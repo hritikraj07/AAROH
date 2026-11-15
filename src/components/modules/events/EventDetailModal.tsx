@@ -109,7 +109,7 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpe
         )}
 
         {/* Schedule & Venue Metadata */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-slate-50 border border-border rounded-md text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-md text-xs">
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-slate-700">
               <Calendar className="w-4 h-4 text-teal-700 shrink-0" />
@@ -142,7 +142,7 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpe
         </div>
 
         {/* Capacity Bar */}
-        <div className="p-3 bg-white border border-border rounded-md space-y-2">
+        <div className="p-3 bg-white border border-slate-200 rounded-md space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-slate-800 flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5 text-slate-500" />

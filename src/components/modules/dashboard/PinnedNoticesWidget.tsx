@@ -10,9 +10,9 @@ export const PinnedNoticesWidget: React.FC = () => {
   const pinnedNotices = notices.filter(n => n.isPinned);
 
   return (
-    <div className="bg-white border border-border rounded-lg shadow-subtle overflow-hidden flex flex-col h-full">
+    <div className="bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-slate-50/50">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-50/50">
         <div className="flex items-center gap-2">
           <Pin className="w-4 h-4 text-teal-700 rotate-45" />
           <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
@@ -47,7 +47,7 @@ export const PinnedNoticesWidget: React.FC = () => {
                 key={notice.id}
                 to={`/notices?id=${notice.id}`}
                 onClick={() => markNoticeRead(notice.id)}
-                className="block p-3 rounded-md border border-border hover:border-slate-300 hover:bg-slate-50/70 transition-all text-xs group"
+                className="block p-3 rounded-md border border-slate-200 hover:border-slate-300 hover:bg-slate-50/70 transition-all text-xs group"
               >
                 <div className="flex items-center justify-between gap-2 mb-1">
                   <div className="flex items-center gap-2">
@@ -95,7 +95,7 @@ export const PinnedNoticesWidget: React.FC = () => {
         )}
 
         {notices.length > 0 && (
-          <div className="pt-3 mt-3 border-t border-border flex items-center justify-between text-[11px] text-slate-500">
+          <div className="pt-3 mt-3 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
             <span>{notices.filter(n => !n.readByCurrentUser).length} unread notices in feed</span>
             <Link to="/student/notices" className="text-teal-700 hover:underline">
               View All Updates

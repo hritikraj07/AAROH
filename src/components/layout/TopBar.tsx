@@ -91,12 +91,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-border h-14 px-4 sm:px-6 flex items-center justify-between">
+    <header className="sticky top-0 z-30 bg-white border-b border-slate-200 h-14 px-4 sm:px-6 flex items-center justify-between">
       {/* Left: Mobile Menu & Breadcrumb */}
       <div className="flex items-center gap-3">
         <button
           onClick={onOpenMobileMenu}
-          className="md:hidden p-1.5 rounded text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+          className="md:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-all duration-150 ease-in-out"
           aria-label="Open sidebar menu"
         >
           <Menu className="w-5 h-5" />
@@ -131,7 +131,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                 }
               }}
               placeholder="Search notices, events, opportunities..."
-              className="w-44 sm:w-64 md:w-72 lg:w-80 pl-8 pr-7 py-1.5 text-xs bg-white border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600 transition-colors font-sans shadow-subtle"
+              className="w-44 sm:w-64 md:w-72 lg:w-80 pl-8 pr-7 py-1.5 text-xs bg-white border border-slate-200 rounded-md text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out font-sans"
               aria-label="Search notices, events, opportunities"
             />
             {searchQuery && (
@@ -142,7 +142,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                   setIsSearchOpen(false);
                   searchInputRef.current?.focus();
                 }}
-                className="absolute right-2 text-slate-400 hover:text-slate-600 p-0.5 rounded transition-colors"
+                className="absolute right-2 text-slate-400 hover:text-slate-600 p-0.5 rounded transition-all duration-150 ease-in-out"
                 aria-label="Clear search query"
               >
                 <X className="w-3 h-3" />
@@ -152,15 +152,15 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
 
           {/* Results Dropdown */}
           {isSearchOpen && searchQuery.trim().length > 1 && (
-            <div className="absolute left-0 mt-1.5 w-80 sm:w-96 bg-white rounded border border-border shadow-sm py-1 z-50 animate-in fade-in zoom-in-95 duration-100 font-sans">
-              <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-slate-50/60 text-[11px] text-slate-500 font-medium">
+            <div className="absolute left-0 top-full mt-1 w-80 sm:w-96 bg-white rounded-md border border-slate-200 shadow-sm py-1 z-50 animate-in fade-in duration-150 font-sans">
+              <div className="flex items-center justify-between px-3 py-1.5 border-b border-slate-200 bg-slate-50/60 text-[11px] text-slate-500 font-medium">
                 <span>Search Results</span>
                 <span className="font-mono text-[10px] text-slate-400">
                   {searchResults.length} {searchResults.length === 1 ? 'match' : 'matches'}
                 </span>
               </div>
 
-              <div className="max-h-80 overflow-y-auto divide-y divide-border">
+              <div className="max-h-80 overflow-y-auto divide-y divide-slate-200">
                 {searchResults.length === 0 ? (
                   <div className="px-4 py-6 text-center text-xs text-slate-500">
                     No results found for '{searchQuery.trim()}'
@@ -174,7 +174,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                         setIsSearchOpen(false);
                         setSearchQuery('');
                       }}
-                      className="block px-3 py-2.5 text-xs transition-colors hover:bg-slate-50 group"
+                      className="block px-3 py-2.5 text-xs transition-all duration-150 ease-in-out hover:bg-slate-50 group"
                     >
                       <div className="flex items-start justify-between gap-2.5">
                         <div className="min-w-0 flex-1">
@@ -185,7 +185,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                             {result.subtitle}
                           </p>
                         </div>
-                        <span className={`shrink-0 px-1.5 py-0.5 text-[10px] font-mono font-medium rounded border ${getTypeBadgeClasses(result.type)}`}>
+                        <span className={`shrink-0 px-2 py-0.5 text-xs font-mono font-medium rounded border ${getTypeBadgeClasses(result.type)}`}>
                           {result.type}
                         </span>
                       </div>
@@ -201,7 +201,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setIsNotifOpen(prev => !prev)}
-            className={`relative p-2 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors ${
+            className={`relative p-2 rounded-md text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all duration-150 ease-in-out ${
               isNotifOpen ? 'bg-slate-100 text-slate-900' : ''
             }`}
             aria-label="Notifications"
@@ -217,12 +217,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
 
           {/* Notifications Dropdown */}
           {isNotifOpen && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg border border-border shadow-modal py-2 z-50 animate-in fade-in zoom-in-95 duration-100 font-sans">
-              <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-slate-50/50">
+            <div className="absolute right-0 top-full mt-1 w-80 sm:w-96 bg-white rounded-md border border-slate-200 shadow-sm py-2 z-50 animate-in fade-in duration-150 font-sans">
+              <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-200 bg-slate-50/50">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-slate-900">Notifications</span>
                   {urgentDeadlines.length > 0 && (
-                    <span className="text-[10px] font-mono font-semibold bg-rose-50 text-rose-700 border border-rose-200 px-1.5 py-0.2 rounded-full">
+                    <span className="text-[10px] font-mono font-semibold bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
                       {urgentDeadlines.length} urgent
                     </span>
                   )}
@@ -230,7 +230,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                 <span className="text-[10px] text-slate-400 font-mono">Next 48 Hours</span>
               </div>
 
-              <div className="max-h-80 overflow-y-auto divide-y divide-border">
+              <div className="max-h-80 overflow-y-auto divide-y divide-slate-200">
                 {urgentDeadlines.length === 0 ? (
                   <div className="p-6 text-center text-xs text-slate-600 font-medium">
                     You're all caught up. No deadlines in the next 48 hours.
@@ -241,7 +241,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                       key={`${item.type}-${item.id}`}
                       to={item.route}
                       onClick={() => setIsNotifOpen(false)}
-                      className="block p-3.5 text-xs transition-colors hover:bg-slate-50 group"
+                      className="block p-3.5 text-xs transition-all duration-150 ease-in-out hover:bg-slate-50 group"
                     >
                       <div className="flex items-start gap-2.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-600 mt-1.5 shrink-0" />
@@ -269,7 +269,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         {/* Quick Demo Reset Data */}
         <button
           onClick={resetDemoData}
-          className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded border border-transparent transition-colors"
+          className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md border border-slate-200 transition-all duration-150 ease-in-out"
           title="Reset demo data to initial seed"
         >
           <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
@@ -277,15 +277,15 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         </button>
 
         {/* User Identity & Role Status Chip */}
-        <div className="hidden lg:flex items-center gap-2 pl-2 border-l border-border text-xs">
-          <div className="w-6 h-6 rounded bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-[10px] flex items-center justify-center font-mono">
+        <div className="hidden lg:flex items-center gap-2 pl-2 border-l border-slate-200 text-xs">
+          <div className="w-6 h-6 rounded-md bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-[10px] flex items-center justify-center font-mono">
             {user?.avatarInitials || (role === 'admin' ? 'AD' : role === 'faculty' ? 'FA' : 'ST')}
           </div>
           <div className="flex items-center gap-1.5">
             <span className="font-medium text-slate-700 max-w-[140px] truncate">
               {user?.name || 'Aaroh User'}
             </span>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 capitalize">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 capitalize">
               {role || 'student'}
             </span>
           </div>

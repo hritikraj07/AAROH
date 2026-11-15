@@ -43,9 +43,9 @@ export const TodayClassesCard: React.FC = () => {
   const sessionsToDisplay = AcademicService.getSessionsForDay(filteredTimetable, displayDayNum);
 
   return (
-    <div className="bg-white border border-border rounded-lg shadow-subtle overflow-hidden flex flex-col h-full">
+    <div className="bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col h-full">
       {/* Card Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-slate-50/50">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-50/50">
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-teal-700" />
           <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
@@ -85,7 +85,7 @@ export const TodayClassesCard: React.FC = () => {
                   className={`p-3 rounded-md border transition-all ${
                     isNext
                       ? 'border-teal-500/80 bg-teal-50/40 ring-1 ring-teal-500/30'
-                      : 'border-border bg-white hover:bg-slate-50/60'
+                      : 'border-slate-200 bg-white hover:bg-slate-50/60'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -136,7 +136,7 @@ export const TodayClassesCard: React.FC = () => {
         )}
 
         {isDisplayingFutureDay && sessionsToDisplay.length > 0 && (
-          <p className="text-[11px] text-slate-500 mt-3 pt-2 border-t border-border flex items-center gap-1.5">
+          <p className="text-[11px] text-slate-500 mt-3 pt-2 border-t border-slate-200 flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" />
             <span>No remaining classes today. Showing next lecture day for your section.</span>
           </p>

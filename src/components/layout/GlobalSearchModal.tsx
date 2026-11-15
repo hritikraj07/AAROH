@@ -179,15 +179,15 @@ export const GlobalSearchModal: React.FC = () => {
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 p-4 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] transition-opacity"
+        className="fixed inset-0 bg-slate-900/40 transition-opacity"
         onClick={closeSearch}
         aria-hidden="true"
       />
 
       {/* Palette Container */}
-      <div className="relative w-full max-w-xl bg-white rounded-lg border border-border shadow-modal z-10 overflow-hidden">
+      <div className="relative w-full max-w-xl bg-white rounded-lg border border-slate-200 shadow-sm z-10 overflow-hidden animate-in fade-in duration-150">
         {/* Search Input Bar */}
-        <div className="flex items-center px-4 py-3 border-b border-border gap-3 bg-slate-50/50">
+        <div className="flex items-center px-4 py-3 border-b border-slate-200 gap-3 bg-slate-50/50">
           <Search className="w-4 h-4 text-slate-400 shrink-0" />
           <input
             ref={inputRef}
@@ -263,7 +263,7 @@ export const GlobalSearchModal: React.FC = () => {
         </div>
 
         {/* Footer Hotkey Legend */}
-        <div className="px-4 py-2 bg-slate-50 border-t border-border flex items-center justify-between text-[11px] text-slate-400">
+        <div className="px-4 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-400">
           <div className="flex items-center gap-3">
             <span>
               <kbd className="font-mono bg-white border border-slate-200 px-1 py-0.5 rounded mr-1">↑↓</kbd>

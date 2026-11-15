@@ -135,7 +135,7 @@ export const OpportunitiesPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
             Opportunity Board
@@ -146,12 +146,12 @@ export const OpportunitiesPage: React.FC = () => {
         </div>
 
         {/* View Switcher: "Browse" vs "Saved" */}
-        <div className="flex items-center bg-slate-100 p-1 rounded-md border border-border text-xs self-start sm:self-auto">
+        <div className="flex items-center bg-slate-100 p-1 rounded-md border border-slate-200 text-xs self-start sm:self-auto">
           <button
             onClick={() => setViewTab('browse')}
             className={`px-3 py-1.5 rounded transition-colors font-medium ${
               viewTab === 'browse'
-                ? 'bg-white text-slate-900 shadow-subtle font-semibold'
+                ? 'bg-white text-slate-900  font-semibold'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -161,7 +161,7 @@ export const OpportunitiesPage: React.FC = () => {
             onClick={() => setViewTab('saved')}
             className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 font-medium ${
               viewTab === 'saved'
-                ? 'bg-teal-700 text-white shadow-subtle font-semibold'
+                ? 'bg-teal-700 text-white  font-semibold'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
@@ -181,7 +181,7 @@ export const OpportunitiesPage: React.FC = () => {
       </div>
 
       {/* Filter and Search Controls Bar */}
-      <div className="bg-white border border-border rounded-lg p-4 shadow-subtle space-y-3.5">
+      <div className="bg-white border border-slate-200 rounded-lg p-4 space-y-3.5">
         {/* Type & Mode & Sort Filters */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Type Filter Buttons */}
@@ -197,7 +197,7 @@ export const OpportunitiesPage: React.FC = () => {
                   onClick={() => setTypeFilter(t)}
                   className={`px-2.5 py-1 text-xs rounded transition-colors whitespace-nowrap ${
                     isSelected
-                      ? 'bg-teal-800 text-white font-semibold shadow-subtle'
+                      ? 'bg-teal-800 text-white font-semibold '
                       : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
@@ -214,7 +214,7 @@ export const OpportunitiesPage: React.FC = () => {
               <select
                 value={modeFilter}
                 onChange={e => setModeFilter(e.target.value as 'All' | OpportunityMode)}
-                className="text-xs px-2.5 py-1.5 bg-slate-50 border border-border rounded text-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-700"
+                className="text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded text-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-700"
               >
                 {modes.map(m => (
                   <option key={m} value={m}>
@@ -229,7 +229,7 @@ export const OpportunitiesPage: React.FC = () => {
               <select
                 value={sortOrder}
                 onChange={e => setSortOrder(e.target.value as 'closest' | 'furthest')}
-                className="text-xs px-2.5 py-1.5 bg-slate-50 border border-border rounded text-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-700"
+                className="text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded text-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-700"
               >
                 <option value="closest">Deadline: Closest First</option>
                 <option value="furthest">Deadline: Furthest First</option>
@@ -239,21 +239,21 @@ export const OpportunitiesPage: React.FC = () => {
         </div>
 
         {/* Search Input */}
-        <div className="relative pt-1 border-t border-border">
+        <div className="relative pt-1 border-t border-slate-200">
           <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 mt-0.5" />
           <input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search by role title, hosting company, eligibility, or stipend keywords..."
-            className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+            className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
           />
         </div>
       </div>
 
       {/* Opportunities List / Dense Grid */}
       {displayOpportunities.length === 0 ? (
-        <div className="py-16 flex flex-col items-center justify-center text-center bg-white border border-border rounded-lg p-6 shadow-subtle">
+        <div className="py-16 flex flex-col items-center justify-center text-center bg-white border border-slate-200 rounded-lg p-6">
           <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
             <Briefcase className="w-5 h-5 text-slate-400" />
           </div>
@@ -288,10 +288,10 @@ export const OpportunitiesPage: React.FC = () => {
             return (
               <div
                 key={opp.id}
-                className={`bg-white border rounded-lg shadow-subtle p-4 transition-all flex flex-col justify-between ${
+                className={`bg-white border rounded-lg  p-4 transition-all flex flex-col justify-between ${
                   isExpired
                     ? 'opacity-60 grayscale-[40%] bg-slate-50/70 border-slate-200'
-                    : 'border-border hover:border-slate-300'
+                    : 'border-slate-200 hover:border-slate-300'
                 }`}
               >
                 <div className="space-y-3">
@@ -392,7 +392,7 @@ export const OpportunitiesPage: React.FC = () => {
                 </div>
 
                 {/* Footer with Apply in New Tab & Details */}
-                <div className="mt-4 pt-3 border-t border-border flex items-center justify-between gap-2 text-xs">
+                <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between gap-2 text-xs">
                   <span className="font-mono text-[11px] text-slate-400">
                     Deadline: {opp.deadline}
                   </span>
@@ -413,7 +413,7 @@ export const OpportunitiesPage: React.FC = () => {
                       className={`px-3 py-1.5 text-xs font-semibold rounded inline-flex items-center gap-1.5 transition-colors ${
                         isExpired
                           ? 'bg-slate-200 text-slate-500 cursor-not-allowed pointer-events-none'
-                          : 'bg-teal-700 hover:bg-teal-800 text-white shadow-subtle'
+                          : 'bg-teal-700 hover:bg-teal-800 text-white '
                       }`}
                     >
                       <span>Apply</span>

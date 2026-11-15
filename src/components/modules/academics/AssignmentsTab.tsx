@@ -53,7 +53,7 @@ export const AssignmentsTab: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Top Filter and Search Bar */}
-      <div className="bg-white border border-border rounded-lg p-3.5 shadow-subtle space-y-3">
+      <div className="bg-white border border-slate-200 rounded-lg p-3.5 space-y-3">
         {/* Status Tabs Bar */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
@@ -69,7 +69,7 @@ export const AssignmentsTab: React.FC = () => {
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap flex items-center gap-1.5 ${
                   statusFilter === tab.id
                     ? 'bg-teal-50 text-teal-900 border border-teal-200/80 font-semibold'
-                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-border'
+                    : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
                 }`}
               >
                 <span>{tab.label}</span>
@@ -86,7 +86,7 @@ export const AssignmentsTab: React.FC = () => {
             <select
               value={sortOrder}
               onChange={e => setSortOrder(e.target.value as 'soonest' | 'furthest')}
-              className="text-xs px-2.5 py-1.5 bg-slate-50 border border-border rounded text-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-700"
+              className="text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded text-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-700"
             >
               <option value="soonest">Due Date (Soonest first)</option>
               <option value="furthest">Due Date (Furthest first)</option>
@@ -95,7 +95,7 @@ export const AssignmentsTab: React.FC = () => {
         </div>
 
         {/* Search & Subject Dropdown Filter */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 pt-1 border-t border-border">
+        <div className="flex flex-col sm:flex-row items-center gap-3 pt-1 border-t border-slate-200">
           <div className="relative flex-1 w-full">
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
@@ -103,7 +103,7 @@ export const AssignmentsTab: React.FC = () => {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search assignments by topic or problem title..."
-              className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50/70 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+              className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50/70 border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
             />
           </div>
 
@@ -112,7 +112,7 @@ export const AssignmentsTab: React.FC = () => {
             <select
               value={courseFilter}
               onChange={e => setCourseFilter(e.target.value)}
-              className="w-full sm:w-56 text-xs px-2.5 py-1.5 bg-slate-50 border border-border rounded text-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-700"
+              className="w-full sm:w-56 text-xs px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded text-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-700"
             >
               <option value="all">All Subjects ({courses.length})</option>
               {courses.map(c => (
@@ -126,7 +126,7 @@ export const AssignmentsTab: React.FC = () => {
       </div>
 
       {/* Assignments List */}
-      <div className="bg-white border border-border rounded-lg shadow-subtle divide-y divide-border">
+      <div className="bg-white border border-slate-200 rounded-lg divide-y divide-border">
         {filteredAssignments.length === 0 ? (
           <div className="py-16 flex flex-col items-center justify-center text-center p-6">
             <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">

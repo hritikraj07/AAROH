@@ -147,7 +147,7 @@ export const AdminPeoplePage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
             Campus User Directory & Onboarding
@@ -173,7 +173,7 @@ export const AdminPeoplePage: React.FC = () => {
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-border rounded-lg p-4 shadow-subtle">
+        <div className="bg-white border border-slate-200 rounded-lg p-4">
           <div className="flex items-center justify-between text-slate-500 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Total Accounts</span>
             <Users className="w-4 h-4 text-slate-700" />
@@ -184,7 +184,7 @@ export const AdminPeoplePage: React.FC = () => {
           <p className="text-[11px] text-slate-500 mt-1">Active verified directory profiles</p>
         </div>
 
-        <div className="bg-white border border-border rounded-lg p-4 shadow-subtle">
+        <div className="bg-white border border-slate-200 rounded-lg p-4">
           <div className="flex items-center justify-between text-slate-500 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Students</span>
             <GraduationCap className="w-4 h-4 text-teal-700" />
@@ -195,7 +195,7 @@ export const AdminPeoplePage: React.FC = () => {
           <p className="text-[11px] text-slate-500 mt-1 font-mono">@aaroh.edu.in</p>
         </div>
 
-        <div className="bg-white border border-border rounded-lg p-4 shadow-subtle">
+        <div className="bg-white border border-slate-200 rounded-lg p-4">
           <div className="flex items-center justify-between text-slate-500 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Faculty</span>
             <Briefcase className="w-4 h-4 text-blue-700" />
@@ -206,7 +206,7 @@ export const AdminPeoplePage: React.FC = () => {
           <p className="text-[11px] text-slate-500 mt-1 font-mono">@faculty.aaroh.edu.in</p>
         </div>
 
-        <div className="bg-white border border-border rounded-lg p-4 shadow-subtle">
+        <div className="bg-white border border-slate-200 rounded-lg p-4">
           <div className="flex items-center justify-between text-slate-500 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Administrators</span>
             <ShieldAlert className="w-4 h-4 text-amber-700" />
@@ -219,7 +219,7 @@ export const AdminPeoplePage: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-lg border border-border">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-lg border border-slate-200">
         {/* Search */}
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -228,7 +228,7 @@ export const AdminPeoplePage: React.FC = () => {
             placeholder="Search by name, email, roll number..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full text-xs pl-9 pr-3 py-1.5 bg-slate-50 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+            className="w-full text-xs pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
           />
         </div>
 
@@ -239,7 +239,7 @@ export const AdminPeoplePage: React.FC = () => {
             className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${
               roleFilter === 'all'
                 ? 'bg-slate-900 text-white font-semibold'
-                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-border'
+                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             All Accounts ({users.length})
@@ -249,7 +249,7 @@ export const AdminPeoplePage: React.FC = () => {
             className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${
               roleFilter === 'student'
                 ? 'bg-teal-700 text-white font-semibold'
-                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-border'
+                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             Students ({studentCount})
@@ -259,7 +259,7 @@ export const AdminPeoplePage: React.FC = () => {
             className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${
               roleFilter === 'faculty'
                 ? 'bg-blue-700 text-white font-semibold'
-                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-border'
+                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             Faculty ({facultyCount})
@@ -269,7 +269,7 @@ export const AdminPeoplePage: React.FC = () => {
             className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${
               roleFilter === 'admin'
                 ? 'bg-slate-700 text-white font-semibold'
-                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-border'
+                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
             }`}
           >
             Admins ({adminCount})
@@ -279,7 +279,7 @@ export const AdminPeoplePage: React.FC = () => {
 
       {/* Directory Table */}
       {filteredUsers.length === 0 ? (
-        <div className="bg-white border border-border rounded-lg p-10 text-center space-y-3">
+        <div className="bg-white border border-slate-200 rounded-lg p-10 text-center space-y-3">
           <Users className="w-10 h-10 text-slate-300 mx-auto" />
           <h3 className="text-sm font-semibold text-slate-900">No users match your criteria</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
@@ -297,11 +297,11 @@ export const AdminPeoplePage: React.FC = () => {
           </Button>
         </div>
       ) : (
-        <div className="bg-white border border-border rounded-lg overflow-hidden shadow-subtle">
+        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
-                <tr className="bg-slate-50 border-b border-border text-slate-500 font-mono uppercase text-[10px]">
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-mono uppercase text-[10px]">
                   <th className="py-3 px-4">User</th>
                   <th className="py-3 px-4">Role</th>
                   <th className="py-3 px-4">Institutional Email</th>
@@ -410,9 +410,9 @@ export const AdminPeoplePage: React.FC = () => {
 
       {/* Add User Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-border rounded-lg shadow-modal max-w-lg w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-100 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-lg shadow-sm max-w-lg w-full p-6 space-y-4 animate-in fade-in duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <UserPlus className="w-4 h-4 text-teal-800" />
                 <h3 className="text-sm font-semibold text-slate-900">
@@ -447,7 +447,7 @@ export const AdminPeoplePage: React.FC = () => {
                     className={`p-3 rounded-md border text-left transition-colors flex items-center gap-2.5 ${
                       role === 'student'
                         ? 'border-teal-700 bg-teal-50/60 text-teal-900 font-semibold ring-1 ring-teal-700'
-                        : 'border-border bg-white text-slate-700 hover:bg-slate-50'
+                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                     }`}
                   >
                     <GraduationCap className={`w-4 h-4 ${role === 'student' ? 'text-teal-700' : 'text-slate-400'}`} />
@@ -463,7 +463,7 @@ export const AdminPeoplePage: React.FC = () => {
                     className={`p-3 rounded-md border text-left transition-colors flex items-center gap-2.5 ${
                       role === 'faculty'
                         ? 'border-blue-700 bg-blue-50/60 text-blue-900 font-semibold ring-1 ring-blue-700'
-                        : 'border-border bg-white text-slate-700 hover:bg-slate-50'
+                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                     }`}
                   >
                     <Briefcase className={`w-4 h-4 ${role === 'faculty' ? 'text-blue-700' : 'text-slate-400'}`} />
@@ -486,7 +486,7 @@ export const AdminPeoplePage: React.FC = () => {
                   placeholder={role === 'student' ? 'e.g. Devika Patel' : 'e.g. Prof. Rajesh Verma'}
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                 />
               </div>
 
@@ -506,7 +506,7 @@ export const AdminPeoplePage: React.FC = () => {
                     }
                     value={email}
                     onChange={e => setEmail(e.target.value)}
-                    className="w-full text-xs font-mono pl-9 pr-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs font-mono pl-9 pr-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                   />
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1">
@@ -516,7 +516,7 @@ export const AdminPeoplePage: React.FC = () => {
 
               {/* Dynamic Fields: Student */}
               {role === 'student' && (
-                <div className="p-3 bg-slate-50 border border-border rounded-md space-y-3">
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-md space-y-3">
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-teal-900">
                     Student Academic Information
                   </div>
@@ -532,7 +532,7 @@ export const AdminPeoplePage: React.FC = () => {
                         placeholder="e.g. 23CS014"
                         value={rollNumber}
                         onChange={e => setRollNumber(e.target.value)}
-                        className="w-full text-xs font-mono uppercase px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                        className="w-full text-xs font-mono uppercase px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                       />
                     </div>
 
@@ -543,7 +543,7 @@ export const AdminPeoplePage: React.FC = () => {
                       <select
                         value={program}
                         onChange={e => setProgram(e.target.value)}
-                        className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                        className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                       >
                         <option value="B.Tech">B.Tech Computer Science</option>
                         <option value="B.Tech ECE">B.Tech Electronics & Comm.</option>
@@ -561,7 +561,7 @@ export const AdminPeoplePage: React.FC = () => {
                       <select
                         value={semester}
                         onChange={e => setSemester(Number(e.target.value))}
-                        className="w-full text-xs font-mono px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                        className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                       >
                         {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
                           <option key={s} value={s}>
@@ -579,7 +579,7 @@ export const AdminPeoplePage: React.FC = () => {
                         type="text"
                         value={section}
                         onChange={e => setSection(e.target.value)}
-                        className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                        className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                       />
                     </div>
                   </div>
@@ -588,7 +588,7 @@ export const AdminPeoplePage: React.FC = () => {
 
               {/* Dynamic Fields: Faculty */}
               {role === 'faculty' && (
-                <div className="p-3 bg-slate-50 border border-border rounded-md space-y-3">
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-md space-y-3">
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-blue-900">
                     Faculty Department & Title
                   </div>
@@ -603,7 +603,7 @@ export const AdminPeoplePage: React.FC = () => {
                       placeholder="e.g. Department of Computer Science & Engineering"
                       value={department}
                       onChange={e => setDepartment(e.target.value)}
-                      className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                     />
                   </div>
 
@@ -615,18 +615,18 @@ export const AdminPeoplePage: React.FC = () => {
                       type="text"
                       value={designation}
                       onChange={e => setDesignation(e.target.value)}
-                      className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                     />
                   </div>
                 </div>
               )}
 
-              <div className="p-3 bg-slate-50 border border-border rounded-md text-[11px] text-slate-500 leading-relaxed">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-[11px] text-slate-500 leading-relaxed">
                 <CheckCircle className="w-3.5 h-3.5 text-teal-700 inline mr-1" />
                 Once onboarded, this user can immediately sign in at <code className="font-mono">/login</code> using this email address.
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
                 <Button
                   type="button"
                   variant="secondary"

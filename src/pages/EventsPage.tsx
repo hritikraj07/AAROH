@@ -88,11 +88,11 @@ export const EventsPage: React.FC = () => {
 
         {/* View Mode & My Registrations Tab */}
         <div className="flex items-center gap-2 self-start sm:self-auto">
-          <div className="flex items-center bg-slate-100 p-1 rounded-md border border-border text-xs">
+          <div className="flex items-center bg-slate-100 p-1 rounded-md border border-slate-200 text-xs">
             <button
               onClick={() => setActiveTab('all')}
               className={`px-3 py-1 rounded font-medium transition-colors ${activeTab === 'all'
-                  ? 'bg-white text-slate-900 shadow-subtle font-semibold'
+                  ? 'bg-white text-slate-900  font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
                 }`}
             >
@@ -101,7 +101,7 @@ export const EventsPage: React.FC = () => {
             <button
               onClick={() => setActiveTab('my-registrations')}
               className={`px-3 py-1 rounded font-medium transition-colors flex items-center gap-1.5 ${activeTab === 'my-registrations'
-                  ? 'bg-teal-700 text-white shadow-subtle font-semibold'
+                  ? 'bg-teal-700 text-white  font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
                 }`}
             >
@@ -121,7 +121,7 @@ export const EventsPage: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white border border-border rounded-lg p-3.5 shadow-subtle space-y-3">
+      <div className="bg-white border border-slate-200 rounded-lg p-3.5 space-y-3">
         {/* Category Pills Bar */}
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
@@ -133,7 +133,7 @@ export const EventsPage: React.FC = () => {
                   onClick={() => setCategoryFilter(cat)}
                   className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${isSelected
                       ? 'bg-teal-50 text-teal-900 border border-teal-200 font-semibold'
-                      : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-border'
+                      : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
                     }`}
                 >
                   {cat}
@@ -143,10 +143,10 @@ export const EventsPage: React.FC = () => {
           </div>
 
           {/* Toggle List / Calendar */}
-          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded border border-border text-xs">
+          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded border border-slate-200 text-xs">
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded transition-colors ${viewMode === 'list' ? 'bg-white text-slate-900 shadow-subtle' : 'text-slate-500 hover:text-slate-800'
+              className={`p-1.5 rounded transition-colors ${viewMode === 'list' ? 'bg-white text-slate-900 ' : 'text-slate-500 hover:text-slate-800'
                 }`}
               title="List View"
             >
@@ -154,7 +154,7 @@ export const EventsPage: React.FC = () => {
             </button>
             <button
               onClick={() => setViewMode('calendar')}
-              className={`p-1.5 rounded transition-colors ${viewMode === 'calendar' ? 'bg-white text-slate-900 shadow-subtle' : 'text-slate-500 hover:text-slate-800'
+              className={`p-1.5 rounded transition-colors ${viewMode === 'calendar' ? 'bg-white text-slate-900 ' : 'text-slate-500 hover:text-slate-800'
                 }`}
               title="Calendar View"
             >
@@ -164,14 +164,14 @@ export const EventsPage: React.FC = () => {
         </div>
 
         {/* Search Input */}
-        <div className="relative pt-2 border-t border-border">
+        <div className="relative pt-2 border-t border-slate-200">
           <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 mt-1" />
           <input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search events by title, organizer, or venue..."
-            className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50/70 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+            className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50/70 border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
           />
         </div>
       </div>
@@ -180,7 +180,7 @@ export const EventsPage: React.FC = () => {
       {viewMode === 'list' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredEvents.length === 0 ? (
-            <div className="col-span-full py-16 flex flex-col items-center justify-center text-center bg-white border border-border rounded-lg p-6">
+            <div className="col-span-full py-16 flex flex-col items-center justify-center text-center bg-white border border-slate-200 rounded-lg p-6">
               <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
                 <CalendarIcon className="w-5 h-5 text-slate-400" />
               </div>
@@ -214,7 +214,7 @@ export const EventsPage: React.FC = () => {
               return (
                 <div
                   key={event.id}
-                  className="bg-white border border-border rounded-lg shadow-subtle p-4 hover:border-slate-300 transition-all flex flex-col justify-between"
+                  className="bg-white border border-slate-200 rounded-lg p-4 hover:border-slate-300 transition-all flex flex-col justify-between"
                 >
                   <div className="space-y-2">
                     {/* Top Row: Category and Date Badge */}
@@ -291,7 +291,7 @@ export const EventsPage: React.FC = () => {
                   </div>
 
                   {/* Bottom Action Footer */}
-                  <div className="mt-4 pt-3 border-t border-border flex items-center justify-between gap-3 text-xs">
+                  <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
                       <Users className="w-3.5 h-3.5 text-slate-400" />
                       <span className="font-mono font-medium text-slate-700">
@@ -333,8 +333,8 @@ export const EventsPage: React.FC = () => {
 
       {/* 2. Calendar View */}
       {viewMode === 'calendar' && (
-        <div className="bg-white border border-border rounded-lg shadow-subtle p-5">
-          <div className="flex items-center justify-between pb-3 mb-4 border-b border-border">
+        <div className="bg-white border border-slate-200 rounded-lg p-5">
+          <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-200">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
               Campus Event Schedule Matrix
             </h3>
@@ -357,7 +357,7 @@ export const EventsPage: React.FC = () => {
                 <div
                   key={event.id}
                   onClick={() => handleOpenDetail(event)}
-                  className="p-3.5 rounded-lg border border-border hover:bg-slate-50 cursor-pointer transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className="p-3.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-16 h-14 rounded bg-teal-50 border border-teal-200 text-teal-900 flex flex-col items-center justify-center shrink-0">

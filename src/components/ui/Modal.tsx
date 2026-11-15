@@ -48,20 +48,20 @@ export const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] transition-opacity"
+        className="fixed inset-0 bg-slate-900/40 transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Modal Surface */}
       <div
-        className={`relative w-full ${maxWidthStyles} bg-white rounded-lg border border-border shadow-modal z-10 overflow-hidden my-auto`}
+        className={`relative w-full ${maxWidthStyles} bg-white rounded-lg border border-slate-200 shadow-sm z-10 overflow-hidden my-auto animate-in fade-in duration-150`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
       >
         {/* Header */}
-        <div className="flex items-start justify-between px-6 py-4 border-b border-border bg-slate-50/50">
+        <div className="flex items-start justify-between px-6 py-4 border-b border-slate-200 bg-slate-50/50">
           <div>
             <h3 id="modal-title" className="text-base font-semibold text-slate-900 leading-snug">
               {title}
@@ -84,7 +84,7 @@ export const Modal: React.FC<ModalProps> = ({
 
         {/* Optional Footer */}
         {footer && (
-          <div className="flex items-center justify-end gap-3 px-6 py-3.5 border-t border-border bg-slate-50/80">
+          <div className="flex items-center justify-end gap-3 px-6 py-3.5 border-t border-slate-200 bg-slate-50/80">
             {footer}
           </div>
         )}

@@ -77,7 +77,7 @@ export const FacultyNoticesPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
             Department Circulars & Notices
@@ -98,7 +98,7 @@ export const FacultyNoticesPage: React.FC = () => {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-lg border border-border shadow-subtle">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-lg border border-slate-200">
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
@@ -106,7 +106,7 @@ export const FacultyNoticesPage: React.FC = () => {
             placeholder="Search circulars, department memos, syllabus updates..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-1.5 text-xs bg-slate-50 border border-border rounded focus:outline-none focus:ring-1 focus:ring-teal-700"
+            className="w-full pl-9 pr-4 py-1.5 text-xs bg-white border border-slate-200 rounded focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
           />
         </div>
 
@@ -118,9 +118,9 @@ export const FacultyNoticesPage: React.FC = () => {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-2.5 py-1 text-xs rounded transition-colors whitespace-nowrap capitalize ${
+              className={`px-2.5 py-1 text-xs rounded transition-all duration-150 ease-in-out whitespace-nowrap capitalize ${
                 selectedCategory === cat
-                  ? 'bg-teal-800 text-white font-semibold'
+                  ? 'bg-teal-700 text-white font-semibold'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
@@ -131,8 +131,8 @@ export const FacultyNoticesPage: React.FC = () => {
       </div>
 
       {/* Notices Table */}
-      <div className="bg-white border border-border rounded-lg shadow-subtle overflow-hidden">
-        <div className="p-4 border-b border-border bg-slate-50/50 flex items-center justify-between">
+      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+        <div className="p-4 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
             Published Bulletins ({filteredNotices.length})
           </h3>
@@ -162,7 +162,7 @@ export const FacultyNoticesPage: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
-                <tr className="border-b border-border bg-slate-50 text-slate-500 font-mono uppercase text-[10px]">
+                <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-mono uppercase text-[10px]">
                   <th className="py-3 px-4 w-12 text-center">Pin</th>
                   <th className="py-3 px-4">Subject / Title</th>
                   <th className="py-3 px-4 w-32">Category</th>
@@ -240,9 +240,9 @@ export const FacultyNoticesPage: React.FC = () => {
 
       {/* Draft & Publish Notice Modal */}
       {isDraftModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-border rounded-lg shadow-xl max-w-lg w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between p-4 border-b border-border bg-slate-50/50">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-lg shadow-sm max-w-lg w-full overflow-hidden animate-in fade-in duration-150">
+            <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-50/50">
               <div className="flex items-center gap-2">
                 <Bell className="w-4 h-4 text-teal-800" />
                 <h3 className="text-sm font-bold text-slate-900">
@@ -269,7 +269,7 @@ export const FacultyNoticesPage: React.FC = () => {
                   placeholder="e.g. CS301 Laboratory Schedule Change & Viva Dates"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-border rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700"
                 />
               </div>
 
@@ -281,7 +281,7 @@ export const FacultyNoticesPage: React.FC = () => {
                   <select
                     value={category}
                     onChange={e => setCategory(e.target.value as NoticeCategory)}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-border rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700"
                   >
                     <option value="Academic">Academic</option>
                     <option value="Exams">Exams</option>
@@ -299,7 +299,7 @@ export const FacultyNoticesPage: React.FC = () => {
                     required
                     value={department}
                     onChange={e => setDepartment(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-border rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700"
                   />
                 </div>
               </div>
@@ -314,7 +314,7 @@ export const FacultyNoticesPage: React.FC = () => {
                   placeholder="Write notice body, instructions for students, relevant deadlines, and faculty contact info..."
                   value={content}
                   onChange={e => setContent(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-border rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700 resize-none"
+                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700 resize-none"
                 />
               </div>
 
@@ -329,7 +329,7 @@ export const FacultyNoticesPage: React.FC = () => {
                     placeholder="e.g. Lab_Experiment_Manual_2026.pdf"
                     value={attachmentName}
                     onChange={e => setAttachmentName(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-border rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700"
                   />
                 </div>
               </div>
@@ -340,14 +340,14 @@ export const FacultyNoticesPage: React.FC = () => {
                   id="facultyPinNotice"
                   checked={isPinned}
                   onChange={e => setIsPinned(e.target.checked)}
-                  className="rounded border-border text-teal-700 focus:ring-teal-700"
+                  className="rounded border-slate-200 text-teal-700 focus:ring-teal-700"
                 />
                 <label htmlFor="facultyPinNotice" className="text-xs text-slate-700 font-medium">
                   Pin to top of student notice board
                 </label>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
                 <Button
                   type="button"
                   variant="outline"

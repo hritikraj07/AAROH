@@ -46,7 +46,7 @@ export const AdminSettingsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="pb-4 border-b border-border">
+      <div className="pb-4 border-b border-slate-200">
         <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
           Institutional System Configuration
         </h2>
@@ -59,8 +59,8 @@ export const AdminSettingsPage: React.FC = () => {
         {/* Left Col: Institutional Parameters & Regulatory Thresholds */}
         <div className="space-y-6">
           {/* Institutional Branding */}
-          <div className="bg-white border border-border rounded-lg p-5 shadow-subtle space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-border">
+          <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
               <Building className="w-4 h-4 text-teal-800" />
               <h3 className="text-sm font-semibold text-slate-900">Institution Identity</h3>
             </div>
@@ -68,7 +68,7 @@ export const AdminSettingsPage: React.FC = () => {
             <div className="space-y-3 text-xs">
               <div>
                 <label className="block text-slate-500 font-medium mb-1">Institution Full Title</label>
-                <div className="p-2.5 bg-slate-50 border border-border rounded font-semibold text-slate-800">
+                <div className="p-2.5 bg-slate-50 border border-slate-200 rounded font-semibold text-slate-800">
                   {APP_CONFIG.collegeName}
                 </div>
               </div>
@@ -76,13 +76,13 @@ export const AdminSettingsPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-slate-500 font-medium mb-1">Software Wordmark</label>
-                  <div className="p-2 bg-slate-50 border border-border rounded font-mono font-bold text-slate-900">
+                  <div className="p-2 bg-slate-50 border border-slate-200 rounded font-mono font-bold text-slate-900">
                     {APP_CONFIG.appName}
                   </div>
                 </div>
                 <div>
                   <label className="block text-slate-500 font-medium mb-1">College Short Code</label>
-                  <div className="p-2 bg-slate-50 border border-border rounded font-mono font-bold text-slate-900">
+                  <div className="p-2 bg-slate-50 border border-slate-200 rounded font-mono font-bold text-slate-900">
                     {APP_CONFIG.collegeShortName}
                   </div>
                 </div>
@@ -95,8 +95,8 @@ export const AdminSettingsPage: React.FC = () => {
           </div>
 
           {/* Attendance Regulation Settings */}
-          <div className="bg-white border border-border rounded-lg p-5 shadow-subtle space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-border">
+          <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
               <Sliders className="w-4 h-4 text-teal-800" />
               <h3 className="text-sm font-semibold text-slate-900">
                 Attendance Regulatory Policy
@@ -150,8 +150,8 @@ export const AdminSettingsPage: React.FC = () => {
         {/* Right Col: RBAC Domain Routing & Demo Reset */}
         <div className="space-y-6">
           {/* RBAC Domain Security */}
-          <div className="bg-white border border-border rounded-lg p-5 shadow-subtle space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-border">
+          <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
               <ShieldCheck className="w-4 h-4 text-teal-800" />
               <h3 className="text-sm font-semibold text-slate-900">
                 Role-Based Domain Governance
@@ -159,38 +159,38 @@ export const AdminSettingsPage: React.FC = () => {
             </div>
 
             <div className="space-y-2.5 text-xs">
-              <div className="p-3 bg-slate-50 border border-border rounded flex items-center justify-between">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md flex items-center justify-between">
                 <div>
                   <span className="font-semibold text-slate-900 block">Student Clearance</span>
                   <span className="text-[11px] text-slate-500">
                     Dashboard, Academics, Notices, Events, Opportunities
                   </span>
                 </div>
-                <code className="font-mono text-teal-800 font-bold text-[11px] bg-white px-2 py-0.5 rounded border border-border">
+                <code className="font-mono text-teal-800 font-bold text-[11px] bg-white px-2 py-0.5 rounded border border-slate-200">
                   @aaroh.edu.in
                 </code>
               </div>
 
-              <div className="p-3 bg-slate-50 border border-border rounded flex items-center justify-between">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md flex items-center justify-between">
                 <div>
                   <span className="font-semibold text-slate-900 block">Faculty Clearance</span>
                   <span className="text-[11px] text-slate-500">
                     Classes, Roll Logger, Coursework, Grading
                   </span>
                 </div>
-                <code className="font-mono text-teal-800 font-bold text-[11px] bg-white px-2 py-0.5 rounded border border-border">
+                <code className="font-mono text-teal-800 font-bold text-[11px] bg-white px-2 py-0.5 rounded border border-slate-200">
                   @faculty.aaroh.edu.in
                 </code>
               </div>
 
-              <div className="p-3 bg-slate-50 border border-border rounded flex items-center justify-between">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md flex items-center justify-between">
                 <div>
                   <span className="font-semibold text-slate-900 block">Administration Clearance</span>
                   <span className="text-[11px] text-slate-500">
                     Full Console, Timetable Engine, Events, Notices
                   </span>
                 </div>
-                <code className="font-mono text-teal-800 font-bold text-[11px] bg-white px-2 py-0.5 rounded border border-border">
+                <code className="font-mono text-teal-800 font-bold text-[11px] bg-white px-2 py-0.5 rounded border border-slate-200">
                   @admin.aaroh.edu.in
                 </code>
               </div>
@@ -198,7 +198,7 @@ export const AdminSettingsPage: React.FC = () => {
           </div>
 
           {/* Clean Reset Demo Data Card */}
-          <div className="bg-white border border-rose-200 rounded-lg p-5 shadow-subtle space-y-4">
+          <div className="bg-white border border-rose-200 rounded-lg p-5 space-y-4">
             <div className="flex items-center gap-2 pb-3 border-b border-rose-100">
               <RotateCcw className="w-4 h-4 text-rose-700" />
               <h3 className="text-sm font-semibold text-rose-950">Maintenance & State Reset</h3>
@@ -225,8 +225,8 @@ export const AdminSettingsPage: React.FC = () => {
 
       {/* Reset Confirmation Dialog */}
       {isResetConfirmOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-border rounded-lg shadow-modal max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-100">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-lg shadow-sm max-w-md w-full p-6 space-y-4 animate-in fade-in duration-150">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-5 h-5" />
@@ -241,7 +241,7 @@ export const AdminSettingsPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
               <Button
                 type="button"
                 variant="secondary"

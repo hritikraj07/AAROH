@@ -25,13 +25,13 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose }) =
     <div className="fixed inset-0 z-50 md:hidden flex">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-slate-900/40 transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Drawer content */}
-      <div className="relative w-72 max-w-[80vw] bg-white h-full z-10 flex flex-col shadow-2xl animate-in slide-in-from-left duration-200">
+      <div className="relative w-72 max-w-[80vw] bg-white h-full z-10 flex flex-col border-r border-slate-200 shadow-sm animate-in fade-in duration-150">
         <button
           onClick={onClose}
           className="absolute top-4 right-3 p-1.5 rounded text-slate-400 hover:text-slate-700 hover:bg-slate-100 z-20"

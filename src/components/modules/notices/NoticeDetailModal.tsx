@@ -52,7 +52,7 @@ export const NoticeDetailModal: React.FC<NoticeDetailModalProps> = ({ notice, is
     >
       <div className="space-y-4">
         {/* Meta Bar */}
-        <div className="p-3 bg-slate-50 rounded-md border border-border flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="p-3 bg-slate-50 rounded-md border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2">
             <Badge
               variant={
@@ -90,7 +90,7 @@ export const NoticeDetailModal: React.FC<NoticeDetailModalProps> = ({ notice, is
         </div>
 
         {/* Full Notice Content */}
-        <div className="text-slate-800 text-sm leading-relaxed whitespace-pre-line py-2 border-t border-b border-border">
+        <div className="text-slate-800 text-sm leading-relaxed whitespace-pre-line py-2 border-t border-b border-slate-200">
           {notice.content}
         </div>
 
@@ -104,7 +104,7 @@ export const NoticeDetailModal: React.FC<NoticeDetailModalProps> = ({ notice, is
               {notice.attachments.map(att => (
                 <div
                   key={att.name}
-                  className="flex items-center justify-between p-2.5 bg-slate-50 border border-border rounded-md text-xs hover:bg-slate-100/70 transition-colors"
+                  className="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-md text-xs hover:bg-slate-100/70 transition-colors"
                 >
                   <div className="flex items-center gap-2.5">
                     <FileText className="w-4 h-4 text-teal-700 shrink-0" />

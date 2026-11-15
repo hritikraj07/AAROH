@@ -9,7 +9,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className = '', variant = 'secondary', size = 'md', icon, loading, children, disabled, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-medium transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-teal-700 disabled:opacity-50 disabled:cursor-not-allowed select-none rounded';
+    const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 disabled:opacity-50 disabled:cursor-not-allowed select-none rounded-md';
 
     const sizeStyles = {
       sm: 'text-xs px-2.5 py-1.5 gap-1.5',
@@ -18,11 +18,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     }[size];
 
     const variantStyles = {
-      primary: 'bg-primary text-white hover:bg-[#0D6861] active:bg-[#115E59] border border-transparent shadow-subtle',
-      secondary: 'bg-white text-slate-700 hover:bg-slate-50 active:bg-slate-100 border border-border shadow-subtle',
-      outline: 'bg-transparent text-slate-700 hover:bg-slate-100/70 border border-border',
+      primary: 'bg-teal-700 text-white hover:bg-[#0D6861] active:bg-[#115E59] border border-transparent',
+      secondary: 'bg-white text-slate-700 hover:bg-slate-50 active:bg-slate-100 border border-slate-200',
+      outline: 'bg-transparent text-slate-700 hover:bg-slate-100/70 border border-slate-200',
       ghost: 'bg-transparent text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 border border-transparent',
-      danger: 'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 border border-transparent shadow-subtle',
+      danger: 'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 border border-transparent',
     }[variant];
 
     return (

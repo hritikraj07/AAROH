@@ -28,9 +28,9 @@ export const AttendanceAlertsWidget: React.FC = () => {
   const safeAttendance = analyses.filter(a => !a.isBelowThreshold);
 
   return (
-    <div className="bg-white border border-border rounded-lg shadow-subtle overflow-hidden flex flex-col h-full">
+    <div className="bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-slate-50/50">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-50/50">
         <div className="flex items-center gap-2">
           {studentAttendance.length === 0 ? (
             <CheckCircle2 className="w-4 h-4 text-slate-400" />
@@ -78,7 +78,7 @@ export const AttendanceAlertsWidget: React.FC = () => {
             {lowAttendance.map(item => (
               <div
                 key={item.courseId}
-                className="p-3 rounded-md border border-rose-200 bg-white shadow-subtle space-y-2"
+                className="p-3 rounded-md border border-rose-200 bg-white space-y-2"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
@@ -124,7 +124,7 @@ export const AttendanceAlertsWidget: React.FC = () => {
 
         {/* Safe courses snapshot */}
         {safeAttendance.length > 0 && (
-          <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] text-slate-500">
+          <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
             <span>{safeAttendance.length} other subjects in good standing</span>
             <Link to="/student/academics?tab=attendance" className="text-teal-700 hover:underline">
               View Breakdown

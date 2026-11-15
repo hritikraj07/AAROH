@@ -33,7 +33,7 @@ export const Tabs: React.FC<TabsProps> = ({
               onClick={() => onChange(tab.id)}
               className={`inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded transition-all duration-150 ${
                 isActive
-                  ? 'bg-white text-slate-900 shadow-subtle font-semibold'
+                  ? 'bg-white text-slate-900  font-semibold'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
               }`}
             >
@@ -41,7 +41,7 @@ export const Tabs: React.FC<TabsProps> = ({
               <span>{tab.label}</span>
               {typeof tab.count === 'number' && (
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full tabular-nums ${
+                  className={`text-[10px] px-2 py-0.5 rounded font-mono tabular-nums ${
                     isActive ? 'bg-teal-100 text-teal-800' : 'bg-slate-200 text-slate-600'
                   }`}
                 >
@@ -56,16 +56,16 @@ export const Tabs: React.FC<TabsProps> = ({
   }
 
   return (
-    <div className={`border-b border-border flex items-center gap-6 ${className}`}>
+    <div className={`border-b border-slate-200 flex items-center gap-6 ${className}`}>
       {tabs.map(tab => {
         const isActive = activeTab === tab.id;
         return (
           <button
             key={tab.id}
             onClick={() => onChange(tab.id)}
-            className={`inline-flex items-center gap-2 py-3 text-sm font-medium border-b-2 transition-colors duration-150 -mb-[1px] ${
+            className={`inline-flex items-center gap-2 py-3 text-sm font-medium border-b-2 transition-all duration-150 ease-in-out -mb-[1px] ${
               isActive
-                ? 'border-primary text-primary font-semibold'
+                ? 'border-teal-700 text-teal-700 font-semibold'
                 : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
             }`}
           >
@@ -73,7 +73,7 @@ export const Tabs: React.FC<TabsProps> = ({
             <span>{tab.label}</span>
             {typeof tab.count === 'number' && (
               <span
-                className={`text-xs px-1.5 py-0.5 rounded-full tabular-nums ${
+                className={`text-xs px-2 py-0.5 rounded font-mono tabular-nums ${
                   isActive ? 'bg-teal-50 text-teal-700 font-semibold' : 'bg-slate-100 text-slate-500'
                 }`}
               >

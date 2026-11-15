@@ -81,7 +81,7 @@ export const AdminOpportunitiesPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
             Opportunity Board Publisher
@@ -93,8 +93,8 @@ export const AdminOpportunitiesPage: React.FC = () => {
       </div>
 
       {/* 1. Add Opportunity Form (Single-Column White Card Layout) */}
-      <div className="bg-white border border-border rounded-lg p-5 sm:p-6 shadow-subtle">
-        <div className="flex items-center gap-2 pb-4 mb-4 border-b border-border">
+      <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6">
+        <div className="flex items-center gap-2 pb-4 mb-4 border-b border-slate-200">
           <Briefcase className="w-4 h-4 text-teal-800" />
           <h3 className="text-sm font-bold text-slate-900">
             Publish New Opportunity
@@ -113,7 +113,7 @@ export const AdminOpportunitiesPage: React.FC = () => {
               value={title}
               onChange={e => setTitle(e.target.value)}
               placeholder="e.g. Google Summer of Code 2026 or Software Engineering Summer Intern"
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
             />
           </div>
 
@@ -128,7 +128,7 @@ export const AdminOpportunitiesPage: React.FC = () => {
               value={organization}
               onChange={e => setOrganization(e.target.value)}
               placeholder="e.g. Google Open Source or Microsoft India R&D"
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
             />
           </div>
 
@@ -141,7 +141,7 @@ export const AdminOpportunitiesPage: React.FC = () => {
               <select
                 value={type}
                 onChange={e => setType(e.target.value as OpportunityType)}
-                className="w-full text-xs px-3 py-2 bg-slate-50 border border-border rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700 font-medium"
+                className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700 font-medium"
               >
                 <option value="Internship">Internship</option>
                 <option value="Hackathon">Hackathon</option>
@@ -153,11 +153,11 @@ export const AdminOpportunitiesPage: React.FC = () => {
               <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
                 Engagement Mode <span className="text-rose-500">*</span>
               </label>
-              <div className="grid grid-cols-2 gap-2 p-1 bg-slate-50 border border-border rounded">
+              <div className="grid grid-cols-2 gap-2 p-1 bg-slate-50 border border-slate-200 rounded">
                 <label
                   className={`flex items-center justify-center gap-1.5 py-1 text-xs font-semibold rounded cursor-pointer transition-colors ${
                     mode === 'Remote'
-                      ? 'bg-teal-700 text-white shadow-subtle'
+                      ? 'bg-teal-700 text-white '
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
@@ -175,7 +175,7 @@ export const AdminOpportunitiesPage: React.FC = () => {
                 <label
                   className={`flex items-center justify-center gap-1.5 py-1 text-xs font-semibold rounded cursor-pointer transition-colors ${
                     mode === 'On-site'
-                      ? 'bg-teal-700 text-white shadow-subtle'
+                      ? 'bg-teal-700 text-white '
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
@@ -204,7 +204,7 @@ export const AdminOpportunitiesPage: React.FC = () => {
                 required
                 value={deadline}
                 onChange={e => setDeadline(e.target.value)}
-                className="w-full text-xs px-3 py-2 bg-slate-50 border border-border rounded text-slate-900 font-mono focus:outline-none focus:ring-1 focus:ring-teal-700"
+                className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded text-slate-900 font-mono focus:outline-none focus:ring-1 focus:ring-teal-700"
               />
             </div>
 
@@ -218,7 +218,7 @@ export const AdminOpportunitiesPage: React.FC = () => {
                 value={stipendPrize}
                 onChange={e => setStipendPrize(e.target.value)}
                 placeholder="e.g. ₹45,000 / month or ₹1,00,000 Prize Pool"
-                className="w-full text-xs px-3 py-2 bg-slate-50 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+                className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
               />
             </div>
           </div>
@@ -234,7 +234,7 @@ export const AdminOpportunitiesPage: React.FC = () => {
               value={eligibility}
               onChange={e => setEligibility(e.target.value)}
               placeholder="e.g. Pre-final & Final Year B.Tech / MCA students (Batch of 2026/2027)"
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
             />
           </div>
 
@@ -249,7 +249,7 @@ export const AdminOpportunitiesPage: React.FC = () => {
               value={applyLink}
               onChange={e => setApplyLink(e.target.value)}
               placeholder="https://company.com/careers/apply-opportunity"
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
             />
           </div>
 
@@ -263,7 +263,7 @@ export const AdminOpportunitiesPage: React.FC = () => {
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="Provide a summary of core technical responsibilities, skills sought, and application steps..."
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700 resize-none"
+              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700 resize-none"
             />
           </div>
 
@@ -282,8 +282,8 @@ export const AdminOpportunitiesPage: React.FC = () => {
       </div>
 
       {/* 2. Currently Active Opportunities Data Table */}
-      <div className="bg-white border border-border rounded-lg shadow-subtle overflow-hidden">
-        <div className="p-4 border-b border-border bg-slate-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+        <div className="p-4 border-b border-slate-200 bg-slate-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
               Published Opportunities ({opportunities.length})
@@ -300,7 +300,7 @@ export const AdminOpportunitiesPage: React.FC = () => {
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search published listings..."
-              className="w-full text-xs pl-8 pr-3 py-1.5 bg-white border border-border rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700"
+              className="w-full text-xs pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700"
             />
           </div>
         </div>
@@ -313,7 +313,7 @@ export const AdminOpportunitiesPage: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
-                <tr className="border-b border-border bg-slate-50 text-slate-500 font-mono uppercase text-[10px]">
+                <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-mono uppercase text-[10px]">
                   <th className="py-3 px-4">Title & Organization</th>
                   <th className="py-3 px-4 w-28">Type</th>
                   <th className="py-3 px-4 w-24">Mode</th>

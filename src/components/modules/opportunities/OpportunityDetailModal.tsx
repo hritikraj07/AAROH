@@ -85,7 +85,7 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
                 href={opportunity.applyLink || opportunity.applyUrl || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1.5 text-xs font-semibold rounded inline-flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 text-white transition-colors shadow-subtle"
+                className="px-3 py-1.5 text-xs font-semibold rounded inline-flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 text-white transition-colors"
               >
                 <span>Apply on Official Portal</span>
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -97,7 +97,7 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
     >
       <div className="space-y-4">
         {/* Banner with Org, Mode, Compensation */}
-        <div className="p-4 bg-slate-50 border border-border rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Badge
@@ -119,7 +119,7 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
             <h4 className="text-base font-bold text-slate-900">{opportunity.organization}</h4>
           </div>
 
-          <div className="sm:text-right border-t sm:border-t-0 pt-2 sm:pt-0 border-border">
+          <div className="sm:text-right border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200">
             <span className="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">
               Stipend / Prize Pool
             </span>
@@ -158,7 +158,7 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
         </div>
 
         {/* Eligibility Criteria */}
-        <div className="space-y-1.5 p-3 bg-white border border-border rounded-md">
+        <div className="space-y-1.5 p-3 bg-white border border-slate-200 rounded-md">
           <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
             Eligibility & Prerequisites
           </h4>

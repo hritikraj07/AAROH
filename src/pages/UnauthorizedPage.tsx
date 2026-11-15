@@ -36,9 +36,9 @@ export const UnauthorizedPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col justify-center items-center p-4 sm:p-6 font-sans">
-      <div className="w-full max-w-lg bg-white border border-border rounded-lg shadow-card p-6 sm:p-8 space-y-6">
+      <div className="w-full max-w-lg bg-white border border-slate-200 rounded-lg p-6 sm:p-8 space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2 pb-4 border-b border-border">
+        <div className="text-center space-y-2 pb-4 border-b border-slate-200">
           <div className="w-12 h-12 rounded-full bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center mx-auto">
             <ShieldAlert className="w-6 h-6" />
           </div>
@@ -56,7 +56,7 @@ export const UnauthorizedPage: React.FC = () => {
         </div>
 
         {/* Current Active Account Information */}
-        <div className="p-4 bg-slate-50 border border-border rounded-md space-y-3">
+        <div className="p-4 bg-slate-50 border border-slate-200 rounded-md space-y-3">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
             Current Active Identity
           </span>
@@ -93,7 +93,7 @@ export const UnauthorizedPage: React.FC = () => {
             size="md"
             icon={<ArrowLeft className="w-4 h-4" />}
             onClick={() => navigate(getDashboardPath())}
-            className="w-full sm:flex-1 justify-center shadow-subtle"
+            className="w-full sm:flex-1 justify-center"
           >
             Return to My Portal
           </Button>

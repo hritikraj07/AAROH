@@ -20,9 +20,9 @@ export const WeekAssignmentsWidget: React.FC = () => {
   const pendingCount = assignments.filter(a => a.status !== 'submitted').length;
 
   return (
-    <div className="bg-white border border-border rounded-lg shadow-subtle overflow-hidden flex flex-col h-full">
+    <div className="bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-slate-50/50">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-50/50">
         <div className="flex items-center gap-2">
           <BookOpen className="w-4 h-4 text-teal-700" />
           <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
@@ -67,10 +67,10 @@ export const WeekAssignmentsWidget: React.FC = () => {
                   key={asg.id}
                   className={`p-3 rounded-md border text-xs transition-all flex items-start justify-between gap-3 ${
                     isSubmitted
-                      ? 'border-border bg-slate-50/50 text-slate-500'
+                      ? 'border-slate-200 bg-slate-50/50 text-slate-500'
                       : isOverdue
                       ? 'border-rose-200 bg-rose-50/30'
-                      : 'border-border bg-white hover:bg-slate-50/60'
+                      : 'border-slate-200 bg-white hover:bg-slate-50/60'
                   }`}
                 >
                   <div className="flex-1 min-w-0">
@@ -108,7 +108,7 @@ export const WeekAssignmentsWidget: React.FC = () => {
                     onClick={() => toggleAssignmentSubmission(asg.id)}
                     className={`px-2 py-1 rounded text-[11px] font-medium transition-colors shrink-0 ${
                       isSubmitted
-                        ? 'text-slate-500 hover:text-slate-700 bg-white border border-border'
+                        ? 'text-slate-500 hover:text-slate-700 bg-white border border-slate-200'
                         : 'text-teal-800 bg-teal-50 hover:bg-teal-100 border border-teal-200'
                     }`}
                     title={isSubmitted ? 'Click to mark unsubmitted' : 'Click to mark submitted'}
@@ -122,7 +122,7 @@ export const WeekAssignmentsWidget: React.FC = () => {
         )}
 
         {sortedAssignments.length > 0 && (
-          <div className="pt-3 mt-3 border-t border-border flex items-center justify-between text-[11px] text-slate-500">
+          <div className="pt-3 mt-3 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
             <span>{assignments.filter(a => a.status === 'submitted').length} / {assignments.length} completed</span>
             <Link to="/student/academics?tab=assignments" className="text-teal-700 hover:underline">
               Manage Submissions

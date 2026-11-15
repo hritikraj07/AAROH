@@ -100,7 +100,7 @@ export const AdminTimetablePage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
             Institutional Master Timetable
@@ -124,7 +124,7 @@ export const AdminTimetablePage: React.FC = () => {
       </div>
 
       {/* Program Filter Bar & Day Selector */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-lg border border-border">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-lg border border-slate-200">
         <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
           {days.map(d => {
             const count = timetable.filter(s => s.dayOfWeek === d.num).length;
@@ -132,16 +132,16 @@ export const AdminTimetablePage: React.FC = () => {
               <button
                 key={d.num}
                 onClick={() => setActiveDay(d.num)}
-                className={`py-1.5 px-3 text-xs font-medium rounded-md transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+                className={`py-1.5 px-3 text-xs font-medium rounded-md transition-all duration-150 ease-in-out whitespace-nowrap flex items-center gap-1.5 ${
                   activeDay === d.num
-                    ? 'bg-teal-700 text-white font-semibold shadow-subtle'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-slate-50 border border-border'
+                    ? 'bg-teal-700 text-white font-semibold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 bg-white border border-slate-200'
                 }`}
               >
                 <span>{d.label}</span>
                 <span
-                  className={`text-[10px] font-mono px-1 rounded-full ${
-                    activeDay === d.num ? 'bg-teal-800 text-teal-100' : 'bg-slate-200 text-slate-600'
+                  className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${
+                    activeDay === d.num ? 'bg-teal-800 text-teal-100' : 'bg-slate-100 text-slate-600'
                   }`}
                 >
                   {count}
@@ -156,7 +156,7 @@ export const AdminTimetablePage: React.FC = () => {
           <select
             value={programFilter}
             onChange={e => setProgramFilter(e.target.value)}
-            className="text-xs font-mono px-3 py-1.5 bg-slate-50 border border-border rounded text-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-700"
+            className="text-xs font-mono px-3 py-1.5 bg-slate-50 border border-slate-200 rounded text-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-700"
           >
             <option value="all">All Cohorts ({timetable.length} slots)</option>
             <option value="B.Tech CSE">B.Tech CSE</option>
@@ -168,7 +168,7 @@ export const AdminTimetablePage: React.FC = () => {
 
       {/* Timetable Table for Active Day */}
       {currentDaySessions.length === 0 ? (
-        <div className="bg-white border border-border rounded-lg p-10 text-center space-y-3">
+        <div className="bg-white border border-slate-200 rounded-lg p-10 text-center space-y-3">
           <Clock className="w-10 h-10 text-slate-300 mx-auto" />
           <h3 className="text-sm font-semibold text-slate-900">
             No lecture slots scheduled for {days.find(d => d.num === activeDay)?.label}
@@ -189,11 +189,11 @@ export const AdminTimetablePage: React.FC = () => {
           </Button>
         </div>
       ) : (
-        <div className="bg-white border border-border rounded-lg overflow-hidden shadow-subtle">
+        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
-                <tr className="bg-slate-50 border-b border-border text-slate-500 font-mono uppercase text-[10px]">
+                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-mono uppercase text-[10px]">
                   <th className="py-3 px-4">Time Slot</th>
                   <th className="py-3 px-4">Subject</th>
                   <th className="py-3 px-4">Hall / Room</th>
@@ -276,9 +276,9 @@ export const AdminTimetablePage: React.FC = () => {
 
       {/* Add Slot Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-border rounded-lg shadow-modal max-w-lg w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-100 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-lg shadow-sm max-w-lg w-full p-6 space-y-4 animate-in fade-in duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-teal-800" />
                 <h3 className="text-sm font-semibold text-slate-900">Add Master Timetable Entry</h3>
@@ -313,7 +313,7 @@ export const AdminTimetablePage: React.FC = () => {
                   <select
                     value={selectedCourseId}
                     onChange={e => setSelectedCourseId(e.target.value)}
-                    className="w-full text-xs font-mono px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                   >
                     {courses.map(c => (
                       <option key={c.id} value={c.id}>
@@ -330,7 +330,7 @@ export const AdminTimetablePage: React.FC = () => {
                         placeholder="Code (e.g. CS301)"
                         value={customSubjectCode}
                         onChange={e => setCustomSubjectCode(e.target.value)}
-                        className="w-full text-xs font-mono uppercase px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                        className="w-full text-xs font-mono uppercase px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                       />
                     </div>
                     <div className="col-span-2">
@@ -340,7 +340,7 @@ export const AdminTimetablePage: React.FC = () => {
                         placeholder="Subject Title (e.g. Operating Systems)"
                         value={customSubjectName}
                         onChange={e => setCustomSubjectName(e.target.value)}
-                        className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                        className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                       />
                     </div>
                   </div>
@@ -356,7 +356,7 @@ export const AdminTimetablePage: React.FC = () => {
                   <select
                     value={selectedFacultyEmail}
                     onChange={e => setSelectedFacultyEmail(e.target.value)}
-                    className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                   >
                     {facultyMembers.map(f => (
                       <option key={f.id} value={f.email}>
@@ -371,7 +371,7 @@ export const AdminTimetablePage: React.FC = () => {
                     placeholder="e.g. Prof. K. Ramanujam"
                     value={customFacultyName}
                     onChange={e => setCustomFacultyName(e.target.value)}
-                    className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                   />
                 )}
                 <p className="text-[11px] text-slate-400 mt-1">
@@ -388,7 +388,7 @@ export const AdminTimetablePage: React.FC = () => {
                   <select
                     value={dayOfWeek}
                     onChange={e => setDayOfWeek(Number(e.target.value))}
-                    className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                   >
                     {days.map(d => (
                       <option key={d.num} value={d.num}>
@@ -408,7 +408,7 @@ export const AdminTimetablePage: React.FC = () => {
                     placeholder="e.g. LH-101 or CS Lab 2"
                     value={room}
                     onChange={e => setRoom(e.target.value)}
-                    className="w-full text-xs font-mono px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                   />
                 </div>
               </div>
@@ -421,7 +421,7 @@ export const AdminTimetablePage: React.FC = () => {
                     type="time"
                     value={startTime}
                     onChange={e => setStartTime(e.target.value)}
-                    className="w-full text-xs font-mono px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                   />
                 </div>
 
@@ -431,7 +431,7 @@ export const AdminTimetablePage: React.FC = () => {
                     type="time"
                     value={endTime}
                     onChange={e => setEndTime(e.target.value)}
-                    className="w-full text-xs font-mono px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                   />
                 </div>
 
@@ -440,7 +440,7 @@ export const AdminTimetablePage: React.FC = () => {
                   <select
                     value={sessionType}
                     onChange={e => setSessionType(e.target.value as ClassType)}
-                    className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                   >
                     <option value="Lecture">Lecture</option>
                     <option value="Lab">Laboratory</option>
@@ -450,7 +450,7 @@ export const AdminTimetablePage: React.FC = () => {
               </div>
 
               {/* Target Audience: Program & Semester */}
-              <div className="p-3 bg-slate-50 border border-border rounded-md space-y-2.5">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md space-y-2.5">
                 <div className="text-[11px] font-semibold uppercase tracking-wider text-teal-900">
                   Target Student Audience (Cohort)
                 </div>
@@ -463,7 +463,7 @@ export const AdminTimetablePage: React.FC = () => {
                     <select
                       value={program}
                       onChange={e => setProgram(e.target.value)}
-                      className="w-full text-xs font-mono px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                      className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                     >
                       <option value="B.Tech CSE">B.Tech Computer Science</option>
                       <option value="B.Tech ECE">B.Tech Electronics & Comm.</option>
@@ -479,7 +479,7 @@ export const AdminTimetablePage: React.FC = () => {
                     <select
                       value={semester}
                       onChange={e => setSemester(Number(e.target.value))}
-                      className="w-full text-xs font-mono px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                      className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                     >
                       {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
                         <option key={s} value={s}>
@@ -494,7 +494,7 @@ export const AdminTimetablePage: React.FC = () => {
                 </p>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
                 <Button
                   type="button"
                   variant="secondary"

@@ -13,9 +13,9 @@ export const UpcomingEventsWidget: React.FC = () => {
   const displayEvents = registeredEvents.length > 0 ? registeredEvents : events.slice(0, 2);
 
   return (
-    <div className="bg-white border border-border rounded-lg shadow-subtle overflow-hidden flex flex-col h-full">
+    <div className="bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col h-full">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-slate-50/50">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-slate-50/50">
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-teal-700" />
           <h3 className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
@@ -57,7 +57,7 @@ export const UpcomingEventsWidget: React.FC = () => {
               return (
                 <div
                   key={event.id}
-                  className="p-3 rounded-md border border-border bg-white hover:bg-slate-50/70 transition-all text-xs"
+                  className="p-3 rounded-md border border-slate-200 bg-white hover:bg-slate-50/70 transition-all text-xs"
                 >
                   <div className="flex items-center justify-between gap-2 mb-1">
                     <div className="flex items-center gap-2">
@@ -108,7 +108,7 @@ export const UpcomingEventsWidget: React.FC = () => {
         )}
 
         {events.length > 0 && (
-          <div className="pt-3 mt-3 border-t border-border flex items-center justify-between text-[11px] text-slate-500">
+          <div className="pt-3 mt-3 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
             <span>{registeredEvents.length} registered event{registeredEvents.length === 1 ? '' : 's'}</span>
             <Link to="/student/events" className="text-teal-700 hover:underline">
               Browse Event Calendar

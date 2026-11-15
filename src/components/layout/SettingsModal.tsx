@@ -41,7 +41,7 @@ export const SettingsModal: React.FC = () => {
     >
       <div className="space-y-6">
         {/* Student Profile Overview */}
-        <div className="p-3.5 bg-slate-50 border border-border rounded-lg space-y-2">
+        <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
             <UserCheck className="w-4 h-4 text-teal-700" />
             <span>Active Student Session</span>
@@ -84,7 +84,7 @@ export const SettingsModal: React.FC = () => {
                 className={`px-3 py-1.5 text-xs font-medium rounded border transition-colors ${
                   threshold === val
                     ? 'bg-teal-50 text-teal-800 border-teal-600 font-semibold ring-1 ring-teal-600'
-                    : 'bg-white text-slate-700 border-border hover:bg-slate-50'
+                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                 }`}
               >
                 {val}% {val === 75 ? '(Default)' : ''}

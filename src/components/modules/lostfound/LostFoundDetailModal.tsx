@@ -105,7 +105,7 @@ export const LostFoundDetailModal: React.FC<LostFoundDetailModalProps> = ({
       <div className="space-y-4">
         {/* Photo Display if Present */}
         {item.imageUrl && (
-          <div className="rounded-lg overflow-hidden border border-border bg-slate-100 max-h-60 flex items-center justify-center">
+          <div className="rounded-lg overflow-hidden border border-slate-200 bg-slate-100 max-h-60 flex items-center justify-center">
             <img
               src={item.imageUrl}
               alt={item.title}
@@ -115,7 +115,7 @@ export const LostFoundDetailModal: React.FC<LostFoundDetailModalProps> = ({
         )}
 
         {/* Status & Type Bar */}
-        <div className="flex items-center justify-between p-3 bg-slate-50 border border-border rounded-md text-xs">
+        <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-md text-xs">
           <div className="flex items-center gap-2">
             <Badge variant={item.type === 'lost' ? 'rose' : 'teal'} size="md">
               {item.type === 'lost' ? 'Lost Item' : 'Found Item'}
@@ -139,7 +139,7 @@ export const LostFoundDetailModal: React.FC<LostFoundDetailModalProps> = ({
         </div>
 
         {/* Location and Date */}
-        <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50/60 border border-border rounded-md text-xs text-slate-700">
+        <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50/60 border border-slate-200 rounded-md text-xs text-slate-700">
           <div className="space-y-1">
             <span className="text-slate-400 block text-[11px] font-medium">Location</span>
             <div className="flex items-center gap-1.5 font-semibold text-slate-900">
@@ -168,7 +168,7 @@ export const LostFoundDetailModal: React.FC<LostFoundDetailModalProps> = ({
         </div>
 
         {/* Poster Identity Card (Privacy Safe: No phone numbers or emails) */}
-        <div className="p-3 bg-slate-50 border border-border rounded-md text-xs flex items-center justify-between">
+        <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-xs flex items-center justify-between">
           <div className="flex items-center gap-2">
             <User className="w-4 h-4 text-slate-400" />
             <div>

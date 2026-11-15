@@ -143,12 +143,12 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
           <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
             Listing Type <span className="text-rose-500">*</span>
           </label>
-          <div className="grid grid-cols-2 gap-3 p-2 bg-slate-50 border border-border rounded-md">
+          <div className="grid grid-cols-2 gap-3 p-2 bg-slate-50 border border-slate-200 rounded-md">
             <label
               className={`flex items-center gap-2.5 p-2 rounded cursor-pointer transition-colors border ${
                 type === 'lost'
                   ? 'bg-rose-50/80 border-rose-200 text-rose-950 font-semibold'
-                  : 'bg-white border-border text-slate-700 hover:bg-slate-100'
+                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
               }`}
             >
               <input
@@ -157,7 +157,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
                 value="lost"
                 checked={type === 'lost'}
                 onChange={() => setType('lost')}
-                className="text-rose-600 focus:ring-rose-500 border-border"
+                className="text-rose-600 focus:ring-rose-500 border-slate-200"
               />
               <span className="text-xs">Lost Item</span>
             </label>
@@ -166,7 +166,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
               className={`flex items-center gap-2.5 p-2 rounded cursor-pointer transition-colors border ${
                 type === 'found'
                   ? 'bg-teal-50/80 border-teal-200 text-teal-950 font-semibold'
-                  : 'bg-white border-border text-slate-700 hover:bg-slate-100'
+                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
               }`}
             >
               <input
@@ -175,7 +175,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
                 value="found"
                 checked={type === 'found'}
                 onChange={() => setType('found')}
-                className="text-teal-700 focus:ring-teal-600 border-border"
+                className="text-teal-700 focus:ring-teal-600 border-slate-200"
               />
               <span className="text-xs">Found Item</span>
             </label>
@@ -193,7 +193,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder="e.g. Casio fx-991EX Scientific Calculator"
-            className="w-full text-xs px-3 py-2 bg-slate-50 border border-border rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900"
+            className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900"
           />
         </div>
 
@@ -206,7 +206,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
             <select
               value={category}
               onChange={e => setCategory(e.target.value as LostFoundCategory)}
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-border rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900"
+              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900"
             >
               <option value="Electronics">Electronics</option>
               <option value="ID & Cards">ID & Cards</option>
@@ -225,7 +225,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
               required
               value={date}
               onChange={e => setDate(e.target.value)}
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-border rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900 font-mono"
+              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900 font-mono"
             />
           </div>
         </div>
@@ -241,7 +241,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
             value={location}
             onChange={e => setLocation(e.target.value)}
             placeholder="e.g. Central Library 2nd Floor Reading Room or CS Lab 3"
-            className="w-full text-xs px-3 py-2 bg-slate-50 border border-border rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900"
+            className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900"
           />
         </div>
 
@@ -255,7 +255,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
             value={description}
             onChange={e => setDescription(e.target.value)}
             placeholder="Include color, brand, unique stickers, markings, serial hints, or condition..."
-            className="w-full text-xs px-3 py-2 bg-slate-50 border border-border rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900 resize-none"
+            className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900 resize-none"
           />
         </div>
 
@@ -287,8 +287,8 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
               </span>
             </div>
           ) : photoBase64 ? (
-            <div className="p-3 bg-slate-50 border border-border rounded-lg space-y-2">
-              <div className="relative rounded overflow-hidden border border-border bg-slate-100 h-48 w-full flex items-center justify-center">
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
+              <div className="relative rounded overflow-hidden border border-slate-200 bg-slate-100 h-48 w-full flex items-center justify-center">
                 <img
                   src={photoBase64}
                   alt="Cropped item preview"
@@ -341,14 +341,14 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
         </div>
 
         {/* Notice on Privacy */}
-        <div className="p-2.5 bg-slate-50 border border-border rounded text-[11px] text-slate-500 leading-relaxed">
+        <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-500 leading-relaxed">
           <p>
             <strong className="text-slate-700">Privacy Protection:</strong> Phone numbers and emails are never displayed publicly. Other students connect with you via in-app "Request Contact" tokens.
           </p>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
           <Button type="button" variant="ghost" size="sm" onClick={onClose}>
             Cancel
           </Button>

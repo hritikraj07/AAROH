@@ -22,7 +22,36 @@
 
   body {
     background-color: #FBFBFA;
-    color: #1E293B;
+    color: #0F172A;
+  }
+
+  /* Strict global form input standards */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="date"],
+  input[type="url"],
+  select,
+  textarea {
+    background-color: #FFFFFF;
+    border-color: #E2E8F0;
+    border-width: 1px;
+    border-style: solid;
+    transition: all 150ms ease-in-out;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="number"]:focus,
+  input[type="date"]:focus,
+  input[type="url"]:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: #0F766E;
+    box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.2);
   }
 }
 

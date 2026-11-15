@@ -63,10 +63,10 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center items-center p-4 sm:p-6 font-sans">
-      <div className="w-full max-w-md bg-white border border-border rounded-lg shadow-card p-6 sm:p-8 space-y-6">
+    <div className="min-h-screen bg-[#FBFBFA] flex flex-col justify-center items-center p-4 sm:p-6 font-sans">
+      <div className="w-full max-w-md bg-white border border-slate-200 rounded-lg p-6 sm:p-8 space-y-6">
         {/* Header Wordmark & Institutional Brand */}
-        <div className="text-center space-y-1.5 pb-2 border-b border-border">
+        <div className="text-center space-y-1.5 pb-2 border-b border-slate-200">
           <div className="flex items-center justify-center gap-2">
             <span className="text-2xl font-bold tracking-tight text-slate-900 font-sans">
               {APP_CONFIG.appName}
@@ -84,7 +84,7 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {/* Domain-based RBAC Notice */}
-        <div className="p-3 bg-slate-50 border border-border rounded-md text-xs text-slate-600 space-y-2">
+        <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-600 space-y-2">
           <div className="flex items-center gap-2 font-semibold text-slate-800">
             <ShieldCheck className="w-4 h-4 text-teal-700 shrink-0" />
             <span>Institutional Domain Routing</span>
@@ -130,7 +130,7 @@ export const LoginPage: React.FC = () => {
                   if (errorMessage) setErrorMessage(null);
                 }}
                 placeholder="name@aaroh.edu.in"
-                className="w-full text-xs font-mono pl-9 pr-3 py-2 bg-white border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700 focus:border-teal-700 transition-colors"
+                className="w-full text-xs font-mono pl-9 pr-3 py-2 bg-white border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700 focus:border-teal-700 transition-colors"
               />
             </div>
           </div>
@@ -150,7 +150,7 @@ export const LoginPage: React.FC = () => {
                   if (errorMessage) setErrorMessage(null);
                 }}
                 placeholder="••••••••••••"
-                className="w-full text-xs pl-9 pr-3 py-2 bg-white border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700 focus:border-teal-700 transition-colors"
+                className="w-full text-xs pl-9 pr-3 py-2 bg-white border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700 focus:border-teal-700 transition-colors"
               />
             </div>
           </div>
@@ -160,7 +160,7 @@ export const LoginPage: React.FC = () => {
             variant="primary"
             size="md"
             loading={loading}
-            className="w-full shadow-subtle justify-center"
+            className="w-full justify-center"
           >
             <span>Authenticate & Enter Portal</span>
             <ArrowRight className="w-4 h-4 ml-1.5" />
@@ -168,7 +168,7 @@ export const LoginPage: React.FC = () => {
         </form>
 
         {/* Evaluator Quick-Fill Options */}
-        <div className="pt-3 border-t border-border space-y-2.5">
+        <div className="pt-3 border-t border-slate-200 space-y-2.5">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block text-center">
             Evaluator One-Click Logins
           </span>
@@ -176,7 +176,7 @@ export const LoginPage: React.FC = () => {
             <button
               type="button"
               onClick={() => handleFillDemo('aarav.sharma@aaroh.edu.in')}
-              className="flex items-center justify-between px-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100 border border-border rounded text-slate-700 transition-colors text-left"
+              className="flex items-center justify-between px-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded text-slate-700 transition-colors text-left"
             >
               <div className="flex items-center gap-2">
                 <GraduationCap className="w-3.5 h-3.5 text-teal-700" />
@@ -189,7 +189,7 @@ export const LoginPage: React.FC = () => {
             <button
               type="button"
               onClick={() => handleFillDemo('prof.raman@faculty.aaroh.edu.in')}
-              className="flex items-center justify-between px-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100 border border-border rounded text-slate-700 transition-colors text-left"
+              className="flex items-center justify-between px-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded text-slate-700 transition-colors text-left"
             >
               <div className="flex items-center gap-2">
                 <Briefcase className="w-3.5 h-3.5 text-blue-700" />
@@ -202,7 +202,7 @@ export const LoginPage: React.FC = () => {
             <button
               type="button"
               onClick={() => handleFillDemo('registrar@admin.aaroh.edu.in')}
-              className="flex items-center justify-between px-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100 border border-border rounded text-slate-700 transition-colors text-left"
+              className="flex items-center justify-between px-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded text-slate-700 transition-colors text-left"
             >
               <div className="flex items-center gap-2">
                 <ShieldAlert className="w-3.5 h-3.5 text-amber-700" />

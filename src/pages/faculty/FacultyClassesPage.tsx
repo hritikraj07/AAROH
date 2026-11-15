@@ -38,7 +38,7 @@ export const FacultyClassesPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
             Assigned Courses & Curriculum
@@ -60,7 +60,7 @@ export const FacultyClassesPage: React.FC = () => {
 
       {/* Courses List */}
       {courses.length === 0 ? (
-        <div className="bg-white border border-border rounded-lg p-10 text-center space-y-3">
+        <div className="bg-white border border-slate-200 rounded-lg p-10 text-center space-y-3">
           <BookOpen className="w-10 h-10 text-slate-300 mx-auto" />
           <h3 className="text-sm font-semibold text-slate-900">No courses currently assigned</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
@@ -82,7 +82,7 @@ export const FacultyClassesPage: React.FC = () => {
             return (
               <div
                 key={course.id}
-                className="bg-white border border-border rounded-lg p-5 shadow-subtle flex flex-col justify-between space-y-4 hover:border-slate-300 transition-colors"
+                className="bg-white border border-slate-200 rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-slate-300 transition-all duration-150 ease-in-out"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
@@ -106,7 +106,7 @@ export const FacultyClassesPage: React.FC = () => {
                     </p>
                   </div>
 
-                  <div className="pt-2 border-t border-border grid grid-cols-2 gap-2 text-xs text-slate-600 font-mono">
+                  <div className="pt-2 border-t border-slate-200 grid grid-cols-2 gap-2 text-xs text-slate-600 font-mono">
                     <div className="flex items-center gap-1.5">
                       <span className="text-slate-400">Credits:</span>
                       <span className="font-semibold text-slate-800">{course.credits}</span>
@@ -117,13 +117,13 @@ export const FacultyClassesPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded border border-border flex items-center gap-1.5">
+                  <div className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded border border-slate-200 flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                     <span className="truncate">{courseSessions.length > 0 ? `${courseSessions.length} weekly sessions scheduled` : 'Scheduled as per master timetable'}</span>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-border flex items-center justify-between text-xs">
+                <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
                   <span className="text-slate-500 text-[11px]">
                     {courseSessions.length} weekly sessions
                   </span>
@@ -139,9 +139,9 @@ export const FacultyClassesPage: React.FC = () => {
 
       {/* Add Course Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white border border-border rounded-lg shadow-modal max-w-md w-full p-6 space-y-4 animate-in fade-in zoom-in-95 duration-100">
-            <div className="flex items-center justify-between pb-3 border-b border-border">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
+          <div className="bg-white border border-slate-200 rounded-lg shadow-sm max-w-md w-full p-6 space-y-4 animate-in fade-in duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-4 h-4 text-teal-800" />
                 <h3 className="text-sm font-semibold text-slate-900">Add Curriculum Course</h3>
@@ -165,7 +165,7 @@ export const FacultyClassesPage: React.FC = () => {
                   placeholder="e.g. CS301"
                   value={code}
                   onChange={e => setCode(e.target.value)}
-                  className="w-full text-xs font-mono px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                 />
               </div>
 
@@ -179,7 +179,7 @@ export const FacultyClassesPage: React.FC = () => {
                   placeholder="e.g. Data Structures and Algorithms"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                 />
               </div>
 
@@ -192,7 +192,7 @@ export const FacultyClassesPage: React.FC = () => {
                     max={6}
                     value={credits}
                     onChange={e => setCredits(Number(e.target.value))}
-                    className="w-full text-xs font-mono px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                   />
                 </div>
                 <div>
@@ -201,7 +201,7 @@ export const FacultyClassesPage: React.FC = () => {
                     type="text"
                     value={room}
                     onChange={e => setRoom(e.target.value)}
-                    className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                   />
                 </div>
               </div>
@@ -212,7 +212,7 @@ export const FacultyClassesPage: React.FC = () => {
                   type="text"
                   value={department}
                   onChange={e => setDepartment(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                 />
               </div>
 
@@ -225,11 +225,11 @@ export const FacultyClassesPage: React.FC = () => {
                   placeholder="e.g. Mon, Wed, Fri 09:00 - 10:00"
                   value={scheduleDesc}
                   onChange={e => setScheduleDesc(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-border rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
                 <Button
                   type="button"
                   variant="secondary"

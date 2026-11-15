@@ -29,10 +29,10 @@ export const AdminDashboardPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Administrator Header Banner */}
-      <div className="bg-white border border-border rounded-lg p-5 sm:p-6 shadow-subtle">
+      <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-slate-900 text-white font-semibold text-base flex items-center justify-center font-mono shrink-0 shadow-subtle">
+            <div className="w-12 h-12 rounded-lg bg-slate-900 text-white font-semibold text-base flex items-center justify-center font-mono shrink-0">
               {user?.avatarInitials || 'AD'}
             </div>
             <div>
@@ -99,7 +99,7 @@ export const AdminDashboardPage: React.FC = () => {
 
       {/* System Metrics Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-border rounded-lg p-4 shadow-subtle">
+        <div className="bg-white border border-slate-200 rounded-lg p-4">
           <div className="flex items-center justify-between text-slate-500 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Circulars & Notices</span>
             <Bell className="w-4 h-4 text-teal-700" />
@@ -112,7 +112,7 @@ export const AdminDashboardPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="bg-white border border-border rounded-lg p-4 shadow-subtle">
+        <div className="bg-white border border-slate-200 rounded-lg p-4">
           <div className="flex items-center justify-between text-slate-500 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Campus Events</span>
             <Calendar className="w-4 h-4 text-blue-700" />
@@ -125,7 +125,7 @@ export const AdminDashboardPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="bg-white border border-border rounded-lg p-4 shadow-subtle">
+        <div className="bg-white border border-slate-200 rounded-lg p-4">
           <div className="flex items-center justify-between text-slate-500 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Master Timetable</span>
             <Clock className="w-4 h-4 text-amber-700" />
@@ -138,7 +138,7 @@ export const AdminDashboardPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="bg-white border border-border rounded-lg p-4 shadow-subtle">
+        <div className="bg-white border border-slate-200 rounded-lg p-4">
           <div className="flex items-center justify-between text-slate-500 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">System State</span>
             <Activity className="w-4 h-4 text-emerald-700" />
@@ -155,8 +155,8 @@ export const AdminDashboardPage: React.FC = () => {
       {/* Main Two-Column Administrative Split */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Administrative Jump Consoles */}
-        <div className="bg-white border border-border rounded-lg p-5 shadow-subtle space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-border">
+        <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <div>
               <h3 className="text-sm font-semibold text-slate-900">Administrative Consoles</h3>
               <p className="text-xs text-slate-500">Direct module management</p>
@@ -167,7 +167,7 @@ export const AdminDashboardPage: React.FC = () => {
           <div className="grid grid-cols-1 gap-2.5">
             <Link
               to="/admin/people"
-              className="p-3.5 rounded-md border border-border bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors flex items-center justify-between group"
+              className="p-3.5 rounded-md border border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors flex items-center justify-between group"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded bg-teal-50 border border-teal-200 text-teal-800 flex items-center justify-center">
@@ -190,7 +190,7 @@ export const AdminDashboardPage: React.FC = () => {
 
             <Link
               to="/admin/notices"
-              className="p-3.5 rounded-md border border-border bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors flex items-center justify-between group"
+              className="p-3.5 rounded-md border border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors flex items-center justify-between group"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded bg-teal-50 border border-teal-200 text-teal-800 flex items-center justify-center">
@@ -210,7 +210,7 @@ export const AdminDashboardPage: React.FC = () => {
 
             <Link
               to="/admin/events"
-              className="p-3.5 rounded-md border border-border bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors flex items-center justify-between group"
+              className="p-3.5 rounded-md border border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors flex items-center justify-between group"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded bg-blue-50 border border-blue-200 text-blue-800 flex items-center justify-center">
@@ -230,7 +230,7 @@ export const AdminDashboardPage: React.FC = () => {
 
             <Link
               to="/admin/timetable"
-              className="p-3.5 rounded-md border border-border bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors flex items-center justify-between group"
+              className="p-3.5 rounded-md border border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors flex items-center justify-between group"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded bg-amber-50 border border-amber-200 text-amber-800 flex items-center justify-center">
@@ -250,7 +250,7 @@ export const AdminDashboardPage: React.FC = () => {
 
             <Link
               to="/admin/settings"
-              className="p-3.5 rounded-md border border-border bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors flex items-center justify-between group"
+              className="p-3.5 rounded-md border border-slate-200 bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors flex items-center justify-between group"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded bg-slate-100 border border-slate-300 text-slate-800 flex items-center justify-center">
@@ -271,8 +271,8 @@ export const AdminDashboardPage: React.FC = () => {
         </div>
 
         {/* Right: System Audit & Health */}
-        <div className="bg-white border border-border rounded-lg p-5 shadow-subtle space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-border">
+        <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
             <div>
               <h3 className="text-sm font-semibold text-slate-900">System State & Compliance</h3>
               <p className="text-xs text-slate-500">Operational status checks</p>
@@ -283,7 +283,7 @@ export const AdminDashboardPage: React.FC = () => {
           </div>
 
           <div className="space-y-3">
-            <div className="p-3 rounded-md border border-border bg-slate-50/50 flex items-start gap-3">
+            <div className="p-3 rounded-md border border-slate-200 bg-slate-50/50 flex items-start gap-3">
               <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <div>
                 <span className="text-xs font-semibold text-slate-800 block">
@@ -295,7 +295,7 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-3 rounded-md border border-border bg-slate-50/50 flex items-start gap-3">
+            <div className="p-3 rounded-md border border-slate-200 bg-slate-50/50 flex items-start gap-3">
               <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <div>
                 <span className="text-xs font-semibold text-slate-800 block">
@@ -307,7 +307,7 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-3 rounded-md border border-border bg-slate-50/50 flex items-start gap-3">
+            <div className="p-3 rounded-md border border-slate-200 bg-slate-50/50 flex items-start gap-3">
               <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <div>
                 <span className="text-xs font-semibold text-slate-800 block">

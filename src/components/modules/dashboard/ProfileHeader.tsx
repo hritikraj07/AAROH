@@ -13,7 +13,7 @@ export const ProfileHeader: React.FC = () => {
   const pendingDue = assignments.filter(a => a.status === 'pending' || a.status === 'overdue');
 
   return (
-    <div className="bg-white border border-border rounded-lg p-4 sm:p-5 shadow-subtle mb-6">
+    <div className="bg-white border border-slate-200 rounded-lg p-4 sm:p-5 mb-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* Left: Avatar & Identity */}
         <div className="flex items-center gap-3.5">
@@ -39,7 +39,7 @@ export const ProfileHeader: React.FC = () => {
         </div>
 
         {/* Right: Quick glance stats */}
-        <div className="flex items-center gap-3 sm:gap-4 border-t sm:border-t-0 sm:border-l border-border pt-3 sm:pt-0 sm:pl-5 text-xs">
+        <div className="flex items-center gap-3 sm:gap-4 border-t sm:border-t-0 sm:border-l border-slate-200 pt-3 sm:pt-0 sm:pl-5 text-xs">
           <div>
             <span className="text-slate-400 block text-[11px]">Enrolled Courses</span>
             <span className="font-semibold text-slate-900 text-sm tabular-nums">
@@ -47,7 +47,7 @@ export const ProfileHeader: React.FC = () => {
             </span>
           </div>
 
-          <div className="border-l border-border pl-3 sm:pl-4">
+          <div className="border-l border-slate-200 pl-3 sm:pl-4">
             <span className="text-slate-400 block text-[11px]">Attendance Alert</span>
             {attendance.length === 0 ? (
               <span className="font-semibold text-slate-500 text-sm">
@@ -65,7 +65,7 @@ export const ProfileHeader: React.FC = () => {
             )}
           </div>
 
-          <div className="border-l border-border pl-3 sm:pl-4">
+          <div className="border-l border-slate-200 pl-3 sm:pl-4">
             <span className="text-slate-400 block text-[11px]">Pending Work</span>
             <span className="font-semibold text-slate-900 text-sm tabular-nums">
               {pendingDue.length}
