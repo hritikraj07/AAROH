@@ -176,3 +176,13 @@ export interface NotificationItem {
   read: boolean;
   actionUrl?: string;
 }
+
+export type GlobalSearchResultType = 'Notice' | 'Event' | 'Opportunity';
+
+export interface GlobalSearchResult {
+  id: string;
+  type: GlobalSearchResultType;
+  title: string;
+  subtitle: string;
+  url: string;
+}

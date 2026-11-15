@@ -12,6 +12,7 @@ import {
   LostFoundItem,
   Opportunity,
   NotificationItem,
+  GlobalSearchResult,
 } from '../types';
 import { StorageService } from '../services/storage';
 
@@ -48,6 +49,7 @@ interface AppContextType {
   isSearchOpen: boolean;
   openSearch: () => void;
   closeSearch: () => void;
+  searchGlobal: (query: string) => GlobalSearchResult[];
   isSettingsOpen: boolean;
   openSettings: () => void;
   closeSettings: () => void;
@@ -158,6 +160,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Search Global Service
+  const searchGlobal = useCallback((query: string) => {
+    return StorageService.searchGlobal(query);
   }, []);
 
   // Counts
@@ -479,6 +486,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isSearchOpen,
         openSearch: () => setIsSearchOpen(true),
         closeSearch: () => setIsSearchOpen(false),
+        searchGlobal,
         isSettingsOpen,
         openSettings: () => setIsSettingsOpen(true),
         closeSettings: () => setIsSettingsOpen(false),

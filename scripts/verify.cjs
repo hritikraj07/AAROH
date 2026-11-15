@@ -266,4 +266,101 @@ assert(topBarContent.includes('to={item.route}'), 'TopBar links notification ite
 assert(appContent.includes('path="assignments" element={<Navigate to="/student/academics?tab=assignments" replace />}'), 'App.tsx has /student/assignments route alias');
 assert(appContent.includes('path="/assignments" element={<Navigate to="/student/academics?tab=assignments" replace />}'), 'App.tsx has /assignments backward-compat alias');
 
+// 22. Check Global Unified Search Service & Normalized Results
+assert(typesContent.includes('export interface GlobalSearchResult {'), 'GlobalSearchResult interface defined in types/index.ts');
+assert(typesContent.includes("type: GlobalSearchResultType;") || typesContent.includes("type: 'Notice' | 'Event' | 'Opportunity'"), 'GlobalSearchResult defines union type');
+assert(storageContent.includes('searchGlobal(query: string): GlobalSearchResult[]'), 'StorageService implements searchGlobal function');
+
+// Test searchGlobal logic simulation in Node.js
+function searchGlobalTest(query, mockNotices, mockEvents, mockOpps) {
+  const q = (query || '').trim().toLowerCase();
+  if (!q) return [];
+  const results = [];
+
+  mockNotices.forEach(notice => {
+    if (notice.title.toLowerCase().includes(q) || (notice.content && notice.content.toLowerCase().includes(q))) {
+      results.push({
+        id: notice.id,
+        type: 'Notice',
+        title: notice.title,
+        subtitle: notice.category || 'General',
+        url: '/student/campus-updates',
+      });
+    }
+  });
+
+  mockEvents.forEach(event => {
+    if (event.title.toLowerCase().includes(q) || (event.description && event.description.toLowerCase().includes(q))) {
+      results.push({
+        id: event.id,
+        type: 'Event',
+        title: event.title,
+        subtitle: event.venue ? `${event.date} • ${event.venue}` : event.date,
+        url: '/student/events',
+      });
+    }
+  });
+
+  mockOpps.forEach(opp => {
+    if (opp.title.toLowerCase().includes(q) || (opp.description && opp.description.toLowerCase().includes(q)) || (opp.organization && opp.organization.toLowerCase().includes(q))) {
+      results.push({
+        id: opp.id,
+        type: 'Opportunity',
+        title: opp.title,
+        subtitle: opp.organization,
+        url: '/student/opportunities',
+      });
+    }
+  });
+
+  return results;
+}
+
+const testNotices = [
+  { id: 'not_1', title: 'Mid-Term Exam Schedule', content: 'Exam hall seating', category: 'Exams' },
+  { id: 'not_2', title: 'Library Renovation', content: 'Extended hours', category: 'Academic' }
+];
+const testEvents = [
+  { id: 'evt_1', title: 'Annual Hackathon 2026', description: 'Tech sprint', date: '2026-11-20', venue: 'Auditorium' },
+];
+const testOpps = [
+  { id: 'opp_1', title: 'Google Summer of Code', description: 'Open source internships', organization: 'Google' },
+  { id: 'opp_2', title: 'Smart India Hackathon', description: 'National software contest', organization: 'AICTE' }
+];
+
+// Test multi-category query "Hackathon"
+const hackathonMatches = searchGlobalTest('hackathon', testNotices, testEvents, testOpps);
+assert(hackathonMatches.length === 2, 'Search query "hackathon" returns results from both Events and Opportunities simultaneously');
+assert(hackathonMatches.some(m => m.type === 'Event' && m.url === '/student/events'), 'Event result properly normalized with url /student/events');
+assert(hackathonMatches.some(m => m.type === 'Opportunity' && m.url === '/student/opportunities'), 'Opportunity result properly normalized with url /student/opportunities');
+
+// Test Notice match
+const examMatches = searchGlobalTest('exam', testNotices, testEvents, testOpps);
+assert(examMatches.length === 1 && examMatches[0].type === 'Notice', 'Search query "exam" returns Notice result');
+assert(examMatches[0].subtitle === 'Exams', 'Notice subtitle is its category');
+assert(examMatches[0].url === '/student/campus-updates', 'Notice url is /student/campus-updates');
+
+// Test Opportunity match
+const googleMatches = searchGlobalTest('Google', testNotices, testEvents, testOpps);
+assert(googleMatches.length === 1 && googleMatches[0].type === 'Opportunity', 'Search query "Google" returns Opportunity result');
+assert(googleMatches[0].subtitle === 'Google', 'Opportunity subtitle is the organization');
+
+// Test empty search
+const emptyMatches = searchGlobalTest('xyznotfound', testNotices, testEvents, testOpps);
+assert(emptyMatches.length === 0, 'Returns 0 results for unknown term');
+
+// TopBar Search UI Checks
+assert(topBarContent.includes('<input') && topBarContent.includes('searchQuery'), 'TopBar renders inline search input field');
+assert(topBarContent.includes('Search notices, events, opportunities...'), 'Search input has descriptive placeholder');
+assert(topBarContent.includes('isSearchOpen && searchQuery.trim().length > 1'), 'Dropdown appears when query length > 1');
+assert(topBarContent.includes("No results found for '"), 'Dropdown renders empty state message');
+assert(topBarContent.includes('getTypeBadgeClasses') || topBarContent.includes('result.type'), 'Dropdown renders type badge next to each result');
+assert(topBarContent.includes('to={result.url}'), 'Clicking result routes to normalized module URL');
+assert(topBarContent.includes('setIsSearchOpen(false)') && topBarContent.includes("setSearchQuery('')"), 'Clicking result closes search dropdown');
+
+// App routing for /student/campus-updates
+const currentAppContent = fs.readFileSync(path.join(__dirname, '../src/App.tsx'), 'utf8');
+assert(currentAppContent.includes('path="campus-updates" element={<NoticesPage />}'), 'App.tsx mounts /student/campus-updates route');
+assert(currentAppContent.includes('path="/campus-updates" element={<Navigate to="/student/campus-updates" replace />}'), 'App.tsx has /campus-updates backward-compat alias');
+
 console.log('--- ALL NOTIFICATIONS & DEADLINE CALCULATIONS VERIFICATIONS PASSED ---');

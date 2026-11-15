@@ -11,6 +11,7 @@ import {
   LostFoundItem,
   Opportunity,
   NotificationItem,
+  GlobalSearchResult,
 } from '../types';
 import {
   INITIAL_COURSES,
@@ -88,6 +89,14 @@ export const StorageService = {
     // Ensure users directory is seeded even if previously initialized
     if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
       setStored(STORAGE_KEYS.USERS, INITIAL_USERS);
+    }
+
+    // Ensure notices and events are available for search if empty
+    if (!localStorage.getItem(STORAGE_KEYS.NOTICES) || getStored<any[]>(STORAGE_KEYS.NOTICES, []).length === 0) {
+      setStored(STORAGE_KEYS.NOTICES, INITIAL_NOTICES);
+    }
+    if (!localStorage.getItem(STORAGE_KEYS.EVENTS) || getStored<any[]>(STORAGE_KEYS.EVENTS, []).length === 0) {
+      setStored(STORAGE_KEYS.EVENTS, INITIAL_EVENTS);
     }
   },
 
@@ -671,6 +680,70 @@ export const StorageService = {
   markAllNotificationsRead(): void {
     const list = this.getNotifications().map(n => ({ ...n, read: true }));
     setStored(STORAGE_KEYS.NOTIFICATIONS, list);
+  },
+
+  // Global Unified Search Service
+  searchGlobal(query: string): GlobalSearchResult[] {
+    const q = (query || '').trim().toLowerCase();
+    if (!q) return [];
+
+    const results: GlobalSearchResult[] = [];
+
+    // 1. Notices (url: '/student/campus-updates', subtitle: category)
+    const notices = this.getNotices();
+    notices.forEach(notice => {
+      const matchTitle = notice.title?.toLowerCase().includes(q);
+      const matchContent = notice.content?.toLowerCase().includes(q);
+      const matchDesc = (notice as any).description?.toLowerCase().includes(q);
+      if (matchTitle || matchContent || matchDesc) {
+        results.push({
+          id: notice.id,
+          type: 'Notice',
+          title: notice.title,
+          subtitle: notice.category || 'General',
+          url: '/student/campus-updates',
+        });
+      }
+    });
+
+    // 2. Events (url: '/student/events', subtitle: date / venue)
+    const events = this.getEvents();
+    events.forEach(event => {
+      const matchTitle = event.title?.toLowerCase().includes(q);
+      const matchDesc = event.description?.toLowerCase().includes(q);
+      if (matchTitle || matchDesc) {
+        const subtitle = event.venue
+          ? `${event.date} • ${event.venue}`
+          : event.date;
+        results.push({
+          id: event.id,
+          type: 'Event',
+          title: event.title,
+          subtitle,
+          url: '/student/events',
+        });
+      }
+    });
+
+    // 3. Opportunities (url: '/student/opportunities', subtitle: organization)
+    const opportunities = this.getOpportunities();
+    opportunities.forEach(opp => {
+      const matchTitle = opp.title?.toLowerCase().includes(q);
+      const matchDesc = opp.description?.toLowerCase().includes(q);
+      const matchOrg = opp.organization?.toLowerCase().includes(q);
+      const matchElig = opp.eligibility?.toLowerCase().includes(q);
+      if (matchTitle || matchDesc || matchOrg || matchElig) {
+        results.push({
+          id: opp.id,
+          type: 'Opportunity',
+          title: opp.title,
+          subtitle: opp.organization || 'Aaroh Opportunity',
+          url: '/student/opportunities',
+        });
+      }
+    });
+
+    return results;
   },
 
   // Full reset

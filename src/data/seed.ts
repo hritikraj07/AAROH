@@ -299,13 +299,65 @@ export const INITIAL_ASSIGNMENTS: Assignment[] = [
     status: 'pending',
   },
 ];
-export const INITIAL_NOTICES: Notice[] = [];
-export const INITIAL_EVENTS: CampusEvent[] = [];
 const getRelativeDate = (offsetDays: number): string => {
   const d = new Date();
   d.setDate(d.getDate() + offsetDays);
   return d.toISOString().split('T')[0];
 };
+
+export const INITIAL_NOTICES: Notice[] = [
+  {
+    id: 'not_1',
+    title: 'Mid-Term Examination Schedule & Room Allotment',
+    content: 'The official schedule for Autumn Semester Mid-Term Examinations is released. Students must check their assigned exam halls and report 15 minutes prior to commencement.',
+    category: 'Exams',
+    department: 'Office of the Controller of Examinations',
+    publishedDate: getRelativeDate(-2),
+    isPinned: true,
+    readByCurrentUser: false,
+  },
+  {
+    id: 'not_2',
+    title: 'Central Library Extended Hours for Capstone Projects',
+    content: 'The Central Library reading hall and digital resources center will remain operational until 11:00 PM on weekdays to facilitate academic research and semester project submissions.',
+    category: 'Academic',
+    department: 'University Library System',
+    publishedDate: getRelativeDate(-4),
+    isPinned: false,
+    readByCurrentUser: true,
+  },
+];
+
+export const INITIAL_EVENTS: CampusEvent[] = [
+  {
+    id: 'evt_1',
+    title: 'Aaroh Annual Inter-College Hackathon 2026',
+    description: 'A 36-hour sprint challenging multidisciplinary student teams to build intelligent solutions for smart campuses and urban sustainability.',
+    category: 'Tech',
+    date: getRelativeDate(5),
+    startTime: '09:00',
+    endTime: '18:00',
+    venue: 'Auditorium Complex - Hall A',
+    organizer: 'Computing & Innovation Society',
+    capacity: 120,
+    registeredCount: 48,
+    isRegistered: false,
+  },
+  {
+    id: 'evt_2',
+    title: 'Workshop: Distributed Systems with Go & Docker',
+    description: 'Hands-on technical workshop covering concurrency patterns, microservice architectures, and Docker containerization.',
+    category: 'Workshops',
+    date: getRelativeDate(8),
+    startTime: '14:00',
+    endTime: '17:00',
+    venue: 'CS Seminar Hall 2',
+    organizer: 'Department of Computer Science',
+    capacity: 75,
+    registeredCount: 30,
+    isRegistered: false,
+  },
+];
 
 export const INITIAL_LOST_FOUND: LostFoundItem[] = [];
 export const INITIAL_OPPORTUNITIES: Opportunity[] = [

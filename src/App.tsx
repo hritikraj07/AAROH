@@ -73,6 +73,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="academics" element={<AcademicsPage />} />
         <Route path="assignments" element={<Navigate to="/student/academics?tab=assignments" replace />} />
         <Route path="notices" element={<NoticesPage />} />
+        <Route path="campus-updates" element={<NoticesPage />} />
         <Route path="events" element={<EventsPage />} />
         <Route path="lost-found" element={<LostFoundPage />} />
         <Route path="opportunities" element={<OpportunitiesPage />} />
@@ -123,6 +124,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="/academics" element={<Navigate to="/student/academics" replace />} />
       <Route path="/assignments" element={<Navigate to="/student/academics?tab=assignments" replace />} />
       <Route path="/notices" element={<Navigate to="/student/notices" replace />} />
+      <Route path="/campus-updates" element={<Navigate to="/student/campus-updates" replace />} />
       <Route path="/events" element={<Navigate to="/student/events" replace />} />
       <Route path="/lost-found" element={<Navigate to="/student/lost-found" replace />} />
       <Route path="/opportunities" element={<Navigate to="/student/opportunities" replace />} />
