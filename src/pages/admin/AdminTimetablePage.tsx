@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Button } from '../../components/ui/Button';
 import {
@@ -11,7 +11,8 @@ import {
   X,
   BookOpen,
   Filter,
-  GraduationCap
+  GraduationCap,
+  AlertTriangle
 } from 'lucide-react';
 import { ClassSession, ClassType } from '../../types';
 
@@ -39,6 +40,70 @@ export const AdminTimetablePage: React.FC = () => {
   const [sessionType, setSessionType] = useState<ClassType>('Lecture');
   const [program, setProgram] = useState('B.Tech CSE');
   const [semester, setSemester] = useState<number>(5);
+  const [conflictWarning, setConflictWarning] = useState<string | null>(null);
+
+  // 1. Conflict-Free Timetable Assistant (useEffect scanning timetable for Room or Faculty clash)
+  useEffect(() => {
+    const currentFaculty = facultyMembers.find(f => f.email === selectedFacultyEmail);
+    const facultyNameToMatch = currentFaculty ? currentFaculty.name : customFacultyName.trim();
+    const facultyEmailToMatch = currentFaculty ? currentFaculty.email : selectedFacultyEmail;
+    const currentRoom = room.trim();
+
+    if (!currentRoom && !facultyNameToMatch) {
+      setConflictWarning(null);
+      return;
+    }
+
+    // Scan timetable array for room or faculty conflict at exact day and overlapping time
+    const conflictingSession = timetable.find(slot => {
+      // Must be same day of week
+      if (Number(slot.dayOfWeek) !== Number(dayOfWeek)) return false;
+
+      // Must overlap in time or match exact slot
+      const isExactOrOverlap =
+        slot.startTime === startTime ||
+        (slot.startTime < endTime && slot.endTime > startTime);
+
+      if (!isExactOrOverlap) return false;
+
+      // Room booked check
+      const roomClash =
+        Boolean(currentRoom) &&
+        Boolean(slot.room) &&
+        slot.room.trim().toLowerCase() === currentRoom.toLowerCase();
+
+      // Faculty booked check
+      const facultyClash = Boolean(
+        (facultyEmailToMatch && slot.facultyEmail && slot.facultyEmail.toLowerCase() === facultyEmailToMatch.toLowerCase()) ||
+        (facultyNameToMatch && slot.facultyName && slot.facultyName.toLowerCase() === facultyNameToMatch.toLowerCase())
+      );
+
+      return roomClash || facultyClash;
+    });
+
+    if (conflictingSession) {
+      const roomClash =
+        Boolean(currentRoom) &&
+        conflictingSession.room.trim().toLowerCase() === currentRoom.toLowerCase();
+      const facultyClash = Boolean(
+        (facultyEmailToMatch && conflictingSession.facultyEmail && conflictingSession.facultyEmail.toLowerCase() === facultyEmailToMatch.toLowerCase()) ||
+        (facultyNameToMatch && conflictingSession.facultyName && conflictingSession.facultyName.toLowerCase() === facultyNameToMatch.toLowerCase())
+      );
+
+      let conflictedEntity = conflictingSession.room;
+      if (roomClash && facultyClash) {
+        conflictedEntity = `${conflictingSession.room} and ${conflictingSession.facultyName}`;
+      } else if (facultyClash) {
+        conflictedEntity = conflictingSession.facultyName;
+      } else {
+        conflictedEntity = conflictingSession.room;
+      }
+
+      setConflictWarning(`Conflict Detected: ${conflictedEntity} is already booked at this time.`);
+    } else {
+      setConflictWarning(null);
+    }
+  }, [room, selectedFacultyEmail, customFacultyName, dayOfWeek, startTime, endTime, timetable, facultyMembers]);
 
   const days = [
     { num: 1, label: 'Monday', short: 'Mon' },
@@ -59,6 +124,7 @@ export const AdminTimetablePage: React.FC = () => {
 
   const handleAddSession = (e: React.FormEvent) => {
     e.preventDefault();
+    if (conflictWarning) return;
 
     let courseId = '';
     let courseCode = '';
@@ -494,6 +560,14 @@ export const AdminTimetablePage: React.FC = () => {
                 </p>
               </div>
 
+              {/* Conflict Detected Warning Banner */}
+              {conflictWarning && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-md text-xs font-semibold text-red-700 flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+                  <span>{conflictWarning}</span>
+                </div>
+              )}
+
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
                 <Button
                   type="button"
@@ -503,7 +577,12 @@ export const AdminTimetablePage: React.FC = () => {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary" size="sm">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="sm"
+                  disabled={Boolean(conflictWarning)}
+                >
                   Save Timetable Entry
                 </Button>
               </div>

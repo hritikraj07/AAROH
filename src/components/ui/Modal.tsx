@@ -4,8 +4,9 @@ import { X } from 'lucide-react';
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
-  subtitle?: string;
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
+  headerAction?: React.ReactNode;
   children: React.ReactNode;
   footer?: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
@@ -16,6 +17,7 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   subtitle,
+  headerAction,
   children,
   footer,
   maxWidth = 'md',
@@ -62,10 +64,13 @@ export const Modal: React.FC<ModalProps> = ({
       >
         {/* Header */}
         <div className="flex items-start justify-between px-6 py-4 border-b border-slate-200 bg-slate-50/50">
-          <div>
-            <h3 id="modal-title" className="text-base font-semibold text-slate-900 leading-snug">
-              {title}
-            </h3>
+          <div className="flex-1 pr-4">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <h3 id="modal-title" className="text-base font-semibold text-slate-900 leading-snug">
+                {title}
+              </h3>
+              {headerAction}
+            </div>
             {subtitle && <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>}
           </div>
           <button

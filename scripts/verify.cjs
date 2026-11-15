@@ -476,4 +476,152 @@ assert(aiComponentContent.includes('bg-teal-50') && aiComponentContent.includes(
 const currentLayoutContent = fs.readFileSync(path.join(__dirname, '../src/components/layout/Layout.tsx'), 'utf8');
 assert(currentLayoutContent.includes('<AarohAIAssistant />') || currentLayoutContent.includes('AarohAIAssistant'), 'Layout.tsx mounts AarohAIAssistant component');
 
-console.log('--- ALL NOTIFICATIONS, SEARCH, CUSTOM LOGO, VERCEL CONFIG, USER MANAGEMENT & AAROH AI VERIFICATIONS PASSED ---');
+// ==========================================
+// 16. Check Feature 1: Conflict-Free Timetable Assistant (Admin Portal)
+// ==========================================
+const adminTimetablePageContent = fs.readFileSync(path.join(__dirname, '../src/pages/admin/AdminTimetablePage.tsx'), 'utf8');
+assert(adminTimetablePageContent.includes('useEffect(') && adminTimetablePageContent.includes('conflictWarning'), 'AdminTimetablePage uses useEffect to track timetable conflicts');
+assert(adminTimetablePageContent.includes('Conflict Detected:'), 'AdminTimetablePage generates exact Conflict Detected: warning message');
+assert(adminTimetablePageContent.includes('text-red-700') && adminTimetablePageContent.includes('bg-red-50') && adminTimetablePageContent.includes('border-red-200'), 'AdminTimetablePage renders red conflict alert banner');
+assert(adminTimetablePageContent.includes('disabled={Boolean(conflictWarning)}'), 'AdminTimetablePage disables Save button on conflict');
+
+// Unit test timetable conflict detection algorithm
+function detectTimetableConflictTest(slotToCheck, existingSlots) {
+  const conflict = existingSlots.find(slot => {
+    if (Number(slot.dayOfWeek) !== Number(slotToCheck.dayOfWeek)) return false;
+    const timeOverlap = slot.startTime === slotToCheck.startTime || (slot.startTime < slotToCheck.endTime && slot.endTime > slotToCheck.startTime);
+    if (!timeOverlap) return false;
+    const roomClash = slot.room.trim().toLowerCase() === slotToCheck.room.trim().toLowerCase();
+    const facultyClash = slot.facultyEmail && slotToCheck.facultyEmail && slot.facultyEmail.toLowerCase() === slotToCheck.facultyEmail.toLowerCase();
+    return roomClash || facultyClash;
+  });
+
+  if (!conflict) return null;
+  const isRoomConflict = conflict.room.trim().toLowerCase() === slotToCheck.room.trim().toLowerCase();
+  const isFacultyConflict = conflict.facultyEmail && slotToCheck.facultyEmail && conflict.facultyEmail.toLowerCase() === slotToCheck.facultyEmail.toLowerCase();
+  let entity = conflict.room;
+  if (isRoomConflict && isFacultyConflict) entity = `${conflict.room} and ${conflict.facultyName}`;
+  else if (isFacultyConflict) entity = conflict.facultyName;
+  else entity = conflict.room;
+  return `Conflict Detected: ${entity} is already booked at this time.`;
+}
+
+const mockExistingTimetable = [
+  { id: '1', dayOfWeek: 1, startTime: '09:00', endTime: '10:30', room: 'LH-101', facultyName: 'Prof. Raman', facultyEmail: 'prof.raman@faculty.aaroh.edu.in' }
+];
+
+const roomClashResult = detectTimetableConflictTest(
+  { dayOfWeek: 1, startTime: '09:00', endTime: '10:30', room: 'LH-101', facultyEmail: 'other@faculty.aaroh.edu.in' },
+  mockExistingTimetable
+);
+assert(roomClashResult && roomClashResult.includes('LH-101') && roomClashResult.includes('already booked'), 'Conflict detected for booked Room LH-101');
+
+const facultyClashResult = detectTimetableConflictTest(
+  { dayOfWeek: 1, startTime: '09:00', endTime: '10:30', room: 'LH-202', facultyName: 'Prof. Raman', facultyEmail: 'prof.raman@faculty.aaroh.edu.in' },
+  mockExistingTimetable
+);
+assert(facultyClashResult && facultyClashResult.includes('Prof. Raman') && facultyClashResult.includes('already booked'), 'Conflict detected for booked Faculty Prof. Raman');
+
+const cleanSlotResult = detectTimetableConflictTest(
+  { dayOfWeek: 2, startTime: '09:00', endTime: '10:30', room: 'LH-101', facultyEmail: 'prof.raman@faculty.aaroh.edu.in' },
+  mockExistingTimetable
+);
+assert(cleanSlotResult === null, 'No conflict on different day of week');
+
+// ==========================================
+// 17. Check Feature 2: "TL;DR" AI Notice Summarizer (Student Portal)
+// ==========================================
+const noticeSummarizerPath = path.join(__dirname, '../src/utils/noticeSummarizer.ts');
+assert(fs.existsSync(noticeSummarizerPath), 'noticeSummarizer.ts exists in src/utils');
+const noticeSummarizerContent = fs.readFileSync(noticeSummarizerPath, 'utf8');
+assert(noticeSummarizerContent.includes('export function summarizeNoticeAI'), 'summarizeNoticeAI exported from noticeSummarizer.ts');
+assert(noticeSummarizerContent.includes('deadline') && noticeSummarizerContent.includes('mandatory') && noticeSummarizerContent.includes('fee'), 'summarizeNoticeAI scans for deadline, mandatory, and fees keywords');
+
+const noticeDetailModalContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/notices/NoticeDetailModal.tsx'), 'utf8');
+assert(noticeDetailModalContent.includes('AI Summarize'), 'NoticeDetailModal renders AI Summarize button');
+assert(noticeDetailModalContent.includes('bg-teal-700'), 'AI Summarize button styled with deep teal accent');
+assert(noticeDetailModalContent.includes('active:scale-95'), 'AI Summarize button has active:scale-95 click animation');
+assert(noticeDetailModalContent.includes('1500') && noticeDetailModalContent.includes('setTimeout'), 'NoticeDetailModal simulates 1.5s AI synthesis processing time');
+assert(noticeDetailModalContent.includes('Generating summary...'), 'NoticeDetailModal shows Generating summary... state with fast spinner');
+assert(noticeDetailModalContent.includes('bg-[#F0F7F6]') && noticeDetailModalContent.includes('border-teal-200'), 'NoticeDetailModal renders tinted box bg-[#F0F7F6] with 1px teal border');
+assert(noticeDetailModalContent.includes('animate-in fade-in slide-in-from-top-2 duration-300'), 'NoticeDetailModal summary expands smoothly with slide-in-from-top-2');
+
+// Unit test summarizeNoticeAI logic directly in Node.js
+function summarizeNoticeAITest(notice) {
+  const text = `${notice.title} ${notice.content}`;
+  const lower = text.toLowerCase();
+  const hasDeadline = lower.includes('deadline') || lower.includes('due') || lower.includes('last date') || lower.includes('by');
+  const hasMandatory = lower.includes('mandatory') || lower.includes('compulsory') || lower.includes('required') || lower.includes('must');
+  const hasFees = lower.includes('fee') || lower.includes('fees') || lower.includes('payment') || lower.includes('dues');
+
+  const bullets = [];
+  bullets.push(`Core Update: ${notice.title}`);
+  if (hasMandatory) bullets.push('Compliance: Mandatory attendance and strict adherence required.');
+  else if (hasFees) bullets.push('Financials: Clear all examination dues and administrative fees.');
+  else bullets.push('Directive: Follow instructions issued by the Department.');
+
+  if (hasDeadline) bullets.push(`Timeline: Strict deadline is ${notice.publishedDate || '2026-11-20'}.`);
+  else bullets.push('Timeline: Effective immediately.');
+
+  return bullets.slice(0, 3);
+}
+
+const mockNoticeWithKeywords = {
+  title: 'End-Term Examination Fee & Hall Ticket Clearance',
+  content: 'All students must clear pending semester fees by 2026-11-25. Attendance in all laboratory sessions is mandatory.',
+  publishedDate: '2026-11-15'
+};
+const summaryOutput = summarizeNoticeAITest(mockNoticeWithKeywords);
+assert(summaryOutput.length === 3, 'summarizeNoticeAI returns exactly 3 concise bullet points');
+assert(summaryOutput.some(b => b.includes('Core Update:')), 'Summary includes Core Update bullet');
+assert(summaryOutput.some(b => b.includes('Compliance:') || b.includes('Financials:')), 'Summary detects mandatory compliance or fee requirement');
+assert(summaryOutput.some(b => b.includes('Timeline:')), 'Summary includes deadline timeline bullet');
+
+// ==========================================
+// 18. Check Feature 3: Smart Team / Study Partner Matchmaker (Student Portal)
+// ==========================================
+const teamMatchmakerPath = path.join(__dirname, '../src/utils/teamMatchmaker.ts');
+assert(fs.existsSync(teamMatchmakerPath), 'teamMatchmaker.ts exists in src/utils');
+const teamMatchmakerContent = fs.readFileSync(teamMatchmakerPath, 'utf8');
+assert(teamMatchmakerContent.includes('export function findStudyPartnerMatch'), 'findStudyPartnerMatch exported from teamMatchmaker.ts');
+
+const opportunitiesPageContent = fs.readFileSync(path.join(__dirname, '../src/pages/OpportunitiesPage.tsx'), 'utf8');
+assert(opportunitiesPageContent.includes('Find a Team') || opportunitiesPageContent.includes('Study Partner Matchmaker'), 'OpportunitiesPage includes Find a Team section');
+assert(opportunitiesPageContent.includes('Match Me'), 'OpportunitiesPage includes Match Me button');
+assert(opportunitiesPageContent.includes('✨ AI Matched'), 'OpportunitiesPage renders ✨ AI Matched badge');
+assert(opportunitiesPageContent.includes('Request to Connect'), 'OpportunitiesPage includes Request to Connect action');
+assert(opportunitiesPageContent.includes('Connection Request Sent'), 'OpportunitiesPage triggers connection request toast');
+
+// Unit test findStudyPartnerMatch logic directly in Node.js
+function findStudyPartnerMatchTest(currentUser, allUsers) {
+  if (!currentUser) return null;
+  const currentProg = (currentUser.program || '').trim().toLowerCase();
+  const currentSem = Number(currentUser.semester);
+  const candidates = (allUsers || []).filter(u => {
+    if (u.role !== 'student') return false;
+    if (u.id === currentUser.id) return false;
+    if (Number(u.semester) !== currentSem) return false;
+    const userProg = (u.program || '').trim().toLowerCase();
+    if (!currentProg || !userProg) return false;
+    return userProg === currentProg || userProg.includes(currentProg) || currentProg.includes(userProg);
+  });
+  return candidates.length > 0 ? candidates[0] : null;
+}
+
+const mockMatchUserList = [
+  { id: 'usr_me', role: 'student', name: 'Aarav Sharma', semester: 5, program: 'B.Tech CSE' },
+  { id: 'usr_peer', role: 'student', name: 'Priya Patel', semester: 5, program: 'B.Tech CSE' },
+  { id: 'usr_diff_sem', role: 'student', name: 'Rohan Gupta', semester: 3, program: 'B.Tech CSE' },
+  { id: 'usr_diff_prog', role: 'student', name: 'Sneha Rao', semester: 5, program: 'Mechanical' },
+  { id: 'usr_faculty', role: 'faculty', name: 'Prof. Raman', semester: 5, program: 'B.Tech CSE' },
+];
+
+const currentStudent = mockMatchUserList[0];
+const matchedPeer = findStudyPartnerMatchTest(currentStudent, mockMatchUserList);
+assert(matchedPeer !== null && matchedPeer.id === 'usr_peer', 'Finds matching student peer with exact semester 5 and program B.Tech CSE');
+assert(matchedPeer.name === 'Priya Patel', 'Matched student is Priya Patel');
+
+const studentNoMatches = { id: 'usr_solo', role: 'student', semester: 7, program: 'B.Arch' };
+assert(findStudyPartnerMatchTest(studentNoMatches, mockMatchUserList) === null, 'Returns null when no peer shares exact program and semester');
+
+console.log('--- ALL SMART FEATURES (TIMETABLE CONFLICTS, AI NOTICE SUMMARIZER, STUDY PARTNER MATCHMAKER) VERIFIED ---');

@@ -95,9 +95,18 @@ export const StorageService = {
       localStorage.setItem('aaroh_krmu_clean_v1', 'true');
     }
 
-    // Ensure users directory is seeded even if previously initialized
-    if (!localStorage.getItem(STORAGE_KEYS.USERS) || getStored<any[]>(STORAGE_KEYS.USERS, []).length === 0) {
-      setStored(STORAGE_KEYS.USERS, INITIAL_USERS);
+    // Ensure users directory is seeded and includes all default accounts
+    const currentUsers = getStored<User[]>(STORAGE_KEYS.USERS, []);
+    let usersUpdated = false;
+    const mergedUsers = [...currentUsers];
+    INITIAL_USERS.forEach(initUser => {
+      if (!mergedUsers.some(u => u.email.toLowerCase() === initUser.email.toLowerCase())) {
+        mergedUsers.push(initUser);
+        usersUpdated = true;
+      }
+    });
+    if (usersUpdated || currentUsers.length === 0) {
+      setStored(STORAGE_KEYS.USERS, mergedUsers);
     }
   },
 
