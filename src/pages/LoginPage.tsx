@@ -3,6 +3,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { APP_CONFIG } from '../config';
 import { Button } from '../components/ui/Button';
+import { Logo } from '../components/ui/Logo';
 import { Lock, Mail, AlertCircle, ArrowRight, ShieldCheck, GraduationCap, Briefcase, ShieldAlert } from 'lucide-react';
 import { getUserRoleFromEmail } from '../data/seed';
 
@@ -67,10 +68,8 @@ export const LoginPage: React.FC = () => {
       <div className="w-full max-w-md bg-white border border-slate-200 rounded-lg p-6 sm:p-8 space-y-6">
         {/* Header Wordmark & Institutional Brand */}
         <div className="text-center space-y-1.5 pb-2 border-b border-slate-200">
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-2xl font-bold tracking-tight text-slate-900 font-sans">
-              {APP_CONFIG.appName}
-            </span>
+          <div className="flex items-center justify-center gap-2.5">
+            <Logo size="lg" />
             <span className="text-[10px] uppercase font-bold tracking-wider text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">
               SSO Gateway
             </span>

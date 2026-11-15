@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { APP_CONFIG } from '../../config';
 import { useApp } from '../../context/AppContext';
+import { Logo } from '../ui/Logo';
 
 export interface SidebarProps {
   onCloseMobile?: () => void;
@@ -209,10 +210,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       <div>
         <div className="px-5 py-4 border-b border-slate-200">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-bold tracking-tight text-slate-900 font-sans">
-                {APP_CONFIG.appName}
-              </span>
+            <div className="flex items-center gap-2.5">
+              <Logo size="md" />
               <span className="text-[10px] uppercase font-semibold tracking-wider text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">
                 {getBadgeLabel()}
               </span>

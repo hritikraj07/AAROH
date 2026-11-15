@@ -363,4 +363,21 @@ const currentAppContent = fs.readFileSync(path.join(__dirname, '../src/App.tsx')
 assert(currentAppContent.includes('path="campus-updates" element={<NoticesPage />}'), 'App.tsx mounts /student/campus-updates route');
 assert(currentAppContent.includes('path="/campus-updates" element={<Navigate to="/student/campus-updates" replace />}'), 'App.tsx has /campus-updates backward-compat alias');
 
-console.log('--- ALL NOTIFICATIONS & DEADLINE CALCULATIONS VERIFICATIONS PASSED ---');
+// 12. Check Custom SVG Logo Component
+const logoPath = path.join(__dirname, '../src/components/ui/Logo.tsx');
+assert(fs.existsSync(logoPath), 'Logo.tsx exists in src/components/ui');
+const logoContent = fs.readFileSync(logoPath, 'utf8');
+assert(logoContent.includes('export const Logo'), 'Logo component is exported');
+assert(logoContent.includes('export const LogoIcon'), 'LogoIcon component is exported');
+assert(logoContent.includes('fillRule="evenodd"') || logoContent.includes('clipRule="evenodd"'), 'Logo uses precision evenodd vector path');
+assert(logoContent.includes('text-teal-700'), 'Logo uses deep teal text-teal-700 accent');
+assert(logoContent.includes('text-slate-900'), 'Logo text uses text-slate-900');
+assert(logoContent.includes('SIZE_CONFIG'), 'Logo defines size scale');
+
+// Verify integration in Sidebar and LoginPage
+const currentSidebarContent = fs.readFileSync(path.join(__dirname, '../src/components/layout/Sidebar.tsx'), 'utf8');
+assert(currentSidebarContent.includes('<Logo'), 'Sidebar.tsx renders Logo component');
+const currentLoginContent = fs.readFileSync(path.join(__dirname, '../src/pages/LoginPage.tsx'), 'utf8');
+assert(currentLoginContent.includes('<Logo'), 'LoginPage.tsx renders Logo component');
+
+console.log('--- ALL NOTIFICATIONS, SEARCH & CUSTOM LOGO VERIFICATIONS PASSED ---');
