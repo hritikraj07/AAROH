@@ -1,6 +1,6 @@
 # Aaroh: One Platform for College Life
 
-> A unified, role-secured internal operating system for campus life at **Apex Institute of Technology (AIT)**, featuring dedicated portals for **Students**, **Faculty**, and **Administration**.
+> A unified, role-secured internal operating system for campus life at **K.R. Mangalam University (KRMU)**, featuring dedicated portals for **Students**, **Faculty**, and **Administration**.
 
 Students traditionally navigate fragmented portals, paper notice boards, unofficial WhatsApp groups, and chaotic spreadsheets. **Aaroh** consolidates academics, campus circulars, events, timetable scheduling, coursework, and career opportunities behind institutional Single Sign-On (SSO) with strict Role-Based Access Control (RBAC).
 

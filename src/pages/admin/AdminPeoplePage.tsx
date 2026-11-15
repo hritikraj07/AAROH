@@ -26,16 +26,41 @@ export const AdminPeoplePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
 
+  // Available Faculty Departments
+  const FACULTY_DEPARTMENTS = [
+    'Computer Science & Engineering',
+    'Mechanical Engineering',
+    'School of Management & Commerce',
+    'School of Law',
+    'Applied Sciences & Humanities',
+    'Architecture & Design',
+    'Pharmaceutical Sciences',
+  ];
+
+  // Helper for dynamic read-only institutional email suffix
+  const getEmailSuffix = (targetRole: UserRole) => {
+    switch (targetRole) {
+      case 'faculty':
+        return '@faculty.aaroh.edu.in';
+      case 'admin':
+        return '@admin.aaroh.edu.in';
+      case 'student':
+      default:
+        return '@aaroh.edu.in';
+    }
+  };
+
   // Form State
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [emailPrefix, setEmailPrefix] = useState('');
   const [role, setRole] = useState<UserRole>('student');
 
   // Student specific form fields
   const [rollNumber, setRollNumber] = useState('');
-  const [program, setProgram] = useState('B.Tech');
+  const [program, setProgram] = useState('B.Tech Computer Science');
   const [semester, setSemester] = useState<number>(1);
   const [section, setSection] = useState('Section A');
+  const [classCoordinator, setClassCoordinator] = useState<string>('');
 
   // Faculty/Admin specific form fields
   const [department, setDepartment] = useState('Computer Science & Engineering');
@@ -43,6 +68,9 @@ export const AdminPeoplePage: React.FC = () => {
 
   // Validation message
   const [formError, setFormError] = useState<string | null>(null);
+
+  // Dynamic list of faculty members for class coordinator assignment
+  const facultyMembers = users.filter(u => u.role === 'faculty');
 
   // Filtered Users
   const filteredUsers = users.filter(u => {
@@ -54,7 +82,8 @@ export const AdminPeoplePage: React.FC = () => {
       u.email.toLowerCase().includes(q) ||
       (u.rollNumber && u.rollNumber.toLowerCase().includes(q)) ||
       (u.department && u.department.toLowerCase().includes(q)) ||
-      (u.program && u.program.toLowerCase().includes(q));
+      (u.program && u.program.toLowerCase().includes(q)) ||
+      (u.classCoordinator && u.classCoordinator.toLowerCase().includes(q));
 
     return matchesRole && matchesSearch;
   });
@@ -66,16 +95,12 @@ export const AdminPeoplePage: React.FC = () => {
   const handleRoleChange = (newRole: UserRole) => {
     setRole(newRole);
     setFormError(null);
-    // Suggest domain based on role
     if (newRole === 'student') {
-      setEmail(prev => prev.split('@')[0] ? `${prev.split('@')[0]}@aaroh.edu.in` : '');
       setDepartment('Computer Science & Engineering');
     } else if (newRole === 'faculty') {
-      setEmail(prev => prev.split('@')[0] ? `${prev.split('@')[0]}@faculty.aaroh.edu.in` : '');
-      setDepartment('Department of Computer Science & Engineering');
+      setDepartment(FACULTY_DEPARTMENTS[0]);
       setDesignation('Assistant Professor');
     } else if (newRole === 'admin') {
-      setEmail(prev => prev.split('@')[0] ? `${prev.split('@')[0]}@admin.aaroh.edu.in` : '');
       setDepartment('Central Administration');
       setDesignation('Administrative Officer');
     }
@@ -86,17 +111,19 @@ export const AdminPeoplePage: React.FC = () => {
     setFormError(null);
 
     const trimmedName = name.trim();
-    const trimmedEmail = email.trim().toLowerCase();
+    const cleanPrefix = emailPrefix.trim().toLowerCase().replace(/[@\s]/g, '');
 
     if (!trimmedName) {
       setFormError('Please enter user full name.');
       return;
     }
 
-    if (!trimmedEmail) {
-      setFormError('Please enter user institutional email.');
+    if (!cleanPrefix) {
+      setFormError('Please enter user email prefix username.');
       return;
     }
+
+    const fullEmail = `${cleanPrefix}${getEmailSuffix(role)}`;
 
     // Role-specific validation
     if (role === 'student' && !rollNumber.trim()) {
@@ -110,15 +137,15 @@ export const AdminPeoplePage: React.FC = () => {
     }
 
     // Check duplicate email
-    if (users.some(u => u.email.toLowerCase() === trimmedEmail)) {
-      setFormError(`An account with email "${trimmedEmail}" already exists in the directory.`);
+    if (users.some(u => u.email.toLowerCase() === fullEmail.toLowerCase())) {
+      setFormError(`An account with email "${fullEmail}" already exists in the directory.`);
       return;
     }
 
     // Create User object
     const newUserData: Omit<User, 'id'> = {
       name: trimmedName,
-      email: trimmedEmail,
+      email: fullEmail,
       role,
       avatarInitials: '',
       department: department.trim() || (role === 'student' ? 'Computer Science & Engineering' : 'Central Administration'),
@@ -131,6 +158,7 @@ export const AdminPeoplePage: React.FC = () => {
             section: section.trim(),
             academicYear: APP_CONFIG.academicSession,
             attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
+            classCoordinator: classCoordinator.trim() || undefined,
           }
         : {}),
     };
@@ -139,8 +167,9 @@ export const AdminPeoplePage: React.FC = () => {
 
     // Reset Form
     setName('');
-    setEmail('');
+    setEmailPrefix('');
     setRollNumber('');
+    setClassCoordinator('');
     setIsAddModalOpen(false);
   };
 
@@ -374,6 +403,11 @@ export const AdminPeoplePage: React.FC = () => {
                             <div className="text-[11px] text-slate-500">
                               {u.program || 'B.Tech'} • Sem {u.semester || 1}
                             </div>
+                            {u.classCoordinator && (
+                              <div className="text-[10px] text-teal-700 font-medium">
+                                Coord: {u.classCoordinator}
+                              </div>
+                            )}
                           </div>
                         ) : (
                           <div className="space-y-0.5">
@@ -486,7 +520,7 @@ export const AdminPeoplePage: React.FC = () => {
                   placeholder={role === 'student' ? 'e.g. Devika Patel' : 'e.g. Prof. Rajesh Verma'}
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                 />
               </div>
 
@@ -494,23 +528,27 @@ export const AdminPeoplePage: React.FC = () => {
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Institutional Email Address <span className="text-rose-600">*</span>
                 </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <div className="flex items-center rounded-md border border-slate-200 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-teal-700/20 focus-within:border-teal-700 transition-all duration-150 ease-in-out">
+                  <div className="pl-3 pr-1 text-slate-400">
+                    <Mail className="w-4 h-4" />
+                  </div>
                   <input
-                    type="email"
+                    type="text"
                     required
-                    placeholder={
-                      role === 'student'
-                        ? 'devika.patel@aaroh.edu.in'
-                        : 'rajesh.verma@faculty.aaroh.edu.in'
-                    }
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    className="w-full text-xs font-mono pl-9 pr-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    placeholder={role === 'student' ? 'e.g. devika.patel' : 'e.g. rajesh.verma'}
+                    value={emailPrefix}
+                    onChange={e => {
+                      const val = e.target.value.toLowerCase().replace(/[@\s]/g, '');
+                      setEmailPrefix(val);
+                    }}
+                    className="flex-1 min-w-0 text-xs font-mono px-2 py-2 bg-transparent text-slate-900 placeholder:text-slate-400 focus:outline-none border-0"
                   />
+                  <span className="px-3 py-2 bg-slate-50 border-l border-slate-200 text-xs font-mono text-slate-600 font-semibold select-none whitespace-nowrap">
+                    {getEmailSuffix(role)}
+                  </span>
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1">
-                  Must be an institutional address. This email serves as their SSO login ID.
+                  Type the username prefix; <span className="font-mono font-medium text-slate-700">{getEmailSuffix(role)}</span> is permanently assigned based on role. Full login ID: <span className="font-mono text-teal-800 font-semibold">{emailPrefix ? `${emailPrefix}${getEmailSuffix(role)}` : `username${getEmailSuffix(role)}`}</span>
                 </p>
               </div>
 
@@ -532,7 +570,7 @@ export const AdminPeoplePage: React.FC = () => {
                         placeholder="e.g. 23CS014"
                         value={rollNumber}
                         onChange={e => setRollNumber(e.target.value)}
-                        className="w-full text-xs font-mono uppercase px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                        className="w-full text-xs font-mono uppercase px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                       />
                     </div>
 
@@ -543,12 +581,15 @@ export const AdminPeoplePage: React.FC = () => {
                       <select
                         value={program}
                         onChange={e => setProgram(e.target.value)}
-                        className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                        className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                       >
-                        <option value="B.Tech">B.Tech Computer Science</option>
-                        <option value="B.Tech ECE">B.Tech Electronics & Comm.</option>
-                        <option value="B.Sc IT">B.Sc Information Tech</option>
-                        <option value="M.Tech">M.Tech AI & Data Science</option>
+                        <option value="B.Tech Computer Science">B.Tech Computer Science</option>
+                        <option value="B.Tech Electronics & Comm.">B.Tech Electronics & Comm.</option>
+                        <option value="B.Tech Mechanical">B.Tech Mechanical</option>
+                        <option value="BBA / MBA">School of Management</option>
+                        <option value="BA LL.B / BBA LL.B">School of Law</option>
+                        <option value="B.Pharm">Pharmaceutical Sciences</option>
+                        <option value="B.Sc / M.Sc Applied Sciences">Applied Sciences</option>
                       </select>
                     </div>
                   </div>
@@ -561,7 +602,7 @@ export const AdminPeoplePage: React.FC = () => {
                       <select
                         value={semester}
                         onChange={e => setSemester(Number(e.target.value))}
-                        className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                        className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                       >
                         {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
                           <option key={s} value={s}>
@@ -579,9 +620,37 @@ export const AdminPeoplePage: React.FC = () => {
                         type="text"
                         value={section}
                         onChange={e => setSection(e.target.value)}
-                        className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                        className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                       />
                     </div>
+                  </div>
+
+                  {/* Class Coordinator Field */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Class Coordinator (Faculty Mentor)
+                    </label>
+                    <select
+                      value={classCoordinator}
+                      onChange={e => setClassCoordinator(e.target.value)}
+                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                    >
+                      <option value="">Unassigned (Select Coordinator)</option>
+                      {facultyMembers.map(fac => (
+                        <option key={fac.id} value={fac.name}>
+                          {fac.name} — {fac.department}
+                        </option>
+                      ))}
+                    </select>
+                    {facultyMembers.length === 0 ? (
+                      <p className="text-[10px] text-amber-700 mt-1">
+                        Notice: No faculty members found in directory. Onboard faculty members first to assign coordinators.
+                      </p>
+                    ) : (
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        Select an existing teacher from the faculty directory as this student's coordinator.
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
@@ -597,14 +666,17 @@ export const AdminPeoplePage: React.FC = () => {
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Academic Department <span className="text-rose-600">*</span>
                     </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Department of Computer Science & Engineering"
+                    <select
                       value={department}
                       onChange={e => setDepartment(e.target.value)}
-                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
-                    />
+                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                    >
+                      {FACULTY_DEPARTMENTS.map(dept => (
+                        <option key={dept} value={dept}>
+                          {dept}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div>
@@ -615,7 +687,7 @@ export const AdminPeoplePage: React.FC = () => {
                       type="text"
                       value={designation}
                       onChange={e => setDesignation(e.target.value)}
-                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                     />
                   </div>
                 </div>

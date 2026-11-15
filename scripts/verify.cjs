@@ -386,4 +386,26 @@ assert(fs.existsSync(vercelConfigPath), 'vercel.json exists in root directory');
 const vercelConfig = JSON.parse(fs.readFileSync(vercelConfigPath, 'utf8'));
 assert(Array.isArray(vercelConfig.rewrites) && vercelConfig.rewrites.some(r => r.source === '/(.*)' && r.destination === '/index.html'), 'vercel.json rewrites all routes to /index.html for SPA routing');
 
-console.log('--- ALL NOTIFICATIONS, SEARCH, CUSTOM LOGO & VERCEL CONFIG VERIFICATIONS PASSED ---');
+// 14. Check Global Branding, Wiped Database & User Management UX Upgrades
+const configContent = fs.readFileSync(path.join(__dirname, '../src/config.ts'), 'utf8');
+assert(configContent.includes("collegeName: 'K.R. Mangalam University'"), "APP_CONFIG.collegeName updated to 'K.R. Mangalam University'");
+assert(configContent.includes("collegeShortName: 'KRMU'"), "APP_CONFIG.collegeShortName updated to 'KRMU'");
+
+// Check that pre-seeded database arrays are empty
+const updatedSeedContent = fs.readFileSync(path.join(__dirname, '../src/data/seed.ts'), 'utf8');
+assert(updatedSeedContent.includes('export const INITIAL_NOTICES: Notice[] = [];'), 'INITIAL_NOTICES is initialized as an empty array');
+assert(updatedSeedContent.includes('export const INITIAL_EVENTS: CampusEvent[] = [];'), 'INITIAL_EVENTS is initialized as an empty array');
+assert(updatedSeedContent.includes('export const INITIAL_TIMETABLE: ClassSession[] = [];'), 'INITIAL_TIMETABLE is initialized as an empty array');
+assert(updatedSeedContent.includes('export const INITIAL_OPPORTUNITIES: Opportunity[] = [];'), 'INITIAL_OPPORTUNITIES is initialized as an empty array');
+
+// Check Admin User Management upgrades in AdminPeoplePage.tsx
+const currentAdminPeopleContent = fs.readFileSync(path.join(__dirname, '../src/pages/admin/AdminPeoplePage.tsx'), 'utf8');
+assert(currentAdminPeopleContent.includes('getEmailSuffix'), 'AdminPeoplePage defines smart getEmailSuffix helper');
+assert(currentAdminPeopleContent.includes('@aaroh.edu.in') && currentAdminPeopleContent.includes('@faculty.aaroh.edu.in'), 'AdminPeoplePage includes smart institutional domain suffixes');
+assert(currentAdminPeopleContent.includes('emailPrefix') && currentAdminPeopleContent.includes('setEmailPrefix'), 'AdminPeoplePage uses email prefix input state');
+assert(currentAdminPeopleContent.includes('FACULTY_DEPARTMENTS'), 'AdminPeoplePage defines faculty department options');
+assert(currentAdminPeopleContent.includes('classCoordinator') && currentAdminPeopleContent.includes('setClassCoordinator'), 'AdminPeoplePage includes Class Coordinator field state');
+assert(currentAdminPeopleContent.includes("users.filter(u => u.role === 'faculty')"), 'AdminPeoplePage dynamically filters faculty members for coordinator assignment');
+assert(currentAdminPeopleContent.includes('Coord: {u.classCoordinator}'), 'AdminPeoplePage displays assigned Class Coordinator in user table');
+
+console.log('--- ALL NOTIFICATIONS, SEARCH, CUSTOM LOGO, VERCEL CONFIG & USER MANAGEMENT VERIFICATIONS PASSED ---');

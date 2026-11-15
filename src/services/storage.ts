@@ -66,9 +66,17 @@ function setStored<T>(key: string, data: T): void {
 export const StorageService = {
   // Initialize clean state on first boot or forced reset
   initializeData(forceReset = false): void {
+    const cleanDbFlag = localStorage.getItem('aaroh_krmu_clean_v1');
     const initialized = localStorage.getItem(STORAGE_KEYS.INITIALIZED);
-    if (!initialized || forceReset) {
-      setStored(STORAGE_KEYS.USERS, INITIAL_USERS);
+
+    // If never initialized, forced reset, or migrating from old mock database
+    if (!initialized || !cleanDbFlag || forceReset) {
+      // Keep existing users if already in localStorage, or seed default initial users
+      const existingUsers = getStored<User[]>(STORAGE_KEYS.USERS, []);
+      const usersToStore = existingUsers.length > 0 ? existingUsers : INITIAL_USERS;
+      setStored(STORAGE_KEYS.USERS, usersToStore);
+
+      // Clean empty arrays for database entities so admin can build from scratch
       setStored(STORAGE_KEYS.COURSES, INITIAL_COURSES);
       setStored(STORAGE_KEYS.TIMETABLE, INITIAL_TIMETABLE);
       setStored(STORAGE_KEYS.ATTENDANCE, INITIAL_ATTENDANCE);
@@ -84,19 +92,12 @@ export const StorageService = {
         localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
       }
       localStorage.setItem(STORAGE_KEYS.INITIALIZED, 'true');
+      localStorage.setItem('aaroh_krmu_clean_v1', 'true');
     }
 
     // Ensure users directory is seeded even if previously initialized
-    if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
+    if (!localStorage.getItem(STORAGE_KEYS.USERS) || getStored<any[]>(STORAGE_KEYS.USERS, []).length === 0) {
       setStored(STORAGE_KEYS.USERS, INITIAL_USERS);
-    }
-
-    // Ensure notices and events are available for search if empty
-    if (!localStorage.getItem(STORAGE_KEYS.NOTICES) || getStored<any[]>(STORAGE_KEYS.NOTICES, []).length === 0) {
-      setStored(STORAGE_KEYS.NOTICES, INITIAL_NOTICES);
-    }
-    if (!localStorage.getItem(STORAGE_KEYS.EVENTS) || getStored<any[]>(STORAGE_KEYS.EVENTS, []).length === 0) {
-      setStored(STORAGE_KEYS.EVENTS, INITIAL_EVENTS);
     }
   },
 

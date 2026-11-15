@@ -15,6 +15,7 @@ export interface User {
   section?: string;
   academicYear?: string;
   attendanceMinimum?: number; // default 75%
+  classCoordinator?: string; // Assigned faculty mentor / coordinator
   savedOpportunityIds?: string[]; // Saved opportunities per user
 }
 
