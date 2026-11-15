@@ -285,9 +285,32 @@ export const StorageService = {
 
   createTimetableSession(session: Omit<ClassSession, 'id'>): ClassSession {
     const list = this.getTimetable();
+    let courseId = session.courseId;
+    const courses = this.getCourses();
+
+    // Ensure course exists or auto-register curriculum course
+    const existingCourse = courses.find(c => c.id === courseId || c.code === session.courseCode);
+    if (!existingCourse && session.courseCode) {
+      const newCourse = this.createCourse({
+        code: session.courseCode,
+        name: session.courseName || session.courseCode,
+        credits: 4,
+        facultyName: session.facultyName,
+        facultyEmail: session.facultyEmail || '',
+        roomDefault: session.room,
+        colorTag: 'teal',
+      });
+      courseId = newCourse.id;
+    } else if (existingCourse) {
+      courseId = existingCourse.id;
+    }
+
     const newSession: ClassSession = {
       ...session,
       id: `ts_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      courseId,
+      courseCode: session.courseCode || existingCourse?.code,
+      courseName: session.courseName || existingCourse?.name,
     };
     list.push(newSession);
     setStored(STORAGE_KEYS.TIMETABLE, list);
@@ -305,17 +328,19 @@ export const StorageService = {
     return getStored<AttendanceRecord[]>(STORAGE_KEYS.ATTENDANCE, INITIAL_ATTENDANCE);
   },
 
-  recordAttendanceEntry(courseId: string, attendedDelta = 1, totalDelta = 1): AttendanceRecord {
+  recordAttendanceEntry(courseId: string, attendedDelta = 1, totalDelta = 1, studentId?: string): AttendanceRecord {
     const list = this.getAttendance();
-    const idx = list.findIndex(a => a.courseId === courseId);
+    const idx = list.findIndex(a => a.courseId === courseId && (!studentId || a.studentId === studentId));
     if (idx !== -1) {
       list[idx].attended += attendedDelta;
       list[idx].total += totalDelta;
+      if (studentId && !list[idx].studentId) list[idx].studentId = studentId;
       setStored(STORAGE_KEYS.ATTENDANCE, list);
       return list[idx];
     } else {
       const newRecord: AttendanceRecord = {
         courseId,
+        studentId,
         attended: attendedDelta,
         total: totalDelta,
       };
@@ -323,6 +348,57 @@ export const StorageService = {
       setStored(STORAGE_KEYS.ATTENDANCE, list);
       return newRecord;
     }
+  },
+
+  recordBatchAttendance(courseId: string, studentMarks: { studentId: string; isPresent: boolean }[]): void {
+    const list = this.getAttendance();
+    let updatedList = [...list];
+
+    studentMarks.forEach(mark => {
+      const idx = updatedList.findIndex(a => a.courseId === courseId && a.studentId === mark.studentId);
+      if (idx !== -1) {
+        updatedList[idx].total += 1;
+        if (mark.isPresent) {
+          updatedList[idx].attended += 1;
+        }
+      } else {
+        // Also check if there's a generic record for courseId without studentId
+        const genericIdx = updatedList.findIndex(a => a.courseId === courseId && !a.studentId);
+        if (genericIdx !== -1) {
+          const old = updatedList[genericIdx];
+          updatedList[genericIdx] = {
+            ...old,
+            studentId: mark.studentId,
+            total: old.total + 1,
+            attended: old.attended + (mark.isPresent ? 1 : 0),
+          };
+        } else {
+          updatedList.push({
+            courseId,
+            studentId: mark.studentId,
+            attended: mark.isPresent ? 1 : 0,
+            total: 1,
+          });
+        }
+      }
+    });
+
+    // Also update generic record for that courseId so overall course totals reflect
+    const generic = updatedList.find(a => a.courseId === courseId && !a.studentId);
+    if (generic) {
+      const anyPresent = studentMarks.some(m => m.isPresent);
+      generic.total += 1;
+      if (anyPresent) generic.attended += 1;
+    } else {
+      const anyPresent = studentMarks.some(m => m.isPresent);
+      updatedList.push({
+        courseId,
+        attended: anyPresent ? 1 : 0,
+        total: 1,
+      });
+    }
+
+    setStored(STORAGE_KEYS.ATTENDANCE, updatedList);
   },
 
   updateAttendanceThreshold(min: number): Student | null {

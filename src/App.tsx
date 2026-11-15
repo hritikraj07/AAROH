@@ -19,6 +19,7 @@ import { FacultyDashboardPage } from './pages/faculty/FacultyDashboardPage';
 import { FacultyClassesPage } from './pages/faculty/FacultyClassesPage';
 import { FacultyAttendancePage } from './pages/faculty/FacultyAttendancePage';
 import { FacultyAssignmentsPage } from './pages/faculty/FacultyAssignmentsPage';
+import { FacultyNoticesPage } from './pages/faculty/FacultyNoticesPage';
 
 // Admin Portal Pages
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
@@ -89,6 +90,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="classes" element={<FacultyClassesPage />} />
         <Route path="attendance" element={<FacultyAttendancePage />} />
         <Route path="assignments" element={<FacultyAssignmentsPage />} />
+        <Route path="notices" element={<FacultyNoticesPage />} />
       </Route>
 
       {/* 3. Admin Portal (/admin/*) */}

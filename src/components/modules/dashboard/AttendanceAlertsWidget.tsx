@@ -9,7 +9,20 @@ import { APP_CONFIG } from '../../../config';
 export const AttendanceAlertsWidget: React.FC = () => {
   const { attendance, courses, student } = useApp();
   const minThreshold = student?.attendanceMinimum || APP_CONFIG.defaultAttendanceThreshold;
-  const analyses = AcademicService.analyzeAttendance(attendance, courses, minThreshold);
+
+  // Filter attendance records specifically for the logged-in student
+  const studentAttendance = attendance.filter(rec => {
+    if (student?.id && rec.studentId) {
+      return rec.studentId === student.id;
+    }
+    if (!rec.studentId) {
+      const hasSpecific = attendance.some(a => a.courseId === rec.courseId && a.studentId === student?.id);
+      return !hasSpecific;
+    }
+    return false;
+  });
+
+  const analyses = AcademicService.analyzeAttendance(studentAttendance, courses, minThreshold);
 
   const lowAttendance = analyses.filter(a => a.isBelowThreshold);
   const safeAttendance = analyses.filter(a => !a.isBelowThreshold);
@@ -19,7 +32,7 @@ export const AttendanceAlertsWidget: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-slate-50/50">
         <div className="flex items-center gap-2">
-          {attendance.length === 0 ? (
+          {studentAttendance.length === 0 ? (
             <CheckCircle2 className="w-4 h-4 text-slate-400" />
           ) : lowAttendance.length > 0 ? (
             <AlertTriangle className="w-4 h-4 text-rose-600" />
@@ -44,7 +57,7 @@ export const AttendanceAlertsWidget: React.FC = () => {
 
       {/* Content */}
       <div className="p-4 flex-1 space-y-3 flex flex-col justify-between">
-        {attendance.length === 0 ? (
+        {studentAttendance.length === 0 ? (
           <div className="py-12 flex flex-col items-center justify-center text-center my-auto">
             <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2.5">
               <ShieldCheck className="w-4 h-4 text-slate-400" />

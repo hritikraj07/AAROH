@@ -6,20 +6,33 @@ import { AcademicService } from '../../../services/academicService';
 import { Badge } from '../../ui/Badge';
 
 export const TodayClassesCard: React.FC = () => {
-  const { timetable, courses } = useApp();
+  const { timetable, courses, user } = useApp();
   const courseMap = new Map(courses.map(c => [c.id, c]));
+
+  // Filter timetable if logged-in user is a student with program/semester
+  const filteredTimetable = timetable.filter(s => {
+    if (user?.role === 'student') {
+      if (s.program && user.program && !s.program.toLowerCase().includes(user.program.toLowerCase()) && !user.program.toLowerCase().includes(s.program.toLowerCase())) {
+        return false;
+      }
+      if (s.semester && user.semester && Number(s.semester) !== Number(user.semester)) {
+        return false;
+      }
+    }
+    return true;
+  });
 
   const now = new Date();
   const currentDayOfWeek = now.getDay(); // 0 = Sun, 1 = Mon ... 6 = Sat
-  const upcomingInfo = AcademicService.getNextUpcomingClass(timetable, now);
+  const upcomingInfo = AcademicService.getNextUpcomingClass(filteredTimetable, now);
 
   // Get sessions to display: today's sessions, or next day's sessions if today has none
   let displayDayNum = currentDayOfWeek;
   let isDisplayingFutureDay = false;
   let headerLabel = "Today's Classes";
 
-  if (timetable.length > 0) {
-    if (currentDayOfWeek === 0 || AcademicService.getSessionsForDay(timetable, currentDayOfWeek).length === 0) {
+  if (filteredTimetable.length > 0) {
+    if (currentDayOfWeek === 0 || AcademicService.getSessionsForDay(filteredTimetable, currentDayOfWeek).length === 0) {
       isDisplayingFutureDay = true;
       displayDayNum = upcomingInfo.session ? upcomingInfo.session.dayOfWeek : 1;
       const daysName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -27,7 +40,7 @@ export const TodayClassesCard: React.FC = () => {
     }
   }
 
-  const sessionsToDisplay = AcademicService.getSessionsForDay(timetable, displayDayNum);
+  const sessionsToDisplay = AcademicService.getSessionsForDay(filteredTimetable, displayDayNum);
 
   return (
     <div className="bg-white border border-border rounded-lg shadow-subtle overflow-hidden flex flex-col h-full">

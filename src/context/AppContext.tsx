@@ -91,6 +91,7 @@ interface AppContextType {
   createTimetableSession: (session: Omit<ClassSession, 'id'>) => ClassSession;
   deleteTimetableSession: (id: string) => void;
   recordAttendanceEntry: (courseId: string, attendedDelta?: number, totalDelta?: number) => void;
+  recordBatchAttendance: (courseId: string, studentMarks: { studentId: string; isPresent: boolean }[]) => void;
   createAssignment: (asg: Omit<Assignment, 'id' | 'status'>) => Assignment;
 }
 
@@ -161,6 +162,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const unreadNoticeCount = notices.filter(n => !n.readByCurrentUser).length;
   const pendingAssignmentsCount = assignments.filter(a => a.status === 'pending' || a.status === 'overdue').length;
   const lowAttendanceCount = attendance.filter(rec => {
+    if (user?.id && rec.studentId && rec.studentId !== user.id) return false;
     const pct = rec.total > 0 ? (rec.attended / rec.total) * 100 : 100;
     return pct < (user?.attendanceMinimum || 75);
   }).length;
@@ -419,6 +421,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return updated;
   };
 
+  const recordBatchAttendance = (courseId: string, studentMarks: { studentId: string; isPresent: boolean }[]) => {
+    StorageService.recordBatchAttendance(courseId, studentMarks);
+    setAttendance(StorageService.getAttendance());
+    const presentCount = studentMarks.filter(s => s.isPresent).length;
+    showToast({
+      type: 'success',
+      title: 'Roll Call Submitted',
+      message: `Recorded attendance for ${studentMarks.length} students (${presentCount} present).`,
+    });
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -478,6 +491,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         createTimetableSession,
         deleteTimetableSession,
         recordAttendanceEntry,
+        recordBatchAttendance,
         createAssignment,
       }}
     >

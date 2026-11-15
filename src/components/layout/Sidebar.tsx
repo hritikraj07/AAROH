@@ -120,8 +120,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       ) : null,
     },
     {
-      to: '/student/notices',
-      label: 'Campus Circulars',
+      to: '/faculty/notices',
+      label: 'Department Notices',
       icon: <Bell className="w-4 h-4" />,
     },
   ];

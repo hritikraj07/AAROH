@@ -6,8 +6,21 @@ import { Badge } from '../../ui/Badge';
 import { Clock, MapPin, User, Calendar } from 'lucide-react';
 
 export const TimetableTab: React.FC = () => {
-  const { timetable, courses } = useApp();
+  const { timetable, courses, user } = useApp();
   const [viewMode, setViewMode] = useState<'grid' | 'day'>('grid');
+
+  // Filter timetable if logged-in user is a student with program/semester
+  const filteredTimetable = timetable.filter(s => {
+    if (user?.role === 'student') {
+      if (s.program && user.program && !s.program.toLowerCase().includes(user.program.toLowerCase()) && !user.program.toLowerCase().includes(s.program.toLowerCase())) {
+        return false;
+      }
+      if (s.semester && user.semester && Number(s.semester) !== Number(user.semester)) {
+        return false;
+      }
+    }
+    return true;
+  });
 
   const now = new Date();
   const currentDayOfWeek = now.getDay(); // 0 = Sun, 1 = Mon ... 6 = Sat
@@ -34,10 +47,10 @@ export const TimetableTab: React.FC = () => {
   ];
 
   const getSessionAtSlot = (dayNum: number, startTime: string): ClassSession | undefined => {
-    return timetable.find(s => s.dayOfWeek === dayNum && s.startTime === startTime);
+    return filteredTimetable.find(s => s.dayOfWeek === dayNum && s.startTime === startTime);
   };
 
-  const daySessions = AcademicService.getSessionsForDay(timetable, selectedDay);
+  const daySessions = AcademicService.getSessionsForDay(filteredTimetable, selectedDay);
 
   return (
     <div className="space-y-4">

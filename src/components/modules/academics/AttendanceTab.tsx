@@ -8,10 +8,23 @@ import { APP_CONFIG } from '../../../config';
 export const AttendanceTab: React.FC = () => {
   const { attendance, courses, student, updateAttendanceThreshold } = useApp();
   const minThreshold = student?.attendanceMinimum || APP_CONFIG.defaultAttendanceThreshold;
-  const analyses = AcademicService.analyzeAttendance(attendance, courses, minThreshold);
 
-  const totalAttended = attendance.reduce((acc, curr) => acc + curr.attended, 0);
-  const totalHeld = attendance.reduce((acc, curr) => acc + curr.total, 0);
+  // Filter attendance records specifically for the logged-in student
+  const studentAttendance = attendance.filter(rec => {
+    if (student?.id && rec.studentId) {
+      return rec.studentId === student.id;
+    }
+    if (!rec.studentId) {
+      const hasSpecific = attendance.some(a => a.courseId === rec.courseId && a.studentId === student?.id);
+      return !hasSpecific;
+    }
+    return false;
+  });
+
+  const analyses = AcademicService.analyzeAttendance(studentAttendance, courses, minThreshold);
+
+  const totalAttended = studentAttendance.reduce((acc, curr) => acc + curr.attended, 0);
+  const totalHeld = studentAttendance.reduce((acc, curr) => acc + curr.total, 0);
   const overallPercentage = totalHeld > 0 ? Number(((totalAttended / totalHeld) * 100).toFixed(1)) : 0;
   const belowCount = analyses.filter(a => a.isBelowThreshold).length;
 
@@ -40,7 +53,7 @@ export const AttendanceTab: React.FC = () => {
               Shortfall Status
             </span>
             <div className="mt-1">
-              {attendance.length === 0 ? (
+              {studentAttendance.length === 0 ? (
                 <span className="text-xs text-slate-500">No active course logs</span>
               ) : belowCount > 0 ? (
                 <Badge variant="rose" size="md" dot>

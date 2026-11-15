@@ -48,6 +48,8 @@ export const Layout: React.FC = () => {
         return 'Lecture Attendance Logger';
       case '/faculty/assignments':
         return 'Coursework & Grading';
+      case '/faculty/notices':
+        return 'Department Circulars & Notices';
 
       // Admin Routes
       case '/admin':

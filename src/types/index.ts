@@ -36,16 +36,23 @@ export type ClassType = 'Lecture' | 'Lab' | 'Tutorial';
 export interface ClassSession {
   id: string;
   courseId: string;
+  courseCode?: string;
+  courseName?: string;
   dayOfWeek: 1 | 2 | 3 | 4 | 5 | 6; // 1 = Monday ... 6 = Saturday
   startTime: string; // "09:00" (24h format)
   endTime: string;   // "10:30"
   room: string;
   facultyName: string;
+  facultyEmail?: string;
   type: ClassType;
+  program?: string;  // e.g. "B.Tech CSE"
+  semester?: number; // e.g. 5
 }
 
 export interface AttendanceRecord {
   courseId: string;
+  studentId?: string;
+  studentEmail?: string;
   attended: number;
   total: number;
 }

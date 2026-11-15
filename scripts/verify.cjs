@@ -66,4 +66,41 @@ const loginContent = fs.readFileSync(path.join(__dirname, '../src/pages/LoginPag
 assert(loginContent.includes('users.some('), 'LoginPage checks localStorage users array for known accounts');
 assert(loginContent.includes('login(trimmedEmail, password)'), 'LoginPage invokes refactored login handler');
 
-console.log('--- ALL USER MANAGEMENT & RBAC VERIFICATIONS PASSED ---');
+// 9. Check Batch Attendance Storage & Context
+assert(storageContent.includes('recordBatchAttendance('), 'StorageService includes recordBatchAttendance method');
+assert(contextContent.includes('recordBatchAttendance: (courseId: string'), 'AppContextType exposes recordBatchAttendance');
+
+// 10. Check Admin Timetable Module
+assert(fs.existsSync(path.join(__dirname, '../src/pages/admin/AdminTimetablePage.tsx')), 'AdminTimetablePage.tsx exists');
+const adminTimetableContent = fs.readFileSync(path.join(__dirname, '../src/pages/admin/AdminTimetablePage.tsx'), 'utf8');
+assert(adminTimetableContent.includes('targetProgram') || adminTimetableContent.includes('program'), 'AdminTimetablePage has target audience program');
+assert(adminTimetableContent.includes('targetSemester') || adminTimetableContent.includes('semester'), 'AdminTimetablePage has target audience semester');
+assert(adminTimetableContent.includes('assignedFacultyEmail') || adminTimetableContent.includes('facultyEmail'), 'AdminTimetablePage has assigned faculty dropdown');
+
+// 11. Check Faculty Dashboard
+assert(fs.existsSync(path.join(__dirname, '../src/pages/faculty/FacultyDashboardPage.tsx')), 'FacultyDashboardPage.tsx exists');
+const facultyDashContent = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyDashboardPage.tsx'), 'utf8');
+assert(facultyDashContent.includes('facultyEmail') || facultyDashContent.includes('effectiveTimetable'), 'FacultyDashboardPage filters classes for assigned teacher');
+assert(facultyDashContent.includes('Quick Faculty Actions'), 'FacultyDashboardPage renders Quick Actions row');
+assert(facultyDashContent.includes('Mark Roll Call') || facultyDashContent.includes('Mark Attendance'), 'FacultyDashboardPage has Mark Roll Call action');
+
+// 12. Check Faculty Attendance Page
+assert(fs.existsSync(path.join(__dirname, '../src/pages/faculty/FacultyAttendancePage.tsx')), 'FacultyAttendancePage.tsx exists');
+const facultyAttContent = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyAttendancePage.tsx'), 'utf8');
+assert(facultyAttContent.includes('recordBatchAttendance'), 'FacultyAttendancePage calls recordBatchAttendance');
+assert(facultyAttContent.includes('enrolledStudents'), 'FacultyAttendancePage computes enrolledStudents filtered by audience');
+assert(facultyAttContent.includes('Present') && facultyAttContent.includes('Absent'), 'FacultyAttendancePage includes Present/Absent toggles');
+
+// 13. Check Faculty Notices Page
+assert(fs.existsSync(path.join(__dirname, '../src/pages/faculty/FacultyNoticesPage.tsx')), 'FacultyNoticesPage.tsx exists');
+const facultyNoticeContent = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyNoticesPage.tsx'), 'utf8');
+assert(facultyNoticeContent.includes('Draft Department Notice') || facultyNoticeContent.includes('Department Circulars'), 'FacultyNoticesPage renders department circulars view');
+assert(facultyNoticeContent.includes('createNotice'), 'FacultyNoticesPage provides notice draft and publish form');
+
+// 14. Check Student Timetable & Dashboard Audience Filtering
+const studentTodayClasses = fs.readFileSync(path.join(__dirname, '../src/components/modules/dashboard/TodayClassesCard.tsx'), 'utf8');
+assert(studentTodayClasses.includes('user.program') && studentTodayClasses.includes('user.semester'), 'TodayClassesCard filters classes by student program and semester');
+const studentTimetableTab = fs.readFileSync(path.join(__dirname, '../src/components/modules/academics/TimetableTab.tsx'), 'utf8');
+assert(studentTimetableTab.includes('user.program') && studentTimetableTab.includes('user.semester'), 'TimetableTab filters classes by student program and semester');
+
+console.log('--- ALL USER MANAGEMENT, RBAC, TIMETABLE & FACULTY PORTAL VERIFICATIONS PASSED ---');
