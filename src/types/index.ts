@@ -15,6 +15,7 @@ export interface User {
   section?: string;
   academicYear?: string;
   attendanceMinimum?: number; // default 75%
+  savedOpportunityIds?: string[]; // Saved opportunities per user
 }
 
 // Student is an alias of User for full backward compatibility
@@ -155,10 +156,13 @@ export interface Opportunity {
   deadline: string; // YYYY-MM-DD
   mode: OpportunityMode;
   eligibility: string;
-  compensation: string;
-  description: string;
-  applyUrl: string;
-  isSaved: boolean;
+  stipendPrize: string;
+  applyLink: string;
+  // Backward-compatible properties
+  compensation?: string;
+  applyUrl?: string;
+  description?: string;
+  isSaved?: boolean;
 }
 
 export type NotificationType = 'notice' | 'deadline' | 'attendance' | 'event';

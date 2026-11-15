@@ -134,4 +134,21 @@ assert(detailModalContent.includes('Request Contact'), 'LostFoundDetailModal pro
 assert(detailModalContent.includes('Mark as Resolved') || detailModalContent.includes('handleResolve'), 'LostFoundDetailModal allows poster to mark item resolved');
 assert(!detailModalContent.includes('item.reportedBy.phone'), 'LostFoundDetailModal never exposes phone numbers publicly');
 
-console.log('--- ALL USER MANAGEMENT, RBAC, TIMETABLE, FACULTY & LOST & FOUND VERIFICATIONS PASSED ---');
+// 18. Check Opportunity Board Module
+assert(fs.existsSync(path.join(__dirname, '../src/pages/OpportunitiesPage.tsx')), 'OpportunitiesPage.tsx exists');
+const oppContent = fs.readFileSync(path.join(__dirname, '../src/pages/OpportunitiesPage.tsx'), 'utf8');
+assert(oppContent.includes('Opportunity Board'), 'OpportunitiesPage renders module header');
+assert(oppContent.includes('Browse') && oppContent.includes('Saved'), 'OpportunitiesPage renders Browse and Saved views');
+assert(oppContent.includes('daysLeft') || oppContent.includes('days left'), 'OpportunitiesPage computes dynamic date math');
+assert(oppContent.includes('isExpired') && oppContent.includes('target="_blank"'), 'OpportunitiesPage has external Apply link');
+assert(oppContent.includes('toggleSaveOpportunity'), 'OpportunitiesPage provides bookmark save toggle');
+assert(oppContent.includes('displayOpportunities: [...active, ...expired]'), 'OpportunitiesPage forces expired opportunities to bottom of list');
+
+// 19. Check Saved Opportunities in LocalStorage & User Profile
+const typesContent = fs.readFileSync(path.join(__dirname, '../src/types/index.ts'), 'utf8');
+assert(typesContent.includes('savedOpportunityIds?: string[];'), 'User interface defines savedOpportunityIds array');
+assert(typesContent.includes('stipendPrize: string;'), 'Opportunity interface defines stipendPrize');
+assert(typesContent.includes('applyLink: string;'), 'Opportunity interface defines applyLink');
+assert(storageContent.includes('savedOpportunityIds'), 'StorageService persists savedOpportunityIds per user in localStorage');
+
+console.log('--- ALL USER MANAGEMENT, RBAC, TIMETABLE, FACULTY, LOST & FOUND & OPPORTUNITIES VERIFICATIONS PASSED ---');

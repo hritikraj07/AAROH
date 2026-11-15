@@ -76,15 +76,21 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
             <Button variant="ghost" size="sm" onClick={onClose}>
               Close
             </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              disabled={isExpired}
-              onClick={handleApply}
-              icon={<ExternalLink className="w-3.5 h-3.5" />}
-            >
-              {isExpired ? 'Applications Closed' : 'Apply on Official Portal'}
-            </Button>
+            {isExpired ? (
+              <Button variant="primary" size="sm" disabled>
+                Applications Closed
+              </Button>
+            ) : (
+              <a
+                href={opportunity.applyLink || opportunity.applyUrl || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-1.5 text-xs font-semibold rounded inline-flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 text-white transition-colors shadow-subtle"
+              >
+                <span>Apply on Official Portal</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
           </div>
         </div>
       }
@@ -118,7 +124,7 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
               Stipend / Prize Pool
             </span>
             <span className="text-sm font-bold text-emerald-700 font-mono">
-              {opportunity.compensation}
+              {opportunity.stipendPrize || opportunity.compensation}
             </span>
           </div>
         </div>

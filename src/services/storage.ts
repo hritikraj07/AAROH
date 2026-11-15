@@ -588,17 +588,63 @@ export const StorageService = {
 
   // Opportunities
   getOpportunities(): Opportunity[] {
-    return getStored<Opportunity[]>(STORAGE_KEYS.OPPORTUNITIES, INITIAL_OPPORTUNITIES);
+    const list = getStored<Opportunity[]>(STORAGE_KEYS.OPPORTUNITIES, INITIAL_OPPORTUNITIES);
+    const user = this.getAuthUser();
+    const savedIds = user?.savedOpportunityIds || [];
+
+    return list.map(opp => {
+      const isSaved = savedIds.includes(opp.id) || opp.isSaved || false;
+      return {
+        ...opp,
+        stipendPrize: opp.stipendPrize || opp.compensation || 'Stipend provided',
+        compensation: opp.stipendPrize || opp.compensation || 'Stipend provided',
+        applyLink: opp.applyLink || opp.applyUrl || '#',
+        applyUrl: opp.applyLink || opp.applyUrl || '#',
+        isSaved,
+      };
+    });
+  },
+
+  getSavedOpportunityIds(): string[] {
+    const user = this.getAuthUser();
+    return user?.savedOpportunityIds || [];
   },
 
   toggleSaveOpportunity(id: string): boolean {
-    const list = this.getOpportunities();
-    const idx = list.findIndex(o => o.id === id);
-    if (idx === -1) return false;
+    const user = this.getAuthUser();
+    const currentSaved = user?.savedOpportunityIds || [];
+    const isAlreadySaved = currentSaved.includes(id);
+    const newSaved = isAlreadySaved
+      ? currentSaved.filter(itemId => itemId !== id)
+      : [...currentSaved, id];
 
-    list[idx].isSaved = !list[idx].isSaved;
+    if (user) {
+      user.savedOpportunityIds = newSaved;
+      this.updateUser(user.id, { savedOpportunityIds: newSaved });
+      setStored(STORAGE_KEYS.AUTH_USER, user);
+    }
+
+    // Also persist in opportunities array for compatibility
+    const list = getStored<Opportunity[]>(STORAGE_KEYS.OPPORTUNITIES, INITIAL_OPPORTUNITIES);
+    const idx = list.findIndex(o => o.id === id);
+    if (idx !== -1) {
+      list[idx].isSaved = !isAlreadySaved;
+      setStored(STORAGE_KEYS.OPPORTUNITIES, list);
+    }
+
+    return !isAlreadySaved;
+  },
+
+  createOpportunity(opp: Omit<Opportunity, 'id' | 'isSaved'>): Opportunity {
+    const list = getStored<Opportunity[]>(STORAGE_KEYS.OPPORTUNITIES, INITIAL_OPPORTUNITIES);
+    const newOpp: Opportunity = {
+      ...opp,
+      id: `opp_${Date.now()}`,
+      isSaved: false,
+    };
+    list.unshift(newOpp);
     setStored(STORAGE_KEYS.OPPORTUNITIES, list);
-    return list[idx].isSaved;
+    return newOpp;
   },
 
   // Notifications

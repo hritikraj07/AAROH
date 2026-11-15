@@ -115,6 +115,7 @@ export const INITIAL_USERS: User[] = [
     academicYear: APP_CONFIG.academicSession,
     avatarInitials: 'AS',
     attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
+    savedOpportunityIds: ['opp_1'],
   },
   {
     id: 'usr_fac_demo',
@@ -275,6 +276,78 @@ export const INITIAL_ATTENDANCE: AttendanceRecord[] = [
 export const INITIAL_ASSIGNMENTS: Assignment[] = [];
 export const INITIAL_NOTICES: Notice[] = [];
 export const INITIAL_EVENTS: CampusEvent[] = [];
+const getRelativeDate = (offsetDays: number): string => {
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  return d.toISOString().split('T')[0];
+};
+
 export const INITIAL_LOST_FOUND: LostFoundItem[] = [];
-export const INITIAL_OPPORTUNITIES: Opportunity[] = [];
+export const INITIAL_OPPORTUNITIES: Opportunity[] = [
+  {
+    id: 'opp_1',
+    title: 'Google Summer of Code (GSoC) 2026',
+    organization: 'Google Open Source',
+    type: 'Internship',
+    deadline: getRelativeDate(2),
+    mode: 'Remote',
+    eligibility: 'All enrolled undergraduate students in STEM disciplines',
+    stipendPrize: '₹45,000 / month ($1,500 – $3,000 total stipend)',
+    applyLink: 'https://summerofcode.withgoogle.com',
+    description: 'Work with open source contributor organizations on 12-week or 22-week programming projects under the guidance of dedicated technical mentors.',
+    isSaved: true,
+  },
+  {
+    id: 'opp_2',
+    title: 'Smart India Hackathon 2026 (Software Edition)',
+    organization: 'Ministry of Education & AICTE',
+    type: 'Hackathon',
+    deadline: getRelativeDate(5),
+    mode: 'On-site',
+    eligibility: 'Teams of 6 students with at least 1 female teammate',
+    stipendPrize: '₹1,00,000 Prize Pool per Problem Statement',
+    applyLink: 'https://sih.gov.in',
+    description: 'Nationwide product-building challenge seeking digital solutions for ministry departments, public sector challenges, and green energy logistics.',
+    isSaved: false,
+  },
+  {
+    id: 'opp_3',
+    title: 'Software Engineering Summer Intern',
+    organization: 'Microsoft India R&D',
+    type: 'Internship',
+    deadline: getRelativeDate(14),
+    mode: 'On-site',
+    eligibility: 'Pre-final Year B.Tech / Dual Degree students (Batch of 2027)',
+    stipendPrize: '₹1,25,000 / month + Housing Allowance',
+    applyLink: 'https://careers.microsoft.com',
+    description: 'Build enterprise cloud tools, distributed systems, and modern web infrastructure alongside senior core engineering teams in Hyderabad / Bangalore.',
+    isSaved: false,
+  },
+  {
+    id: 'opp_4',
+    title: 'ACM ICPC Asia-Amritapuri Regional Championship',
+    organization: 'International Collegiate Programming Contest',
+    type: 'Competition',
+    deadline: getRelativeDate(28),
+    mode: 'On-site',
+    eligibility: 'Teams of 3 university students with coach endorsement',
+    stipendPrize: 'World Finals Qualification & ₹2,50,000 Cash Awards',
+    applyLink: 'https://icpc.global',
+    description: 'The premier algorithmic programming championship testing mathematical reasoning, data structures, and high-pressure team problem solving.',
+    isSaved: false,
+  },
+  {
+    id: 'opp_5',
+    title: 'ISRO Geo-Spatial AI Challenge',
+    organization: 'Indian Space Research Organisation',
+    type: 'Competition',
+    deadline: getRelativeDate(-3), // Expired!
+    mode: 'Remote',
+    eligibility: 'Undergraduate and postgraduate students across India',
+    stipendPrize: '₹75,000 Cash Prize & Research Citation',
+    applyLink: 'https://isro.gov.in',
+    description: 'Computer vision and multi-spectral satellite imagery segmentation competition to automatically classify terrain, wetlands, and urbanization.',
+    isSaved: false,
+  },
+];
 export const INITIAL_NOTIFICATIONS: NotificationItem[] = [];

@@ -10,24 +10,30 @@ import {
   Building,
   Bookmark,
   Calendar,
-  DollarSign,
   Search,
-  Filter,
   ExternalLink,
   Clock,
+  MapPin,
+  Award,
+  DollarSign,
+  ChevronRight,
   Sparkles,
-  CheckCircle2,
+  Info
 } from 'lucide-react';
 
 export const OpportunitiesPage: React.FC = () => {
   const { opportunities, toggleSaveOpportunity } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState<'all' | 'saved'>('all');
+  // Views: "Browse" or "Saved"
+  const [viewTab, setViewTab] = useState<'browse' | 'saved'>('browse');
+
+  // Filters & Sorting
   const [typeFilter, setTypeFilter] = useState<'All' | OpportunityType>('All');
   const [modeFilter, setModeFilter] = useState<'All' | OpportunityMode>('All');
-  const [sortOrder, setSortOrder] = useState<'soonest' | 'furthest'>('soonest');
+  const [sortOrder, setSortOrder] = useState<'closest' | 'furthest'>('closest');
   const [searchQuery, setSearchQuery] = useState('');
+
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
 
   // Sync with ?id=
@@ -39,28 +45,34 @@ export const OpportunitiesPage: React.FC = () => {
     }
   }, [idFromUrl, opportunities]);
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
 
+  // Compute days left from today
   const calculateDaysLeft = (deadlineStr: string) => {
-    const d1 = new Date(todayStr).getTime();
-    const d2 = new Date(deadlineStr).getTime();
-    return Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24));
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const deadline = new Date(deadlineStr);
+    deadline.setHours(0, 0, 0, 0);
+    const diffTime = deadline.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
   const types: ('All' | OpportunityType)[] = ['All', 'Internship', 'Hackathon', 'Competition'];
+  const modes: ('All' | OpportunityMode)[] = ['All', 'Remote', 'On-site'];
 
-  const savedCount = opportunities.filter(o => o.isSaved).length;
+  const savedCount = useMemo(() => opportunities.filter(o => o.isSaved).length, [opportunities]);
 
-  const { activeOpportunities, expiredOpportunities } = useMemo(() => {
-    // 1. Filter
+  // Filter and sort opportunities (active first, expired always forced to bottom)
+  const { displayOpportunities, activeCount, expiredCount } = useMemo(() => {
+    // 1. Filter by tab, type, mode, search
     const filtered = opportunities.filter(opp => {
-      // Saved tab
-      if (activeTab === 'saved' && !opp.isSaved) return false;
+      // Saved view
+      if (viewTab === 'saved' && !opp.isSaved) return false;
 
-      // Type
+      // Type filter
       if (typeFilter !== 'All' && opp.type !== typeFilter) return false;
 
-      // Mode
+      // Mode filter
       if (modeFilter !== 'All' && opp.mode !== modeFilter) return false;
 
       // Search query
@@ -68,9 +80,10 @@ export const OpportunitiesPage: React.FC = () => {
         const q = searchQuery.toLowerCase();
         const matchTitle = opp.title.toLowerCase().includes(q);
         const matchOrg = opp.organization.toLowerCase().includes(q);
-        const matchDesc = opp.description.toLowerCase().includes(q);
+        const matchDesc = opp.description?.toLowerCase().includes(q);
         const matchElig = opp.eligibility.toLowerCase().includes(q);
-        if (!matchTitle && !matchOrg && !matchDesc && !matchElig) return false;
+        const matchStipend = (opp.stipendPrize || opp.compensation || '').toLowerCase().includes(q);
+        if (!matchTitle && !matchOrg && !matchDesc && !matchElig && !matchStipend) return false;
       }
 
       return true;
@@ -81,27 +94,33 @@ export const OpportunitiesPage: React.FC = () => {
     const expired: Opportunity[] = [];
 
     filtered.forEach(o => {
-      if (o.deadline < todayStr) {
+      const days = calculateDaysLeft(o.deadline);
+      if (days < 0) {
         expired.push(o);
       } else {
         active.push(o);
       }
     });
 
-    // 3. Sort by deadline
-    const sorter = (a: Opportunity, b: Opportunity) => {
-      if (sortOrder === 'soonest') {
+    // 3. Sort active opportunities according to sortOrder
+    active.sort((a, b) => {
+      if (sortOrder === 'closest') {
         return a.deadline.localeCompare(b.deadline);
       } else {
         return b.deadline.localeCompare(a.deadline);
       }
+    });
+
+    // Sort expired opportunities (most recently expired first)
+    expired.sort((a, b) => b.deadline.localeCompare(a.deadline));
+
+    // Force expired opportunities to the very bottom regardless of active sort order
+    return {
+      displayOpportunities: [...active, ...expired],
+      activeCount: active.length,
+      expiredCount: expired.length,
     };
-
-    active.sort(sorter);
-    expired.sort(sorter);
-
-    return { activeOpportunities: active, expiredOpportunities: expired };
-  }, [opportunities, activeTab, typeFilter, modeFilter, sortOrder, searchQuery, todayStr]);
+  }, [opportunities, viewTab, typeFilter, modeFilter, sortOrder, searchQuery, todayStr]);
 
   const handleOpenDetail = (opp: Opportunity) => {
     setSelectedOpportunity(opp);
@@ -113,160 +132,45 @@ export const OpportunitiesPage: React.FC = () => {
     setSearchParams({});
   };
 
-  const renderOpportunityCard = (opp: Opportunity, isExpired: boolean) => {
-    const daysLeft = calculateDaysLeft(opp.deadline);
-
-    return (
-      <div
-        key={opp.id}
-        className={`bg-white border rounded-lg shadow-subtle p-4 transition-all flex flex-col justify-between ${
-          isExpired
-            ? 'opacity-65 grayscale-[30%] border-slate-200 bg-slate-50/50'
-            : 'border-border hover:border-slate-300'
-        }`}
-      >
-        <div className="space-y-2">
-          {/* Top Row: Type, Mode, Save Bookmark */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <Badge
-                variant={
-                  opp.type === 'Internship'
-                    ? 'teal'
-                    : opp.type === 'Hackathon'
-                    ? 'blue'
-                    : 'indigo'
-                }
-                size="sm"
-              >
-                {opp.type}
-              </Badge>
-              <Badge variant="slate" size="sm">
-                {opp.mode}
-              </Badge>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {/* Days left badge */}
-              {isExpired ? (
-                <Badge variant="rose" size="sm">
-                  Expired
-                </Badge>
-              ) : daysLeft === 0 ? (
-                <Badge variant="amber" size="sm" dot>
-                  Closes Today
-                </Badge>
-              ) : daysLeft <= 3 ? (
-                <Badge variant="amber" size="sm" dot>
-                  {daysLeft}d left
-                </Badge>
-              ) : (
-                <span className="font-mono text-xs text-slate-500 font-medium">
-                  {daysLeft} days left
-                </span>
-              )}
-
-              <button
-                type="button"
-                onClick={() => toggleSaveOpportunity(opp.id)}
-                className="p-1 rounded text-slate-400 hover:text-teal-700 hover:bg-slate-100 transition-colors"
-                title={opp.isSaved ? 'Remove from saved' : 'Save opportunity'}
-              >
-                <Bookmark
-                  className={`w-4 h-4 ${
-                    opp.isSaved ? 'fill-teal-700 text-teal-700' : 'text-slate-400'
-                  }`}
-                />
-              </button>
-            </div>
-          </div>
-
-          {/* Org & Role Title */}
-          <div>
-            <span className="text-xs font-semibold text-slate-500 block truncate">
-              {opp.organization}
-            </span>
-            <h3
-              onClick={() => handleOpenDetail(opp)}
-              className="text-sm font-bold text-slate-900 hover:text-teal-800 cursor-pointer leading-snug line-clamp-1 mt-0.5"
-            >
-              {opp.title}
-            </h3>
-          </div>
-
-          {/* Compensation & Eligibility */}
-          <div className="p-2.5 rounded bg-slate-50 border border-slate-100 space-y-1 text-xs">
-            <div className="flex items-center justify-between">
-              <span className="text-slate-400 text-[11px]">Stipend / Prize</span>
-              <span className="font-bold text-emerald-800 font-mono">
-                {opp.compensation}
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-600 truncate">
-              <strong className="text-slate-700">Eligibility:</strong> {opp.eligibility}
-            </p>
-          </div>
-
-          <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-            {opp.description}
-          </p>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-4 pt-3 border-t border-border flex items-center justify-between gap-2 text-xs">
-          <span className="font-mono text-[11px] text-slate-400">
-            Deadline: {opp.deadline}
-          </span>
-
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => handleOpenDetail(opp)}
-          >
-            {isExpired ? 'View Details' : 'Details & Apply'}
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <div className="space-y-5">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h2 className="text-lg font-bold text-slate-900">Opportunities Board</h2>
-          <p className="text-xs text-slate-500">
-            Curated engineering internships, competitive programming hackathons, and research fellowships.
+          <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
+            Opportunity Board
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Curated engineering internships, competitive hackathons, and national design challenges.
           </p>
         </div>
 
-        {/* Saved Items Tab Switcher */}
+        {/* View Switcher: "Browse" vs "Saved" */}
         <div className="flex items-center bg-slate-100 p-1 rounded-md border border-border text-xs self-start sm:self-auto">
           <button
-            onClick={() => setActiveTab('all')}
-            className={`px-3 py-1 rounded font-medium transition-colors ${
-              activeTab === 'all'
+            onClick={() => setViewTab('browse')}
+            className={`px-3 py-1.5 rounded transition-colors font-medium ${
+              viewTab === 'browse'
                 ? 'bg-white text-slate-900 shadow-subtle font-semibold'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            All Listings ({opportunities.length})
+            Browse ({opportunities.length})
           </button>
           <button
-            onClick={() => setActiveTab('saved')}
-            className={`px-3 py-1 rounded font-medium transition-colors flex items-center gap-1.5 ${
-              activeTab === 'saved'
+            onClick={() => setViewTab('saved')}
+            className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 font-medium ${
+              viewTab === 'saved'
                 ? 'bg-teal-700 text-white shadow-subtle font-semibold'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Bookmark className="w-3.5 h-3.5" />
-            <span>Saved Listings</span>
+            <Bookmark className={`w-3.5 h-3.5 ${viewTab === 'saved' ? 'fill-white' : ''}`} />
+            <span>Saved</span>
             {savedCount > 0 && (
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full tabular-nums ${
-                  activeTab === 'saved' ? 'bg-teal-800 text-white' : 'bg-slate-200 text-slate-700'
+                className={`text-[10px] px-1.5 py-0.2 rounded-full tabular-nums font-mono ${
+                  viewTab === 'saved' ? 'bg-teal-800 text-white' : 'bg-slate-200 text-slate-700'
                 }`}
               >
                 {savedCount}
@@ -276,21 +180,25 @@ export const OpportunitiesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-white border border-border rounded-lg p-3.5 shadow-subtle space-y-3">
-        {/* Type Filter Buttons & Sort */}
+      {/* Filter and Search Controls Bar */}
+      <div className="bg-white border border-border rounded-lg p-4 shadow-subtle space-y-3.5">
+        {/* Type & Mode & Sort Filters */}
         <div className="flex flex-wrap items-center justify-between gap-3">
+          {/* Type Filter Buttons */}
           <div className="flex items-center gap-1.5 overflow-x-auto">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mr-1">
+              Type:
+            </span>
             {types.map(t => {
               const isSelected = typeFilter === t;
               return (
                 <button
                   key={t}
                   onClick={() => setTypeFilter(t)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${
+                  className={`px-2.5 py-1 text-xs rounded transition-colors whitespace-nowrap ${
                     isSelected
-                      ? 'bg-teal-50 text-teal-900 border border-teal-200 font-semibold'
-                      : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-border'
+                      ? 'bg-teal-800 text-white font-semibold shadow-subtle'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 >
                   {t}
@@ -300,30 +208,31 @@ export const OpportunitiesPage: React.FC = () => {
           </div>
 
           {/* Mode & Sort Dropdowns */}
-          <div className="flex items-center gap-3 text-xs">
-            <div className="flex items-center gap-1">
-              <span className="text-slate-400 font-medium">Mode:</span>
+          <div className="flex items-center gap-3 text-xs flex-wrap">
+            <div className="flex items-center gap-1.5">
+              <span className="text-slate-500 font-medium">Mode:</span>
               <select
                 value={modeFilter}
                 onChange={e => setModeFilter(e.target.value as 'All' | OpportunityMode)}
-                className="text-xs px-2 py-1 bg-slate-50 border border-border rounded text-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-700"
+                className="text-xs px-2.5 py-1.5 bg-slate-50 border border-border rounded text-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-700"
               >
-                <option value="All">All Modes</option>
-                <option value="Remote">Remote</option>
-                <option value="On-site">On-site</option>
-                <option value="Hybrid">Hybrid</option>
+                {modes.map(m => (
+                  <option key={m} value={m}>
+                    {m === 'All' ? 'All Modes' : m}
+                  </option>
+                ))}
               </select>
             </div>
 
-            <div className="flex items-center gap-1">
-              <span className="text-slate-400 font-medium">Sort:</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-slate-500 font-medium">Sort:</span>
               <select
                 value={sortOrder}
-                onChange={e => setSortOrder(e.target.value as 'soonest' | 'furthest')}
-                className="text-xs px-2 py-1 bg-slate-50 border border-border rounded text-slate-700 focus:outline-none focus:ring-1 focus:ring-teal-700"
+                onChange={e => setSortOrder(e.target.value as 'closest' | 'furthest')}
+                className="text-xs px-2.5 py-1.5 bg-slate-50 border border-border rounded text-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-700"
               >
-                <option value="soonest">Deadline (Soonest first)</option>
-                <option value="furthest">Deadline (Furthest first)</option>
+                <option value="closest">Deadline: Closest First</option>
+                <option value="furthest">Deadline: Furthest First</option>
               </select>
             </div>
           </div>
@@ -336,57 +245,185 @@ export const OpportunitiesPage: React.FC = () => {
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search by role, company name, skill, or eligibility..."
-            className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50/70 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+            placeholder="Search by role title, hosting company, eligibility, or stipend keywords..."
+            className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
           />
         </div>
       </div>
 
-      {/* 1. Active Opportunities */}
-      <div className="space-y-3">
-        {activeOpportunities.length === 0 && expiredOpportunities.length === 0 ? (
-          <div className="py-16 flex flex-col items-center justify-center text-center bg-white border border-border rounded-lg p-6">
-            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
-              <Briefcase className="w-5 h-5 text-slate-400" />
-            </div>
-            <h4 className="text-sm font-semibold text-slate-900">
-              {activeTab === 'saved'
-                ? 'No saved opportunities'
-                : opportunities.length === 0
-                ? 'No opportunities posted yet'
-                : 'No matching opportunities found'}
-            </h4>
-            <p className="text-xs text-slate-500 max-w-sm mt-1 leading-relaxed">
-              {activeTab === 'saved'
-                ? 'Bookmark interesting internships, hackathons, and fellowship tracks to view them here.'
-                : opportunities.length === 0
-                ? 'Engineering internships, hackathon prizes, and competitions will appear here.'
-                : 'Try adjusting your type, mode, or search terms above.'}
-            </p>
+      {/* Opportunities List / Dense Grid */}
+      {displayOpportunities.length === 0 ? (
+        <div className="py-16 flex flex-col items-center justify-center text-center bg-white border border-border rounded-lg p-6 shadow-subtle">
+          <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+            <Briefcase className="w-5 h-5 text-slate-400" />
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {activeOpportunities.map(opp => renderOpportunityCard(opp, false))}
-          </div>
-        )}
-      </div>
+          <h4 className="text-sm font-semibold text-slate-900">
+            {viewTab === 'saved'
+              ? 'No saved opportunities'
+              : opportunities.length === 0
+              ? 'No opportunities cataloged'
+              : 'No matching opportunities found'}
+          </h4>
+          <p className="text-xs text-slate-500 max-w-sm mt-1 mb-4 leading-relaxed">
+            {viewTab === 'saved'
+              ? 'Bookmark internships, hackathons, or fellowships in the Browse tab to review them here.'
+              : opportunities.length === 0
+              ? 'Verified industry opportunities will appear here once published by the Career Development Cell.'
+              : 'Try clearing your type, mode, or keyword search filters.'}
+          </p>
+          {viewTab === 'saved' && (
+            <Button variant="secondary" size="sm" onClick={() => setViewTab('browse')}>
+              Explore Opportunities
+            </Button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {displayOpportunities.map(opp => {
+            const daysLeft = calculateDaysLeft(opp.deadline);
+            const isExpired = daysLeft < 0;
+            const applyTargetUrl = opp.applyLink || opp.applyUrl || '#';
+            const displayStipend = opp.stipendPrize || opp.compensation || 'Stipend details TBA';
 
-      {/* 2. Expired Opportunities (Muted and listed last) */}
-      {expiredOpportunities.length > 0 && (
-        <div className="space-y-3 pt-6 border-t border-border">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-slate-400" />
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Closed & Expired Opportunities ({expiredOpportunities.length})
-              </h3>
-            </div>
-            <span className="text-[11px] text-slate-400">Archived for reference</span>
-          </div>
+            return (
+              <div
+                key={opp.id}
+                className={`bg-white border rounded-lg shadow-subtle p-4 transition-all flex flex-col justify-between ${
+                  isExpired
+                    ? 'opacity-60 grayscale-[40%] bg-slate-50/70 border-slate-200'
+                    : 'border-border hover:border-slate-300'
+                }`}
+              >
+                <div className="space-y-3">
+                  {/* Top Badges & Save Action */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <Badge
+                        variant={
+                          opp.type === 'Internship'
+                            ? 'teal'
+                            : opp.type === 'Hackathon'
+                            ? 'blue'
+                            : 'indigo'
+                        }
+                        size="sm"
+                      >
+                        {opp.type}
+                      </Badge>
+                      <Badge variant="slate" size="sm">
+                        {opp.mode}
+                      </Badge>
+                    </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {expiredOpportunities.map(opp => renderOpportunityCard(opp, true))}
-          </div>
+                    <div className="flex items-center gap-2">
+                      {/* Dynamic Date Math Badge ("X days left") */}
+                      {isExpired ? (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold font-mono bg-slate-200 text-slate-600 border border-slate-300">
+                          Expired
+                        </span>
+                      ) : daysLeft === 0 ? (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold font-mono bg-amber-50 text-amber-900 border border-amber-300">
+                          Due today
+                        </span>
+                      ) : daysLeft === 1 ? (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold font-mono bg-amber-50 text-amber-900 border border-amber-300">
+                          1 day left
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-semibold font-mono bg-teal-50 text-teal-800 border border-teal-200">
+                          {daysLeft} days left
+                        </span>
+                      )}
+
+                      {/* Bookmark / Save Icon Button */}
+                      <button
+                        type="button"
+                        onClick={() => toggleSaveOpportunity(opp.id)}
+                        className={`p-1.5 rounded transition-colors ${
+                          opp.isSaved
+                            ? 'bg-teal-50 text-teal-700 hover:bg-teal-100'
+                            : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'
+                        }`}
+                        title={opp.isSaved ? 'Remove from saved' : 'Save opportunity'}
+                      >
+                        <Bookmark
+                          className={`w-4 h-4 ${
+                            opp.isSaved ? 'fill-teal-700 text-teal-700' : 'text-slate-400'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Organization & Title */}
+                  <div>
+                    <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block truncate">
+                      {opp.organization}
+                    </span>
+                    <h3
+                      onClick={() => handleOpenDetail(opp)}
+                      className={`text-sm font-bold leading-snug cursor-pointer hover:text-teal-800 line-clamp-1 mt-0.5 ${
+                        isExpired ? 'text-slate-600' : 'text-slate-900'
+                      }`}
+                    >
+                      {opp.title}
+                    </h3>
+                  </div>
+
+                  {/* Stipend / Prize & Eligibility Box */}
+                  <div className="p-2.5 rounded bg-slate-50 border border-slate-100 space-y-1 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-400 text-[11px]">Stipend / Prize</span>
+                      <span className="font-bold text-emerald-800 font-mono text-[11px]">
+                        {displayStipend}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 truncate">
+                      <strong className="text-slate-700 font-medium">Eligibility:</strong>{' '}
+                      {opp.eligibility}
+                    </p>
+                  </div>
+
+                  {opp.description && (
+                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                      {opp.description}
+                    </p>
+                  )}
+                </div>
+
+                {/* Footer with Apply in New Tab & Details */}
+                <div className="mt-4 pt-3 border-t border-border flex items-center justify-between gap-2 text-xs">
+                  <span className="font-mono text-[11px] text-slate-400">
+                    Deadline: {opp.deadline}
+                  </span>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleOpenDetail(opp)}
+                    >
+                      Details
+                    </Button>
+
+                    <a
+                      href={applyTargetUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`px-3 py-1.5 text-xs font-semibold rounded inline-flex items-center gap-1.5 transition-colors ${
+                        isExpired
+                          ? 'bg-slate-200 text-slate-500 cursor-not-allowed pointer-events-none'
+                          : 'bg-teal-700 hover:bg-teal-800 text-white shadow-subtle'
+                      }`}
+                    >
+                      <span>Apply</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -399,3 +436,5 @@ export const OpportunitiesPage: React.FC = () => {
     </div>
   );
 };
+
+export default OpportunitiesPage;

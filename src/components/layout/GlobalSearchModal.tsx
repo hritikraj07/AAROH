@@ -100,12 +100,17 @@ export const GlobalSearchModal: React.FC = () => {
 
     // 3. Opportunities
     opportunities.forEach(o => {
-      if (o.title.toLowerCase().includes(q) || o.organization.toLowerCase().includes(q) || o.description.toLowerCase().includes(q) || o.eligibility.toLowerCase().includes(q)) {
+      if (
+        o.title.toLowerCase().includes(q) ||
+        o.organization.toLowerCase().includes(q) ||
+        o.description?.toLowerCase().includes(q) ||
+        o.eligibility.toLowerCase().includes(q)
+      ) {
         results.push({
           id: o.id,
           type: 'Opportunity',
           title: o.title,
-          subtitle: `${o.organization} • ${o.compensation}`,
+          subtitle: `${o.organization} • ${o.stipendPrize || o.compensation}`,
           url: `/student/opportunities?id=${o.id}`,
           icon: <Briefcase className="w-3.5 h-3.5" />,
           tagVariant: 'emerald',
