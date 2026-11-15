@@ -81,11 +81,10 @@ export const TodayClassesCard: React.FC = () => {
                 return (
                   <div
                     key={session.id}
-                    className={`py-3.5 px-3 rounded-xl flex items-center justify-between gap-4 transition-colors ${
-                      isNext
+                    className={`py-3.5 px-3 rounded-xl flex items-center justify-between gap-4 transition-colors ${isNext
                         ? 'bg-teal-50/70 dark:bg-teal-900/30'
                         : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
-                    }`}
+                      }`}
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
@@ -123,8 +122,8 @@ export const TodayClassesCard: React.FC = () => {
                           {upcomingInfo.isHappeningNow
                             ? 'Live'
                             : upcomingInfo.isToday && upcomingInfo.minutesUntil > 0
-                            ? `In ${upcomingInfo.minutesUntil}m`
-                            : 'Next'}
+                              ? `In ${upcomingInfo.minutesUntil}m`
+                              : 'Next'}
                         </span>
                       ) : null}
                     </div>
