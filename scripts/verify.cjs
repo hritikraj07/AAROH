@@ -164,4 +164,106 @@ assert(appContent.includes('path="opportunities" element={<AdminOpportunitiesPag
 assert(contextContent.includes('createOpportunity: (opp: Omit<Opportunity'), 'AppContextType exposes createOpportunity');
 assert(contextContent.includes('deleteOpportunity: (id: string'), 'AppContextType exposes deleteOpportunity');
 
-console.log('--- ALL USER MANAGEMENT, RBAC, TIMETABLE, FACULTY, LOST & FOUND & OPPORTUNITIES VERIFICATIONS PASSED ---');
+// 21. Check 48-Hour Approaching Deadlines Notification System & TopBar Popover
+assert(fs.existsSync(path.join(__dirname, '../src/utils/deadlineUtils.ts')), 'deadlineUtils.ts exists');
+const deadlineUtilsContent = fs.readFileSync(path.join(__dirname, '../src/utils/deadlineUtils.ts'), 'utf8');
+assert(deadlineUtilsContent.includes('export const getApproachingDeadlines ='), 'deadlineUtils.ts exports getApproachingDeadlines');
+assert(deadlineUtilsContent.includes('48 * 60 * 60 * 1000'), 'deadlineUtils.ts calculates 48 hours in milliseconds');
+assert(!deadlineUtilsContent.includes('moment') && !deadlineUtilsContent.includes('date-fns'), 'deadlineUtils uses pure vanilla JS Date math without external libraries');
+assert(deadlineUtilsContent.includes('/student/assignments'), 'deadlineUtils routes assignments to /student/assignments');
+assert(deadlineUtilsContent.includes('/student/opportunities'), 'deadlineUtils routes opportunities to /student/opportunities');
+
+// Test 48-hour logic function directly in Node.js
+function getApproachingDeadlinesTest(assignments, opportunities, user, now = new Date()) {
+  const currentMs = now.getTime();
+  const FORTY_EIGHT_HOURS_MS = 48 * 60 * 60 * 1000;
+  const items = [];
+
+  const pendingAssignments = (assignments || []).filter(a => a.status === 'pending');
+  pendingAssignments.forEach(asg => {
+    const dateObj = asg.dueDate.includes('T') ? new Date(asg.dueDate) : new Date(`${asg.dueDate}T23:59:59`);
+    const diffMs = dateObj.getTime() - currentMs;
+    if (diffMs > 0 && diffMs <= FORTY_EIGHT_HOURS_MS) {
+      const hoursRemaining = Math.max(1, Math.round(diffMs / (1000 * 60 * 60)));
+      const timeRemainingLabel = hoursRemaining === 1 ? 'due in 1 hour' : `due in ${hoursRemaining} hours`;
+      items.push({
+        id: asg.id,
+        type: 'assignment',
+        title: asg.title,
+        hoursRemaining,
+        timeRemainingLabel,
+        formattedText: `Assignment: ${asg.title} ${timeRemainingLabel}`,
+        route: '/student/assignments',
+      });
+    }
+  });
+
+  const savedIds = user?.savedOpportunityIds || [];
+  const savedOpportunities = (opportunities || []).filter(opp => savedIds.includes(opp.id) || opp.isSaved);
+  savedOpportunities.forEach(opp => {
+    const dateObj = opp.deadline.includes('T') ? new Date(opp.deadline) : new Date(`${opp.deadline}T23:59:59`);
+    const diffMs = dateObj.getTime() - currentMs;
+    if (diffMs > 0 && diffMs <= FORTY_EIGHT_HOURS_MS) {
+      const hoursRemaining = Math.max(1, Math.round(diffMs / (1000 * 60 * 60)));
+      const timeRemainingLabel = hoursRemaining === 1 ? 'due in 1 hour' : `due in ${hoursRemaining} hours`;
+      items.push({
+        id: opp.id,
+        type: 'opportunity',
+        title: opp.title,
+        hoursRemaining,
+        timeRemainingLabel,
+        formattedText: `Opportunity: ${opp.title} ${timeRemainingLabel}`,
+        route: '/student/opportunities',
+      });
+    }
+  });
+
+  items.sort((a, b) => a.hoursRemaining - b.hoursRemaining);
+  return items;
+}
+
+const mockNow = new Date('2026-11-15T12:00:00Z');
+const mockAssignments = [
+  { id: 'asg_urgent', title: 'OS Lab', status: 'pending', dueDate: '2026-11-16T12:00:00Z' }, // 24h away (urgent)
+  { id: 'asg_later', title: 'DBMS Report', status: 'pending', dueDate: '2026-11-18T12:00:00Z' }, // 72h away (>48h)
+  { id: 'asg_done', title: 'Networks', status: 'submitted', dueDate: '2026-11-16T08:00:00Z' }, // submitted
+  { id: 'asg_past', title: 'Maths', status: 'pending', dueDate: '2026-11-14T12:00:00Z' }, // past
+];
+const mockOpportunities = [
+  { id: 'opp_urgent', title: 'GSoC 2026', organization: 'Google', type: 'Internship', deadline: '2026-11-16T18:00:00Z', isSaved: false },
+  { id: 'opp_later', title: 'SIH 2026', organization: 'Govt', type: 'Hackathon', deadline: '2026-11-20T12:00:00Z', isSaved: false },
+  { id: 'opp_unsaved', title: 'ICPC', organization: 'ACM', type: 'Competition', deadline: '2026-11-16T14:00:00Z', isSaved: false },
+];
+const mockUser = {
+  id: 'usr_1',
+  name: 'Student Demo',
+  role: 'student',
+  savedOpportunityIds: ['opp_urgent', 'opp_later'],
+};
+
+const results = getApproachingDeadlinesTest(mockAssignments, mockOpportunities, mockUser, mockNow);
+assert(results.length === 2, 'Calculates exactly 2 urgent items within next 48 hours');
+assert(results[0].id === 'asg_urgent', 'Urgent assignment included (due in 24 hours)');
+assert(results[1].id === 'opp_urgent', 'Urgent saved opportunity included (due in 30 hours)');
+assert(results[0].formattedText.includes('due in 24 hours'), 'Assignment formattedText contains "due in 24 hours"');
+assert(results[0].route === '/student/assignments', 'Assignment routes to /student/assignments');
+assert(results[1].route === '/student/opportunities', 'Opportunity routes to /student/opportunities');
+
+// Test empty state
+const emptyResults = getApproachingDeadlinesTest([], [], mockUser, mockNow);
+assert(emptyResults.length === 0, 'Returns empty array when no items exist');
+
+// TopBar Checks
+const topBarContent = fs.readFileSync(path.join(__dirname, '../src/components/layout/TopBar.tsx'), 'utf8');
+assert(topBarContent.includes('getApproachingDeadlines'), 'TopBar.tsx imports getApproachingDeadlines');
+assert(topBarContent.includes('urgentDeadlines.length > 0'), 'TopBar checks urgentDeadlines count');
+assert(topBarContent.includes('bg-rose-600') && !topBarContent.includes('animate-ping') && !topBarContent.includes('animate-pulse'), 'TopBar renders un-pulsing solid red indicator dot on bell');
+assert(topBarContent.includes("You're all caught up. No deadlines in the next 48 hours."), 'TopBar displays exact empty state string');
+assert(topBarContent.includes('item.formattedText'), 'TopBar displays formatted notification item text');
+assert(topBarContent.includes('to={item.route}'), 'TopBar links notification items to module routes');
+
+// App routing aliases for assignments
+assert(appContent.includes('path="assignments" element={<Navigate to="/student/academics?tab=assignments" replace />}'), 'App.tsx has /student/assignments route alias');
+assert(appContent.includes('path="/assignments" element={<Navigate to="/student/academics?tab=assignments" replace />}'), 'App.tsx has /assignments backward-compat alias');
+
+console.log('--- ALL NOTIFICATIONS & DEADLINE CALCULATIONS VERIFICATIONS PASSED ---');

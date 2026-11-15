@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Menu, Search, Bell, RotateCcw, Check, ExternalLink } from 'lucide-react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { Menu, Search, Bell, RotateCcw, ArrowRight } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { APP_CONFIG } from '../../config';
 import { Link } from 'react-router-dom';
+import { getApproachingDeadlines } from '../../utils/deadlineUtils';
 
 export interface TopBarProps {
   onOpenMobileMenu: () => void;
@@ -12,10 +13,8 @@ export interface TopBarProps {
 export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) => {
   const {
     openSearch,
-    notifications,
-    unreadNotificationsCount,
-    markNotificationRead,
-    markAllNotificationsRead,
+    assignments,
+    opportunities,
     resetDemoData,
     user,
     role,
@@ -23,6 +22,11 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
+
+  // Compute urgent approaching deadlines strictly within next 48 hours
+  const urgentDeadlines = useMemo(() => {
+    return getApproachingDeadlines(assignments, opportunities, user);
+  }, [assignments, opportunities, user]);
 
   // Close notifications on outside click
   useEffect(() => {
@@ -79,74 +83,64 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setIsNotifOpen(prev => !prev)}
-            className={`relative p-1.5 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors ${
+            className={`relative p-2 rounded text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors ${
               isNotifOpen ? 'bg-slate-100 text-slate-900' : ''
             }`}
             aria-label="Notifications"
           >
             <Bell className="w-4 h-4" />
-            {unreadNotificationsCount > 0 && (
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-teal-600 ring-2 ring-white" />
+            {urgentDeadlines.length > 0 && (
+              <span
+                data-testid="urgent-deadline-dot"
+                className="w-2 h-2 rounded-full bg-rose-600 absolute top-1.5 right-1.5 ring-2 ring-white"
+              />
             )}
           </button>
 
           {/* Notifications Dropdown */}
           {isNotifOpen && (
-            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg border border-border shadow-modal py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
-              <div className="flex items-center justify-between px-4 py-2 border-b border-border">
+            <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-lg border border-border shadow-modal py-2 z-50 animate-in fade-in zoom-in-95 duration-100 font-sans">
+              <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-slate-50/50">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold text-slate-900">Notifications</span>
-                  {unreadNotificationsCount > 0 && (
-                    <span className="text-[10px] font-medium bg-teal-50 text-teal-700 border border-teal-200 px-1.5 py-0.2 rounded-full">
-                      {unreadNotificationsCount} unread
+                  {urgentDeadlines.length > 0 && (
+                    <span className="text-[10px] font-mono font-semibold bg-rose-50 text-rose-700 border border-rose-200 px-1.5 py-0.2 rounded-full">
+                      {urgentDeadlines.length} urgent
                     </span>
                   )}
                 </div>
-                {unreadNotificationsCount > 0 && (
-                  <button
-                    onClick={markAllNotificationsRead}
-                    className="text-[11px] text-teal-700 hover:text-teal-900 font-medium hover:underline"
-                  >
-                    Mark all as read
-                  </button>
-                )}
+                <span className="text-[10px] text-slate-400 font-mono">Next 48 Hours</span>
               </div>
 
               <div className="max-h-80 overflow-y-auto divide-y divide-border">
-                {notifications.length === 0 ? (
-                  <div className="p-6 text-center text-xs text-slate-500">
-                    No notifications right now
+                {urgentDeadlines.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-slate-600 font-medium">
+                    You're all caught up. No deadlines in the next 48 hours.
                   </div>
                 ) : (
-                  notifications.map(n => (
-                    <div
-                      key={n.id}
-                      onClick={() => markNotificationRead(n.id)}
-                      className={`p-3 text-xs transition-colors hover:bg-slate-50 flex items-start justify-between gap-3 ${
-                        !n.read ? 'bg-teal-50/30' : ''
-                      }`}
+                  urgentDeadlines.map(item => (
+                    <Link
+                      key={`${item.type}-${item.id}`}
+                      to={item.route}
+                      onClick={() => setIsNotifOpen(false)}
+                      className="block p-3.5 text-xs transition-colors hover:bg-slate-50 group"
                     >
-                      <div className="flex-1">
-                        <div className="flex items-center gap-1.5">
-                          {!n.read && <span className="w-1.5 h-1.5 rounded-full bg-teal-600 shrink-0" />}
-                          <p className="font-semibold text-slate-900 leading-snug">{n.title}</p>
-                        </div>
-                        <p className="text-slate-600 mt-1 leading-relaxed">{n.message}</p>
-                        <div className="flex items-center justify-between mt-2 pt-1 text-[11px] text-slate-400">
-                          <span>{n.timestamp}</span>
-                          {n.actionUrl && (
-                            <Link
-                              to={n.actionUrl}
-                              onClick={() => setIsNotifOpen(false)}
-                              className="inline-flex items-center gap-1 text-teal-700 hover:underline font-medium"
-                            >
-                              <span>View</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </Link>
-                          )}
+                      <div className="flex items-start gap-2.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-rose-600 mt-1.5 shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-slate-900 font-medium leading-snug group-hover:text-teal-700 transition-colors">
+                            {item.formattedText}
+                          </p>
+                          <div className="flex items-center justify-between mt-1 text-[11px] text-slate-500">
+                            <span>{item.subtitle}</span>
+                            <span className="font-mono text-[10px] text-slate-400 capitalize flex items-center gap-0.5 group-hover:text-teal-700">
+                              <span>Go to {item.type === 'assignment' ? 'assignments' : 'opportunities'}</span>
+                              <ArrowRight className="w-2.5 h-2.5" />
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   ))
                 )}
               </div>

@@ -273,7 +273,32 @@ export const INITIAL_ATTENDANCE: AttendanceRecord[] = [
     total: 20,
   },
 ];
-export const INITIAL_ASSIGNMENTS: Assignment[] = [];
+const getRelativeDateTime = (hoursFromNow: number): string => {
+  const d = new Date();
+  d.setTime(d.getTime() + hoursFromNow * 60 * 60 * 1000);
+  return d.toISOString();
+};
+
+export const INITIAL_ASSIGNMENTS: Assignment[] = [
+  {
+    id: 'asg_1',
+    courseId: 'crs_cs301',
+    title: 'Process Synchronization & Semaphore Lab Report',
+    description: 'Implement dining philosophers and producer-consumer problem using POSIX semaphores and mutex locks. Submit source code and benchmark report.',
+    dueDate: getRelativeDateTime(18), // Due in 18 hours (under 48h)
+    maxMarks: 25,
+    status: 'pending',
+  },
+  {
+    id: 'asg_2',
+    courseId: 'crs_cs303',
+    title: 'B+ Tree Indexing & Query Optimization Worksheet',
+    description: 'Solve theoretical problems on multi-level indexing, calculate disk access costs, and write query execution trees.',
+    dueDate: getRelativeDateTime(72), // Due in 72 hours (outside 48h)
+    maxMarks: 30,
+    status: 'pending',
+  },
+];
 export const INITIAL_NOTICES: Notice[] = [];
 export const INITIAL_EVENTS: CampusEvent[] = [];
 const getRelativeDate = (offsetDays: number): string => {
@@ -289,7 +314,7 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
     title: 'Google Summer of Code (GSoC) 2026',
     organization: 'Google Open Source',
     type: 'Internship',
-    deadline: getRelativeDate(2),
+    deadline: getRelativeDate(1), // Due tomorrow (well within 48h window)
     mode: 'Remote',
     eligibility: 'All enrolled undergraduate students in STEM disciplines',
     stipendPrize: '₹45,000 / month ($1,500 – $3,000 total stipend)',
