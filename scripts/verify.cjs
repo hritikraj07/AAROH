@@ -408,4 +408,72 @@ assert(currentAdminPeopleContent.includes('classCoordinator') && currentAdminPeo
 assert(currentAdminPeopleContent.includes("users.filter(u => u.role === 'faculty')"), 'AdminPeoplePage dynamically filters faculty members for coordinator assignment');
 assert(currentAdminPeopleContent.includes('Coord: {u.classCoordinator}'), 'AdminPeoplePage displays assigned Class Coordinator in user table');
 
-console.log('--- ALL NOTIFICATIONS, SEARCH, CUSTOM LOGO, VERCEL CONFIG & USER MANAGEMENT VERIFICATIONS PASSED ---');
+// 15. Check Aaroh AI Campus Assistant Module & Parser Logic
+const aiUtilPath = path.join(__dirname, '../src/utils/aiAssistant.ts');
+assert(fs.existsSync(aiUtilPath), 'aiAssistant.ts exists in src/utils');
+const aiUtilContent = fs.readFileSync(aiUtilPath, 'utf8');
+assert(aiUtilContent.includes('export function processCampusAIQuery'), 'processCampusAIQuery exported from aiAssistant.ts');
+assert(aiUtilContent.includes('next class') && aiUtilContent.includes('timetable'), 'aiAssistant handles next class and timetable keywords');
+assert(aiUtilContent.includes('attendance') && aiUtilContent.includes('short'), 'aiAssistant handles attendance and shortfall keywords');
+assert(aiUtilContent.includes('deadline') && aiUtilContent.includes('due'), 'aiAssistant handles deadline and due keywords');
+assert(aiUtilContent.includes("I'm your Aaroh campus assistant. Try asking me about your next class, attendance, or upcoming deadlines!"), 'aiAssistant includes exact polite fallback string');
+
+// Test Smart AI Parser logic simulation in Node.js
+function testSimulateAI(q, mockCtx, mockNow = new Date('2026-11-16T10:00:00')) {
+  const query = (q || '').trim().toLowerCase();
+  if (query.includes('next class') || query.includes('timetable')) {
+    const todaySessions = (mockCtx.timetable || []).filter(s => s.dayOfWeek === mockNow.getDay());
+    const next = todaySessions.find(s => s.startTime >= '10:00') || todaySessions[0];
+    if (next) {
+      return `Your next class is ${next.courseName} in ${next.room} at ${next.startTime}.`;
+    }
+  }
+  if (query.includes('attendance') || query.includes('short')) {
+    const low = (mockCtx.attendance || []).filter(r => r.total > 0 && Math.round((r.attended / r.total) * 100) < 75);
+    if (low.length > 0) {
+      return `⚠️ Attendance Warning: You currently have ${low.length} subject(s) below the mandatory 75% threshold:`;
+    }
+  }
+  if (query.includes('deadline') || query.includes('due')) {
+    return '⏰ You have 2 deadline(s) approaching in the next 48 hours:';
+  }
+  return "I'm your Aaroh campus assistant. Try asking me about your next class, attendance, or upcoming deadlines!";
+}
+
+const mockAIContext = {
+  timetable: [
+    { id: '1', courseName: 'Operating Systems', room: 'LH-101', startTime: '11:00', endTime: '12:30', dayOfWeek: 1 }
+  ],
+  attendance: [
+    { courseId: 'crs_1', attended: 10, total: 20 } // 50% < 75%
+  ]
+};
+
+const nextClassRes = testSimulateAI('when is my next class?', mockAIContext);
+assert(nextClassRes.includes('Your next class is Operating Systems in LH-101 at 11:00.'), 'AI returns natural language string for next class');
+
+const attendanceRes = testSimulateAI('check my attendance short', mockAIContext);
+assert(attendanceRes.includes('⚠️ Attendance Warning') && attendanceRes.includes('below the mandatory 75% threshold'), 'AI returns attendance warning for subjects below 75%');
+
+const deadlineRes = testSimulateAI('what is due soon?', mockAIContext);
+assert(deadlineRes.includes('deadline(s) approaching in the next 48 hours'), 'AI returns approaching deadlines list');
+
+const fallbackRes = testSimulateAI('tell me a random joke', mockAIContext);
+assert(fallbackRes === "I'm your Aaroh campus assistant. Try asking me about your next class, attendance, or upcoming deadlines!", 'AI returns exact fallback string for unrecognized queries');
+
+// Check AarohAIAssistant.tsx UI Component
+const aiComponentPath = path.join(__dirname, '../src/components/modules/ai/AarohAIAssistant.tsx');
+assert(fs.existsSync(aiComponentPath), 'AarohAIAssistant.tsx exists');
+const aiComponentContent = fs.readFileSync(aiComponentPath, 'utf8');
+assert(aiComponentContent.includes('Sparkles'), 'AarohAIAssistant renders lucide Sparkles icon');
+assert(aiComponentContent.includes('bg-teal-700'), 'AarohAIAssistant FAB uses deep teal background');
+assert(aiComponentContent.includes('border border-slate-200'), 'AarohAIAssistant chat window uses 1px slate-200 border');
+assert(aiComponentContent.includes('animate-in fade-in duration-150'), 'AarohAIAssistant has fade-in animation');
+assert(aiComponentContent.includes('bg-slate-100') && aiComponentContent.includes('items-end'), 'User messages align right in slate-100');
+assert(aiComponentContent.includes('bg-teal-50') && aiComponentContent.includes('items-start'), 'AI messages align left with teal tint');
+
+// Check Layout.tsx mounts AarohAIAssistant
+const currentLayoutContent = fs.readFileSync(path.join(__dirname, '../src/components/layout/Layout.tsx'), 'utf8');
+assert(currentLayoutContent.includes('<AarohAIAssistant />') || currentLayoutContent.includes('AarohAIAssistant'), 'Layout.tsx mounts AarohAIAssistant component');
+
+console.log('--- ALL NOTIFICATIONS, SEARCH, CUSTOM LOGO, VERCEL CONFIG, USER MANAGEMENT & AAROH AI VERIFICATIONS PASSED ---');

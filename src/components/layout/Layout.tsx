@@ -6,6 +6,7 @@ import { MobileDrawer } from './MobileDrawer';
 import { GlobalSearchModal } from './GlobalSearchModal';
 import { SettingsModal } from './SettingsModal';
 import { ToastContainer } from '../ui/ToastContainer';
+import { AarohAIAssistant } from '../modules/ai/AarohAIAssistant';
 
 export const Layout: React.FC = () => {
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
@@ -102,10 +103,11 @@ export const Layout: React.FC = () => {
         </main>
       </div>
 
-      {/* Global Modals & Notifications */}
+      {/* Global Modals, Floating AI Assistant & Notifications */}
       <GlobalSearchModal />
       <SettingsModal />
       <ToastContainer />
+      <AarohAIAssistant />
     </div>
   );
 };
