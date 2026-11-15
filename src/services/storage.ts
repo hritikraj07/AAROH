@@ -537,7 +537,9 @@ export const StorageService = {
 
   // Lost & Found
   getLostFoundItems(): LostFoundItem[] {
-    return getStored<LostFoundItem[]>(STORAGE_KEYS.LOST_FOUND, INITIAL_LOST_FOUND);
+    const list = getStored<LostFoundItem[]>(STORAGE_KEYS.LOST_FOUND, []);
+    if (list && list.length > 0) return list;
+    return getStored<LostFoundItem[]>('lost_found_items', INITIAL_LOST_FOUND);
   },
 
   createLostFoundItem(item: Omit<LostFoundItem, 'id' | 'status' | 'contactRequestsCount'>): LostFoundItem {
@@ -550,6 +552,7 @@ export const StorageService = {
     };
     list.unshift(newItem);
     setStored(STORAGE_KEYS.LOST_FOUND, list);
+    setStored('lost_found_items', list);
     return newItem;
   },
 
@@ -567,6 +570,7 @@ export const StorageService = {
     };
     list[idx] = updated;
     setStored(STORAGE_KEYS.LOST_FOUND, list);
+    setStored('lost_found_items', list);
     return updated;
   },
 
@@ -578,6 +582,7 @@ export const StorageService = {
     list[idx].contactRequestsCount = (list[idx].contactRequestsCount || 0) + 1;
     list[idx].hasUserRequestedContact = true;
     setStored(STORAGE_KEYS.LOST_FOUND, list);
+    setStored('lost_found_items', list);
     return { success: true, count: list[idx].contactRequestsCount };
   },
 

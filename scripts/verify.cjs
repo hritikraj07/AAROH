@@ -111,12 +111,21 @@ assert(lostFoundContent.includes('Report Item'), 'LostFoundPage includes Report 
 assert(lostFoundContent.includes('typeFilter') && lostFoundContent.includes('statusFilter'), 'LostFoundPage includes type and status filters');
 assert(lostFoundContent.includes('imageUrl'), 'LostFoundPage renders photo preview for items with images');
 
-// 16. Check Offline Base64 Photo Upload & 1MB Storage Protection
+// 16. Check Offline Base64 Photo Upload & HTML5 Canvas Compression
+assert(fs.existsSync(path.join(__dirname, '../src/utils/imageUtils.ts')), 'imageUtils.ts exists');
+const imageUtilsContent = fs.readFileSync(path.join(__dirname, '../src/utils/imageUtils.ts'), 'utf8');
+assert(imageUtilsContent.includes('export const compressImage ='), 'imageUtils.ts exports compressImage function');
+assert(imageUtilsContent.includes('document.createElement(\'canvas\')') || imageUtilsContent.includes('document.createElement("canvas")'), 'compressImage uses HTML5 Canvas');
+assert(imageUtilsContent.includes('canvas.toDataURL(\'image/jpeg\'') || imageUtilsContent.includes('canvas.toDataURL("image/jpeg"'), 'compressImage outputs JPEG data URL');
+
 assert(fs.existsSync(path.join(__dirname, '../src/components/modules/lostfound/ReportLostFoundModal.tsx')), 'ReportLostFoundModal.tsx exists');
 const reportModalContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/lostfound/ReportLostFoundModal.tsx'), 'utf8');
-assert(reportModalContent.includes('FileReader') && reportModalContent.includes('readAsDataURL'), 'ReportLostFoundModal converts photo to Base64 using FileReader');
-assert(reportModalContent.includes('MAX_FILE_SIZE') || reportModalContent.includes('1 * 1024 * 1024'), 'ReportLostFoundModal enforces 1MB storage protection limit');
-assert(reportModalContent.includes('showToast') && (reportModalContent.includes('1MB') || reportModalContent.includes('limit')), 'ReportLostFoundModal alerts user if file exceeds 1MB');
+assert(reportModalContent.includes('compressImage'), 'ReportLostFoundModal imports and calls compressImage');
+assert(reportModalContent.includes('Math.round((compressedDataUrl.length * 3) / 4) / 1024') || reportModalContent.includes('(compressedDataUrl.length * 3) / 4'), 'ReportLostFoundModal calculates Base64 size in KB');
+assert(reportModalContent.includes('500'), 'ReportLostFoundModal enforces 500KB storage protection limit');
+assert(reportModalContent.includes('type="radio"') && reportModalContent.includes('value="lost"') && reportModalContent.includes('value="found"'), 'ReportLostFoundModal has radio buttons for Lost/Found type');
+assert(reportModalContent.includes('h-48') && reportModalContent.includes('object-cover'), 'ReportLostFoundModal renders cropped preview with h-48 and object-cover');
+assert(storageContent.includes('lost_found_items'), 'StorageService syncs with lost_found_items array in localStorage');
 
 // 17. Check Privacy-Protected Contact Exchange & Poster Resolution
 assert(fs.existsSync(path.join(__dirname, '../src/components/modules/lostfound/LostFoundDetailModal.tsx')), 'LostFoundDetailModal.tsx exists');
