@@ -19,10 +19,19 @@ import {
   CheckCircle2,
   AlertCircle
 } from 'lucide-react';
+import { EarlyWarningSystemCard } from '../../components/modules/faculty/EarlyWarningSystemCard';
 
 export const FacultyDashboardPage: React.FC = () => {
-  const { user, courses, timetable, assignments, notices } = useApp();
+  const { user, users, courses, timetable, assignments, notices, attendance, showToast } = useApp();
   const navigate = useNavigate();
+
+  const handleTriggerIntervention = (studentName: string) => {
+    showToast({
+      type: 'success',
+      title: `Automated check-in email sent to ${studentName} and parent portal.`,
+      message: 'Class coordinator intervention logged and dispatched.',
+    });
+  };
 
   const courseMap = new Map(courses.map(c => [c.id, c]));
 
@@ -124,27 +133,36 @@ export const FacultyDashboardPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Class Coordinator Early Warning System: Intervention Required Panel */}
+      <EarlyWarningSystemCard
+        currentUser={user}
+        users={users}
+        attendance={attendance}
+        assignments={assignments}
+        onTriggerIntervention={handleTriggerIntervention}
+      />
+
       {/* Quick Actions Row */}
-      <div className="bg-white border border-slate-200 rounded-lg p-4">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-200 mb-3">
-          <span className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
+      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-4 transition-colors">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A] mb-3">
+          <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
             Quick Faculty Actions
           </span>
-          <span className="text-[11px] text-slate-400 font-mono">Faculty Task Suite</span>
+          <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">Faculty Task Suite</span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <button
             onClick={() => navigate('/faculty/attendance')}
-            className="p-3 rounded-md border border-slate-200 bg-slate-50/60 hover:bg-teal-50/50 hover:border-teal-300 text-left transition-all group flex flex-col justify-between"
+            className="p-3 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/60 dark:bg-[#0E0E11] hover:bg-teal-50/50 dark:hover:bg-[#27272A] hover:border-teal-300 dark:hover:border-teal-700 text-left transition-all group flex flex-col justify-between cursor-pointer"
           >
-            <div className="w-8 h-8 rounded bg-teal-100/80 text-teal-800 flex items-center justify-center mb-2 group-hover:bg-teal-700 group-hover:text-white transition-colors">
+            <div className="w-8 h-8 rounded bg-teal-100/80 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 flex items-center justify-center mb-2 group-hover:bg-teal-700 group-hover:text-white transition-colors">
               <ClipboardList className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-semibold text-slate-900 group-hover:text-teal-900">
+              <div className="text-xs font-semibold text-slate-900 dark:text-slate-100 group-hover:text-teal-900 dark:group-hover:text-teal-400">
                 Mark Attendance
               </div>
-              <div className="text-[11px] text-slate-500 mt-0.5">
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Take class roll call
               </div>
             </div>
@@ -152,16 +170,16 @@ export const FacultyDashboardPage: React.FC = () => {
 
           <button
             onClick={() => navigate('/faculty/notices')}
-            className="p-3 rounded-md border border-slate-200 bg-slate-50/60 hover:bg-teal-50/50 hover:border-teal-300 text-left transition-all group flex flex-col justify-between"
+            className="p-3 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/60 dark:bg-[#0E0E11] hover:bg-teal-50/50 dark:hover:bg-[#27272A] hover:border-teal-300 dark:hover:border-teal-700 text-left transition-all group flex flex-col justify-between cursor-pointer"
           >
-            <div className="w-8 h-8 rounded bg-blue-100/80 text-blue-800 flex items-center justify-center mb-2 group-hover:bg-blue-700 group-hover:text-white transition-colors">
+            <div className="w-8 h-8 rounded bg-blue-100/80 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 flex items-center justify-center mb-2 group-hover:bg-blue-700 group-hover:text-white transition-colors">
               <Bell className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-semibold text-slate-900 group-hover:text-teal-900">
+              <div className="text-xs font-semibold text-slate-900 dark:text-slate-100 group-hover:text-teal-900 dark:group-hover:text-teal-400">
                 Post Department Notice
               </div>
-              <div className="text-[11px] text-slate-500 mt-0.5">
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Issue academic memo
               </div>
             </div>
@@ -169,16 +187,16 @@ export const FacultyDashboardPage: React.FC = () => {
 
           <button
             onClick={() => navigate('/faculty/assignments')}
-            className="p-3 rounded-md border border-slate-200 bg-slate-50/60 hover:bg-teal-50/50 hover:border-teal-300 text-left transition-all group flex flex-col justify-between"
+            className="p-3 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/60 dark:bg-[#0E0E11] hover:bg-teal-50/50 dark:hover:bg-[#27272A] hover:border-teal-300 dark:hover:border-teal-700 text-left transition-all group flex flex-col justify-between cursor-pointer"
           >
-            <div className="w-8 h-8 rounded bg-amber-100/80 text-amber-800 flex items-center justify-center mb-2 group-hover:bg-amber-700 group-hover:text-white transition-colors">
+            <div className="w-8 h-8 rounded bg-amber-100/80 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 flex items-center justify-center mb-2 group-hover:bg-amber-700 group-hover:text-white transition-colors">
               <FileText className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-semibold text-slate-900 group-hover:text-teal-900">
+              <div className="text-xs font-semibold text-slate-900 dark:text-slate-100 group-hover:text-teal-900 dark:group-hover:text-teal-400">
                 Manage Coursework
               </div>
-              <div className="text-[11px] text-slate-500 mt-0.5">
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Assignments & submissions
               </div>
             </div>
@@ -186,16 +204,16 @@ export const FacultyDashboardPage: React.FC = () => {
 
           <button
             onClick={() => navigate('/faculty/classes')}
-            className="p-3 rounded-md border border-slate-200 bg-slate-50/60 hover:bg-teal-50/50 hover:border-teal-300 text-left transition-all group flex flex-col justify-between"
+            className="p-3 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/60 dark:bg-[#0E0E11] hover:bg-teal-50/50 dark:hover:bg-[#27272A] hover:border-teal-300 dark:hover:border-teal-700 text-left transition-all group flex flex-col justify-between cursor-pointer"
           >
-            <div className="w-8 h-8 rounded bg-emerald-100/80 text-emerald-800 flex items-center justify-center mb-2 group-hover:bg-emerald-700 group-hover:text-white transition-colors">
+            <div className="w-8 h-8 rounded bg-emerald-100/80 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 flex items-center justify-center mb-2 group-hover:bg-emerald-700 group-hover:text-white transition-colors">
               <BookOpen className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-semibold text-slate-900 group-hover:text-teal-900">
+              <div className="text-xs font-semibold text-slate-900 dark:text-slate-100 group-hover:text-teal-900 dark:group-hover:text-teal-400">
                 Assigned Courses
               </div>
-              <div className="text-[11px] text-slate-500 mt-0.5">
+              <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                 Curriculum & syllabus
               </div>
             </div>
@@ -205,63 +223,63 @@ export const FacultyDashboardPage: React.FC = () => {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 transition-colors">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Assigned Classes</span>
-            <BookOpen className="w-4 h-4 text-teal-700" />
+            <BookOpen className="w-4 h-4 text-teal-700 dark:text-teal-400" />
           </div>
-          <div className="text-2xl font-bold tracking-tight text-slate-900 font-mono">
+          <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
             {effectiveTimetable.length}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Weekly teaching sessions</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Weekly teaching sessions</p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 transition-colors">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Today's Lectures</span>
-            <Clock className="w-4 h-4 text-blue-700" />
+            <Clock className="w-4 h-4 text-blue-700 dark:text-blue-400" />
           </div>
-          <div className="text-2xl font-bold tracking-tight text-slate-900 font-mono">
+          <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
             {todayClasses.length}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">{todayName} schedule</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">{todayName} schedule</p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 transition-colors">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Active Coursework</span>
-            <FileText className="w-4 h-4 text-amber-700" />
+            <FileText className="w-4 h-4 text-amber-700 dark:text-amber-400" />
           </div>
-          <div className="text-2xl font-bold tracking-tight text-slate-900 font-mono">
+          <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
             {assignments.length}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Assignments assigned</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Assignments assigned</p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 transition-colors">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Department Circulars</span>
-            <Bell className="w-4 h-4 text-emerald-700" />
+            <Bell className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
           </div>
-          <div className="text-2xl font-bold tracking-tight text-slate-900 font-mono">
+          <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
             {departmentNotices.length}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Published notices</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Published notices</p>
         </div>
       </div>
 
       {/* Main Two-Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Classes Today Widget */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 space-y-4 transition-colors">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A]">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 {isShowingFutureDay
                   ? `${dayNames[nextTeachingDayNum]}'s Lectures (Next Scheduled Day)`
                   : "Today's Teaching Schedule"}
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {isShowingFutureDay
                   ? `No remaining classes today (${todayName}). Displaying upcoming session roster.`
                   : `${todayClasses.length} scheduled lecture sessions for ${todayName}`}
@@ -269,7 +287,7 @@ export const FacultyDashboardPage: React.FC = () => {
             </div>
             <Link
               to="/faculty/attendance"
-              className="text-xs font-medium text-teal-700 hover:text-teal-900 flex items-center gap-1 hover:underline"
+              className="text-xs font-medium text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 flex items-center gap-1 hover:underline"
             >
               <span>Roll Call Page</span>
               <ArrowRight className="w-3 h-3" />
@@ -277,10 +295,10 @@ export const FacultyDashboardPage: React.FC = () => {
           </div>
 
           {(isShowingFutureDay ? nextTeachingDayClasses : todayClasses).length === 0 ? (
-            <div className="py-10 text-center border border-dashed border-slate-200 rounded-md bg-slate-50/50">
-              <Calendar className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-              <p className="text-xs font-semibold text-slate-700">No lectures scheduled</p>
-              <p className="text-[11px] text-slate-400 mt-1 max-w-xs mx-auto">
+            <div className="py-10 text-center border border-dashed border-slate-200 dark:border-[#27272A] rounded-xl bg-slate-50/50 dark:bg-[#0E0E11]">
+              <Calendar className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+              <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">No lectures scheduled</p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
                 No active timetable sessions allocated to your faculty account for this period.
               </p>
             </div>
@@ -294,14 +312,14 @@ export const FacultyDashboardPage: React.FC = () => {
                 return (
                   <div
                     key={cls.id}
-                    className="p-3.5 rounded-lg border border-slate-200 bg-slate-50/50 hover:bg-white hover:border-teal-700 transition-all duration-150 ease-in-out flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    className="p-3.5 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/50 dark:bg-[#0E0E11] hover:bg-white dark:hover:bg-[#18181B] hover:border-teal-700 dark:hover:border-teal-500 transition-all duration-150 ease-in-out flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                   >
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-mono text-xs font-bold text-teal-900 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                        <span className="font-mono text-xs font-bold text-teal-900 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 px-2 py-0.5 rounded border border-teal-200 dark:border-teal-800">
                           {code}
                         </span>
-                        <span className="text-xs font-semibold text-slate-900">
+                        <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
                           {name}
                         </span>
                         <Badge variant="slate" size="sm">
@@ -309,7 +327,7 @@ export const FacultyDashboardPage: React.FC = () => {
                         </Badge>
                       </div>
 
-                      <div className="flex items-center gap-3 text-[11px] text-slate-500 font-mono flex-wrap">
+                      <div className="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400 font-mono flex-wrap">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3 text-slate-400" />
                           {cls.startTime} – {cls.endTime}
@@ -322,7 +340,7 @@ export const FacultyDashboardPage: React.FC = () => {
                         {(cls.program || cls.semester) && (
                           <>
                             <span>•</span>
-                            <span className="text-teal-800 font-sans font-medium">
+                            <span className="text-teal-800 dark:text-teal-400 font-sans font-medium">
                               {cls.program || 'All Programs'} {cls.semester ? `(Sem ${cls.semester})` : ''}
                             </span>
                           </>
@@ -345,23 +363,23 @@ export const FacultyDashboardPage: React.FC = () => {
           )}
 
           {isShowingFutureDay && (
-            <div className="pt-2 text-[11px] text-slate-500 flex items-center gap-1.5 border-t border-slate-200">
-              <CheckCircle2 className="w-3.5 h-3.5 text-teal-700" />
+            <div className="pt-2 text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 border-t border-slate-200 dark:border-[#27272A]">
+              <CheckCircle2 className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
               <span>Today's instruction period concluded. Showing upcoming lecture slots.</span>
             </div>
           )}
         </div>
 
         {/* Right: Department Circulars & Coursework Submissions */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 space-y-4 transition-colors">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A]">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Department Circulars & Notices</h3>
-              <p className="text-xs text-slate-500">Official updates issued to students</p>
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Department Circulars & Notices</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Official updates issued to students</p>
             </div>
             <Link
               to="/faculty/notices"
-              className="text-xs font-medium text-teal-700 hover:text-teal-900 flex items-center gap-1 hover:underline"
+              className="text-xs font-medium text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 flex items-center gap-1 hover:underline"
             >
               <span>Manage Circulars</span>
               <ArrowRight className="w-3 h-3" />
@@ -369,10 +387,10 @@ export const FacultyDashboardPage: React.FC = () => {
           </div>
 
           {departmentNotices.length === 0 ? (
-            <div className="py-10 text-center border border-dashed border-slate-200 rounded-md bg-slate-50/50">
-              <Bell className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-              <p className="text-xs font-semibold text-slate-700">No department circulars posted</p>
-              <p className="text-[11px] text-slate-400 mt-1 max-w-xs mx-auto">
+            <div className="py-10 text-center border border-dashed border-slate-200 dark:border-[#27272A] rounded-xl bg-slate-50/50 dark:bg-[#0E0E11]">
+              <Bell className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
+              <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">No department circulars posted</p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 max-w-xs mx-auto">
                 Issue memos, lab schedule changes, or exam announcements to enrolled students.
               </p>
               <Button
@@ -390,23 +408,23 @@ export const FacultyDashboardPage: React.FC = () => {
               {departmentNotices.slice(0, 4).map(notice => (
                 <div
                   key={notice.id}
-                  className="p-3 rounded-md border border-slate-200 bg-slate-50/40 hover:bg-slate-50 transition-colors flex items-start justify-between gap-3 text-xs"
+                  className="p-3 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/40 dark:bg-[#0E0E11] hover:bg-slate-50 dark:hover:bg-[#27272A]/50 transition-colors flex items-start justify-between gap-3 text-xs"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-slate-900 line-clamp-1">
+                      <span className="font-semibold text-slate-900 dark:text-slate-100 line-clamp-1">
                         {notice.title}
                       </span>
                       {notice.isPinned && (
-                        <span className="text-[10px] bg-teal-50 text-teal-800 border border-teal-200 px-1.5 py-0.2 rounded font-semibold">
+                        <span className="text-[10px] bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 px-1.5 py-0.2 rounded font-semibold">
                           Pinned
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] text-slate-500 line-clamp-1">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
                       {notice.content}
                     </p>
-                    <div className="flex items-center gap-3 text-[10px] text-slate-400 font-mono">
+                    <div className="flex items-center gap-3 text-[10px] text-slate-400 dark:text-slate-500 font-mono">
                       <span>{notice.category}</span>
                       <span>•</span>
                       <span>{notice.publishedDate}</span>
@@ -417,7 +435,7 @@ export const FacultyDashboardPage: React.FC = () => {
 
                   <Link
                     to="/faculty/notices"
-                    className="text-xs font-medium text-teal-700 hover:text-teal-900 shrink-0 mt-0.5"
+                    className="text-xs font-medium text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 shrink-0 mt-0.5"
                   >
                     View
                   </Link>

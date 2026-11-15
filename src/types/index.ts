@@ -59,7 +59,7 @@ export interface AttendanceRecord {
   total: number;
 }
 
-export type AssignmentStatus = 'pending' | 'submitted' | 'overdue' | 'graded';
+export type AssignmentStatus = 'pending' | 'submitted' | 'overdue' | 'graded' | 'failed';
 export type AssignmentType = 'standard' | 'coding';
 export type LabStatus = 'locked' | 'active' | 'closed';
 
@@ -79,6 +79,8 @@ export interface Assignment {
   status: AssignmentStatus;
   submittedAt?: string;
   submissionNote?: string;
+  studentId?: string;
+  studentEmail?: string;
 
   // Live Lab / Coding Assignment additions
   type?: 'standard' | 'coding';

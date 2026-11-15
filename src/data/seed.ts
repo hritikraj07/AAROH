@@ -136,11 +136,28 @@ export const INITIAL_USERS: User[] = [
     savedOpportunityIds: [],
   },
   {
+    id: 'usr_std_rohan',
+    name: 'Rohan Verma',
+    email: 'rohan.verma@aaroh.edu.in',
+    role: 'student',
+    designation: 'Undergraduate Scholar',
+    rollNumber: '22CS104',
+    program: 'B.Tech CSE',
+    department: 'Computer Science & Engineering',
+    semester: 5,
+    section: 'Section A',
+    academicYear: APP_CONFIG.academicSession,
+    avatarInitials: 'RV',
+    attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
+    classCoordinator: 'Prof. K. Ramanujam',
+    savedOpportunityIds: [],
+  },
+  {
     id: 'usr_fac_demo',
     name: 'Prof. K. Ramanujam',
     email: 'prof.raman@faculty.aaroh.edu.in',
     role: 'faculty',
-    designation: 'Assistant Professor',
+    designation: 'Assistant Professor & Class Coordinator',
     department: 'Department of Computer Science & Engineering',
     avatarInitials: 'KR',
   },
@@ -149,8 +166,63 @@ export const INITIAL_USERS: User[] = [
 // Clean initial states: all pre-seeded mock entities wiped clean for production foundation
 export const INITIAL_COURSES: Course[] = [];
 export const INITIAL_TIMETABLE: ClassSession[] = [];
-export const INITIAL_ATTENDANCE: AttendanceRecord[] = [];
-export const INITIAL_ASSIGNMENTS: Assignment[] = [];
+export const INITIAL_ATTENDANCE: AttendanceRecord[] = [
+  {
+    courseId: 'cs_core',
+    studentId: 'usr_std_demo',
+    studentEmail: 'aarav.sharma@aaroh.edu.in',
+    attended: 22,
+    total: 25,
+  },
+  {
+    courseId: 'cs_core',
+    studentId: 'usr_std_priya',
+    studentEmail: 'priya.patel@aaroh.edu.in',
+    attended: 11,
+    total: 16,
+  },
+  {
+    courseId: 'cs_core',
+    studentId: 'usr_std_rohan',
+    studentEmail: 'rohan.verma@aaroh.edu.in',
+    attended: 20,
+    total: 24,
+  },
+];
+export const INITIAL_ASSIGNMENTS: Assignment[] = [
+  {
+    id: 'asg_lab_1',
+    courseId: 'cs_core',
+    title: 'Automated Coding Lab 1: Memory Allocation',
+    description: 'Implement memory allocation system calls in C/C++.',
+    dueDate: '2026-11-20',
+    maxMarks: 100,
+    status: 'submitted',
+    type: 'coding',
+    language: 'C++',
+    starterCode: '// Memory allocator starter code',
+    testResultsSummary: '❌ Test 1 Failed: Segfault in custom allocator | ❌ Test 2 Failed',
+    submittedAt: '2026-11-10T14:30:00.000Z',
+    studentId: 'usr_std_rohan',
+    studentEmail: 'rohan.verma@aaroh.edu.in',
+  },
+  {
+    id: 'asg_lab_2',
+    courseId: 'cs_core',
+    title: 'Automated Coding Lab 2: Process Scheduling',
+    description: 'Simulate Round Robin and Priority preemptive task schedulers.',
+    dueDate: '2026-11-22',
+    maxMarks: 100,
+    status: 'submitted',
+    type: 'coding',
+    language: 'Python',
+    starterCode: '# Process scheduler starter',
+    testResultsSummary: '❌ Test 1 Failed: Deadlock in worker pool | ❌ Test 2 Failed',
+    submittedAt: '2026-11-14T16:00:00.000Z',
+    studentId: 'usr_std_rohan',
+    studentEmail: 'rohan.verma@aaroh.edu.in',
+  },
+];
 export const INITIAL_NOTICES: Notice[] = [];
 export const INITIAL_EVENTS: CampusEvent[] = [];
 export const INITIAL_LOST_FOUND: LostFoundItem[] = [];

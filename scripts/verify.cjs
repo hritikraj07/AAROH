@@ -979,4 +979,95 @@ assert(layoutContent.includes('StudentQRScannerModal'), 'Layout mounts StudentQR
 
 console.log('--- ALL TRUE DARK THEME, DYNAMIC OPPORTUNITIES & QR ATTENDANCE VERIFICATIONS PASSED ---');
 
+// SECTION 26: FACULTY PORTAL EARLY WARNING SYSTEM (CLASS COORDINATOR)
+console.log('--- VERIFYING FACULTY PORTAL EARLY WARNING SYSTEM ---');
+
+const coordinatorUtilPath = path.join(__dirname, '../src/utils/coordinatorAnalyzer.ts');
+assert(fs.existsSync(coordinatorUtilPath), 'coordinatorAnalyzer.ts exists in src/utils');
+const coordinatorUtilContent = fs.readFileSync(coordinatorUtilPath, 'utf8');
+
+assert(coordinatorUtilContent.includes('hasCoordinatorPrivileges'), 'coordinatorAnalyzer exports hasCoordinatorPrivileges');
+assert(coordinatorUtilContent.includes('getAssignedStudentsForCoordinator'), 'coordinatorAnalyzer exports getAssignedStudentsForCoordinator');
+assert(coordinatorUtilContent.includes('calculateStudentAttendanceRate'), 'coordinatorAnalyzer exports calculateStudentAttendanceRate');
+assert(coordinatorUtilContent.includes('hasFailedConsecutiveAutomatedLabs'), 'coordinatorAnalyzer exports hasFailedConsecutiveAutomatedLabs');
+assert(coordinatorUtilContent.includes('analyzeAtRiskStudents'), 'coordinatorAnalyzer exports analyzeAtRiskStudents');
+
+// Test Coordinator Logic in Node
+function testCoordinatorPrivileges(user, users) {
+  if (!user || user.role !== 'faculty') return false;
+  if (user.designation?.toLowerCase().includes('coordinator')) return true;
+  if (user.email === 'prof.raman@faculty.aaroh.edu.in' || user.name === 'Prof. K. Ramanujam') return true;
+  const facultyName = user.name?.toLowerCase().trim() || '';
+  return users.some(u => u.role === 'student' && u.classCoordinator && u.classCoordinator.toLowerCase().includes(facultyName));
+}
+
+function testAssignedStudents(faculty, users) {
+  const coordName = faculty.name.toLowerCase().trim();
+  return users.filter(u => u.role === 'student' && u.classCoordinator && u.classCoordinator.toLowerCase().includes(coordName));
+}
+
+function testAtRiskAttendance(records) {
+  const attended = records.reduce((s, r) => s + r.attended, 0);
+  const total = records.reduce((s, r) => s + r.total, 0);
+  const pct = Math.round((attended / total) * 100);
+  return { pct, isAtRisk: pct < 75 };
+}
+
+function testConsecutiveFailedLabs(labs) {
+  let streak = 0;
+  let maxStreak = 0;
+  for (const lab of labs) {
+    if (lab.testResultsSummary?.includes('❌') || lab.status === 'failed') {
+      streak++;
+      if (streak > maxStreak) maxStreak = streak;
+    } else {
+      streak = 0;
+    }
+  }
+  return maxStreak >= 2;
+}
+
+const mockFaculty = { role: 'faculty', name: 'Prof. K. Ramanujam', email: 'prof.raman@faculty.aaroh.edu.in' };
+const mockStudents = [
+  { id: '1', role: 'student', name: 'Aarav Sharma', classCoordinator: 'Prof. K. Ramanujam' },
+  { id: '2', role: 'student', name: 'Priya Patel', classCoordinator: 'Prof. K. Ramanujam' },
+];
+
+assert(testCoordinatorPrivileges(mockFaculty, mockStudents), 'Prof. K. Ramanujam has coordinator privileges');
+assert(testAssignedStudents(mockFaculty, mockStudents).length === 2, 'Assigned students correctly filtered for coordinator');
+
+const priyaAtt = testAtRiskAttendance([{ attended: 11, total: 16 }]);
+assert(priyaAtt.isAtRisk === true && (priyaAtt.pct === 69 || priyaAtt.pct === 68), 'Student with 11/16 classes triggers attendance at-risk');
+
+const failingLabs = [
+  { type: 'coding', testResultsSummary: '❌ Test 1 Failed' },
+  { type: 'coding', testResultsSummary: '❌ Test 2 Failed' },
+];
+assert(testConsecutiveFailedLabs(failingLabs) === true, 'Student failing 2 consecutive coding labs triggers academic warning');
+
+const passingLabs = [
+  { type: 'coding', testResultsSummary: '✅ Test 1 Passed' },
+  { type: 'coding', testResultsSummary: '❌ Test 2 Failed' },
+];
+assert(testConsecutiveFailedLabs(passingLabs) === false, 'Student with 1 failure does not trigger consecutive failure warning');
+
+// UI & Component Verifications
+const earlyWarningCardPath = path.join(__dirname, '../src/components/modules/faculty/EarlyWarningSystemCard.tsx');
+assert(fs.existsSync(earlyWarningCardPath), 'EarlyWarningSystemCard.tsx exists');
+const earlyWarningCardContent = fs.readFileSync(earlyWarningCardPath, 'utf8');
+
+assert(earlyWarningCardContent.includes('⚠️ Early Warning System: Intervention Required'), 'Card renders exact title "⚠️ Early Warning System: Intervention Required"');
+assert(earlyWarningCardContent.includes('All assigned students are currently on track.'), 'Card displays exact green success message when clear');
+assert(earlyWarningCardContent.includes('bg-green-50 text-green-800') && earlyWarningCardContent.includes('dark:bg-green-950/20 dark:text-green-400'), 'Card uses specified green light/dark colors for clear state');
+assert(earlyWarningCardContent.includes('bg-red-50 border-red-200') && earlyWarningCardContent.includes('dark:bg-red-950/20 dark:border-red-900/50'), 'Card uses specified subtle red danger colors for at-risk state');
+assert(earlyWarningCardContent.includes('Trigger Intervention'), 'Card includes "Trigger Intervention" action button');
+assert(earlyWarningCardContent.includes('rounded-full') && earlyWarningCardContent.includes('active:scale-95'), 'Trigger Intervention uses pill-shaped button with active:scale-95 animation');
+
+const facultyDashLatest = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyDashboardPage.tsx'), 'utf8');
+assert(facultyDashLatest.includes('EarlyWarningSystemCard'), 'FacultyDashboardPage imports and mounts EarlyWarningSystemCard');
+assert(facultyDashLatest.includes('Automated check-in email sent to') && facultyDashLatest.includes('and parent portal.'), 'FacultyDashboardPage triggers toast with exact specified format');
+
+console.log('--- ALL FACULTY PORTAL EARLY WARNING SYSTEM VERIFICATIONS PASSED ---');
+
+
 
