@@ -103,4 +103,26 @@ assert(studentTodayClasses.includes('user.program') && studentTodayClasses.inclu
 const studentTimetableTab = fs.readFileSync(path.join(__dirname, '../src/components/modules/academics/TimetableTab.tsx'), 'utf8');
 assert(studentTimetableTab.includes('user.program') && studentTimetableTab.includes('user.semester'), 'TimetableTab filters classes by student program and semester');
 
-console.log('--- ALL USER MANAGEMENT, RBAC, TIMETABLE & FACULTY PORTAL VERIFICATIONS PASSED ---');
+// 15. Check Lost & Found Module Dashboard
+assert(fs.existsSync(path.join(__dirname, '../src/pages/LostFoundPage.tsx')), 'LostFoundPage.tsx exists');
+const lostFoundContent = fs.readFileSync(path.join(__dirname, '../src/pages/LostFoundPage.tsx'), 'utf8');
+assert(lostFoundContent.includes('Campus Lost & Found Registry'), 'LostFoundPage renders header');
+assert(lostFoundContent.includes('Report Item'), 'LostFoundPage includes Report Item button');
+assert(lostFoundContent.includes('typeFilter') && lostFoundContent.includes('statusFilter'), 'LostFoundPage includes type and status filters');
+assert(lostFoundContent.includes('imageUrl'), 'LostFoundPage renders photo preview for items with images');
+
+// 16. Check Offline Base64 Photo Upload & 1MB Storage Protection
+assert(fs.existsSync(path.join(__dirname, '../src/components/modules/lostfound/ReportLostFoundModal.tsx')), 'ReportLostFoundModal.tsx exists');
+const reportModalContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/lostfound/ReportLostFoundModal.tsx'), 'utf8');
+assert(reportModalContent.includes('FileReader') && reportModalContent.includes('readAsDataURL'), 'ReportLostFoundModal converts photo to Base64 using FileReader');
+assert(reportModalContent.includes('MAX_FILE_SIZE') || reportModalContent.includes('1 * 1024 * 1024'), 'ReportLostFoundModal enforces 1MB storage protection limit');
+assert(reportModalContent.includes('showToast') && (reportModalContent.includes('1MB') || reportModalContent.includes('limit')), 'ReportLostFoundModal alerts user if file exceeds 1MB');
+
+// 17. Check Privacy-Protected Contact Exchange & Poster Resolution
+assert(fs.existsSync(path.join(__dirname, '../src/components/modules/lostfound/LostFoundDetailModal.tsx')), 'LostFoundDetailModal.tsx exists');
+const detailModalContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/lostfound/LostFoundDetailModal.tsx'), 'utf8');
+assert(detailModalContent.includes('Request Contact'), 'LostFoundDetailModal provides Request Contact action');
+assert(detailModalContent.includes('Mark as Resolved') || detailModalContent.includes('handleResolve'), 'LostFoundDetailModal allows poster to mark item resolved');
+assert(!detailModalContent.includes('item.reportedBy.phone'), 'LostFoundDetailModal never exposes phone numbers publicly');
+
+console.log('--- ALL USER MANAGEMENT, RBAC, TIMETABLE, FACULTY & LOST & FOUND VERIFICATIONS PASSED ---');

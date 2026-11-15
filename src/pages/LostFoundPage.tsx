@@ -20,10 +20,11 @@ import {
   Watch,
   Package,
   Check,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export const LostFoundPage: React.FC = () => {
-  const { lostFound, student } = useApp();
+  const { lostFound, user, student, toggleResolveItem } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [typeFilter, setTypeFilter] = useState<'all' | LostFoundType>('all');
@@ -60,6 +61,8 @@ export const LostFoundPage: React.FC = () => {
     'Personal Belongings',
   ];
 
+  const currentUser = user || student;
+
   const filteredItems = useMemo(() => {
     return lostFound.filter(item => {
       // Type
@@ -75,9 +78,10 @@ export const LostFoundPage: React.FC = () => {
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchTitle = item.title.toLowerCase().includes(q);
-        const matchDesc = item.description.toLowerCase().includes(q);
+        const matchDesc = item.description?.toLowerCase().includes(q);
         const matchLoc = item.location.toLowerCase().includes(q);
-        if (!matchTitle && !matchDesc && !matchLoc) return false;
+        const matchCat = item.category.toLowerCase().includes(q);
+        if (!matchTitle && !matchDesc && !matchLoc && !matchCat) return false;
       }
 
       return true;
@@ -110,12 +114,14 @@ export const LostFoundPage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h2 className="text-lg font-bold text-slate-900">Campus Lost & Found Registry</h2>
-          <p className="text-xs text-slate-500">
+          <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
+            Campus Lost & Found Registry
+          </h2>
+          <p className="text-xs text-slate-500 mt-0.5">
             A peer-to-peer lost property clearinghouse with privacy-protected contact exchange.
           </p>
         </div>
@@ -123,24 +129,24 @@ export const LostFoundPage: React.FC = () => {
         <Button
           variant="primary"
           size="sm"
-          icon={<PlusCircle className="w-4 h-4" />}
+          icon={<PlusCircle className="w-3.5 h-3.5" />}
           onClick={() => setIsReportOpen(true)}
           className="self-start sm:self-auto"
         >
-          Report an Item
+          Report Item
         </Button>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white border border-border rounded-lg p-3.5 shadow-subtle space-y-3">
-        {/* Type Filter Buttons */}
+      <div className="bg-white border border-border rounded-lg p-4 shadow-subtle space-y-3.5">
+        {/* Type Filter Buttons & Status Dropdown */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-1.5 overflow-x-auto">
             <button
               onClick={() => setTypeFilter('all')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+              className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
                 typeFilter === 'all'
-                  ? 'bg-slate-200 text-slate-900 font-semibold'
+                  ? 'bg-slate-800 text-white font-semibold shadow-subtle'
                   : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-border'
               }`}
             >
@@ -148,31 +154,31 @@ export const LostFoundPage: React.FC = () => {
             </button>
             <button
               onClick={() => setTypeFilter('lost')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 text-xs font-medium rounded transition-colors flex items-center gap-1.5 ${
                 typeFilter === 'lost'
-                  ? 'bg-rose-50 text-rose-900 border border-rose-200 font-semibold'
+                  ? 'bg-rose-700 text-white font-semibold shadow-subtle'
                   : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-border'
               }`}
             >
-              <span className="w-2 h-2 rounded-full bg-rose-500" />
+              <span className={`w-2 h-2 rounded-full ${typeFilter === 'lost' ? 'bg-white' : 'bg-rose-500'}`} />
               <span>Lost ({lostFound.filter(i => i.type === 'lost').length})</span>
             </button>
             <button
               onClick={() => setTypeFilter('found')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center gap-1.5 ${
+              className={`px-3 py-1.5 text-xs font-medium rounded transition-colors flex items-center gap-1.5 ${
                 typeFilter === 'found'
-                  ? 'bg-teal-50 text-teal-900 border border-teal-200 font-semibold'
+                  ? 'bg-teal-700 text-white font-semibold shadow-subtle'
                   : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-border'
               }`}
             >
-              <span className="w-2 h-2 rounded-full bg-teal-600" />
+              <span className={`w-2 h-2 rounded-full ${typeFilter === 'found' ? 'bg-white' : 'bg-teal-500'}`} />
               <span>Found ({lostFound.filter(i => i.type === 'found').length})</span>
             </button>
           </div>
 
           {/* Status Filter */}
-          <div className="flex items-center gap-1 text-xs">
-            <span className="text-slate-400 font-medium">Status:</span>
+          <div className="flex items-center gap-1.5 text-xs">
+            <span className="text-slate-500 font-medium">Status:</span>
             <select
               value={statusFilter}
               onChange={e => setStatusFilter(e.target.value as 'all' | 'open' | 'resolved')}
@@ -186,7 +192,10 @@ export const LostFoundPage: React.FC = () => {
         </div>
 
         {/* Categories Bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 pt-1 border-t border-border">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 pt-2 border-t border-border">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mr-1">
+            Category:
+          </span>
           {categories.map(cat => {
             const isSelected = categoryFilter === cat;
             return (
@@ -195,8 +204,8 @@ export const LostFoundPage: React.FC = () => {
                 onClick={() => setCategoryFilter(cat)}
                 className={`px-2.5 py-1 text-xs font-medium rounded transition-colors whitespace-nowrap ${
                   isSelected
-                    ? 'bg-teal-700 text-white font-semibold'
-                    : 'bg-slate-100/70 text-slate-600 hover:bg-slate-200/60'
+                    ? 'bg-teal-800 text-white font-semibold'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
               >
                 {cat}
@@ -205,15 +214,15 @@ export const LostFoundPage: React.FC = () => {
           })}
         </div>
 
-        {/* Search */}
+        {/* Search Input */}
         <div className="relative pt-1">
           <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 mt-0.5" />
           <input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search items by name, location, brand, or description..."
-            className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50/70 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+            placeholder="Search items by name, campus location, description, or category..."
+            className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
           />
         </div>
       </div>
@@ -221,7 +230,7 @@ export const LostFoundPage: React.FC = () => {
       {/* Grid of Items */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredItems.length === 0 ? (
-          <div className="col-span-full py-16 flex flex-col items-center justify-center text-center bg-white border border-border rounded-lg p-6">
+          <div className="col-span-full py-16 flex flex-col items-center justify-center text-center bg-white border border-border rounded-lg p-6 shadow-subtle">
             <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
               <HelpCircle className="w-5 h-5 text-slate-400" />
             </div>
@@ -231,12 +240,12 @@ export const LostFoundPage: React.FC = () => {
             <p className="text-xs text-slate-500 max-w-sm mt-1 mb-4 leading-relaxed">
               {lostFound.length === 0
                 ? 'Misplaced personal belongings, electronics, and student IDs reported on campus will be cataloged here.'
-                : 'Try clearing your category or status filters.'}
+                : 'Try adjusting your search query or clearing the category and status filters.'}
             </p>
             <Button
               variant="primary"
               size="sm"
-              icon={<PlusCircle className="w-4 h-4" />}
+              icon={<PlusCircle className="w-3.5 h-3.5" />}
               onClick={() => setIsReportOpen(true)}
             >
               Report an Item
@@ -245,43 +254,82 @@ export const LostFoundPage: React.FC = () => {
         ) : (
           filteredItems.map(item => {
             const isResolved = item.status === 'resolved';
-            const isPoster = item.reportedBy.isCurrentUser;
+            const isPoster =
+              item.reportedBy.isCurrentUser ||
+              (currentUser?.id && item.reportedBy.id === currentUser.id) ||
+              (currentUser?.email && item.reportedBy.email === currentUser.email) ||
+              (currentUser?.name && item.reportedBy.name.toLowerCase() === currentUser.name.toLowerCase());
 
             return (
               <div
                 key={item.id}
-                className={`bg-white border rounded-lg shadow-subtle p-4 hover:border-slate-300 transition-all flex flex-col justify-between ${
-                  isResolved ? 'opacity-80 border-slate-200 bg-slate-50/40' : 'border-border'
+                className={`bg-white border rounded-lg shadow-subtle hover:border-slate-300 transition-all flex flex-col justify-between overflow-hidden ${
+                  isResolved ? 'opacity-85 border-slate-200 bg-slate-50/40' : 'border-border'
                 }`}
               >
-                <div className="space-y-2">
-                  {/* Top Badge Row */}
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5">
-                      <Badge variant={item.type === 'lost' ? 'rose' : 'teal'} size="sm">
-                        {item.type.toUpperCase()}
-                      </Badge>
-                      <Badge variant="slate" size="sm">
-                        {item.category}
-                      </Badge>
+                <div>
+                  {/* Photo Thumbnail if present */}
+                  {item.imageUrl ? (
+                    <div
+                      onClick={() => handleOpenDetail(item)}
+                      className="h-44 w-full bg-slate-100 overflow-hidden border-b border-border cursor-pointer relative group"
+                    >
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute top-2 left-2 flex items-center gap-1">
+                        <Badge variant={item.type === 'lost' ? 'rose' : 'teal'} size="sm">
+                          {item.type.toUpperCase()}
+                        </Badge>
+                      </div>
                     </div>
+                  ) : (
+                    <div
+                      onClick={() => handleOpenDetail(item)}
+                      className="h-24 w-full bg-slate-50/80 border-b border-border flex items-center justify-between px-4 cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 rounded bg-white border border-border shadow-subtle">
+                          {getCategoryIcon(item.category)}
+                        </div>
+                        <Badge variant={item.type === 'lost' ? 'rose' : 'teal'} size="sm">
+                          {item.type.toUpperCase()}
+                        </Badge>
+                      </div>
 
-                    {isResolved ? (
-                      <Badge variant="emerald" size="sm" dot>
-                        Resolved
-                      </Badge>
-                    ) : (
-                      <span className="font-mono text-[11px] text-slate-400">
-                        {item.date}
-                      </span>
+                      {isResolved ? (
+                        <Badge variant="emerald" size="sm" dot>
+                          Resolved
+                        </Badge>
+                      ) : (
+                        <span className="font-mono text-[11px] text-slate-400">
+                          {item.date}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Card Content Area */}
+                  <div className="p-4 space-y-2.5">
+                    {item.imageUrl && (
+                      <div className="flex items-center justify-between gap-2">
+                        <Badge variant="slate" size="sm">
+                          {item.category}
+                        </Badge>
+                        {isResolved ? (
+                          <Badge variant="emerald" size="sm" dot>
+                            Resolved
+                          </Badge>
+                        ) : (
+                          <span className="font-mono text-[11px] text-slate-400">
+                            {item.date}
+                          </span>
+                        )}
+                      </div>
                     )}
-                  </div>
 
-                  {/* Title & Icon Header */}
-                  <div className="flex items-start gap-2.5 pt-1">
-                    <div className="p-2 rounded bg-slate-50 border border-border shrink-0 mt-0.5">
-                      {getCategoryIcon(item.category)}
-                    </div>
                     <div>
                       <h3
                         onClick={() => handleOpenDetail(item)}
@@ -292,39 +340,55 @@ export const LostFoundPage: React.FC = () => {
                         {item.title}
                       </h3>
                       <p className="text-[11px] text-slate-500 line-clamp-2 mt-1 leading-relaxed">
-                        {item.description}
+                        {item.description || 'No detailed description provided.'}
                       </p>
                     </div>
-                  </div>
 
-                  {/* Location & Poster Details */}
-                  <div className="space-y-1 pt-2 text-xs text-slate-500 border-t border-slate-100">
-                    <div className="flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span className="truncate font-medium text-slate-700">{item.location}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-[11px] text-slate-400">
-                      <span>Posted by {item.reportedBy.name}</span>
-                      {isPoster && (
-                        <span className="text-teal-700 font-semibold">(Your post)</span>
-                      )}
+                    {/* Location & Poster Details */}
+                    <div className="space-y-1 pt-2 text-xs text-slate-500 border-t border-slate-100">
+                      <div className="flex items-center gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <span className="truncate font-medium text-slate-700">{item.location}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-slate-400">
+                        <span>Posted by {item.reportedBy.name}</span>
+                        {isPoster && (
+                          <span className="text-teal-700 font-semibold">(Your post)</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Footer Action */}
-                <div className="mt-4 pt-3 border-t border-border flex items-center justify-between gap-2 text-xs">
-                  <span className="text-[11px] text-slate-400">
+                <div className="px-4 py-3 bg-slate-50/50 border-t border-border flex items-center justify-between gap-2 text-xs">
+                  <span className="text-[11px] text-slate-400 font-mono">
                     {item.contactRequestsCount} inquiry{item.contactRequestsCount === 1 ? '' : 'ies'}
                   </span>
 
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => handleOpenDetail(item)}
-                  >
-                    View Details
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    {isPoster && (
+                      <button
+                        type="button"
+                        onClick={() => toggleResolveItem(item.id)}
+                        className={`px-2 py-1 text-[11px] rounded font-semibold border transition-colors ${
+                          isResolved
+                            ? 'bg-white hover:bg-slate-100 text-slate-700 border-border'
+                            : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300'
+                        }`}
+                      >
+                        {isResolved ? 'Re-open' : 'Mark Resolved'}
+                      </button>
+                    )}
+
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handleOpenDetail(item)}
+                    >
+                      View Details
+                    </Button>
+                  </div>
                 </div>
               </div>
             );
@@ -350,3 +414,5 @@ export const LostFoundPage: React.FC = () => {
     </div>
   );
 };
+
+export default LostFoundPage;

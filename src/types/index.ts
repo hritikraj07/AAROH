@@ -131,6 +131,8 @@ export interface LostFoundItem {
   date: string; // YYYY-MM-DD
   status: LostFoundStatus;
   reportedBy: {
+    id?: string;
+    email?: string;
     name: string;
     studentId?: string;
     isCurrentUser: boolean;
@@ -138,6 +140,7 @@ export interface LostFoundItem {
   contactRequestsCount: number;
   hasUserRequestedContact?: boolean;
   resolvedAt?: string;
+  imageUrl?: string;
   imageIcon?: string;
 }
 

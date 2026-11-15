@@ -8,12 +8,10 @@ import {
   MapPin,
   Calendar,
   User,
-  ShieldCheck,
   CheckCircle2,
   Send,
-  HelpCircle,
-  Tag,
   Lock,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export interface LostFoundDetailModalProps {
@@ -27,11 +25,17 @@ export const LostFoundDetailModal: React.FC<LostFoundDetailModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { toggleResolveItem, requestContact, student } = useApp();
+  const { toggleResolveItem, requestContact, user, student } = useApp();
 
   if (!item) return null;
 
-  const isPoster = item.reportedBy.isCurrentUser;
+  const currentUser = user || student;
+  const isPoster =
+    item.reportedBy.isCurrentUser ||
+    (currentUser?.id && item.reportedBy.id === currentUser.id) ||
+    (currentUser?.email && item.reportedBy.email === currentUser.email) ||
+    (currentUser?.name && item.reportedBy.name.toLowerCase() === currentUser.name.toLowerCase());
+
   const isResolved = item.status === 'resolved';
 
   const handleResolve = () => {
@@ -99,6 +103,17 @@ export const LostFoundDetailModal: React.FC<LostFoundDetailModalProps> = ({
       }
     >
       <div className="space-y-4">
+        {/* Photo Display if Present */}
+        {item.imageUrl && (
+          <div className="rounded-lg overflow-hidden border border-border bg-slate-100 max-h-60 flex items-center justify-center">
+            <img
+              src={item.imageUrl}
+              alt={item.title}
+              className="w-full h-56 object-cover"
+            />
+          </div>
+        )}
+
         {/* Status & Type Bar */}
         <div className="flex items-center justify-between p-3 bg-slate-50 border border-border rounded-md text-xs">
           <div className="flex items-center gap-2">
@@ -148,11 +163,11 @@ export const LostFoundDetailModal: React.FC<LostFoundDetailModalProps> = ({
             Description & Characteristics
           </h4>
           <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-line pt-1">
-            {item.description}
+            {item.description || 'No detailed description provided for this item.'}
           </p>
         </div>
 
-        {/* Poster Identity Card */}
+        {/* Poster Identity Card (Privacy Safe: No phone numbers or emails) */}
         <div className="p-3 bg-slate-50 border border-border rounded-md text-xs flex items-center justify-between">
           <div className="flex items-center gap-2">
             <User className="w-4 h-4 text-slate-400" />
@@ -187,3 +202,5 @@ export const LostFoundDetailModal: React.FC<LostFoundDetailModalProps> = ({
     </Modal>
   );
 };
+
+export default LostFoundDetailModal;
