@@ -89,6 +89,43 @@ export const generateStudentFromEmail = generateUserFromEmail;
 // Initialized empty states - all mock data wiped clean for production foundation
 export const INITIAL_USER: User | null = null;
 export const INITIAL_STUDENT: User | null = null;
+
+// Initial directory users: default demo admin, one demo student, and one demo faculty member
+export const INITIAL_USERS: User[] = [
+  {
+    id: 'usr_adm_demo',
+    name: 'Academic Registrar',
+    email: 'registrar@admin.aaroh.edu.in',
+    role: 'admin',
+    designation: 'Campus Administrator',
+    department: 'Central Administration',
+    avatarInitials: 'AR',
+  },
+  {
+    id: 'usr_std_demo',
+    name: 'Aarav Sharma',
+    email: 'aarav.sharma@aaroh.edu.in',
+    role: 'student',
+    designation: 'Undergraduate Scholar',
+    rollNumber: '22CS042',
+    program: 'B.Tech CSE',
+    department: 'Computer Science & Engineering',
+    semester: 5,
+    section: 'Section A',
+    academicYear: APP_CONFIG.academicSession,
+    avatarInitials: 'AS',
+    attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
+  },
+  {
+    id: 'usr_fac_demo',
+    name: 'Prof. K. Ramanujam',
+    email: 'prof.raman@faculty.aaroh.edu.in',
+    role: 'faculty',
+    designation: 'Assistant Professor',
+    department: 'Department of Computer Science & Engineering',
+    avatarInitials: 'KR',
+  },
+];
 export const INITIAL_COURSES: Course[] = [];
 export const INITIAL_TIMETABLE: ClassSession[] = [];
 export const INITIAL_ATTENDANCE: AttendanceRecord[] = [];
