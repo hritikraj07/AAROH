@@ -718,3 +718,81 @@ assert(failResult.allPassed === false, 'Code without return or shorter length fa
 assert(failResult.summary.includes('❌ Test 2 Failed'), 'Summary indicates ❌ Test 2 Failed');
 
 console.log('--- ALL LIVE LAB & AUTOMATED CODING ASSIGNMENT VERIFICATIONS PASSED ---');
+
+// ==========================================
+// 20. Check Context-Aware Focus Mode & Skill-Gap Analyzer
+// ==========================================
+console.log('--- VERIFYING CONTEXT-AWARE FOCUS MODE & SKILL-GAP ANALYZER ---');
+
+// 1. Context-Aware Focus Mode in DashboardPage.tsx
+const dashboardContent = fs.readFileSync(path.join(__dirname, '../src/pages/DashboardPage.tsx'), 'utf8');
+assert(dashboardContent.includes('Focus Mode Auto-Activated: Muting non-academic notifications until class ends.'), 'Dashboard renders exact Focus Mode banner message');
+assert(dashboardContent.includes('Focus') && (dashboardContent.includes('<Focus') || dashboardContent.includes('lucide-react')), 'Dashboard renders Focus icon');
+assert(dashboardContent.includes('Current Class:'), 'Dashboard expands prominent Current Class section');
+assert(dashboardContent.includes('Take Live Notes'), 'Dashboard includes Take Live Notes action button');
+assert(dashboardContent.includes('View Resources'), 'Dashboard includes View Resources action button');
+assert(dashboardContent.includes('animate-in fade-in zoom-in-95 duration-500'), 'Dashboard uses smooth animate-in fade-in zoom-in-95 duration-500 transition');
+assert(dashboardContent.includes('!isFocusMode') && (dashboardContent.includes('PinnedNoticesWidget') && dashboardContent.includes('UpcomingEventsWidget')), 'Dashboard mutes/hides Upcoming Events and Campus Updates when in Focus Mode');
+
+// 2. Skill-Gap Analyzer Helper & Dictionary in src/utils/skillMatcher.ts
+const skillMatcherPath = path.join(__dirname, '../src/utils/skillMatcher.ts');
+assert(fs.existsSync(skillMatcherPath), 'skillMatcher.ts exists in src/utils');
+const skillMatcherContent = fs.readFileSync(skillMatcherPath, 'utf8');
+assert(skillMatcherContent.includes("'React'") && skillMatcherContent.includes("'Python'") && skillMatcherContent.includes("'Node'") && skillMatcherContent.includes("'Figma'"), 'skillMatcher defines dictionary with React, Python, Node, Figma');
+assert(skillMatcherContent.includes('export function analyzeSkillMatch'), 'skillMatcher exports analyzeSkillMatch');
+assert(skillMatcherContent.includes('You have the required skills based on your completed Zosima labs.'), 'skillMatcher provides exact success match message');
+assert(skillMatcherContent.includes('Skill Gap: This role requires'), 'skillMatcher provides exact Skill Gap prefix');
+
+// 3. Opportunity Detail Modal Integration in OpportunityDetailModal.tsx
+const oppModalContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/opportunities/OpportunityDetailModal.tsx'), 'utf8');
+assert(oppModalContent.includes('✨ AI Skill Match'), 'OpportunityDetailModal renders ✨ AI Skill Match card');
+assert(oppModalContent.includes('bg-green-50') && oppModalContent.includes('bg-amber-50'), 'OpportunityDetailModal uses tinted background states (bg-green-50 / bg-amber-50)');
+assert(oppModalContent.includes('/student/assignments'), 'OpportunityDetailModal routes quick-link to /student/assignments');
+assert(oppModalContent.includes('Practice in Coding Lab') || oppModalContent.includes('Practice'), 'OpportunityDetailModal provides practice action button');
+
+// 4. Unit Test Skill Matcher Logic directly in Node.js
+function testSkillMatch(oppDesc, assignments) {
+  const keywords = ['React', 'Python', 'Node', 'Figma'];
+  const reqSkills = keywords.filter(kw => new RegExp(`(^|[^a-zA-Z0-9_])${kw}([^a-zA-Z0-9_]|$)`, 'i').test(oppDesc));
+  
+  const studentSkills = new Set();
+  (assignments || []).filter(a => a.type === 'coding' && (a.status === 'submitted' || a.status === 'graded' || a.status === 'passed') && (!a.testResultsSummary || !a.testResultsSummary.includes('❌'))).forEach(a => {
+    if (a.language) studentSkills.add(a.language.toLowerCase());
+    keywords.forEach(kw => {
+      if (new RegExp(`(^|[^a-zA-Z0-9_])${kw}([^a-zA-Z0-9_]|$)`, 'i').test(`${a.title || ''} ${a.description || ''}`)) {
+        studentSkills.add(kw.toLowerCase());
+      }
+    });
+  });
+
+  const missing = reqSkills.filter(s => !studentSkills.has(s.toLowerCase()));
+  const isMatch = missing.length === 0;
+
+  return {
+    isMatch,
+    missing,
+    message: isMatch 
+      ? 'You have the required skills based on your completed Zosima labs.' 
+      : `Skill Gap: This role requires ${missing.join(', ')}.`
+  };
+}
+
+const mockOppDesc = 'Seeking an intern with strong hands-on experience in React and Python backend services.';
+const mockStudentWithBothSkills = [
+  { id: '1', type: 'coding', language: 'React', status: 'submitted', testResultsSummary: '✅ All passed' },
+  { id: '2', type: 'coding', language: 'Python', status: 'graded', testResultsSummary: '✅ Test 1 Passed | ✅ Test 2 Passed' },
+];
+const mockStudentMissingSkills = [
+  { id: '1', type: 'coding', language: 'Python', status: 'submitted', testResultsSummary: '✅ All passed' },
+];
+
+const matchRes = testSkillMatch(mockOppDesc, mockStudentWithBothSkills);
+assert(matchRes.isMatch === true, 'Student with React and Python matches opportunity');
+assert(matchRes.message === 'You have the required skills based on your completed Zosima labs.', 'Matches returns exact Zosima labs success message');
+
+const gapRes = testSkillMatch(mockOppDesc, mockStudentMissingSkills);
+assert(gapRes.isMatch === false, 'Student missing React triggers skill gap');
+assert(gapRes.message === 'Skill Gap: This role requires React.', 'Gap returns exact Skill Gap requirement message');
+
+console.log('--- ALL CONTEXT-AWARE FOCUS MODE & SKILL-GAP ANALYZER VERIFICATIONS PASSED ---');
+

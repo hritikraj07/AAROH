@@ -59,7 +59,7 @@ export interface AttendanceRecord {
   total: number;
 }
 
-export type AssignmentStatus = 'pending' | 'submitted' | 'overdue';
+export type AssignmentStatus = 'pending' | 'submitted' | 'overdue' | 'graded';
 export type AssignmentType = 'standard' | 'coding';
 export type LabStatus = 'locked' | 'active' | 'closed';
 
