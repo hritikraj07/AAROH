@@ -796,3 +796,37 @@ assert(gapRes.message === 'Skill Gap: This role requires React.', 'Gap returns e
 
 console.log('--- ALL CONTEXT-AWARE FOCUS MODE & SKILL-GAP ANALYZER VERIFICATIONS PASSED ---');
 
+// ==========================================
+// 21. Check TopNav Sign Out, Faculty RBAC, and Login Page Redesign
+// ==========================================
+console.log('--- VERIFYING TOPNAV SIGN OUT, FACULTY RBAC, AND LOGIN PAGE REDESIGN ---');
+
+// 1. Top Navigation Bar: Sign Out replace Reset Demo
+const updatedTopBar = fs.readFileSync(path.join(__dirname, '../src/components/layout/TopBar.tsx'), 'utf8');
+assert(!updatedTopBar.includes('Reset Demo'), 'TopBar removes Reset Demo button');
+assert(updatedTopBar.includes('Sign Out'), 'TopBar renders Sign Out button');
+assert(updatedTopBar.includes('LogOut') && (updatedTopBar.includes('<LogOut') || updatedTopBar.includes('lucide-react')), 'TopBar uses LogOut icon');
+assert(updatedTopBar.includes('logout()') && updatedTopBar.includes('/login'), 'TopBar Sign Out button triggers logout and routes to /login');
+
+// 2. Faculty RBAC in FacultyClassesPage.tsx
+const facultyClassesPath = path.join(__dirname, '../src/pages/faculty/FacultyClassesPage.tsx');
+assert(fs.existsSync(facultyClassesPath), 'FacultyClassesPage.tsx exists');
+const facultyClassesContent = fs.readFileSync(facultyClassesPath, 'utf8');
+assert(facultyClassesContent.includes('isFaculty') || facultyClassesContent.includes("role === 'faculty'") || facultyClassesContent.includes("currentUser?.role === 'faculty'"), 'FacultyClassesPage checks user role');
+assert(facultyClassesContent.includes('!isFaculty') || facultyClassesContent.includes("role !== 'faculty'") || facultyClassesContent.includes("currentUser?.role !== 'faculty'"), 'FacultyClassesPage guards Add/Assign Course buttons');
+assert(facultyClassesContent.includes('No courses currently assigned. Your department admin will allocate your subjects here.'), 'FacultyClassesPage renders exact updated empty state text');
+
+// 3. Login Page Nuclear Redesign
+const updatedLoginPath = path.join(__dirname, '../src/pages/LoginPage.tsx');
+assert(fs.existsSync(updatedLoginPath), 'LoginPage.tsx exists');
+const updatedLogin = fs.readFileSync(updatedLoginPath, 'utf8');
+assert(updatedLogin.includes('h-screen w-screen overflow-hidden flex items-center justify-center bg-[#FBFBFA]'), 'LoginPage layout enforces strictly unscrollable full-screen viewport');
+assert(updatedLogin.includes('bg-white max-w-md w-full p-8') && updatedLogin.includes('border-slate-200') && updatedLogin.includes('shadow-sm'), 'LoginPage card uses centered pure white card with 1px border and shadow-sm');
+assert(updatedLogin.includes('<Logo') && updatedLogin.includes('K.R. Mangalam University'), 'LoginPage prominently displays Logo and K.R. Mangalam University in header hierarchy');
+assert(updatedLogin.includes('animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out'), 'LoginPage wraps card in smooth reveal animation');
+assert(updatedLogin.includes('active:scale-95'), 'LoginPage primary Sign In button uses active:scale-95 micro-interaction');
+assert(updatedLogin.includes('<select') && updatedLogin.includes('student') && updatedLogin.includes('faculty') && updatedLogin.includes('admin'), 'LoginPage includes cleanly styled Role dropdown');
+
+console.log('--- ALL TOPNAV, FACULTY RBAC, AND LOGIN OVERHAUL VERIFICATIONS PASSED ---');
+
+

@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Menu, Search, Bell, RotateCcw, ArrowRight, X } from 'lucide-react';
+import { Menu, Search, Bell, LogOut, ArrowRight, X } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { APP_CONFIG } from '../../config';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getApproachingDeadlines } from '../../utils/deadlineUtils';
 import { StorageService } from '../../services/storage';
 import { GlobalSearchResult } from '../../types';
@@ -13,11 +13,12 @@ export interface TopBarProps {
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) => {
+  const navigate = useNavigate();
   const {
     openSearch,
     assignments,
     opportunities,
-    resetDemoData,
+    logout,
     user,
     role,
   } = useApp();
@@ -266,14 +267,17 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
           )}
         </div>
 
-        {/* Quick Demo Reset Data */}
+        {/* Sign Out Action */}
         <button
-          onClick={resetDemoData}
-          className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md border border-slate-200 transition-all duration-150 ease-in-out"
-          title="Reset demo data to initial seed"
+          onClick={() => {
+            logout();
+            navigate('/login');
+          }}
+          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-md border border-slate-200 transition-all duration-150 ease-in-out select-none active:scale-95 group"
+          title="Sign out of active account"
         >
-          <RotateCcw className="w-3.5 h-3.5 text-slate-400" />
-          <span>Reset Demo</span>
+          <LogOut className="w-3.5 h-3.5 text-slate-400 group-hover:text-rose-600 transition-colors" />
+          <span>Sign Out</span>
         </button>
 
         {/* User Identity & Role Status Chip */}

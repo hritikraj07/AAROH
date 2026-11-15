@@ -2,17 +2,18 @@ import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { APP_CONFIG } from '../config';
-import { Button } from '../components/ui/Button';
 import { Logo } from '../components/ui/Logo';
-import { Lock, Mail, AlertCircle, ArrowRight, ShieldCheck, GraduationCap, Briefcase, ShieldAlert } from 'lucide-react';
+import { Lock, Mail, AlertCircle, ArrowRight, ShieldCheck, UserCheck } from 'lucide-react';
 import { getUserRoleFromEmail } from '../data/seed';
+import { UserRole } from '../types';
 
 export const LoginPage: React.FC = () => {
-  const { login, loginWithDomain, users, isAuthenticated, role } = useApp();
+  const { login, users, isAuthenticated, role } = useApp();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('student');
+  const [email, setEmail] = useState('aarav.sharma@aaroh.edu.in');
+  const [password, setPassword] = useState('campusSecure2026');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -20,6 +21,30 @@ export const LoginPage: React.FC = () => {
   if (isAuthenticated && role) {
     return <Navigate to={`/${role}`} replace />;
   }
+
+  const handleRoleChange = (newRole: UserRole) => {
+    setSelectedRole(newRole);
+    if (newRole === 'student') {
+      setEmail('aarav.sharma@aaroh.edu.in');
+      setPassword('campusSecure2026');
+    } else if (newRole === 'faculty') {
+      setEmail('prof.raman@faculty.aaroh.edu.in');
+      setPassword('campusSecure2026');
+    } else if (newRole === 'admin') {
+      setEmail('registrar@admin.aaroh.edu.in');
+      setPassword('campusSecure2026');
+    }
+    setErrorMessage(null);
+  };
+
+  const handleEmailChange = (val: string) => {
+    setEmail(val);
+    if (errorMessage) setErrorMessage(null);
+    const detected = getUserRoleFromEmail(val);
+    if (detected) {
+      setSelectedRole(detected);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +61,7 @@ export const LoginPage: React.FC = () => {
 
     if (!isKnownUser && !detectedRole) {
       setErrorMessage(
-        'Access restricted: Email not recognized in campus directory. Please enter a registered email or institutional address ending with @aaroh.edu.in, @faculty.aaroh.edu.in, or @admin.aaroh.edu.in.'
+        'Access restricted: Email not recognized in campus directory. Please enter a registered email ending with @aaroh.edu.in, @faculty.aaroh.edu.in, or @admin.aaroh.edu.in.'
       );
       return;
     }
@@ -57,89 +82,81 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const handleFillDemo = (demoEmail: string) => {
-    setEmail(demoEmail);
-    setPassword('campusSecure2026');
-    setErrorMessage(null);
-  };
-
   return (
-    <div className="min-h-screen bg-[#FBFBFA] flex flex-col justify-center items-center p-4 sm:p-6 font-sans">
-      <div className="w-full max-w-md bg-white border border-slate-200 rounded-lg p-6 sm:p-8 space-y-6">
-        {/* Header Wordmark & Institutional Brand */}
-        <div className="text-center space-y-1.5 pb-2 border-b border-slate-200">
-          <div className="flex items-center justify-center gap-2.5">
+    <div className="h-screen w-screen overflow-hidden flex items-center justify-center bg-[#FBFBFA] font-sans p-4">
+      {/* Centered Login Card */}
+      <div className="bg-white max-w-md w-full p-8 rounded-lg border border-slate-200 shadow-sm animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out space-y-6">
+        {/* Branding & Header Hierarchy */}
+        <div className="text-center space-y-2">
+          <div className="flex justify-center">
             <Logo size="lg" />
-            <span className="text-[10px] uppercase font-bold tracking-wider text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">
-              SSO Gateway
-            </span>
           </div>
-          <p className="text-xs font-medium text-slate-500">
-            {APP_CONFIG.collegeName}
-          </p>
-          <p className="text-xs text-slate-400">
-            Unified access portal for students, faculty, and administration
-          </p>
-        </div>
-
-        {/* Domain-based RBAC Notice */}
-        <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-xs text-slate-600 space-y-2">
-          <div className="flex items-center gap-2 font-semibold text-slate-800">
-            <ShieldCheck className="w-4 h-4 text-teal-700 shrink-0" />
-            <span>Institutional Domain Routing</span>
-          </div>
-          <div className="grid grid-cols-1 gap-1 text-[11px] text-slate-500 pl-6">
-            <div className="flex items-center justify-between">
-              <span>Student Portal:</span>
-              <code className="font-mono text-teal-800 font-medium">@aaroh.edu.in</code>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Faculty Portal:</span>
-              <code className="font-mono text-teal-800 font-medium">@faculty.aaroh.edu.in</code>
-            </div>
-            <div className="flex items-center justify-between">
-              <span>Admin Console:</span>
-              <code className="font-mono text-teal-800 font-medium">@admin.aaroh.edu.in</code>
-            </div>
+          <div>
+            <h2 className="text-xs font-semibold tracking-wider text-slate-500 uppercase font-mono">
+              K.R. Mangalam University
+            </h2>
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 mt-0.5">
+              Sign In to Aaroh
+            </h1>
+            <p className="text-xs text-slate-400 mt-1">
+              Unified Academic Operating System & Campus Portal
+            </p>
           </div>
         </div>
 
         {/* Error Alert */}
         {errorMessage && (
-          <div className="p-3 bg-rose-50 border border-rose-200 rounded-md text-xs text-rose-800 flex items-start gap-2">
+          <div className="p-3 bg-rose-50 border border-rose-200 rounded-md text-xs text-rose-800 flex items-start gap-2 animate-in fade-in duration-150">
             <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
             <span className="leading-relaxed">{errorMessage}</span>
           </div>
         )}
 
-        {/* Credentials Form */}
+        {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Role Dropdown */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              Institutional Email Address
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5 font-mono uppercase tracking-wider">
+              Role
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <select
+                value={selectedRole}
+                onChange={e => handleRoleChange(e.target.value as UserRole)}
+                className="w-full text-xs font-medium px-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors cursor-pointer"
+              >
+                <option value="student">Student</option>
+                <option value="faculty">Faculty</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Email Address */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5 font-mono uppercase tracking-wider">
+              Institutional Email
+            </label>
+            <div className="relative">
+              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="email"
                 required
                 value={email}
-                onChange={e => {
-                  setEmail(e.target.value);
-                  if (errorMessage) setErrorMessage(null);
-                }}
+                onChange={e => handleEmailChange(e.target.value)}
                 placeholder="name@aaroh.edu.in"
-                className="w-full text-xs font-mono pl-9 pr-3 py-2 bg-white border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700 focus:border-teal-700 transition-colors"
+                className="w-full text-xs font-mono pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors"
               />
             </div>
           </div>
 
+          {/* Password */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              Account Password
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5 font-mono uppercase tracking-wider">
+              Password
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="password"
                 required
@@ -149,73 +166,29 @@ export const LoginPage: React.FC = () => {
                   if (errorMessage) setErrorMessage(null);
                 }}
                 placeholder="••••••••••••"
-                className="w-full text-xs pl-9 pr-3 py-2 bg-white border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700 focus:border-teal-700 transition-colors"
+                className="w-full text-xs pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-md text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors font-mono"
               />
             </div>
           </div>
 
-          <Button
+          {/* Primary Action */}
+          <button
             type="submit"
-            variant="primary"
-            size="md"
-            loading={loading}
-            className="w-full justify-center"
+            disabled={loading}
+            className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-semibold text-white bg-teal-700 hover:bg-teal-800 rounded-md transition-all duration-150 active:scale-95 shadow-sm disabled:opacity-50 select-none cursor-pointer"
           >
-            <span>Authenticate & Enter Portal</span>
-            <ArrowRight className="w-4 h-4 ml-1.5" />
-          </Button>
+            <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </form>
 
-        {/* Evaluator Quick-Fill Options */}
-        <div className="pt-3 border-t border-slate-200 space-y-2.5">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block text-center">
-            Evaluator One-Click Logins
-          </span>
-          <div className="flex flex-col gap-1.5">
-            <button
-              type="button"
-              onClick={() => handleFillDemo('aarav.sharma@aaroh.edu.in')}
-              className="flex items-center justify-between px-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded text-slate-700 transition-colors text-left"
-            >
-              <div className="flex items-center gap-2">
-                <GraduationCap className="w-3.5 h-3.5 text-teal-700" />
-                <span className="font-semibold text-slate-800">Student:</span>
-                <span className="font-mono text-[11px] text-slate-600">aarav.sharma@aaroh.edu.in</span>
-              </div>
-              <span className="text-[10px] text-slate-400 uppercase font-mono">Fill</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleFillDemo('prof.raman@faculty.aaroh.edu.in')}
-              className="flex items-center justify-between px-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded text-slate-700 transition-colors text-left"
-            >
-              <div className="flex items-center gap-2">
-                <Briefcase className="w-3.5 h-3.5 text-blue-700" />
-                <span className="font-semibold text-slate-800">Faculty:</span>
-                <span className="font-mono text-[11px] text-slate-600">prof.raman@faculty.aaroh.edu.in</span>
-              </div>
-              <span className="text-[10px] text-slate-400 uppercase font-mono">Fill</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleFillDemo('registrar@admin.aaroh.edu.in')}
-              className="flex items-center justify-between px-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded text-slate-700 transition-colors text-left"
-            >
-              <div className="flex items-center gap-2">
-                <ShieldAlert className="w-3.5 h-3.5 text-amber-700" />
-                <span className="font-semibold text-slate-800">Admin:</span>
-                <span className="font-mono text-[11px] text-slate-600">registrar@admin.aaroh.edu.in</span>
-              </div>
-              <span className="text-[10px] text-slate-400 uppercase font-mono">Fill</span>
-            </button>
-          </div>
-        </div>
-
         {/* Institutional System Footer */}
-        <div className="pt-1 text-center text-[11px] text-slate-400">
-          <span>Role-Based Single Sign-On (RBAC) Architecture</span>
+        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+          <span>Enterprise SSO Gateway</span>
+          <span className="text-teal-700 font-medium flex items-center gap-1">
+            <ShieldCheck className="w-3 h-3" />
+            256-bit TLS
+          </span>
         </div>
       </div>
     </div>

@@ -5,16 +5,19 @@ import { BookOpen, Plus, Users, Clock, Building, X, Trash2 } from 'lucide-react'
 import { Course } from '../../types';
 
 export const FacultyClassesPage: React.FC = () => {
-  const { courses, timetable, createCourse, deleteCourse } = useApp();
+  const { courses, timetable, createCourse, deleteCourse, user, role } = useApp();
+  const currentUser = user;
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Form State
+  // Form State (Admin course creation modal)
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [credits, setCredits] = useState(4);
   const [department, setDepartment] = useState('Computer Science & Engineering');
   const [room, setRoom] = useState('Room 402');
   const [scheduleDesc, setScheduleDesc] = useState('Mon, Wed, Fri 09:00 - 10:00');
+
+  const isFaculty = currentUser?.role === 'faculty' || role === 'faculty';
 
   const handleCreateCourse = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,8 +27,8 @@ export const FacultyClassesPage: React.FC = () => {
       code: code.trim().toUpperCase(),
       name: name.trim(),
       credits: Number(credits) || 4,
-      facultyName: 'Prof. Faculty Member',
-      facultyEmail: 'faculty@faculty.aaroh.edu.in',
+      facultyName: currentUser?.name || 'Prof. Faculty Member',
+      facultyEmail: currentUser?.email || 'faculty@faculty.aaroh.edu.in',
       roomDefault: room.trim(),
       colorTag: 'teal',
     });
@@ -48,14 +51,17 @@ export const FacultyClassesPage: React.FC = () => {
           </p>
         </div>
 
-        <Button
-          variant="primary"
-          size="sm"
-          icon={<Plus className="w-3.5 h-3.5" />}
-          onClick={() => setIsAddModalOpen(true)}
-        >
-          Add Course
-        </Button>
+        {/* RBAC: Faculty cannot create/assign courses. Strictly hidden for faculty role */}
+        {!isFaculty && (
+          <Button
+            variant="primary"
+            size="sm"
+            icon={<Plus className="w-3.5 h-3.5" />}
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            Add Course
+          </Button>
+        )}
       </div>
 
       {/* Courses List */}
@@ -64,16 +70,19 @@ export const FacultyClassesPage: React.FC = () => {
           <BookOpen className="w-10 h-10 text-slate-300 mx-auto" />
           <h3 className="text-sm font-semibold text-slate-900">No courses currently assigned</h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-            There are currently no active courses assigned to your department portfolio. Add your first course module to begin scheduling lectures and assignments.
+            No courses currently assigned. Your department admin will allocate your subjects here.
           </p>
-          <Button
-            variant="primary"
-            size="sm"
-            icon={<Plus className="w-3.5 h-3.5" />}
-            onClick={() => setIsAddModalOpen(true)}
-          >
-            Assign Course
-          </Button>
+          {/* RBAC: Strictly hidden for faculty role */}
+          {!isFaculty && (
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<Plus className="w-3.5 h-3.5" />}
+              onClick={() => setIsAddModalOpen(true)}
+            >
+              Assign Course
+            </Button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -89,13 +98,15 @@ export const FacultyClassesPage: React.FC = () => {
                     <span className="font-mono text-xs font-bold text-teal-900 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
                       {course.code}
                     </span>
-                    <button
-                      onClick={() => deleteCourse(course.id)}
-                      className="text-slate-400 hover:text-rose-600 p-1 rounded transition-colors"
-                      title="Remove Course"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    {!isFaculty && (
+                      <button
+                        onClick={() => deleteCourse(course.id)}
+                        className="text-slate-400 hover:text-rose-600 p-1 rounded transition-colors"
+                        title="Remove Course"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
 
                   <div>
@@ -137,8 +148,8 @@ export const FacultyClassesPage: React.FC = () => {
         </div>
       )}
 
-      {/* Add Course Modal */}
-      {isAddModalOpen && (
+      {/* Add Course Modal (Admin only) */}
+      {!isFaculty && isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
           <div className="bg-white border border-slate-200 rounded-lg shadow-sm max-w-md w-full p-6 space-y-4 animate-in fade-in duration-150">
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
