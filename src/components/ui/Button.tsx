@@ -9,7 +9,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className = '', variant = 'secondary', size = 'md', icon, loading, children, disabled, ...props }, ref) => {
-    const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-150 ease-in-out active:scale-95 transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 disabled:opacity-50 disabled:cursor-not-allowed select-none rounded-md';
+    const baseStyles = 'inline-flex items-center justify-center font-medium active:scale-95 transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 disabled:opacity-50 disabled:cursor-not-allowed select-none rounded-md cursor-pointer';
 
     const sizeStyles = {
       sm: 'text-xs px-2.5 py-1.5 gap-1.5',
@@ -18,11 +18,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     }[size];
 
     const variantStyles = {
-      primary: 'bg-teal-700 text-white hover:bg-[#0D6861] active:bg-[#115E59] border border-transparent',
-      secondary: 'bg-white text-slate-700 hover:bg-slate-50 active:bg-slate-100 border border-slate-200',
-      outline: 'bg-transparent text-slate-700 hover:bg-slate-100/70 border border-slate-200',
-      ghost: 'bg-transparent text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 border border-transparent',
-      danger: 'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 border border-transparent',
+      primary: 'bg-teal-700 text-white hover:bg-[#0D6861] active:bg-[#115E59] border border-transparent shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)]',
+      secondary: 'bg-white text-slate-700 hover:bg-slate-50 active:bg-slate-100 border border-slate-200 dark:bg-[#18181B] dark:border-[#27272A] dark:text-slate-200 dark:hover:bg-[#27272A] shadow-xs',
+      outline: 'bg-transparent text-slate-700 dark:text-slate-200 hover:bg-slate-100/70 dark:hover:bg-[#27272A] border border-slate-200 dark:border-[#27272A]',
+      ghost: 'bg-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-100/80 dark:hover:bg-[#27272A] hover:text-slate-900 dark:hover:text-slate-100 border border-transparent',
+      danger: 'bg-rose-600 text-white hover:bg-rose-700 active:bg-rose-800 border border-transparent shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(225,29,72,0.2)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(225,29,72,0.3)]',
     }[variant];
 
     return (

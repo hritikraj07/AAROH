@@ -1069,5 +1069,56 @@ assert(facultyDashLatest.includes('Automated check-in email sent to') && faculty
 
 console.log('--- ALL FACULTY PORTAL EARLY WARNING SYSTEM VERIFICATIONS PASSED ---');
 
+// ==========================================
+// 27. Check 4-Layer Tactile Button Depth & Shadow System
+// ==========================================
+console.log('--- VERIFYING 4-LAYER TACTILE BUTTON DEPTH SYSTEM ---');
+
+const buttonCompPath = path.join(__dirname, '../src/components/ui/Button.tsx');
+assert(fs.existsSync(buttonCompPath), 'Button.tsx exists');
+const buttonCompContent = fs.readFileSync(buttonCompPath, 'utf8');
+
+const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
+const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
+const exactLightHover = 'hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)]';
+const exactDarkHover = 'dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)]';
+
+assert(buttonCompContent.includes(exactLightShadow), 'Button.tsx implements exact 4-layer light mode shadow');
+assert(buttonCompContent.includes(exactDarkShadow), 'Button.tsx implements exact 4-layer dark mode shadow with 0_0_12px_rgba(15,118,110,0.15) teal glow');
+assert(buttonCompContent.includes(exactLightHover), 'Button.tsx implements light mode hover shadow lifting effect');
+assert(buttonCompContent.includes(exactDarkHover), 'Button.tsx implements dark mode hover shadow lifting effect with 0_0_16px_rgba(15,118,110,0.25)');
+assert(buttonCompContent.includes('active:scale-95'), 'Button.tsx includes active:scale-95 interaction class');
+assert(buttonCompContent.includes('duration-200'), 'Button.tsx includes duration-200 transition');
+
+// Global index.css utilities
+const indexCssPath = path.join(__dirname, '../src/index.css');
+const indexCssContent = fs.readFileSync(indexCssPath, 'utf8');
+assert(indexCssContent.includes('.shadow-btn-tactile'), 'index.css defines .shadow-btn-tactile utility');
+assert(indexCssContent.includes('0 0 12px rgba(15, 118, 110, 0.15)'), 'index.css defines dark mode subtle teal ambient glow');
+
+// Standalone Action Buttons
+const loginPageContent = fs.readFileSync(path.join(__dirname, '../src/pages/LoginPage.tsx'), 'utf8');
+assert(loginPageContent.includes(exactLightShadow) && loginPageContent.includes(exactDarkShadow), 'LoginPage Sign In button implements exact 4-layer light & dark shadows');
+assert(loginPageContent.includes('active:scale-95') && loginPageContent.includes('duration-200'), 'LoginPage Sign In button implements active:scale-95 and duration-200');
+
+const ewsCardContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/faculty/EarlyWarningSystemCard.tsx'), 'utf8');
+assert(ewsCardContent.includes(exactLightShadow) && ewsCardContent.includes(exactDarkShadow), 'EarlyWarningSystemCard Trigger Intervention button implements 4-layer shadows');
+assert(ewsCardContent.includes('active:scale-95') && ewsCardContent.includes('duration-200'), 'EarlyWarningSystemCard Trigger Intervention implements active:scale-95 and duration-200');
+
+const facAttContent = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyAttendancePage.tsx'), 'utf8');
+assert(facAttContent.includes('Start QR Session') && facAttContent.includes(exactLightShadow), 'FacultyAttendancePage Start QR Session implements 4-layer tactile shadows');
+
+const stuQRContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/attendance/StudentQRScannerModal.tsx'), 'utf8');
+assert(stuQRContent.includes('Simulate Scan') && stuQRContent.includes(exactLightShadow), 'StudentQRScannerModal Simulate Scan implements 4-layer tactile shadows');
+
+const dashContentLatest = fs.readFileSync(path.join(__dirname, '../src/pages/DashboardPage.tsx'), 'utf8');
+assert(dashContentLatest.includes('Take Live Notes') && dashContentLatest.includes(exactLightShadow), 'DashboardPage Take Live Notes implements 4-layer tactile shadows');
+
+const stuCodeContent = fs.readFileSync(path.join(__dirname, '../src/pages/StudentCodeWorkspacePage.tsx'), 'utf8');
+assert(stuCodeContent.includes('Submit Assignment') && stuCodeContent.includes(exactLightShadow), 'StudentCodeWorkspacePage Submit Assignment implements 4-layer tactile shadows');
+
+console.log('--- ALL 4-LAYER TACTILE BUTTON DEPTH VERIFICATIONS PASSED ---');
+
+
 
 

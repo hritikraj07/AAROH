@@ -227,7 +227,7 @@ export const FacultyAttendancePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setIsQROpen(true)}
-                    className="px-3.5 py-2 text-xs font-semibold text-white bg-teal-700 hover:bg-teal-800 rounded-md transition-all active:scale-95 flex items-center gap-1.5 shadow-sm cursor-pointer whitespace-nowrap"
+                    className="px-3.5 py-2 text-xs font-semibold text-white bg-teal-700 hover:bg-[#0D6861] active:bg-[#115E59] rounded-md transition-all duration-200 active:scale-95 flex items-center gap-1.5 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)] cursor-pointer whitespace-nowrap"
                   >
                     <QrCode className="w-3.5 h-3.5" />
                     <span>Start QR Session</span>

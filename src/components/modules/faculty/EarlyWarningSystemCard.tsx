@@ -147,7 +147,7 @@ export const EarlyWarningSystemCard: React.FC<EarlyWarningSystemCardProps> = ({
                   <button
                     type="button"
                     onClick={() => onTriggerIntervention(student.name)}
-                    className="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-teal-700 hover:bg-teal-800 text-white transition-all active:scale-95 inline-flex items-center gap-1.5 shadow-none cursor-pointer select-none"
+                    className="rounded-full px-3.5 py-1.5 text-xs font-semibold bg-teal-700 hover:bg-[#0D6861] active:bg-[#115E59] text-white transition-all duration-200 active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)] inline-flex items-center gap-1.5 cursor-pointer select-none"
                   >
                     <Mail className="w-3.5 h-3.5" />
                     <span>Trigger Intervention</span>

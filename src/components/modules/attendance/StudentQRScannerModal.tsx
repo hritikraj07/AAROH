@@ -151,7 +151,7 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({
             type="button"
             onClick={handleSimulateScan}
             disabled={isScanning}
-            className="w-full py-3 px-4 rounded-xl bg-teal-700 hover:bg-teal-600 active:scale-95 text-white font-semibold text-xs transition-all duration-150 shadow-lg shadow-teal-950/50 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full py-3 px-4 rounded-xl bg-teal-700 hover:bg-[#0D6861] active:bg-[#115E59] active:scale-95 text-white font-semibold text-xs transition-all duration-200 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
           >
             {isScanning ? (
               <>
