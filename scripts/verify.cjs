@@ -874,5 +874,33 @@ assert(updatedLogin.includes('backdrop-blur-md shadow-xl'), 'LoginPage card impl
 
 console.log('--- ALL DARK MODE, HERO BANNERS, AND DATA CARDS VERIFICATIONS PASSED ---');
 
+// SECTION 23: AAROH AI GEMINI LLM INTEGRATION & CONTEXT INJECTION
+console.log('--- VERIFYING AAROH AI GEMINI LLM INTEGRATION & CONTEXT INJECTION ---');
+
+const geminiAiUtilPath = path.join(__dirname, '../src/utils/aiAssistant.ts');
+const geminiAiUtilContent = fs.readFileSync(geminiAiUtilPath, 'utf8');
+assert(geminiAiUtilContent.includes('QVEuQWI4Uk42TGljcGZTVy1qd296QS1pWllhT1dGTFRpdGFjSlJ2dGRjRXVxZVBLUm1Cc3c=') || geminiAiUtilContent.includes('GEMINI_API_KEY'), 'Hardcoded Gemini API key is defined in configuration');
+assert(geminiAiUtilContent.includes('generativelanguage.googleapis.com/v1beta'), 'Gemini API endpoint uses v1beta endpoint');
+assert(geminiAiUtilContent.includes('gatherStudentContextFromStorage'), 'gatherStudentContextFromStorage utility is defined and exported');
+assert(geminiAiUtilContent.includes('aaroh_auth_user') && geminiAiUtilContent.includes('aaroh_timetable') && geminiAiUtilContent.includes('aaroh_attendance') && geminiAiUtilContent.includes('aaroh_assignments') && geminiAiUtilContent.includes('aaroh_opportunities'), 'Context gathering queries all required localStorage student keys');
+
+const exactSystemPromptPrefix = "You are Aaroh, the smart campus assistant for K.R. Mangalam University. Be concise, helpful, and professional. Here is the current student's real-time data:";
+assert(geminiAiUtilContent.includes(exactSystemPromptPrefix), 'System prompt contains exact specified prefix');
+assert(geminiAiUtilContent.includes("Answer the user's query strictly based on this data. If they ask about classes, check the timetable. If they ask about deadlines, check assignments."), 'System prompt contains exact specified instructions');
+
+const updatedAiComponentPath = path.join(__dirname, '../src/components/modules/ai/AarohAIAssistant.tsx');
+const updatedAiComponent = fs.readFileSync(updatedAiComponentPath, 'utf8');
+assert(updatedAiComponent.includes('askAarohGeminiAPI'), 'AarohAIAssistant calls real Gemini API');
+assert(updatedAiComponent.includes('gatherStudentContextFromStorage'), 'AarohAIAssistant programmatically gathers student data before sending query');
+assert(updatedAiComponent.includes('Running in offline mode'), 'AarohAIAssistant shows "Running in offline mode" toast on API fallback');
+assert(updatedAiComponent.includes('animate-pulse'), 'AarohAIAssistant includes animated typing indicator using animate-pulse');
+assert(updatedAiComponent.includes('bg-teal-600') || updatedAiComponent.includes('bg-teal-400') || updatedAiComponent.includes('teal'), 'Typing indicator uses pulsing teal dots');
+assert(updatedAiComponent.includes('renderInlineMarkdown') || updatedAiComponent.includes('MarkdownBubble'), 'AarohAIAssistant includes Markdown rendering support');
+assert(updatedAiComponent.includes('dark:bg-slate-900') && updatedAiComponent.includes('dark:border-slate-800'), 'AarohAIAssistant chat panel supports dark mode styling');
+assert(updatedAiComponent.includes('dark:bg-teal-950') || updatedAiComponent.includes('dark:bg-slate-800'), 'Chat bubbles support dark mode styling');
+
+console.log('--- ALL AAROH AI GEMINI LLM INTEGRATION VERIFICATIONS PASSED ---');
+
+
 
 
