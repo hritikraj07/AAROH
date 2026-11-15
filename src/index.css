@@ -89,12 +89,24 @@
   animation-name: slideInFromBottom4;
 }
 
+.duration-500 {
+  animation-duration: 500ms;
+}
+
 .duration-700 {
   animation-duration: 700ms;
 }
 
 .ease-out {
   animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Dark mode scrollbars */
+html.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
 }
 
 /* Subtle scrollbars for dense views */

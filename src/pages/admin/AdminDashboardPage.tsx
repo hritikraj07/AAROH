@@ -27,72 +27,48 @@ export const AdminDashboardPage: React.FC = () => {
   const pendingEventsCount = events.filter(e => e.status === 'pending').length;
 
   return (
-    <div className="space-y-6">
-      {/* Administrator Header Banner */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-slate-900 text-white font-semibold text-base flex items-center justify-center font-mono shrink-0">
-              {user?.avatarInitials || 'AD'}
-            </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
-                  {user?.name || 'Campus Administrator'}
-                </h2>
-                <span className="text-[11px] font-semibold text-slate-800 bg-slate-100 border border-slate-300 px-2 py-0.5 rounded">
-                  System Administrator
-                </span>
-                <span className="text-[10px] uppercase font-bold tracking-wider text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">
-                  Root Clearance
-                </span>
-              </div>
-              <div className="flex items-center gap-3 text-xs text-slate-500 mt-1 flex-wrap font-mono">
-                <span>{APP_CONFIG.collegeName}</span>
-                <span>•</span>
-                <span>{user?.email}</span>
-                <span>•</span>
-                <span className="text-emerald-700 font-sans font-medium flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block animate-pulse" />
-                  SSO System Operational
-                </span>
-              </div>
-            </div>
-          </div>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Hero Banner with Decorative Elements */}
+      <div className="relative overflow-hidden bg-[#0F766E] text-white rounded-3xl p-6 sm:p-10 shadow-sm transition-all duration-300 select-none">
+        <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full border-[20px] border-white/10 pointer-events-none" />
+        <div className="absolute right-28 -top-16 w-52 h-52 rounded-full border-[14px] border-white/10 pointer-events-none" />
+        <div className="absolute top-6 right-16 text-white/20 pointer-events-none select-none">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
+        <div className="absolute bottom-8 right-52 text-white/15 pointer-events-none select-none">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap">
-            <Button
-              variant="primary"
-              size="sm"
-              icon={<Users className="w-3.5 h-3.5" />}
+        <div className="relative z-10 max-w-2xl space-y-2.5">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white backdrop-blur-sm border border-white/20 font-mono uppercase tracking-wider">
+            <span>Administration Console • Root Clearance</span>
+          </div>
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-white font-sans">
+            Welcome back, {user?.name?.split(' ')[0] || 'Administrator'}
+          </h1>
+          <p className="text-xs sm:text-sm text-teal-100 font-normal leading-relaxed max-w-xl">
+            {APP_CONFIG.collegeName} • Full institutional controls: manage campus directory, conflict-free timetable scheduling, and notice publishers.
+          </p>
+
+          <div className="pt-3 flex items-center gap-2.5 flex-wrap">
+            <button
               onClick={() => navigate('/admin/people')}
+              className="rounded-full bg-white text-teal-800 hover:bg-teal-50 text-xs px-4 py-2 font-semibold transition-colors active:scale-95 inline-flex items-center gap-1.5 shadow-sm"
             >
-              User Directory
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<Plus className="w-3.5 h-3.5" />}
-              onClick={() => navigate('/admin/notices')}
-            >
-              Publish Notice
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<Calendar className="w-3.5 h-3.5" />}
-              onClick={() => navigate('/admin/events')}
-            >
-              Events
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              icon={<Clock className="w-3.5 h-3.5" />}
+              <Users className="w-3.5 h-3.5" />
+              <span>User Directory</span>
+            </button>
+            <button
               onClick={() => navigate('/admin/timetable')}
+              className="rounded-full bg-teal-800/80 hover:bg-teal-800 text-white border border-white/30 text-xs px-4 py-2 font-semibold transition-colors active:scale-95 inline-flex items-center gap-1.5 shadow-sm"
             >
-              Timetable
-            </Button>
+              <Clock className="w-3.5 h-3.5" />
+              <span>Master Timetable</span>
+            </button>
           </div>
         </div>
       </div>

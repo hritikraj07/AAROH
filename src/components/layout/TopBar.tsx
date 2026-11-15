@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Menu, Search, Bell, LogOut, ArrowRight, X } from 'lucide-react';
+import { Menu, Search, Bell, LogOut, ArrowRight, X, Sun, Moon, SlidersHorizontal } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { APP_CONFIG } from '../../config';
 import { Link, useNavigate } from 'react-router-dom';
@@ -21,6 +21,8 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
     logout,
     user,
     role,
+    theme,
+    toggleTheme,
   } = useApp();
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -43,7 +45,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
     return StorageService.searchGlobal(searchQuery);
   }, [searchQuery]);
 
-  // Close notifications on outside click
+  // Close notifications and search on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
@@ -81,60 +83,59 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
   const getTypeBadgeClasses = (type: 'Notice' | 'Event' | 'Opportunity') => {
     switch (type) {
       case 'Notice':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
+        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-900';
       case 'Event':
-        return 'bg-amber-50 text-amber-700 border-amber-200';
+        return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-900';
       case 'Opportunity':
-        return 'bg-teal-50 text-teal-700 border-teal-200';
+        return 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950/50 dark:text-teal-400 dark:border-teal-900';
       default:
-        return 'bg-slate-50 text-slate-700 border-slate-200';
+        return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800';
     }
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-white border-b border-slate-200 h-14 px-4 sm:px-6 flex items-center justify-between">
+    <header className="sticky top-0 z-30 bg-[#FBFBFA] dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 h-16 px-4 sm:px-6 flex items-center justify-between gap-4 transition-colors duration-200">
       {/* Left: Mobile Menu & Breadcrumb */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 shrink-0">
         <button
           onClick={onOpenMobileMenu}
-          className="md:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-all duration-150 ease-in-out"
+          className="md:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-150"
           aria-label="Open sidebar menu"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-slate-400 hidden sm:inline">
+          <span className="text-xs font-medium text-slate-400 dark:text-slate-500 hidden sm:inline font-mono">
             {APP_CONFIG.collegeShortName} /
           </span>
-          <h1 className="text-sm font-semibold text-slate-900 tracking-tight">{pageTitle}</h1>
+          <h1 className="text-sm font-semibold text-slate-900 dark:text-slate-100 tracking-tight">{pageTitle}</h1>
         </div>
       </div>
 
-      {/* Right Controls */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        {/* Global Search Input & Dropdown */}
-        <div className="relative" ref={searchRef}>
-          <div className="relative flex items-center">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 pointer-events-none" />
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => {
-                const val = e.target.value;
-                setSearchQuery(val);
-                setIsSearchOpen(val.trim().length > 1);
-              }}
-              onFocus={() => {
-                if (searchQuery.trim().length > 1) {
-                  setIsSearchOpen(true);
-                }
-              }}
-              placeholder="Search notices, events, opportunities..."
-              className="w-44 sm:w-64 md:w-72 lg:w-80 pl-8 pr-7 py-1.5 text-xs bg-white border border-slate-200 rounded-md text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out font-sans"
-              aria-label="Search notices, events, opportunities"
-            />
+      {/* Middle: Expanded Search Bar with Filter Icon */}
+      <div className="flex-1 max-w-xl lg:max-w-2xl" ref={searchRef}>
+        <div className="relative flex items-center">
+          <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 pointer-events-none" />
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={searchQuery}
+            onChange={(e) => {
+              const val = e.target.value;
+              setSearchQuery(val);
+              setIsSearchOpen(val.trim().length > 1);
+            }}
+            onFocus={() => {
+              if (searchQuery.trim().length > 1) {
+                setIsSearchOpen(true);
+              }
+            }}
+            placeholder="Search notices, events, opportunities..."
+            className="w-full pl-9 pr-16 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 dark:focus:border-teal-500 transition-all duration-150 font-sans shadow-none"
+            aria-label="Search notices, events, opportunities"
+          />
+          <div className="absolute right-2.5 flex items-center gap-1.5">
             {searchQuery && (
               <button
                 type="button"
@@ -143,97 +144,115 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                   setIsSearchOpen(false);
                   searchInputRef.current?.focus();
                 }}
-                className="absolute right-2 text-slate-400 hover:text-slate-600 p-0.5 rounded transition-all duration-150 ease-in-out"
+                className="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 p-0.5 rounded"
                 aria-label="Clear search query"
               >
-                <X className="w-3 h-3" />
+                <X className="w-3.5 h-3.5" />
               </button>
             )}
+            <button
+              type="button"
+              onClick={() => {
+                if (searchQuery.trim().length > 1) setIsSearchOpen(prev => !prev);
+              }}
+              className="text-slate-400 hover:text-teal-700 dark:text-slate-500 dark:hover:text-teal-400 p-1 rounded transition-colors"
+              title="Filter and refine search"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+            </button>
           </div>
-
-          {/* Results Dropdown */}
-          {isSearchOpen && searchQuery.trim().length > 1 && (
-            <div className="absolute left-0 top-full mt-1 w-80 sm:w-96 bg-white rounded-md border border-slate-200 shadow-sm py-1 z-50 animate-in fade-in duration-150 font-sans">
-              <div className="flex items-center justify-between px-3 py-1.5 border-b border-slate-200 bg-slate-50/60 text-[11px] text-slate-500 font-medium">
-                <span>Search Results</span>
-                <span className="font-mono text-[10px] text-slate-400">
-                  {searchResults.length} {searchResults.length === 1 ? 'match' : 'matches'}
-                </span>
-              </div>
-
-              <div className="max-h-80 overflow-y-auto divide-y divide-slate-200">
-                {searchResults.length === 0 ? (
-                  <div className="px-4 py-6 text-center text-xs text-slate-500">
-                    No results found for '{searchQuery.trim()}'
-                  </div>
-                ) : (
-                  searchResults.map(result => (
-                    <Link
-                      key={`${result.type}-${result.id}`}
-                      to={result.url}
-                      onClick={() => {
-                        setIsSearchOpen(false);
-                        setSearchQuery('');
-                      }}
-                      className="block px-3 py-2.5 text-xs transition-all duration-150 ease-in-out hover:bg-slate-50 group"
-                    >
-                      <div className="flex items-start justify-between gap-2.5">
-                        <div className="min-w-0 flex-1">
-                          <p className="font-semibold text-slate-900 group-hover:text-teal-700 transition-colors leading-snug truncate">
-                            {result.title}
-                          </p>
-                          <p className="text-[11px] text-slate-500 mt-0.5 truncate">
-                            {result.subtitle}
-                          </p>
-                        </div>
-                        <span className={`shrink-0 px-2 py-0.5 text-xs font-mono font-medium rounded border ${getTypeBadgeClasses(result.type)}`}>
-                          {result.type}
-                        </span>
-                      </div>
-                    </Link>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Notifications Popover */}
+        {/* Results Dropdown */}
+        {isSearchOpen && searchQuery.trim().length > 1 && (
+          <div className="absolute left-auto mt-1 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm py-1 z-50 animate-in fade-in duration-150 font-sans">
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/60 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+              <span>Search Results</span>
+              <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">
+                {searchResults.length} {searchResults.length === 1 ? 'match' : 'matches'}
+              </span>
+            </div>
+
+            <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
+              {searchResults.length === 0 ? (
+                <div className="p-4 text-center text-xs text-slate-500 dark:text-slate-400">
+                  No results found for '{searchQuery}'
+                </div>
+              ) : (
+                searchResults.map(result => (
+                  <Link
+                    key={`${result.type}-${result.id}`}
+                    to={result.url}
+                    onClick={() => {
+                      setIsSearchOpen(false);
+                      setSearchQuery('');
+                    }}
+                    className="block p-3 text-xs hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors group"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <span className="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors truncate">
+                        {result.title}
+                      </span>
+                      <span
+                        className={`text-[10px] font-semibold font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${getTypeBadgeClasses(
+                          result.type
+                        )}`}
+                      >
+                        {result.type}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                      {result.subtitle}
+                    </p>
+                  </Link>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Right Controls */}
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        {/* Dark Mode Theme Toggle Button */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors select-none"
+          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          aria-label="Toggle color theme"
+        >
+          {theme === 'dark' ? (
+            <Sun className="w-4 h-4 text-amber-400 animate-in fade-in duration-200" />
+          ) : (
+            <Moon className="w-4 h-4 text-slate-600 animate-in fade-in duration-200" />
+          )}
+        </button>
+
+        {/* Notifications Bell Dropdown */}
         <div className="relative" ref={notifRef}>
           <button
+            type="button"
             onClick={() => setIsNotifOpen(prev => !prev)}
-            className={`relative p-2 rounded-md text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all duration-150 ease-in-out ${
-              isNotifOpen ? 'bg-slate-100 text-slate-900' : ''
-            }`}
+            className="relative p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+            title="Approaching deadlines & urgent alerts"
             aria-label="Notifications"
           >
             <Bell className="w-4 h-4" />
             {urgentDeadlines.length > 0 && (
-              <span
-                data-testid="urgent-deadline-dot"
-                className="w-2 h-2 rounded-full bg-rose-600 absolute top-1.5 right-1.5 ring-2 ring-white"
-              />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-600 ring-2 ring-white dark:ring-slate-950" />
             )}
           </button>
 
-          {/* Notifications Dropdown */}
           {isNotifOpen && (
-            <div className="absolute right-0 top-full mt-1 w-80 sm:w-96 bg-white rounded-md border border-slate-200 shadow-sm py-2 z-50 animate-in fade-in duration-150 font-sans">
-              <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-200 bg-slate-50/50">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-slate-900">Notifications</span>
-                  {urgentDeadlines.length > 0 && (
-                    <span className="text-[10px] font-mono font-semibold bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded">
-                      {urgentDeadlines.length} urgent
-                    </span>
-                  )}
-                </div>
-                <span className="text-[10px] text-slate-400 font-mono">Next 48 Hours</span>
+            <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm z-50 overflow-hidden animate-in fade-in duration-150 font-sans">
+              <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200">
+                <span>Urgent Approaching Deadlines</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">Next 48 Hours</span>
               </div>
 
-              <div className="max-h-80 overflow-y-auto divide-y divide-slate-200">
+              <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
                 {urgentDeadlines.length === 0 ? (
-                  <div className="p-6 text-center text-xs text-slate-600 font-medium">
+                  <div className="p-6 text-center text-xs text-slate-600 dark:text-slate-400 font-medium">
                     You're all caught up. No deadlines in the next 48 hours.
                   </div>
                 ) : (
@@ -242,17 +261,17 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                       key={`${item.type}-${item.id}`}
                       to={item.route}
                       onClick={() => setIsNotifOpen(false)}
-                      className="block p-3.5 text-xs transition-all duration-150 ease-in-out hover:bg-slate-50 group"
+                      className="block p-3.5 text-xs transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 group"
                     >
                       <div className="flex items-start gap-2.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-600 mt-1.5 shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs text-slate-900 font-medium leading-snug group-hover:text-teal-700 transition-colors">
+                          <p className="text-xs text-slate-900 dark:text-slate-100 font-medium leading-snug group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
                             {item.formattedText}
                           </p>
-                          <div className="flex items-center justify-between mt-1 text-[11px] text-slate-500">
+                          <div className="flex items-center justify-between mt-1 text-[11px] text-slate-500 dark:text-slate-400">
                             <span>{item.subtitle}</span>
-                            <span className="font-mono text-[10px] text-slate-400 capitalize flex items-center gap-0.5 group-hover:text-teal-700">
+                            <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 capitalize flex items-center gap-0.5 group-hover:text-teal-700 dark:group-hover:text-teal-400">
                               <span>Go to {item.type === 'assignment' ? 'assignments' : 'opportunities'}</span>
                               <ArrowRight className="w-2.5 h-2.5" />
                             </span>
@@ -267,34 +286,21 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
           )}
         </div>
 
-        {/* Sign Out Action */}
+        {/* Sign Out Action Button */}
         <button
           onClick={() => {
             logout();
             navigate('/login');
           }}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-slate-600 hover:text-rose-700 hover:bg-rose-50 rounded-md border border-slate-200 transition-all duration-150 ease-in-out select-none active:scale-95 group"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-rose-700 dark:hover:text-rose-400 bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-slate-200 dark:border-slate-800 transition-all duration-150 select-none active:scale-95 group"
           title="Sign out of active account"
         >
           <LogOut className="w-3.5 h-3.5 text-slate-400 group-hover:text-rose-600 transition-colors" />
           <span>Sign Out</span>
         </button>
-
-        {/* User Identity & Role Status Chip */}
-        <div className="hidden lg:flex items-center gap-2 pl-2 border-l border-slate-200 text-xs">
-          <div className="w-6 h-6 rounded-md bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-[10px] flex items-center justify-center font-mono">
-            {user?.avatarInitials || (role === 'admin' ? 'AD' : role === 'faculty' ? 'FA' : 'ST')}
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="font-medium text-slate-700 max-w-[140px] truncate">
-              {user?.name || 'Aaroh User'}
-            </span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 text-slate-600 capitalize">
-              {role || 'student'}
-            </span>
-          </div>
-        </div>
       </div>
     </header>
   );
 };
+
+export default TopBar;

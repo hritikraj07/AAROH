@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, CheckCircle2, Clock } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { Badge } from '../../ui/Badge';
 
@@ -19,36 +19,36 @@ export const WeekAssignmentsWidget: React.FC = () => {
   const pendingCount = assignments.filter(a => a.status !== 'submitted').length;
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-6 sm:p-8 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 flex flex-col justify-between">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-colors duration-200">
       <div>
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+            <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
               ACTIVE COURSEWORK
             </span>
             {pendingCount > 0 && (
-              <span className="text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded font-mono">
+              <span className="text-[10px] font-semibold text-amber-800 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 px-1.5 py-0.5 rounded font-mono">
                 {pendingCount} PENDING
               </span>
             )}
           </div>
           <Link
             to="/student/academics?tab=assignments"
-            className="text-xs font-medium text-teal-700 hover:text-teal-900 flex items-center gap-1 active:scale-95 transition-transform duration-150"
+            className="rounded-full bg-teal-700 hover:bg-teal-800 text-white text-xs px-3 py-1 font-medium transition-colors flex items-center gap-1 active:scale-95"
           >
             <span>All Tasks</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
 
         <div className="mt-6">
           {sortedAssignments.length === 0 ? (
             <div className="py-10 text-center">
-              <p className="text-sm font-semibold text-slate-900">No active coursework</p>
-              <p className="text-xs text-slate-400 mt-1 font-mono">Assignments and lab tasks will appear here</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">No active coursework</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 font-mono">Assignments and lab tasks will appear here</p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-100">
+            <div className="space-y-1">
               {sortedAssignments.map(asg => {
                 const course = courseMap.get(asg.courseId);
                 const isSubmitted = asg.status === 'submitted';
@@ -57,15 +57,15 @@ export const WeekAssignmentsWidget: React.FC = () => {
                 return (
                   <div
                     key={asg.id}
-                    className="py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-4"
+                    className="py-3 px-3 rounded-xl flex items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-slate-900">
+                        <span className="font-mono text-xs font-bold text-slate-900 dark:text-slate-100">
                           {course?.code || 'COURSE'}
                         </span>
-                        <span className="text-slate-300">•</span>
-                        <span className="text-[11px] text-slate-500 font-mono">
+                        <span className="text-slate-300 dark:text-slate-600">•</span>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
                           Due: {asg.dueDate}
                         </span>
                         {isOverdue && (
@@ -82,7 +82,7 @@ export const WeekAssignmentsWidget: React.FC = () => {
 
                       <p
                         className={`text-xs font-semibold mt-1 truncate ${
-                          isSubmitted ? 'line-through text-slate-400' : 'text-slate-900'
+                          isSubmitted ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-900 dark:text-slate-200'
                         }`}
                       >
                         {asg.title}
@@ -91,10 +91,10 @@ export const WeekAssignmentsWidget: React.FC = () => {
 
                     <button
                       onClick={() => toggleAssignmentSubmission(asg.id)}
-                      className={`text-xs px-2.5 py-1 rounded font-medium border active:scale-95 transition-transform duration-150 shrink-0 ${
+                      className={`rounded-full text-xs px-3 py-1 font-medium transition-colors shrink-0 ${
                         isSubmitted
-                          ? 'border-slate-200 text-slate-500 bg-white hover:bg-slate-50'
-                          : 'border-teal-700 bg-teal-700 text-white hover:bg-[#0D6861]'
+                          ? 'border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
+                          : 'bg-teal-700 text-white hover:bg-teal-800'
                       }`}
                     >
                       {isSubmitted ? 'Mark Pending' : 'Submit'}
@@ -106,16 +106,8 @@ export const WeekAssignmentsWidget: React.FC = () => {
           )}
         </div>
       </div>
-
-      {assignments.length > 0 && (
-        <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-mono">
-          <span>{assignments.filter(a => a.status === 'submitted').length}/{assignments.length} completed</span>
-          <span className="flex items-center gap-1">
-            <Clock className="w-3 h-3" />
-            <span>Strict deadline enforcement</span>
-          </span>
-        </div>
-      )}
     </div>
   );
 };
+
+export default WeekAssignmentsWidget;

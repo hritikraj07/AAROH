@@ -829,4 +829,50 @@ assert(updatedLogin.includes('<select') && updatedLogin.includes('student') && u
 
 console.log('--- ALL TOPNAV, FACULTY RBAC, AND LOGIN OVERHAUL VERIFICATIONS PASSED ---');
 
+// SECTION 22: TAILWIND DARK MODE TRANSITION, HERO BANNERS, DATA CARDS & INTERACTIVE LOGIN
+console.log('--- VERIFYING DARK MODE TRANSITION, HERO BANNERS, AND DATA CARDS ---');
+
+const tailwindConfigPath = path.join(__dirname, '../tailwind.config.js');
+const tailwindConfig = fs.readFileSync(tailwindConfigPath, 'utf8');
+assert(tailwindConfig.includes("darkMode: 'class'"), "Tailwind configuration enables darkMode: 'class'");
+
+const appContextPath = path.join(__dirname, '../src/context/AppContext.tsx');
+const appContext = fs.readFileSync(appContextPath, 'utf8');
+assert(appContext.includes('theme:') && appContext.includes('toggleTheme:') && appContext.includes('setTheme:'), 'AppContextType defines theme, toggleTheme, and setTheme');
+assert(appContext.includes('aaroh_theme'), 'AppContext persists theme selection in localStorage aaroh_theme');
+assert(appContext.includes("document.documentElement.classList.add('dark')") && appContext.includes("document.documentElement.classList.remove('dark')"), 'AppContext toggles dark class on document.documentElement root');
+
+const topBarPath = path.join(__dirname, '../src/components/layout/TopBar.tsx');
+const topBar = fs.readFileSync(topBarPath, 'utf8');
+assert(topBar.includes('toggleTheme') && topBar.includes('Sun') && topBar.includes('Moon'), 'TopBar renders Theme Toggle button with Sun/Moon icons');
+assert(topBar.includes('SlidersHorizontal'), 'TopBar search bar features SlidersHorizontal filter icon');
+assert(topBar.includes('dark:bg-slate-950') && topBar.includes('dark:border-slate-800'), 'TopBar styles support dark:bg-slate-950 and dark:border-slate-800');
+
+const sidebarPath = path.join(__dirname, '../src/components/layout/Sidebar.tsx');
+const sidebar = fs.readFileSync(sidebarPath, 'utf8');
+assert(sidebar.includes('OVERVIEW') && sidebar.includes('ACADEMICS'), 'Sidebar organizes navigation under uppercase categorized section headers');
+assert(sidebar.includes('dark:bg-teal-900/30 dark:text-teal-400'), 'Sidebar active nav link uses dark:bg-teal-900/30 dark:text-teal-400');
+assert(sidebar.includes('dark:bg-slate-950') && sidebar.includes('dark:border-slate-800'), 'Sidebar background and borders adapt to dark mode');
+assert(sidebar.includes('LogOut') && sidebar.includes('Logout'), 'Sidebar renders clean Logout link at the bottom');
+
+const studentDashboardPath = path.join(__dirname, '../src/pages/DashboardPage.tsx');
+const studentDashboard = fs.readFileSync(studentDashboardPath, 'utf8');
+assert(studentDashboard.includes('bg-[#0F766E]') && studentDashboard.includes('rounded-3xl'), 'Student Dashboard features Deep Teal rounded-3xl Hero Banner');
+assert(studentDashboard.includes('bg-teal-100') && studentDashboard.includes('dark:bg-teal-900/50'), 'Student Dashboard renders 3-tier Data Cards with category badges');
+assert(studentDashboard.includes('rounded-full bg-teal-700') || studentDashboard.includes('rounded-full'), 'Dashboard uses pill-shaped action buttons');
+
+const facultyDashboardPath = path.join(__dirname, '../src/pages/faculty/FacultyDashboardPage.tsx');
+const facultyDashboard = fs.readFileSync(facultyDashboardPath, 'utf8');
+assert(facultyDashboard.includes('bg-[#0F766E]') && facultyDashboard.includes('rounded-3xl'), 'Faculty Dashboard features Deep Teal rounded-3xl Hero Banner');
+
+const adminDashboardPath = path.join(__dirname, '../src/pages/admin/AdminDashboardPage.tsx');
+const adminDashboard = fs.readFileSync(adminDashboardPath, 'utf8');
+assert(adminDashboard.includes('bg-[#0F766E]') && adminDashboard.includes('rounded-3xl'), 'Admin Dashboard features Deep Teal rounded-3xl Hero Banner');
+
+assert(updatedLogin.includes('onMouseMove') && updatedLogin.includes('blur-[100px]'), 'LoginPage implements interactive onMouseMove shifting blurred blobs');
+assert(updatedLogin.includes('backdrop-blur-md shadow-xl'), 'LoginPage card implements refined backdrop-blur-md shadow-xl surface');
+
+console.log('--- ALL DARK MODE, HERO BANNERS, AND DATA CARDS VERIFICATIONS PASSED ---');
+
+
 

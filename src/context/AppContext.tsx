@@ -54,6 +54,11 @@ interface AppContextType {
   openSettings: () => void;
   closeSettings: () => void;
 
+  // Theme Management
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
+  setTheme: (theme: 'light' | 'dark') => void;
+
   // Feedback Toasts
   toasts: ToastMessage[];
   showToast: (toast: Omit<ToastMessage, 'id'>) => void;
@@ -141,6 +146,37 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     window.addEventListener('storage', refreshData);
     return () => window.removeEventListener('storage', refreshData);
   }, [refreshData]);
+
+  // Theme Management
+  const [theme, setThemeState] = useState<'light' | 'dark'>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('aaroh_theme');
+      if (saved === 'dark' || saved === 'light') return saved;
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+    }
+    return 'light';
+  });
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('aaroh_theme', theme);
+    }
+  }, [theme]);
+
+  const toggleTheme = useCallback(() => {
+    setThemeState(prev => (prev === 'dark' ? 'light' : 'dark'));
+  }, []);
+
+  const setTheme = useCallback((t: 'light' | 'dark') => {
+    setThemeState(t);
+  }, []);
 
   const showToast = useCallback((toast: Omit<ToastMessage, 'id'>) => {
     const id = `toast_${Date.now()}_${Math.random()}`;
@@ -513,6 +549,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         openSearch: () => setIsSearchOpen(true),
         closeSearch: () => setIsSearchOpen(false),
         searchGlobal,
+        theme,
+        toggleTheme,
+        setTheme,
         isSettingsOpen,
         openSettings: () => setIsSettingsOpen(true),
         closeSettings: () => setIsSettingsOpen(false),

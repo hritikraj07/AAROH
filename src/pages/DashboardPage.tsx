@@ -13,7 +13,8 @@ import {
   FileText,
   Sparkles,
   ExternalLink,
-  CheckCircle2
+  CheckCircle2,
+  Users
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { APP_CONFIG } from '../config';
@@ -73,7 +74,6 @@ export const DashboardPage: React.FC = () => {
   const upcomingInfo = AcademicService.getNextUpcomingClass(filteredTimetable, now);
 
   // 3. Context-Aware Focus Mode Logic
-  // Checks current system time against student's timetable array
   const [activeClassSession, setActiveClassSession] = useState<ClassSession | null>(null);
   const [isSimulatedFocus, setIsSimulatedFocus] = useState(false);
 
@@ -92,7 +92,6 @@ export const DashboardPage: React.FC = () => {
         return Number(parts[0]) * 60 + Number(parts[1]);
       };
 
-      // Check if student is currently inside a scheduled class time block
       const inSession = filteredTimetable.find(slot => {
         if (slot.dayOfWeek !== currentDay) return false;
         const startMin = parseTimeToMinutes(slot.startTime);
@@ -111,7 +110,6 @@ export const DashboardPage: React.FC = () => {
   const isSystemInClass = Boolean(activeClassSession);
   const isFocusMode = isSystemInClass || isSimulatedFocus;
 
-  // Active class session for Focus Mode display
   const activeFocusSession: ClassSession | null = activeClassSession || (isSimulatedFocus ? (filteredTimetable[0] || {
     id: 'sim_focus_class',
     courseId: courses[0]?.id || 'cs_core',
@@ -154,24 +152,26 @@ export const DashboardPage: React.FC = () => {
   const savedOppIds = user?.savedOpportunityIds || [];
   const savedOpportunities = opportunities.filter(o => savedOppIds.includes(o.id) || o.isSaved);
 
+  const studentDisplayName = user?.name ? user.name.split(' ')[0] : 'Hritik';
+
   return (
-    <div className="space-y-8">
-      {/* 0. Context-Aware Focus Mode Banner (Displayed when student is inside class block) */}
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* 0. Context-Aware Focus Mode Banner */}
       {isFocusMode && (
-        <div className="animate-in fade-in zoom-in-95 duration-500 bg-teal-50 border border-teal-200 text-teal-900 px-4 py-3 rounded-lg flex items-center justify-between text-xs sm:text-sm font-medium">
+        <div className="animate-in fade-in zoom-in-95 duration-500 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-teal-900 dark:text-teal-200 px-4 py-3 rounded-2xl flex items-center justify-between text-xs sm:text-sm font-medium">
           <div className="flex items-center gap-2.5">
-            <Focus className="w-4 h-4 text-teal-700 animate-pulse shrink-0" />
+            <Focus className="w-4 h-4 text-teal-700 dark:text-teal-400 animate-pulse shrink-0" />
             <span>Focus Mode Auto-Activated: Muting non-academic notifications until class ends.</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-[10px] font-mono font-bold text-teal-800 bg-teal-100/70 border border-teal-200 px-2 py-0.5 rounded uppercase tracking-wider">
+            <span className="text-[10px] font-mono font-bold text-teal-800 dark:text-teal-300 bg-teal-100/70 dark:bg-teal-900/60 border border-teal-200 dark:border-teal-700 px-2 py-0.5 rounded uppercase tracking-wider">
               {isSystemInClass ? 'Live Class Active' : 'Simulated Session'}
             </span>
             {isSimulatedFocus && !isSystemInClass && (
               <button
                 type="button"
                 onClick={() => setIsSimulatedFocus(false)}
-                className="text-xs text-teal-800 underline hover:text-teal-950 font-medium"
+                className="text-xs text-teal-800 dark:text-teal-300 underline hover:text-teal-950 font-medium"
               >
                 Exit Demo
               </button>
@@ -180,93 +180,78 @@ export const DashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* 1. Header & Identity Strip (Zero clutter, crisp typography) */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
-        <div>
-          <div className="flex items-center gap-2.5 flex-wrap">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-              Overview
-            </h1>
-            <span className="text-xs font-mono font-medium text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded">
-              {user?.rollNumber || '22CS042'}
-            </span>
-            <span className="text-xs font-medium text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">
-              {user?.program || 'B.Tech'} Sem {user?.semester || 5}
-            </span>
-          </div>
-          <p className="text-xs text-slate-400 font-medium tracking-tight mt-1">
-            {APP_CONFIG.collegeName} • Academic Session {APP_CONFIG.academicSession}
-          </p>
+      {/* 1. Hero Banner: Deep Teal bg-[#0F766E], rounded-3xl, subtle CSS decorative shapes */}
+      <div className="relative overflow-hidden bg-[#0F766E] text-white rounded-3xl p-6 sm:p-10 shadow-sm transition-all duration-300 select-none">
+        {/* Subtle CSS decorative shapes: curves and stars */}
+        <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full border-[20px] border-white/10 pointer-events-none" />
+        <div className="absolute right-28 -top-16 w-52 h-52 rounded-full border-[14px] border-white/10 pointer-events-none" />
+        <div className="absolute top-6 right-16 text-white/20 pointer-events-none select-none">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
+        <div className="absolute bottom-8 right-52 text-white/15 pointer-events-none select-none">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
         </div>
 
-        {/* Action Controls */}
-        <div className="flex items-center gap-2.5 flex-wrap">
-          {/* Demo helper to test Context-Aware Focus Mode on-demand */}
-          {!isSystemInClass && (
-            <button
-              type="button"
-              onClick={() => setIsSimulatedFocus(prev => !prev)}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition-transform duration-150 select-none active:scale-95 ${
-                isSimulatedFocus
-                  ? 'text-teal-800 bg-teal-50 border-teal-300 font-semibold'
-                  : 'text-slate-600 bg-white border-slate-200 hover:bg-slate-50'
-              }`}
-              title="Test context-aware Focus Mode"
-            >
-              <Focus className="w-3.5 h-3.5 text-slate-400" />
-              <span>{isSimulatedFocus ? 'Exit Focus Demo' : 'Focus Mode Demo'}</span>
-            </button>
-          )}
+        <div className="relative z-10 max-w-2xl space-y-2.5">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white backdrop-blur-sm border border-white/20 font-mono uppercase tracking-wider">
+            <span>{APP_CONFIG.collegeName} • {APP_CONFIG.academicSession}</span>
+          </div>
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-white font-sans">
+            Welcome back, {studentDisplayName}
+          </h1>
+          <p className="text-xs sm:text-sm text-teal-100 font-normal leading-relaxed max-w-xl">
+            Here is your institutional overview for today. All scheduled coursework, live attendance metrics, and campus opportunities are synchronized.
+          </p>
 
-          <button
-            onClick={() => setIsReportModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-teal-700 bg-teal-50 border border-teal-200 rounded-md hover:bg-teal-100 active:scale-95 transition-transform duration-150 select-none"
-          >
-            <PlusCircle className="w-3.5 h-3.5" />
-            <span>Report Item</span>
-          </button>
-
-          <button
-            onClick={() => navigate('/student/opportunities')}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-md hover:bg-slate-50 active:scale-95 transition-transform duration-150 select-none"
-          >
-            <Briefcase className="w-3.5 h-3.5 text-slate-400" />
-            <span>Opportunities</span>
-          </button>
-
-          <button
-            onClick={() => navigate('/student/academics?tab=timetable')}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-md hover:bg-slate-50 active:scale-95 transition-transform duration-150 select-none"
-          >
-            <Clock className="w-3.5 h-3.5 text-slate-400" />
-            <span>Timetable</span>
-          </button>
+          <div className="pt-2 flex items-center gap-2.5 flex-wrap">
+            <span className="text-xs font-mono font-medium text-white bg-white/20 border border-white/30 px-2.5 py-1 rounded-full">
+              Roll No: {user?.rollNumber || '22CS042'}
+            </span>
+            <span className="text-xs font-medium text-teal-900 bg-teal-100 px-2.5 py-1 rounded-full">
+              {user?.program || 'B.Tech'} Sem {user?.semester || 5}
+            </span>
+            {!isSystemInClass && (
+              <button
+                type="button"
+                onClick={() => setIsSimulatedFocus(prev => !prev)}
+                className="text-xs font-medium text-white bg-white/20 hover:bg-white/30 border border-white/30 px-3 py-1 rounded-full transition-colors active:scale-95 flex items-center gap-1.5"
+                title="Toggle Context-Aware Focus Mode demo"
+              >
+                <Focus className="w-3.5 h-3.5" />
+                <span>{isSimulatedFocus ? 'Exit Focus Demo' : 'Focus Mode Demo'}</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Prominent Focus Mode Expanded Section: Current Class */}
       {isFocusMode && activeFocusSession && (
-        <div className="animate-in fade-in zoom-in-95 duration-500 bg-white border border-slate-200 rounded-lg p-6 sm:p-8 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+        <div className="animate-in fade-in zoom-in-95 duration-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
             <div>
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
                   LIVE IN SESSION
                 </span>
-                <span className="text-xs font-mono text-slate-500">
+                <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
                   {activeFocusSession.startTime} – {activeFocusSession.endTime}
                 </span>
                 {activeFocusSession.room && (
-                  <span className="text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                  <span className="text-xs font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
                     Room {activeFocusSession.room}
                   </span>
                 )}
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 mt-2">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mt-2">
                 Current Class: {currentSubjectName}
               </h2>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                 Instructor: {activeFocusSession.facultyName || 'Course Faculty'} • Type: {activeFocusSession.type || 'Lecture'}
               </p>
             </div>
@@ -275,7 +260,7 @@ export const DashboardPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleTakeLiveNotes}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-white bg-teal-700 hover:bg-teal-800 rounded-md transition-colors active:scale-95 shadow-sm"
+                className="rounded-full bg-teal-700 hover:bg-teal-800 text-white text-xs px-4 py-2 font-medium transition-colors active:scale-95 shadow-sm inline-flex items-center gap-1.5"
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>Take Live Notes</span>
@@ -284,7 +269,7 @@ export const DashboardPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleViewResources}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-md transition-colors active:scale-95 shadow-sm"
+                className="rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs px-4 py-2 font-medium transition-colors active:scale-95 shadow-sm inline-flex items-center gap-1.5"
               >
                 <BookOpen className="w-3.5 h-3.5 text-slate-400" />
                 <span>View Resources</span>
@@ -292,56 +277,55 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Context Details Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
-            <div className="p-4 bg-slate-50 rounded-md border border-slate-100">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Class Progress</div>
-              <div className="mt-1 text-sm font-bold text-slate-900 font-mono">
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Class Progress</div>
+              <div className="mt-1 text-sm font-bold text-slate-900 dark:text-slate-100 font-mono">
                 {activeFocusSession.startTime} – {activeFocusSession.endTime}
               </div>
-              <div className="text-xs text-slate-500 mt-0.5">Focus mode auto-disengages when class concludes</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Focus mode auto-disengages when class concludes</div>
             </div>
-            <div className="p-4 bg-slate-50 rounded-md border border-slate-100">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Attendance Sync</div>
-              <div className="mt-1 text-sm font-bold text-teal-700 font-mono">Roll Call Active</div>
-              <div className="text-xs text-slate-500 mt-0.5">Faculty roll call synchronized with student record</div>
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Attendance Sync</div>
+              <div className="mt-1 text-sm font-bold text-teal-700 dark:text-teal-400 font-mono">Roll Call Active</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Faculty roll call synchronized with student record</div>
             </div>
-            <div className="p-4 bg-slate-50 rounded-md border border-slate-100">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Notifications</div>
-              <div className="mt-1 text-sm font-bold text-slate-900 font-mono">Muted & Filtered</div>
-              <div className="text-xs text-slate-500 mt-0.5">Campus notices & events held until session ends</div>
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Notifications</div>
+              <div className="mt-1 text-sm font-bold text-slate-900 dark:text-slate-100 font-mono">Muted & Filtered</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Campus notices & events held until session ends</div>
             </div>
           </div>
         </div>
       )}
 
-      {/* 2. Top Metric Stats Grid (Large bold numbers, uppercase tracked labels, generous whitespace) */}
+      {/* 2. Top Metric Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* Metric 1: Attendance */}
         <div
           onClick={() => navigate('/student/academics?tab=attendance')}
-          className="bg-white border border-slate-200 rounded-lg p-6 sm:p-8 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 cursor-pointer flex flex-col justify-between"
+          className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+            <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
               ATTENDANCE RATE
             </span>
-            <ShieldCheck className="w-4 h-4 text-teal-700" />
+            <ShieldCheck className="w-4 h-4 text-teal-700 dark:text-teal-400" />
           </div>
           <div className="my-3">
-            <span className="text-4xl font-bold tracking-tight text-slate-900 tabular-nums font-mono">
+            <span className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 tabular-nums font-mono">
               {overallPct !== null ? `${overallPct}%` : '—'}
             </span>
           </div>
-          <div className="text-xs text-slate-400 font-mono flex items-center justify-between">
+          <div className="text-xs text-slate-400 dark:text-slate-500 font-mono flex items-center justify-between">
             <span>Req: &ge;{minThreshold}%</span>
             {lowAttendanceCount > 0 ? (
-              <span className="text-rose-600 font-medium flex items-center gap-1">
+              <span className="text-rose-600 dark:text-rose-400 font-medium flex items-center gap-1">
                 <AlertTriangle className="w-3 h-3" />
                 {lowAttendanceCount} shortfall
               </span>
             ) : (
-              <span className="text-teal-700 font-medium">In good standing</span>
+              <span className="text-teal-700 dark:text-teal-400 font-medium">In good standing</span>
             )}
           </div>
         </div>
@@ -349,20 +333,20 @@ export const DashboardPage: React.FC = () => {
         {/* Metric 2: Today's Classes */}
         <div
           onClick={() => navigate('/student/academics?tab=timetable')}
-          className="bg-white border border-slate-200 rounded-lg p-6 sm:p-8 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 cursor-pointer flex flex-col justify-between"
+          className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+            <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
               CLASSES TODAY
             </span>
-            <Clock className="w-4 h-4 text-teal-700" />
+            <Clock className="w-4 h-4 text-teal-700 dark:text-teal-400" />
           </div>
           <div className="my-3">
-            <span className="text-4xl font-bold tracking-tight text-slate-900 tabular-nums font-mono">
+            <span className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 tabular-nums font-mono">
               {todaySessions.length}
             </span>
           </div>
-          <div className="text-xs text-slate-400 font-mono truncate">
+          <div className="text-xs text-slate-400 dark:text-slate-500 font-mono truncate">
             {upcomingInfo.session
               ? `Next: ${upcomingInfo.session.startTime} (${upcomingInfo.session.room})`
               : 'No further sessions today'}
@@ -372,27 +356,27 @@ export const DashboardPage: React.FC = () => {
         {/* Metric 3: Pending Coursework */}
         <div
           onClick={() => navigate('/student/academics?tab=assignments')}
-          className="bg-white border border-slate-200 rounded-lg p-6 sm:p-8 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 cursor-pointer flex flex-col justify-between"
+          className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+            <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
               PENDING TASKS
             </span>
-            <BookOpen className="w-4 h-4 text-teal-700" />
+            <BookOpen className="w-4 h-4 text-teal-700 dark:text-teal-400" />
           </div>
           <div className="my-3">
-            <span className="text-4xl font-bold tracking-tight text-slate-900 tabular-nums font-mono">
+            <span className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 tabular-nums font-mono">
               {pendingAssignments.length}
             </span>
           </div>
-          <div className="text-xs text-slate-400 font-mono flex items-center justify-between">
+          <div className="text-xs text-slate-400 dark:text-slate-500 font-mono flex items-center justify-between">
             <span>{assignments.length} total tasks</span>
             {overdueAssignments.length > 0 ? (
-              <span className="text-rose-600 font-medium">
+              <span className="text-rose-600 dark:text-rose-400 font-medium">
                 {overdueAssignments.length} overdue
               </span>
             ) : (
-              <span className="text-teal-700 font-medium">On schedule</span>
+              <span className="text-teal-700 dark:text-teal-400 font-medium">On schedule</span>
             )}
           </div>
         </div>
@@ -400,32 +384,158 @@ export const DashboardPage: React.FC = () => {
         {/* Metric 4: Saved Opportunities */}
         <div
           onClick={() => navigate('/student/opportunities?tab=saved')}
-          className="bg-white border border-slate-200 rounded-lg p-6 sm:p-8 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 cursor-pointer flex flex-col justify-between"
+          className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+            <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
               SAVED OPPORTUNITIES
             </span>
-            <Briefcase className="w-4 h-4 text-teal-700" />
+            <Briefcase className="w-4 h-4 text-teal-700 dark:text-teal-400" />
           </div>
           <div className="my-3">
-            <span className="text-4xl font-bold tracking-tight text-slate-900 tabular-nums font-mono">
+            <span className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 tabular-nums font-mono">
               {savedOpportunities.length}
             </span>
           </div>
-          <div className="text-xs text-slate-400 font-mono">
+          <div className="text-xs text-slate-400 dark:text-slate-500 font-mono">
             {opportunities.length} active listings
           </div>
         </div>
       </div>
 
-      {/* 3. Primary Data Modules (Clean tables, generous padding, zero boilerplate) */}
+      {/* 3. Data Cards Section: Opportunities, Events, Courses matching reference spec */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono">
+            FEATURED CAMPUS HIGHLIGHTS
+          </h2>
+          <span className="text-[11px] text-teal-700 dark:text-teal-400 font-medium">Curated for your cohort</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Card 1: Opportunity */}
+          <div
+            onClick={() => navigate('/student/opportunities')}
+            className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 flex flex-col justify-between group cursor-pointer"
+          >
+            <div>
+              {/* Top half placeholder image/cover */}
+              <div className="h-32 bg-gradient-to-br from-teal-600 to-teal-800 p-4 relative flex items-end">
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]" />
+                <span className="relative z-10 text-[10px] font-mono font-semibold text-teal-100 bg-black/25 px-2 py-0.5 rounded backdrop-blur-sm">
+                  Summer 2026
+                </span>
+              </div>
+
+              {/* Middle: Tiny category badge + bold title */}
+              <div className="p-5 space-y-2">
+                <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300 font-mono">
+                  INTERNSHIP
+                </span>
+                <h3 className="font-bold text-base text-slate-900 dark:text-slate-50 leading-snug group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
+                  Google Summer of Code: Systems Research
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                  Open-source research program for kernel algorithms and distributed caching.
+                </p>
+              </div>
+            </div>
+
+            {/* Bottom: small avatar / name */}
+            <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-teal-700 text-white font-mono text-[9px] flex items-center justify-center font-bold">
+                  G
+                </div>
+                <span className="font-medium text-slate-700 dark:text-slate-300">Google Open Source</span>
+              </div>
+              <span className="font-mono text-[10px] text-teal-700 dark:text-teal-400 font-semibold">$3,000 Stipend</span>
+            </div>
+          </div>
+
+          {/* Card 2: Hackathon / Event */}
+          <div
+            onClick={() => navigate('/student/events')}
+            className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 flex flex-col justify-between group cursor-pointer"
+          >
+            <div>
+              <div className="h-32 bg-gradient-to-br from-indigo-600 to-indigo-900 p-4 relative flex items-end">
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]" />
+                <span className="relative z-10 text-[10px] font-mono font-semibold text-indigo-100 bg-black/25 px-2 py-0.5 rounded backdrop-blur-sm">
+                  48h Offline
+                </span>
+              </div>
+
+              <div className="p-5 space-y-2">
+                <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300 font-mono">
+                  HACKATHON
+                </span>
+                <h3 className="font-bold text-base text-slate-900 dark:text-slate-50 leading-snug group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
+                  Aarambh AI Builder Summit 2026
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                  Build next-generation campus AI tooling and real-time offline assistants.
+                </p>
+              </div>
+            </div>
+
+            <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-indigo-700 text-white font-mono text-[9px] flex items-center justify-center font-bold">
+                  K
+                </div>
+                <span className="font-medium text-slate-700 dark:text-slate-300">KRMU AI Club</span>
+              </div>
+              <span className="font-mono text-[10px] text-teal-700 dark:text-teal-400 font-semibold">₹1,00,000 Pool</span>
+            </div>
+          </div>
+
+          {/* Card 3: Course */}
+          <div
+            onClick={() => navigate('/student/academics?tab=timetable')}
+            className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 flex flex-col justify-between group cursor-pointer"
+          >
+            <div>
+              <div className="h-32 bg-gradient-to-br from-slate-800 to-slate-950 p-4 relative flex items-end">
+                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]" />
+                <span className="relative z-10 text-[10px] font-mono font-semibold text-slate-200 bg-black/25 px-2 py-0.5 rounded backdrop-blur-sm">
+                  Core Curriculum
+                </span>
+              </div>
+
+              <div className="p-5 space-y-2">
+                <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300 font-mono">
+                  COURSE
+                </span>
+                <h3 className="font-bold text-base text-slate-900 dark:text-slate-50 leading-snug group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
+                  Distributed Systems & Architecture
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                  Concurrency, consensus protocols, Paxos/Raft, and high-throughput pipelines.
+                </p>
+              </div>
+            </div>
+
+            <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-slate-700 text-white font-mono text-[9px] flex items-center justify-center font-bold">
+                  KR
+                </div>
+                <span className="font-medium text-slate-700 dark:text-slate-300">Prof. K. Ramanujam</span>
+              </div>
+              <span className="font-mono text-[10px] text-teal-700 dark:text-teal-400 font-semibold">4 Credits</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Primary Data Modules (Tables: Today's Schedule & Coursework) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <TodayClassesCard />
         <WeekAssignmentsWidget />
       </div>
 
-      {/* 4. Secondary Data Modules: When in Focus Mode, Campus Updates & Upcoming Events are MUTED/HIDDEN */}
+      {/* 5. Secondary Data Modules: When in Focus Mode, Campus Updates & Upcoming Events are MUTED/HIDDEN */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <AttendanceAlertsWidget />
         {!isFocusMode && (

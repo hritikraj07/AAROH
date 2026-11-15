@@ -78,53 +78,48 @@ export const FacultyDashboardPage: React.FC = () => {
   );
 
   return (
-    <div className="space-y-6">
-      {/* Faculty Profile Banner */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-teal-800 text-white font-semibold text-base flex items-center justify-center font-mono shrink-0">
-              {user?.avatarInitials || 'FA'}
-            </div>
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
-                  {user?.name || 'Faculty Member'}
-                </h2>
-                <span className="text-[11px] font-semibold text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">
-                  {user?.designation || 'Faculty In-Charge'}
-                </span>
-              </div>
-              <div className="flex items-center gap-3 text-xs text-slate-500 mt-1 flex-wrap font-mono">
-                <span className="flex items-center gap-1">
-                  <Building className="w-3.5 h-3.5 text-slate-400" />
-                  {user?.department || 'Department of Computer Science & Engineering'}
-                </span>
-                <span>•</span>
-                <span>{user?.email}</span>
-                <span>•</span>
-                <span>{APP_CONFIG.collegeShortName}</span>
-              </div>
-            </div>
-          </div>
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Hero Banner with Decorative Elements */}
+      <div className="relative overflow-hidden bg-[#0F766E] text-white rounded-3xl p-6 sm:p-10 shadow-sm transition-all duration-300 select-none">
+        <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full border-[20px] border-white/10 pointer-events-none" />
+        <div className="absolute right-28 -top-16 w-52 h-52 rounded-full border-[14px] border-white/10 pointer-events-none" />
+        <div className="absolute top-6 right-16 text-white/20 pointer-events-none select-none">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
+        <div className="absolute bottom-8 right-52 text-white/15 pointer-events-none select-none">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+          </svg>
+        </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <Button
-              variant="primary"
-              size="sm"
-              icon={<ClipboardList className="w-3.5 h-3.5" />}
+        <div className="relative z-10 max-w-2xl space-y-2.5">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white backdrop-blur-sm border border-white/20 font-mono uppercase tracking-wider">
+            <span>Faculty Portal • {APP_CONFIG.academicSession}</span>
+          </div>
+          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-white font-sans">
+            Welcome back, {user?.name?.split(' ')[0] || 'Professor'}
+          </h1>
+          <p className="text-xs sm:text-sm text-teal-100 font-normal leading-relaxed max-w-xl">
+            {user?.department || 'Department of Computer Science & Engineering'} • Manage your lecture schedules, student roll calls, and coursework submissions.
+          </p>
+
+          <div className="pt-3 flex items-center gap-2.5 flex-wrap">
+            <button
               onClick={() => navigate('/faculty/attendance')}
+              className="rounded-full bg-white text-teal-800 hover:bg-teal-50 text-xs px-4 py-2 font-semibold transition-colors active:scale-95 inline-flex items-center gap-1.5 shadow-sm"
             >
-              Mark Roll Call
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<Bell className="w-3.5 h-3.5" />}
+              <ClipboardList className="w-3.5 h-3.5" />
+              <span>Mark Roll Call</span>
+            </button>
+            <button
               onClick={() => navigate('/faculty/notices')}
+              className="rounded-full bg-teal-800/80 hover:bg-teal-800 text-white border border-white/30 text-xs px-4 py-2 font-semibold transition-colors active:scale-95 inline-flex items-center gap-1.5 shadow-sm"
             >
-              Post Notice
-            </Button>
+              <Bell className="w-3.5 h-3.5" />
+              <span>Post Notice</span>
+            </button>
           </div>
         </div>
       </div>

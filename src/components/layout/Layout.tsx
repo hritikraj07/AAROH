@@ -82,7 +82,7 @@ export const Layout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#FAFAFA] text-slate-900 font-sans">
+    <div className="flex h-screen overflow-hidden bg-[#FBFBFA] dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
       {/* Desktop Sidebar (Persistent left panel) */}
       <div className="hidden md:flex md:shrink-0">
         <Sidebar />
@@ -101,8 +101,8 @@ export const Layout: React.FC = () => {
           pageTitle={getPageTitle(location.pathname)}
         />
 
-        <main className="flex-1 overflow-y-auto bg-[#FAFAFA]">
-          <div className="max-w-7xl mx-auto p-6 sm:p-8 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
+        <main className="flex-1 overflow-y-auto bg-[#FBFBFA] dark:bg-slate-950 transition-colors duration-200">
+          <div className="max-w-7xl mx-auto p-6 sm:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
             <Outlet />
           </div>
         </main>

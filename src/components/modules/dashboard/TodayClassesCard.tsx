@@ -42,38 +42,38 @@ export const TodayClassesCard: React.FC = () => {
   const sessionsToDisplay = AcademicService.getSessionsForDay(filteredTimetable, displayDayNum);
 
   return (
-    <div className="bg-white border border-slate-200 rounded-lg p-6 sm:p-8 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 flex flex-col justify-between">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-colors duration-200">
       {/* Header */}
       <div>
-        <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
+            <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
               {headerLabel}
             </span>
             {isDisplayingFutureDay && (
-              <span className="text-[10px] font-medium text-slate-400 font-mono">
+              <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 font-mono">
                 (NEXT ACTIVE)
               </span>
             )}
           </div>
           <Link
             to="/student/academics?tab=timetable"
-            className="text-xs font-medium text-teal-700 hover:text-teal-900 flex items-center gap-1 active:scale-95 transition-transform duration-150"
+            className="rounded-full bg-teal-700 hover:bg-teal-800 text-white text-xs px-3 py-1 font-medium transition-colors flex items-center gap-1 active:scale-95"
           >
             <span>Full Schedule</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
 
-        {/* Content Table / Data Rows */}
+        {/* Content Table / Borderless Data Rows */}
         <div className="mt-6">
           {sessionsToDisplay.length === 0 ? (
             <div className="py-10 text-center">
-              <p className="text-sm font-semibold text-slate-900">No scheduled sessions</p>
-              <p className="text-xs text-slate-400 mt-1 font-mono">Timetable records will populate here</p>
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">No scheduled sessions</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 font-mono">Timetable records will populate here</p>
             </div>
           ) : (
-            <div className="divide-y divide-slate-100">
+            <div className="space-y-1">
               {sessionsToDisplay.map(session => {
                 const course = courseMap.get(session.courseId);
                 const isNext = upcomingInfo.session?.id === session.id;
@@ -81,17 +81,19 @@ export const TodayClassesCard: React.FC = () => {
                 return (
                   <div
                     key={session.id}
-                    className={`py-3.5 first:pt-0 last:pb-0 flex items-center justify-between gap-4 transition-colors ${
-                      isNext ? 'bg-teal-50/50 -mx-3 px-3 rounded-md' : ''
+                    className={`py-3.5 px-3 rounded-xl flex items-center justify-between gap-4 transition-colors ${
+                      isNext
+                        ? 'bg-teal-50/70 dark:bg-teal-900/30'
+                        : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
                     }`}
                   >
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-slate-900">
+                        <span className="font-mono text-xs font-bold text-slate-900 dark:text-slate-100">
                           {session.startTime} – {session.endTime}
                         </span>
-                        <span className="text-slate-300">•</span>
-                        <span className="text-xs font-bold text-teal-800">
+                        <span className="text-slate-300 dark:text-slate-600">•</span>
+                        <span className="text-xs font-bold text-teal-800 dark:text-teal-400">
                           {course?.code || 'CS'}
                         </span>
                         <Badge variant="slate" size="sm">
@@ -99,17 +101,17 @@ export const TodayClassesCard: React.FC = () => {
                         </Badge>
                       </div>
 
-                      <p className="text-xs font-semibold text-slate-900 mt-1 truncate">
+                      <p className="text-xs font-semibold text-slate-900 dark:text-slate-200 mt-1 truncate">
                         {course?.name || session.courseName}
                       </p>
 
-                      <div className="flex items-center gap-4 mt-1 text-[11px] text-slate-500">
+                      <div className="flex items-center gap-4 mt-1 text-[11px] text-slate-500 dark:text-slate-400">
                         <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-slate-400" />
+                          <MapPin className="w-3 h-3 text-slate-400 dark:text-slate-500" />
                           {session.room}
                         </span>
                         <span className="flex items-center gap-1">
-                          <UserCheck className="w-3 h-3 text-slate-400" />
+                          <UserCheck className="w-3 h-3 text-slate-400 dark:text-slate-500" />
                           {session.facultyName}
                         </span>
                       </div>
@@ -117,13 +119,13 @@ export const TodayClassesCard: React.FC = () => {
 
                     <div>
                       {isNext ? (
-                        <Badge variant="teal" size="sm" dot>
+                        <span className="rounded-full bg-teal-100 dark:bg-teal-900/60 text-teal-800 dark:text-teal-300 text-[10px] font-bold font-mono uppercase px-2.5 py-1">
                           {upcomingInfo.isHappeningNow
                             ? 'Live'
                             : upcomingInfo.isToday && upcomingInfo.minutesUntil > 0
                             ? `In ${upcomingInfo.minutesUntil}m`
                             : 'Next'}
-                        </Badge>
+                        </span>
                       ) : null}
                     </div>
                   </div>
@@ -135,7 +137,7 @@ export const TodayClassesCard: React.FC = () => {
       </div>
 
       {sessionsToDisplay.length > 0 && (
-        <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+        <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-mono">
           <span>{sessionsToDisplay.length} sessions listed</span>
           <span>Cohort: {user?.program || 'B.Tech'} Sem {user?.semester || 5}</span>
         </div>
@@ -143,3 +145,5 @@ export const TodayClassesCard: React.FC = () => {
     </div>
   );
 };
+
+export default TodayClassesCard;
