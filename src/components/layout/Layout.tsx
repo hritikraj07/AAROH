@@ -15,6 +15,10 @@ export const Layout: React.FC = () => {
   const getPageTitle = (pathname: string): string => {
     const cleanPath = pathname.replace(/\/+$/, '') || '/';
 
+    if (cleanPath.includes('/assignments/code')) {
+      return 'Live Lab Code Workspace';
+    }
+
     switch (cleanPath) {
       // Student Routes
       case '/':

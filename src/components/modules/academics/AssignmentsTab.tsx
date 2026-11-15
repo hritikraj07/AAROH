@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useApp } from '../../../context/AppContext';
 import { AssignmentStatus } from '../../../types';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
-import { CheckCircle2, Clock, AlertCircle, Filter, Search, Calendar, FileText } from 'lucide-react';
+import { CheckCircle2, Clock, AlertCircle, Filter, Search, Calendar, FileText, Code, ArrowRight } from 'lucide-react';
 
 export const AssignmentsTab: React.FC = () => {
   const { assignments, courses, toggleAssignmentSubmission } = useApp();
@@ -169,6 +170,14 @@ export const AssignmentsTab: React.FC = () => {
                       Max: {asg.maxMarks} Marks
                     </span>
 
+                    {/* Coding Live Lab Badge */}
+                    {asg.type === 'coding' && (
+                      <span className="text-[10px] font-semibold text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded font-mono flex items-center gap-1">
+                        <Code className="w-3 h-3" />
+                        <span>LIVE LAB ({asg.language || 'python'})</span>
+                      </span>
+                    )}
+
                     {/* Status Badge */}
                     {isOverdue && (
                       <Badge variant="rose" size="sm" dot>
@@ -212,25 +221,36 @@ export const AssignmentsTab: React.FC = () => {
 
                 {/* Right Action */}
                 <div className="flex items-center sm:flex-col sm:items-end gap-2 shrink-0">
-                  <Button
-                    variant={isSubmitted ? 'outline' : 'primary'}
-                    size="sm"
-                    onClick={() => toggleAssignmentSubmission(asg.id)}
-                    className={
-                      isSubmitted
-                        ? 'border-slate-300 text-slate-700 hover:bg-slate-100'
-                        : ''
-                    }
-                  >
-                    {isSubmitted ? (
-                      <span className="flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                        Mark Pending
-                      </span>
-                    ) : (
-                      'Mark as Submitted'
-                    )}
-                  </Button>
+                  {asg.type === 'coding' ? (
+                    <Link
+                      to={`/student/assignments/code/${asg.id}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-teal-700 hover:bg-[#0D6861] active:scale-95 transition-transform duration-150 rounded-md shadow-none select-none"
+                    >
+                      <Code className="w-3.5 h-3.5 text-teal-200" />
+                      <span>Launch Live Lab</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  ) : (
+                    <Button
+                      variant={isSubmitted ? 'outline' : 'primary'}
+                      size="sm"
+                      onClick={() => toggleAssignmentSubmission(asg.id)}
+                      className={
+                        isSubmitted
+                          ? 'border-slate-300 text-slate-700 hover:bg-slate-100'
+                          : ''
+                      }
+                    >
+                      {isSubmitted ? (
+                        <span className="flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          Mark Pending
+                        </span>
+                      ) : (
+                        'Mark as Submitted'
+                      )}
+                    </Button>
+                  )}
                 </div>
               </div>
             );

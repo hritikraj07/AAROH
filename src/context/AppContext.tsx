@@ -95,6 +95,8 @@ interface AppContextType {
   recordAttendanceEntry: (courseId: string, attendedDelta?: number, totalDelta?: number) => void;
   recordBatchAttendance: (courseId: string, studentMarks: { studentId: string; isPresent: boolean }[]) => void;
   createAssignment: (asg: Omit<Assignment, 'id' | 'status'>) => Assignment;
+  updateAssignmentLabStatus: (id: string, labStatus: 'locked' | 'active' | 'closed') => Assignment | null;
+  submitCodingAssignment: (id: string, studentCode: string, testResultsSummary?: string) => Assignment | null;
   createOpportunity: (opp: Omit<Opportunity, 'id' | 'isSaved'>) => Opportunity;
   deleteOpportunity: (id: string) => void;
 }
@@ -102,10 +104,6 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  useEffect(() => {
-    StorageService.initializeData(false);
-  }, []);
-
   const [user, setUser] = useState<User | null>(() => StorageService.getAuthUser());
   const [users, setUsers] = useState<User[]>(() => StorageService.getUsers());
   const [courses, setCourses] = useState<Course[]>(() => StorageService.getCourses());
@@ -137,6 +135,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setNotifications(StorageService.getNotifications());
     setIsAuthenticated(StorageService.isAuthenticated());
   }, []);
+
+  useEffect(() => {
+    StorageService.initializeData(false);
+    window.addEventListener('storage', refreshData);
+    return () => window.removeEventListener('storage', refreshData);
+  }, [refreshData]);
 
   const showToast = useCallback((toast: Omit<ToastMessage, 'id'>) => {
     const id = `toast_${Date.now()}_${Math.random()}`;
@@ -401,6 +405,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return created;
   };
 
+  const updateAssignmentLabStatus = (id: string, labStatus: 'locked' | 'active' | 'closed') => {
+    const updated = StorageService.updateAssignmentLabStatus(id, labStatus);
+    setAssignments(StorageService.getAssignments());
+    showToast({
+      type: 'info',
+      title: 'Lab Session Status Updated',
+      message: `Assignment lab status changed to ${labStatus.toUpperCase()}.`,
+    });
+    return updated;
+  };
+
+  const submitCodingAssignment = (id: string, studentCode: string, testResultsSummary?: string) => {
+    const updated = StorageService.submitCodingAssignment(id, studentCode, testResultsSummary);
+    setAssignments(StorageService.getAssignments());
+    showToast({
+      type: 'success',
+      title: 'Code Submitted Successfully',
+      message: 'Your automated lab solution has been verified and recorded.',
+    });
+    return updated;
+  };
+
   const createUser = (userData: Omit<User, 'id'>) => {
     const created = StorageService.createUser(userData);
     setUsers(StorageService.getUsers());
@@ -524,6 +550,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         recordAttendanceEntry,
         recordBatchAttendance,
         createAssignment,
+        updateAssignmentLabStatus,
+        submitCodingAssignment,
         createOpportunity,
         deleteOpportunity,
       }}

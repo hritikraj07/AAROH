@@ -60,6 +60,14 @@ export interface AttendanceRecord {
 }
 
 export type AssignmentStatus = 'pending' | 'submitted' | 'overdue';
+export type AssignmentType = 'standard' | 'coding';
+export type LabStatus = 'locked' | 'active' | 'closed';
+
+export interface TestCase {
+  id: string;
+  input: string;
+  expectedOutput: string;
+}
 
 export interface Assignment {
   id: string;
@@ -71,6 +79,15 @@ export interface Assignment {
   status: AssignmentStatus;
   submittedAt?: string;
   submissionNote?: string;
+
+  // Live Lab / Coding Assignment additions
+  type?: 'standard' | 'coding';
+  language?: string;
+  starterCode?: string;
+  testCases?: TestCase[];
+  labStatus?: 'locked' | 'active' | 'closed';
+  studentCode?: string;
+  testResultsSummary?: string;
 }
 
 export type NoticeCategory = 'Academic' | 'Exams' | 'Administration' | 'Placements' | 'General';

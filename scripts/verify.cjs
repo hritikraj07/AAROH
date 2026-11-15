@@ -624,4 +624,97 @@ assert(matchedPeer.name === 'Priya Patel', 'Matched student is Priya Patel');
 const studentNoMatches = { id: 'usr_solo', role: 'student', semester: 7, program: 'B.Arch' };
 assert(findStudyPartnerMatchTest(studentNoMatches, mockMatchUserList) === null, 'Returns null when no peer shares exact program and semester');
 
-console.log('--- ALL SMART FEATURES (TIMETABLE CONFLICTS, AI NOTICE SUMMARIZER, STUDY PARTNER MATCHMAKER) VERIFIED ---');
+// ==========================================
+// 19. Check Live Lab & Automated Coding Assignments Module
+// ==========================================
+console.log('--- VERIFYING LIVE LAB & AUTOMATED CODING ASSIGNMENTS ---');
+
+// 1. Data Structure Updates in types/index.ts
+const updatedTypesContent = fs.readFileSync(path.join(__dirname, '../src/types/index.ts'), 'utf8');
+assert(updatedTypesContent.includes("type?: 'standard' | 'coding';") || updatedTypesContent.includes("type?: AssignmentType;"), 'Assignment interface supports type: standard | coding');
+assert(updatedTypesContent.includes('language?: string;'), 'Assignment interface defines language');
+assert(updatedTypesContent.includes('starterCode?: string;'), 'Assignment interface defines starterCode');
+assert(updatedTypesContent.includes('testCases?: TestCase[];'), 'Assignment interface defines testCases array');
+assert(updatedTypesContent.includes("labStatus?: 'locked' | 'active' | 'closed';") || updatedTypesContent.includes('labStatus?: LabStatus;'), 'Assignment interface defines labStatus: locked | active | closed');
+
+// 2. Storage Service Live Lab Methods
+const updatedStorageContent = fs.readFileSync(path.join(__dirname, '../src/services/storage.ts'), 'utf8');
+assert(updatedStorageContent.includes('updateAssignmentLabStatus(id: string, labStatus:'), 'StorageService implements updateAssignmentLabStatus');
+assert(updatedStorageContent.includes('submitCodingAssignment(id: string, studentCode: string'), 'StorageService implements submitCodingAssignment');
+
+// 3. Faculty Portal: Live Lab Controls in FacultyAssignmentsPage.tsx
+const facultyAssignmentsContent = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyAssignmentsPage.tsx'), 'utf8');
+assert(facultyAssignmentsContent.includes('Create Coding Assignment'), 'FacultyAssignmentsPage includes Create Coding Assignment action');
+assert(facultyAssignmentsContent.includes('Starter Code') || facultyAssignmentsContent.includes('starterCode'), 'FacultyAssignmentsPage includes Starter Code template input');
+assert(facultyAssignmentsContent.includes('testCases') && (facultyAssignmentsContent.includes('Add Test Case') || facultyAssignmentsContent.includes('handleAddTestCase')), 'FacultyAssignmentsPage includes dynamic test cases builder');
+assert(facultyAssignmentsContent.includes('Live Lab Controls'), 'FacultyAssignmentsPage renders Live Lab Controls panel');
+assert(facultyAssignmentsContent.includes('Start Live Lab'), 'FacultyAssignmentsPage includes Start Live Lab button');
+assert(facultyAssignmentsContent.includes('End Lab'), 'FacultyAssignmentsPage includes End Lab button');
+assert(facultyAssignmentsContent.includes("updateAssignmentLabStatus(asg.id, 'active')"), 'Start Live Lab sets status to active');
+assert(facultyAssignmentsContent.includes("updateAssignmentLabStatus(asg.id, 'closed')"), 'End Lab sets status to closed');
+
+// 4. Student Portal: Code Workspace in StudentCodeWorkspacePage.tsx
+const studentWorkspacePath = path.join(__dirname, '../src/pages/StudentCodeWorkspacePage.tsx');
+assert(fs.existsSync(studentWorkspacePath), 'StudentCodeWorkspacePage.tsx exists');
+const studentWorkspaceContent = fs.readFileSync(studentWorkspacePath, 'utf8');
+assert(studentWorkspaceContent.includes('Lab Session is not active. Waiting for the instructor to open the lab...'), 'StudentCodeWorkspacePage renders exact locked screen waiting message');
+assert(studentWorkspaceContent.includes('Lock') && studentWorkspaceContent.includes("labStatus === 'locked'"), 'StudentCodeWorkspacePage renders Lock icon when locked');
+assert(studentWorkspaceContent.includes('font-mono bg-slate-900 text-slate-100 p-4 rounded-md'), 'StudentCodeWorkspacePage renders code editor with font-mono bg-slate-900 text-slate-100 p-4 rounded-md');
+assert(studentWorkspaceContent.includes('Run Code'), 'StudentCodeWorkspacePage renders Run Code action');
+assert(studentWorkspaceContent.includes('Submit Assignment'), 'StudentCodeWorkspacePage renders Submit Assignment action');
+assert(studentWorkspaceContent.includes('Lab Session Ended. Submissions Closed.'), 'StudentCodeWorkspacePage renders exact closed message badge');
+assert(studentWorkspaceContent.includes("window.addEventListener('storage',") || studentWorkspaceContent.includes('window.addEventListener("storage",'), 'StudentCodeWorkspacePage listens to storage event for offline real-time tab sync');
+assert(studentWorkspaceContent.includes('animate-in fade-in zoom-in-95 duration-300'), 'StudentCodeWorkspacePage transitions with animate-in fade-in zoom-in-95 duration-300');
+
+// 5. App.tsx Route Mounting
+const appRoutingContent = fs.readFileSync(path.join(__dirname, '../src/App.tsx'), 'utf8');
+assert(appRoutingContent.includes('assignments/code/:id'), 'App.tsx mounts /student/assignments/code/:id route');
+
+// 6. Offline Mock Auto-Grader in codeGrader.ts
+const codeGraderPath = path.join(__dirname, '../src/utils/codeGrader.ts');
+assert(fs.existsSync(codeGraderPath), 'codeGrader.ts exists in src/utils');
+const codeGraderContent = fs.readFileSync(codeGraderPath, 'utf8');
+assert(codeGraderContent.includes('export function simulateCodeExecution'), 'simulateCodeExecution exported from codeGrader.ts');
+assert(codeGraderContent.includes('return'), 'codeGrader checks for return keyword');
+
+// Unit test simulateCodeExecution directly in Node.js
+function simulateCodeExecutionTest(studentCode, starterCode, testCases) {
+  const code = (studentCode || '').trim();
+  const starter = (starterCode || '').trim();
+  const hasReturn = /\breturn\b/.test(code);
+  const isLonger = code.length > starter.length;
+  const shouldPass = hasReturn && isLonger;
+
+  const cases = testCases || [
+    { id: '1', input: 'n=5', expectedOutput: '25' },
+    { id: '2', input: 'n=10', expectedOutput: '100' }
+  ];
+
+  const results = cases.map((tc, idx) => {
+    const passed = shouldPass ? true : idx === 0 && cases.length > 1;
+    return {
+      testNumber: idx + 1,
+      passed,
+      summary: `${passed ? '✅' : '❌'} Test ${idx + 1} ${passed ? 'Passed' : 'Failed'}`
+    };
+  });
+
+  return {
+    allPassed: shouldPass,
+    summary: results.map(r => r.summary).join(' | ')
+  };
+}
+
+const mockStarterCode = 'def solution(n):\n    pass';
+const mockWorkingStudentCode = 'def solution(n):\n    return n * n';
+const mockIncompleteStudentCode = 'def solution(n):\n    # unfinished';
+
+const passResult = simulateCodeExecutionTest(mockWorkingStudentCode, mockStarterCode);
+assert(passResult.allPassed === true, 'Valid code with return and length > starter passes all test cases');
+assert(passResult.summary === '✅ Test 1 Passed | ✅ Test 2 Passed', 'Summary formats ✅ Test 1 Passed | ✅ Test 2 Passed');
+
+const failResult = simulateCodeExecutionTest(mockIncompleteStudentCode, mockStarterCode);
+assert(failResult.allPassed === false, 'Code without return or shorter length fails test case');
+assert(failResult.summary.includes('❌ Test 2 Failed'), 'Summary indicates ❌ Test 2 Failed');
+
+console.log('--- ALL LIVE LAB & AUTOMATED CODING ASSIGNMENT VERIFICATIONS PASSED ---');

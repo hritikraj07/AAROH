@@ -438,7 +438,37 @@ export const StorageService = {
     };
     list.unshift(newAsg);
     setStored(STORAGE_KEYS.ASSIGNMENTS, list);
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event('storage'));
     return newAsg;
+  },
+
+  updateAssignmentLabStatus(id: string, labStatus: 'locked' | 'active' | 'closed'): Assignment | null {
+    const list = this.getAssignments();
+    const idx = list.findIndex(a => a.id === id);
+    if (idx === -1) return null;
+    list[idx] = {
+      ...list[idx],
+      labStatus,
+    };
+    setStored(STORAGE_KEYS.ASSIGNMENTS, list);
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event('storage'));
+    return list[idx];
+  },
+
+  submitCodingAssignment(id: string, studentCode: string, testResultsSummary?: string): Assignment | null {
+    const list = this.getAssignments();
+    const idx = list.findIndex(a => a.id === id);
+    if (idx === -1) return null;
+    list[idx] = {
+      ...list[idx],
+      studentCode,
+      testResultsSummary,
+      status: 'submitted',
+      submittedAt: new Date().toISOString(),
+    };
+    setStored(STORAGE_KEYS.ASSIGNMENTS, list);
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event('storage'));
+    return list[idx];
   },
 
   toggleAssignmentSubmission(id: string): Assignment | null {
@@ -455,6 +485,7 @@ export const StorageService = {
     };
     list[idx] = updated;
     setStored(STORAGE_KEYS.ASSIGNMENTS, list);
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event('storage'));
     return updated;
   },
 
