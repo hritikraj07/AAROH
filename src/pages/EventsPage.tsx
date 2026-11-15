@@ -1,0 +1,395 @@
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { useApp } from '../context/AppContext';
+import { EventCategory, CampusEvent } from '../types';
+import { AcademicService } from '../services/academicService';
+import { Badge } from '../components/ui/Badge';
+import { Button } from '../components/ui/Button';
+import { EventDetailModal } from '../components/modules/events/EventDetailModal';
+import {
+  Calendar as CalendarIcon,
+  Clock,
+  MapPin,
+  Users,
+  AlertTriangle,
+  CheckCircle2,
+  Search,
+  Filter,
+  List,
+  Sparkles,
+  Ticket,
+} from 'lucide-react';
+
+export const EventsPage: React.FC = () => {
+  const { events, timetable, courses, toggleEventRegistration } = useApp();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [activeTab, setActiveTab] = useState<'all' | 'my-registrations'>('all');
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const [categoryFilter, setCategoryFilter] = useState<'All' | EventCategory>('All');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedEvent, setSelectedEvent] = useState<CampusEvent | null>(null);
+
+  // Sync selected event from query param ?id=
+  const eventIdFromUrl = searchParams.get('id');
+  useEffect(() => {
+    if (eventIdFromUrl) {
+      const match = events.find(e => e.id === eventIdFromUrl);
+      if (match) setSelectedEvent(match);
+    }
+  }, [eventIdFromUrl, events]);
+
+  const categories: ('All' | EventCategory)[] = ['All', 'Tech', 'Cultural', 'Sports', 'Workshops', 'Clubs'];
+
+  const filteredEvents = useMemo(() => {
+    return events.filter(e => {
+      // My registrations tab
+      if (activeTab === 'my-registrations' && !e.isRegistered) return false;
+
+      // Category filter
+      if (categoryFilter !== 'All' && e.category !== categoryFilter) return false;
+
+      // Search query
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchTitle = e.title.toLowerCase().includes(q);
+        const matchDesc = e.description.toLowerCase().includes(q);
+        const matchVenue = e.venue.toLowerCase().includes(q);
+        const matchOrg = e.organizer.toLowerCase().includes(q);
+        if (!matchTitle && !matchDesc && !matchVenue && !matchOrg) return false;
+      }
+
+      return true;
+    });
+  }, [events, activeTab, categoryFilter, searchQuery]);
+
+  const registeredCount = events.filter(e => e.isRegistered).length;
+
+  const handleOpenDetail = (ev: CampusEvent) => {
+    setSelectedEvent(ev);
+    setSearchParams({ id: ev.id });
+  };
+
+  const handleCloseDetail = () => {
+    setSelectedEvent(null);
+    setSearchParams({});
+  };
+
+  return (
+    <div className="space-y-5">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-bold text-slate-900">Campus Events & Activities</h2>
+          <p className="text-xs text-slate-500">
+            Hackathons, symposia, sports tournaments, and club workshops.
+          </p>
+        </div>
+
+        {/* View Mode & My Registrations Tab */}
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <div className="flex items-center bg-slate-100 p-1 rounded-md border border-border text-xs">
+            <button
+              onClick={() => setActiveTab('all')}
+              className={`px-3 py-1 rounded font-medium transition-colors ${
+                activeTab === 'all'
+                  ? 'bg-white text-slate-900 shadow-subtle font-semibold'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              All Events ({events.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('my-registrations')}
+              className={`px-3 py-1 rounded font-medium transition-colors flex items-center gap-1.5 ${
+                activeTab === 'my-registrations'
+                  ? 'bg-teal-700 text-white shadow-subtle font-semibold'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Ticket className="w-3 h-3" />
+              <span>My Registrations</span>
+              {registeredCount > 0 && (
+                <span
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full tabular-nums ${
+                    activeTab === 'my-registrations' ? 'bg-teal-800 text-white' : 'bg-slate-200 text-slate-700'
+                  }`}
+                >
+                  {registeredCount}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter and Search Bar */}
+      <div className="bg-white border border-border rounded-lg p-3.5 shadow-subtle space-y-3">
+        {/* Category Pills Bar */}
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+            {categories.map(cat => {
+              const isSelected = categoryFilter === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setCategoryFilter(cat)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${
+                    isSelected
+                      ? 'bg-teal-50 text-teal-900 border border-teal-200 font-semibold'
+                      : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-border'
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Toggle List / Calendar */}
+          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded border border-border text-xs">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-1.5 rounded transition-colors ${
+                viewMode === 'list' ? 'bg-white text-slate-900 shadow-subtle' : 'text-slate-500 hover:text-slate-800'
+              }`}
+              title="List View"
+            >
+              <List className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={() => setViewMode('calendar')}
+              className={`p-1.5 rounded transition-colors ${
+                viewMode === 'calendar' ? 'bg-white text-slate-900 shadow-subtle' : 'text-slate-500 hover:text-slate-800'
+              }`}
+              title="Calendar View"
+            >
+              <CalendarIcon className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Search Input */}
+        <div className="relative pt-2 border-t border-border">
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 mt-1" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Search events by title, organizer, or venue..."
+            className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50/70 border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+          />
+        </div>
+      </div>
+
+      {/* 1. List View */}
+      {viewMode === 'list' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filteredEvents.length === 0 ? (
+            <div className="col-span-2 py-12 text-center text-xs text-slate-500 bg-white border border-border rounded-lg">
+              {activeTab === 'my-registrations'
+                ? "You haven't registered for any events yet. Browse events above!"
+                : 'No events match your current filter parameters.'}
+            </div>
+          ) : (
+            filteredEvents.map(event => {
+              const seatsLeft = Math.max(0, event.capacity - event.registeredCount);
+              const isFull = seatsLeft === 0 && !event.isRegistered;
+              const clash = AcademicService.checkEventClash(
+                event.date,
+                event.startTime,
+                event.endTime,
+                timetable,
+                courses
+              );
+
+              return (
+                <div
+                  key={event.id}
+                  className="bg-white border border-border rounded-lg shadow-subtle p-4 hover:border-slate-300 transition-all flex flex-col justify-between"
+                >
+                  <div className="space-y-2">
+                    {/* Top Row: Category and Date Badge */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5">
+                        <Badge
+                          variant={
+                            event.category === 'Tech'
+                              ? 'teal'
+                              : event.category === 'Cultural'
+                              ? 'violet'
+                              : event.category === 'Sports'
+                              ? 'emerald'
+                              : event.category === 'Workshops'
+                              ? 'blue'
+                              : 'slate'
+                          }
+                          size="sm"
+                        >
+                          {event.category}
+                        </Badge>
+                        {event.isRegistered && (
+                          <Badge variant="teal" size="sm" dot>
+                            Pass Confirmed
+                          </Badge>
+                        )}
+                        {isFull && (
+                          <Badge variant="rose" size="sm">
+                            Housefull
+                          </Badge>
+                        )}
+                      </div>
+
+                      <span className="font-mono text-xs text-slate-600 font-semibold">
+                        {event.date}
+                      </span>
+                    </div>
+
+                    {/* Title */}
+                    <h3
+                      onClick={() => handleOpenDetail(event)}
+                      className="text-sm font-bold text-slate-900 hover:text-teal-800 cursor-pointer leading-snug pt-0.5 line-clamp-1"
+                    >
+                      {event.title}
+                    </h3>
+
+                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                      {event.description}
+                    </p>
+
+                    {/* Venue & Organizer Details */}
+                    <div className="space-y-1 pt-1 text-xs text-slate-500">
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <span className="font-mono text-[11px]">
+                          {event.startTime} – {event.endTime}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                        <span className="truncate">{event.venue}</span>
+                      </div>
+                    </div>
+
+                    {/* Clash warning */}
+                    {clash.hasClash && (
+                      <div className="p-2 rounded bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-start gap-1.5 mt-2">
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                        <span>
+                          <strong>Class Overlap:</strong> Clashes with {clash.clashingCourse?.code} ({clash.clashingSession?.startTime}–{clash.clashingSession?.endTime})
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bottom Action Footer */}
+                  <div className="mt-4 pt-3 border-t border-border flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-1.5 text-slate-500 text-[11px]">
+                      <Users className="w-3.5 h-3.5 text-slate-400" />
+                      <span className="font-mono font-medium text-slate-700">
+                        {event.registeredCount}/{event.capacity}
+                      </span>
+                      <span>({seatsLeft} left)</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleOpenDetail(event)}
+                      >
+                        Details
+                      </Button>
+
+                      <Button
+                        variant={event.isRegistered ? 'outline' : 'primary'}
+                        size="sm"
+                        disabled={isFull && !event.isRegistered}
+                        onClick={() => toggleEventRegistration(event.id)}
+                        className={event.isRegistered ? 'text-rose-600 hover:bg-rose-50 border-rose-200' : ''}
+                      >
+                        {event.isRegistered
+                          ? 'Cancel'
+                          : isFull
+                          ? 'Full'
+                          : 'Register'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+
+      {/* 2. Calendar View */}
+      {viewMode === 'calendar' && (
+        <div className="bg-white border border-border rounded-lg shadow-subtle p-5">
+          <div className="flex items-center justify-between pb-3 mb-4 border-b border-border">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+              Campus Event Schedule Matrix
+            </h3>
+            <span className="text-xs text-slate-500">Upcoming Semester Highlights</span>
+          </div>
+
+          <div className="space-y-3">
+            {filteredEvents.map(event => (
+              <div
+                key={event.id}
+                onClick={() => handleOpenDetail(event)}
+                className="p-3.5 rounded-lg border border-border hover:bg-slate-50 cursor-pointer transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-16 h-14 rounded bg-teal-50 border border-teal-200 text-teal-900 flex flex-col items-center justify-center shrink-0">
+                    <span className="text-[10px] uppercase font-bold text-teal-700">
+                      {event.date.split('-')[1]}/{event.date.split('-')[2]}
+                    </span>
+                    <span className="text-xs font-mono font-bold">
+                      {event.startTime}
+                    </span>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="slate" size="sm">
+                        {event.category}
+                      </Badge>
+                      {event.isRegistered && (
+                        <Badge variant="teal" size="sm">
+                          Registered
+                        </Badge>
+                      )}
+                    </div>
+                    <h4 className="text-xs font-bold text-slate-900 mt-1">
+                      {event.title}
+                    </h4>
+                    <p className="text-[11px] text-slate-500">
+                      {event.venue} • {event.organizer}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 text-xs self-end sm:self-center">
+                  <span className="font-mono text-slate-500 text-[11px]">
+                    {event.registeredCount} / {event.capacity} Attendees
+                  </span>
+                  <Button variant="outline" size="sm">
+                    View
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Event Detail Modal */}
+      <EventDetailModal
+        event={selectedEvent}
+        isOpen={!!selectedEvent}
+        onClose={handleCloseDetail}
+      />
+    </div>
+  );
+};
