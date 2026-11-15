@@ -22,6 +22,7 @@ import {
   INITIAL_LOST_FOUND,
   INITIAL_OPPORTUNITIES,
   INITIAL_NOTIFICATIONS,
+  INITIAL_USERS,
   generateUserFromEmail,
   getUserRoleFromEmail,
 } from '../data/seed';
@@ -30,6 +31,7 @@ const STORAGE_KEYS = {
   INITIALIZED: 'aaroh_initialized_v3',
   SESSION_TOKEN: 'aaroh_session_token',
   AUTH_USER: 'aaroh_auth_user',
+  USERS: 'aaroh_users',
   COURSES: 'aaroh_courses',
   TIMETABLE: 'aaroh_timetable',
   ATTENDANCE: 'aaroh_attendance',
@@ -65,6 +67,7 @@ export const StorageService = {
   initializeData(forceReset = false): void {
     const initialized = localStorage.getItem(STORAGE_KEYS.INITIALIZED);
     if (!initialized || forceReset) {
+      setStored(STORAGE_KEYS.USERS, INITIAL_USERS);
       setStored(STORAGE_KEYS.COURSES, INITIAL_COURSES);
       setStored(STORAGE_KEYS.TIMETABLE, INITIAL_TIMETABLE);
       setStored(STORAGE_KEYS.ATTENDANCE, INITIAL_ATTENDANCE);
@@ -81,6 +84,11 @@ export const StorageService = {
       }
       localStorage.setItem(STORAGE_KEYS.INITIALIZED, 'true');
     }
+
+    // Ensure users directory is seeded even if previously initialized
+    if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
+      setStored(STORAGE_KEYS.USERS, INITIAL_USERS);
+    }
   },
 
   // Authentication & RBAC Login
@@ -94,16 +102,8 @@ export const StorageService = {
     return localStorage.getItem(STORAGE_KEYS.SESSION_TOKEN);
   },
 
-  loginWithDomain(email: string, password: string): { success: boolean; error?: string; user?: User; token?: string } {
+  loginWithDomain(email: string, password: string): { success: boolean; error?: string; user?: User; token?: string; role?: UserRole } {
     const trimmedEmail = email.trim().toLowerCase();
-    const role = getUserRoleFromEmail(trimmedEmail);
-
-    if (!role) {
-      return {
-        success: false,
-        error: 'Access restricted: Please enter an institutional email ending with @aaroh.edu.in (Student), @faculty.aaroh.edu.in (Faculty), or @admin.aaroh.edu.in (Admin).',
-      };
-    }
 
     if (!password || password.trim().length === 0) {
       return {
@@ -112,15 +112,43 @@ export const StorageService = {
       };
     }
 
-    const user = generateUserFromEmail(trimmedEmail);
-    const token = `aaroh_session_${role}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    // 1. Query the localStorage users array first
+    const users = this.getUsers();
+    const existingUser = users.find(u => u.email.trim().toLowerCase() === trimmedEmail);
 
+    if (existingUser) {
+      const token = `aaroh_session_${existingUser.role}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      localStorage.setItem(STORAGE_KEYS.SESSION_TOKEN, token);
+      setStored(STORAGE_KEYS.AUTH_USER, existingUser);
+      return {
+        success: true,
+        user: existingUser,
+        role: existingUser.role,
+        token,
+      };
+    }
+
+    // 2. If not found in localStorage, verify institutional domain restriction
+    const role = getUserRoleFromEmail(trimmedEmail);
+    if (!role) {
+      return {
+        success: false,
+        error: 'Account not found in directory. Institutional emails must end with @aaroh.edu.in (Student), @faculty.aaroh.edu.in (Faculty), or @admin.aaroh.edu.in (Admin).',
+      };
+    }
+
+    // Auto-provision valid domain email into directory
+    const newUser = generateUserFromEmail(trimmedEmail);
+    this.createUser(newUser);
+
+    const token = `aaroh_session_${role}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     localStorage.setItem(STORAGE_KEYS.SESSION_TOKEN, token);
-    setStored(STORAGE_KEYS.AUTH_USER, user);
+    setStored(STORAGE_KEYS.AUTH_USER, newUser);
 
     return {
       success: true,
-      user,
+      user: newUser,
+      role: newUser.role,
       token,
     };
   },
@@ -132,6 +160,81 @@ export const StorageService = {
 
   getAuthUser(): User | null {
     return getStored<User | null>(STORAGE_KEYS.AUTH_USER, null);
+  },
+
+  // Directory & User Management
+  getUsers(): User[] {
+    const users = getStored<User[]>(STORAGE_KEYS.USERS, INITIAL_USERS);
+    if (!users || users.length === 0) {
+      setStored(STORAGE_KEYS.USERS, INITIAL_USERS);
+      return INITIAL_USERS;
+    }
+    return users;
+  },
+
+  getUserById(id: string): User | null {
+    const users = this.getUsers();
+    return users.find(u => u.id === id) || null;
+  },
+
+  getUserByEmail(email: string): User | null {
+    const trimmed = email.trim().toLowerCase();
+    const users = this.getUsers();
+    return users.find(u => u.email.trim().toLowerCase() === trimmed) || null;
+  },
+
+  createUser(userData: Omit<User, 'id'>): User {
+    const users = this.getUsers();
+    const rolePrefix = userData.role === 'admin' ? 'adm' : userData.role === 'faculty' ? 'fac' : 'std';
+    const id = `usr_${rolePrefix}_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+
+    // Generate avatar initials if missing
+    let initials = userData.avatarInitials;
+    if (!initials) {
+      const parts = userData.name.trim().split(/\s+/);
+      initials = parts.length >= 2
+        ? (parts[0][0] + parts[1][0]).toUpperCase()
+        : userData.name.slice(0, 2).toUpperCase() || (userData.role === 'admin' ? 'AD' : userData.role === 'faculty' ? 'FA' : 'ST');
+    }
+
+    const newUser: User = {
+      ...userData,
+      id,
+      avatarInitials: initials,
+    };
+
+    // Check if user with same email exists, replace or append
+    const existingIndex = users.findIndex(u => u.email.trim().toLowerCase() === newUser.email.trim().toLowerCase());
+    let updatedUsers: User[];
+    if (existingIndex >= 0) {
+      updatedUsers = [...users];
+      updatedUsers[existingIndex] = newUser;
+    } else {
+      updatedUsers = [newUser, ...users];
+    }
+
+    setStored(STORAGE_KEYS.USERS, updatedUsers);
+    return newUser;
+  },
+
+  deleteUser(id: string): boolean {
+    const users = this.getUsers();
+    const filtered = users.filter(u => u.id !== id);
+    if (filtered.length !== users.length) {
+      setStored(STORAGE_KEYS.USERS, filtered);
+      return true;
+    }
+    return false;
+  },
+
+  updateUser(id: string, updates: Partial<User>): User | null {
+    const users = this.getUsers();
+    const idx = users.findIndex(u => u.id === id);
+    if (idx === -1) return null;
+    const updated = { ...users[idx], ...updates };
+    users[idx] = updated;
+    setStored(STORAGE_KEYS.USERS, users);
+    return updated;
   },
 
   // Alias for backward compatibility

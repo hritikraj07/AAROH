@@ -7,7 +7,7 @@ import { Lock, Mail, AlertCircle, ArrowRight, ShieldCheck, GraduationCap, Briefc
 import { getUserRoleFromEmail } from '../data/seed';
 
 export const LoginPage: React.FC = () => {
-  const { loginWithDomain, isAuthenticated, role } = useApp();
+  const { login, loginWithDomain, users, isAuthenticated, role } = useApp();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -30,10 +30,12 @@ export const LoginPage: React.FC = () => {
       return;
     }
 
+    const isKnownUser = users.some(u => u.email.trim().toLowerCase() === trimmedEmail.toLowerCase());
     const detectedRole = getUserRoleFromEmail(trimmedEmail);
-    if (!detectedRole) {
+
+    if (!isKnownUser && !detectedRole) {
       setErrorMessage(
-        'Access restricted: Must be an institutional email ending with @aaroh.edu.in (Student), @faculty.aaroh.edu.in (Faculty), or @admin.aaroh.edu.in (Admin).'
+        'Access restricted: Email not recognized in campus directory. Please enter a registered email or institutional address ending with @aaroh.edu.in, @faculty.aaroh.edu.in, or @admin.aaroh.edu.in.'
       );
       return;
     }
@@ -44,7 +46,7 @@ export const LoginPage: React.FC = () => {
     }
 
     setLoading(true);
-    const result = loginWithDomain(trimmedEmail, password);
+    const result = login(trimmedEmail, password);
     setLoading(false);
 
     if (result.success && result.role) {

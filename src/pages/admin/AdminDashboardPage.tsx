@@ -15,11 +15,12 @@ import {
   CheckCircle,
   Activity,
   Layers,
-  FileText
+  FileText,
+  Users
 } from 'lucide-react';
 
 export const AdminDashboardPage: React.FC = () => {
-  const { notices, events, timetable, courses, user } = useApp();
+  const { notices, events, timetable, courses, user, users } = useApp();
   const navigate = useNavigate();
 
   const pinnedNoticesCount = notices.filter(n => n.isPinned).length;
@@ -63,10 +64,18 @@ export const AdminDashboardPage: React.FC = () => {
             <Button
               variant="primary"
               size="sm"
+              icon={<Users className="w-3.5 h-3.5" />}
+              onClick={() => navigate('/admin/people')}
+            >
+              User Directory
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
               icon={<Plus className="w-3.5 h-3.5" />}
               onClick={() => navigate('/admin/notices')}
             >
-              Publish Circular
+              Publish Notice
             </Button>
             <Button
               variant="secondary"
@@ -74,7 +83,7 @@ export const AdminDashboardPage: React.FC = () => {
               icon={<Calendar className="w-3.5 h-3.5" />}
               onClick={() => navigate('/admin/events')}
             >
-              Manage Events
+              Events
             </Button>
             <Button
               variant="outline"
@@ -156,6 +165,29 @@ export const AdminDashboardPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 gap-2.5">
+            <Link
+              to="/admin/people"
+              className="p-3.5 rounded-md border border-border bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors flex items-center justify-between group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded bg-teal-50 border border-teal-200 text-teal-800 flex items-center justify-center">
+                  <Users className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900 group-hover:text-teal-800 transition-colors flex items-center gap-2">
+                    <span>Campus Directory & Onboarding</span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-teal-50 text-teal-800 border border-teal-200">
+                      {users.length} Users
+                    </span>
+                  </h4>
+                  <p className="text-[11px] text-slate-500">
+                    Onboard new students and faculty, assign institutional credentials, and manage directory.
+                  </p>
+                </div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-slate-700 transition-colors" />
+            </Link>
+
             <Link
               to="/admin/notices"
               className="p-3.5 rounded-md border border-border bg-slate-50/50 hover:bg-slate-50 hover:border-slate-300 transition-colors flex items-center justify-between group"

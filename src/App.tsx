@@ -22,6 +22,7 @@ import { FacultyAssignmentsPage } from './pages/faculty/FacultyAssignmentsPage';
 
 // Admin Portal Pages
 import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
+import { AdminPeoplePage } from './pages/admin/AdminPeoplePage';
 import { AdminNoticesPage } from './pages/admin/AdminNoticesPage';
 import { AdminEventsPage } from './pages/admin/AdminEventsPage';
 import { AdminTimetablePage } from './pages/admin/AdminTimetablePage';
@@ -101,6 +102,9 @@ export const AppRoutes: React.FC = () => {
       >
         <Route index element={<AdminDashboardPage />} />
         <Route path="dashboard" element={<Navigate to="/admin" replace />} />
+        <Route path="people" element={<AdminPeoplePage />} />
+        <Route path="directory" element={<Navigate to="/admin/people" replace />} />
+        <Route path="users" element={<Navigate to="/admin/people" replace />} />
         <Route path="notices" element={<AdminNoticesPage />} />
         <Route path="events" element={<AdminEventsPage />} />
         <Route path="timetable" element={<AdminTimetablePage />} />
@@ -109,6 +113,8 @@ export const AppRoutes: React.FC = () => {
 
       {/* Backward-Compatibility & Deep-link Aliases */}
       <Route path="/dashboard" element={<Navigate to="/" replace />} />
+      <Route path="/people" element={<Navigate to="/admin/people" replace />} />
+      <Route path="/directory" element={<Navigate to="/admin/people" replace />} />
       <Route path="/academics" element={<Navigate to="/student/academics" replace />} />
       <Route path="/notices" element={<Navigate to="/student/notices" replace />} />
       <Route path="/events" element={<Navigate to="/student/events" replace />} />

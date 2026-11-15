@@ -26,6 +26,7 @@ interface AppContextType {
   user: User | null;
   role: UserRole | null;
   student: Student | null; // Compatibility alias
+  users: User[];
   courses: Course[];
   timetable: ClassSession[];
   attendance: AttendanceRecord[];
@@ -57,6 +58,7 @@ interface AppContextType {
   dismissToast: (id: string) => void;
 
   // Authentication
+  login: (email: string, password?: string) => { success: boolean; error?: string; role?: UserRole };
   loginWithDomain: (email: string, password: string) => { success: boolean; error?: string; role?: UserRole };
   logout: () => void;
 
@@ -76,6 +78,9 @@ interface AppContextType {
   refreshData: () => void;
 
   // Faculty & Admin Management Actions
+  createUser: (userData: Omit<User, 'id'>) => User;
+  deleteUser: (id: string) => boolean;
+  updateUser: (id: string, updates: Partial<User>) => User | null;
   createNotice: (notice: Omit<Notice, 'id' | 'publishedDate' | 'readByCurrentUser'>) => Notice;
   deleteNotice: (id: string) => void;
   togglePinNotice: (id: string) => void;
@@ -97,6 +102,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, []);
 
   const [user, setUser] = useState<User | null>(() => StorageService.getAuthUser());
+  const [users, setUsers] = useState<User[]>(() => StorageService.getUsers());
   const [courses, setCourses] = useState<Course[]>(() => StorageService.getCourses());
   const [timetable, setTimetable] = useState<ClassSession[]>(() => StorageService.getTimetable());
   const [attendance, setAttendance] = useState<AttendanceRecord[]>(() => StorageService.getAttendance());
@@ -114,6 +120,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const refreshData = useCallback(() => {
     setUser(StorageService.getAuthUser());
+    setUsers(StorageService.getUsers());
     setCourses(StorageService.getCourses());
     setTimetable(StorageService.getTimetable());
     setAttendance(StorageService.getAttendance());
@@ -160,11 +167,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const unreadNotificationsCount = notifications.filter(n => !n.read).length;
 
   // Domain Auth Login
-  const loginWithDomain = (email: string, password: string) => {
+  const loginWithDomain = (email: string, password = 'demoPassword') => {
     const result = StorageService.loginWithDomain(email, password);
     if (result.success && result.user) {
       setUser(result.user);
       setIsAuthenticated(true);
+      setUsers(StorageService.getUsers());
       showToast({
         type: 'success',
         title: `Authenticated as ${result.user.role.toUpperCase()}`,
@@ -175,6 +183,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return { success: false, error: result.error || 'Authentication failed' };
     }
   };
+
+  const login = loginWithDomain;
 
   const logout = () => {
     StorageService.logout();
@@ -380,12 +390,42 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return created;
   };
 
+  const createUser = (userData: Omit<User, 'id'>) => {
+    const created = StorageService.createUser(userData);
+    setUsers(StorageService.getUsers());
+    showToast({
+      type: 'success',
+      title: 'User Onboarded',
+      message: `${created.name} (${created.role}) has been added to the directory.`,
+    });
+    return created;
+  };
+
+  const deleteUser = (id: string) => {
+    const success = StorageService.deleteUser(id);
+    if (success) {
+      setUsers(StorageService.getUsers());
+      showToast({ type: 'info', title: 'User Removed', message: 'User account removed from directory.' });
+    }
+    return success;
+  };
+
+  const updateUser = (id: string, updates: Partial<User>) => {
+    const updated = StorageService.updateUser(id, updates);
+    if (updated) {
+      setUsers(StorageService.getUsers());
+      showToast({ type: 'success', title: 'User Updated', message: `Profile updated for ${updated.name}.` });
+    }
+    return updated;
+  };
+
   return (
     <AppContext.Provider
       value={{
         user,
         role: user?.role || null,
         student: user, // Compatibility alias
+        users,
         courses,
         timetable,
         attendance,
@@ -409,6 +449,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         toasts,
         showToast,
         dismissToast,
+        login,
         loginWithDomain,
         logout,
         updateAttendanceThreshold,
@@ -424,6 +465,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         markAllNotificationsRead,
         resetDemoData,
         refreshData,
+        createUser,
+        deleteUser,
+        updateUser,
         createNotice,
         deleteNotice,
         togglePinNotice,

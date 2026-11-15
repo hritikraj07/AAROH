@@ -44,6 +44,7 @@ The app enforces institutional domain routing to partition permissions across th
 
 ### 3. Admin Console (`/admin/*`)
 - **Administration Overview (`/admin`):** Institutional metrics (published circulars, campus events, scheduled timetable blocks, system state), audit logs, and direct console shortcuts.
+- **Campus User Directory & Onboarding (`/admin/people`):** Complete user management table listing all registered students, faculty, and administrators. Includes live search, role-based filters, account deletion, and a dynamic modal form to onboard new students (with Program, Semester, Student ID) and faculty (with Department and Designation). Newly added accounts are stored in `localStorage` under `aaroh_users` and can immediately sign in.
 - **Notice Board Publisher (`/admin/notices`):** Comprehensive circular management table with search, category filtering, pin/unpin toggles, delete action, and a full modal form to author official college directives.
 - **Events & Approvals (`/admin/events`):** Oversee campus-wide events, approve student club proposals, schedule venues, and adjust capacities.
 - **Timetable Scheduler (`/admin/timetable`):** Master weekly scheduling engine across Monday–Saturday, allowing administrators to allocate lecture halls, laboratory periods, and faculty assignments.

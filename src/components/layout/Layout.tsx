@@ -53,6 +53,10 @@ export const Layout: React.FC = () => {
       case '/admin':
       case '/admin/dashboard':
         return 'Administration Console';
+      case '/admin/people':
+      case '/admin/directory':
+      case '/admin/users':
+        return 'Campus User Directory & Onboarding';
       case '/admin/notices':
         return 'Notice Board Publisher';
       case '/admin/events':

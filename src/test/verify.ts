@@ -62,7 +62,51 @@ assert(adminLogin.user?.role === 'admin', 'Assigns admin role');
 assert(StorageService.isAuthenticated(), 'Storage confirms authenticated state');
 assert(!!StorageService.getSessionToken(), 'Session token generated and stored');
 
-// 4. State Management: User Actions Write and Read from Storage
+// 4. User Directory & Onboarding Management
+const initialUsers = StorageService.getUsers();
+assert(initialUsers.length >= 3, 'Initial users directory contains default admin, student, and faculty');
+assert(initialUsers.some(u => u.role === 'admin'), 'Directory contains default admin');
+assert(initialUsers.some(u => u.role === 'student'), 'Directory contains default student');
+assert(initialUsers.some(u => u.role === 'faculty'), 'Directory contains default faculty');
+
+// Onboard new student
+const onboardedStudent = StorageService.createUser({
+  name: 'Devika Patel',
+  email: 'devika.patel@aaroh.edu.in',
+  role: 'student',
+  rollNumber: '23CS089',
+  program: 'B.Tech CSE',
+  department: 'Computer Science & Engineering',
+  semester: 3,
+  avatarInitials: 'DP',
+});
+assert(onboardedStudent.id.startsWith('usr_std_'), 'New student onboarded with unique ID');
+assert(StorageService.getUsers().length === initialUsers.length + 1, 'Directory count updated');
+
+// Login with newly onboarded student
+const studentLogin = StorageService.loginWithDomain('devika.patel@aaroh.edu.in', 'customPass123');
+assert(studentLogin.success, 'Newly onboarded student can login immediately');
+assert(studentLogin.role === 'student', 'Granted student role from localStorage user object');
+assert(studentLogin.user?.rollNumber === '23CS089', 'Maintains stored student ID');
+
+// Onboard new faculty
+const onboardedFaculty = StorageService.createUser({
+  name: 'Prof. Rajesh Verma',
+  email: 'rajesh.verma@faculty.aaroh.edu.in',
+  role: 'faculty',
+  department: 'Department of Electrical Engineering',
+  designation: 'Associate Professor',
+  avatarInitials: 'RV',
+});
+assert(onboardedFaculty.id.startsWith('usr_fac_'), 'New faculty onboarded with unique ID');
+
+// Login with newly onboarded faculty
+const facLogin = StorageService.loginWithDomain('rajesh.verma@faculty.aaroh.edu.in', 'facPass');
+assert(facLogin.success, 'Newly onboarded faculty can login immediately');
+assert(facLogin.role === 'faculty', 'Granted faculty role from localStorage user object');
+assert(facLogin.user?.department === 'Department of Electrical Engineering', 'Maintains stored department');
+
+// 5. State Management: User Actions Write and Read from Storage
 const reported = StorageService.createLostFoundItem({
   type: 'lost',
   title: 'Texas Instruments Calculator',

@@ -14,7 +14,8 @@ import {
   ClipboardList,
   Clock,
   ShieldCheck,
-  UserCheck
+  UserCheck,
+  Users
 } from 'lucide-react';
 import { APP_CONFIG } from '../../config';
 import { useApp } from '../../context/AppContext';
@@ -131,6 +132,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       to: '/admin',
       label: 'Administration Console',
       icon: <ShieldCheck className="w-4 h-4" />,
+    },
+    {
+      to: '/admin/people',
+      label: 'User Directory',
+      icon: <Users className="w-4 h-4" />,
     },
     {
       to: '/admin/notices',

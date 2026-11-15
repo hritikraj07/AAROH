@@ -36,7 +36,7 @@ export function generateUserFromEmail(email: string): User {
     : role === 'faculty'
     ? 'Faculty Member'
     : 'Aaroh Student';
-  
+
   const initials = nameParts.length >= 2
     ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
     : localPart.slice(0, 2).toUpperCase() || (role === 'admin' ? 'AD' : role === 'faculty' ? 'FA' : 'ST');

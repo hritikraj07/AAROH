@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node scripts/verify.cjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-sans": "^5.1.0",
