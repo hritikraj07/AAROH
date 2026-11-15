@@ -24,7 +24,7 @@ export const QuickActionsRow: React.FC<QuickActionsRowProps> = ({ onReportLostIt
           if (onReportLostItem) {
             onReportLostItem();
           } else {
-            navigate('/lost-found?action=report');
+            navigate('/student/lost-found?action=report');
           }
         }}
       >
@@ -35,7 +35,7 @@ export const QuickActionsRow: React.FC<QuickActionsRowProps> = ({ onReportLostIt
         variant="secondary"
         size="sm"
         icon={<Calendar className="w-3.5 h-3.5 text-slate-500" />}
-        onClick={() => navigate('/events')}
+        onClick={() => navigate('/student/events')}
       >
         Browse events
       </Button>
@@ -44,7 +44,7 @@ export const QuickActionsRow: React.FC<QuickActionsRowProps> = ({ onReportLostIt
         variant="secondary"
         size="sm"
         icon={<Clock className="w-3.5 h-3.5 text-slate-500" />}
-        onClick={() => navigate('/academics?tab=timetable')}
+        onClick={() => navigate('/student/academics?tab=timetable')}
       >
         Open timetable
       </Button>

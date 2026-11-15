@@ -91,29 +91,26 @@ export const EventsPage: React.FC = () => {
           <div className="flex items-center bg-slate-100 p-1 rounded-md border border-border text-xs">
             <button
               onClick={() => setActiveTab('all')}
-              className={`px-3 py-1 rounded font-medium transition-colors ${
-                activeTab === 'all'
+              className={`px-3 py-1 rounded font-medium transition-colors ${activeTab === 'all'
                   ? 'bg-white text-slate-900 shadow-subtle font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
-              }`}
+                }`}
             >
               All Events ({events.length})
             </button>
             <button
               onClick={() => setActiveTab('my-registrations')}
-              className={`px-3 py-1 rounded font-medium transition-colors flex items-center gap-1.5 ${
-                activeTab === 'my-registrations'
+              className={`px-3 py-1 rounded font-medium transition-colors flex items-center gap-1.5 ${activeTab === 'my-registrations'
                   ? 'bg-teal-700 text-white shadow-subtle font-semibold'
                   : 'text-slate-600 hover:text-slate-900'
-              }`}
+                }`}
             >
               <Ticket className="w-3 h-3" />
               <span>My Registrations</span>
               {registeredCount > 0 && (
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full tabular-nums ${
-                    activeTab === 'my-registrations' ? 'bg-teal-800 text-white' : 'bg-slate-200 text-slate-700'
-                  }`}
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full tabular-nums ${activeTab === 'my-registrations' ? 'bg-teal-800 text-white' : 'bg-slate-200 text-slate-700'
+                    }`}
                 >
                   {registeredCount}
                 </span>
@@ -134,11 +131,10 @@ export const EventsPage: React.FC = () => {
                 <button
                   key={cat}
                   onClick={() => setCategoryFilter(cat)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${
-                    isSelected
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${isSelected
                       ? 'bg-teal-50 text-teal-900 border border-teal-200 font-semibold'
                       : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-border'
-                  }`}
+                    }`}
                 >
                   {cat}
                 </button>
@@ -150,18 +146,16 @@ export const EventsPage: React.FC = () => {
           <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded border border-border text-xs">
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded transition-colors ${
-                viewMode === 'list' ? 'bg-white text-slate-900 shadow-subtle' : 'text-slate-500 hover:text-slate-800'
-              }`}
+              className={`p-1.5 rounded transition-colors ${viewMode === 'list' ? 'bg-white text-slate-900 shadow-subtle' : 'text-slate-500 hover:text-slate-800'
+                }`}
               title="List View"
             >
               <List className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setViewMode('calendar')}
-              className={`p-1.5 rounded transition-colors ${
-                viewMode === 'calendar' ? 'bg-white text-slate-900 shadow-subtle' : 'text-slate-500 hover:text-slate-800'
-              }`}
+              className={`p-1.5 rounded transition-colors ${viewMode === 'calendar' ? 'bg-white text-slate-900 shadow-subtle' : 'text-slate-500 hover:text-slate-800'
+                }`}
               title="Calendar View"
             >
               <CalendarIcon className="w-3.5 h-3.5" />
@@ -194,15 +188,15 @@ export const EventsPage: React.FC = () => {
                 {activeTab === 'my-registrations'
                   ? 'No event registrations found'
                   : events.length === 0
-                  ? 'No campus events scheduled'
-                  : 'No matching events found'}
+                    ? 'No campus events scheduled'
+                    : 'No matching events found'}
               </h4>
               <p className="text-xs text-slate-500 max-w-sm mt-1 leading-relaxed">
                 {activeTab === 'my-registrations'
                   ? "You haven't registered for any events yet. Check back when new events are published!"
                   : events.length === 0
-                  ? 'Hackathons, workshops, cultural fests, and sports championships will appear here.'
-                  : 'Try selecting a different category or search keyword.'}
+                    ? 'Hackathons, workshops, cultural fests, and sports championships will appear here.'
+                    : 'Try selecting a different category or search keyword.'}
               </p>
             </div>
           ) : (
@@ -231,12 +225,12 @@ export const EventsPage: React.FC = () => {
                             event.category === 'Tech'
                               ? 'teal'
                               : event.category === 'Cultural'
-                              ? 'violet'
-                              : event.category === 'Sports'
-                              ? 'emerald'
-                              : event.category === 'Workshops'
-                              ? 'blue'
-                              : 'slate'
+                                ? 'violet'
+                                : event.category === 'Sports'
+                                  ? 'emerald'
+                                  : event.category === 'Workshops'
+                                    ? 'blue'
+                                    : 'slate'
                           }
                           size="sm"
                         >
@@ -325,8 +319,8 @@ export const EventsPage: React.FC = () => {
                         {event.isRegistered
                           ? 'Cancel'
                           : isFull
-                          ? 'Full'
-                          : 'Register'}
+                            ? 'Full'
+                            : 'Register'}
                       </Button>
                     </div>
                   </div>

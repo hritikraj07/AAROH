@@ -1,5 +1,6 @@
 import {
-  Student,
+  User,
+  UserRole,
   Course,
   ClassSession,
   AttendanceRecord,
@@ -12,23 +13,66 @@ import {
 } from '../types';
 import { APP_CONFIG } from '../config';
 
-// Clean foundation helper for generating student profiles upon domain-validated login
-export function generateStudentFromEmail(email: string): Student {
-  const localPart = email.split('@')[0];
+// Parse role from institutional email domain
+export function getUserRoleFromEmail(email: string): UserRole | null {
+  const trimmed = email.trim().toLowerCase();
+  if (trimmed.endsWith('@admin.aaroh.edu.in')) return 'admin';
+  if (trimmed.endsWith('@faculty.aaroh.edu.in')) return 'faculty';
+  if (trimmed.endsWith('@aaroh.edu.in')) return 'student';
+  return null;
+}
+
+// Generate user profile upon domain-validated login
+export function generateUserFromEmail(email: string): User {
+  const trimmed = email.trim().toLowerCase();
+  const role = getUserRoleFromEmail(trimmed) || 'student';
+  const localPart = trimmed.split('@')[0];
   const nameParts = localPart.split(/[._-]/).filter(Boolean);
+  
   const formattedName = nameParts.length > 0
     ? nameParts.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ')
+    : role === 'admin'
+    ? 'Campus Administrator'
+    : role === 'faculty'
+    ? 'Faculty Member'
     : 'Aaroh Student';
   
   const initials = nameParts.length >= 2
     ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
-    : localPart.slice(0, 2).toUpperCase() || 'AS';
+    : localPart.slice(0, 2).toUpperCase() || (role === 'admin' ? 'AD' : role === 'faculty' ? 'FA' : 'ST');
 
+  if (role === 'admin') {
+    return {
+      id: `usr_adm_${Date.now()}`,
+      name: formattedName,
+      email: trimmed,
+      role: 'admin',
+      designation: 'System Administrator',
+      department: 'Central Administration',
+      avatarInitials: initials,
+    };
+  }
+
+  if (role === 'faculty') {
+    return {
+      id: `usr_fac_${Date.now()}`,
+      name: formattedName.startsWith('Prof') || formattedName.startsWith('Dr') ? formattedName : `Prof. ${formattedName}`,
+      email: trimmed,
+      role: 'faculty',
+      designation: 'Assistant Professor',
+      department: 'Department of Computer Science & Engineering',
+      avatarInitials: initials,
+    };
+  }
+
+  // Default: Student
   return {
-    id: `std_${Date.now()}`,
+    id: `usr_std_${Date.now()}`,
     name: formattedName,
     rollNumber: '22CS042',
-    email: email.trim().toLowerCase(),
+    email: trimmed,
+    role: 'student',
+    designation: 'Undergraduate Scholar',
     program: 'B.Tech',
     department: 'Computer Science & Engineering',
     semester: 5,
@@ -39,8 +83,12 @@ export function generateStudentFromEmail(email: string): Student {
   };
 }
 
+// Compatibility alias
+export const generateStudentFromEmail = generateUserFromEmail;
+
 // Initialized empty states - all mock data wiped clean for production foundation
-export const INITIAL_STUDENT: Student | null = null;
+export const INITIAL_USER: User | null = null;
+export const INITIAL_STUDENT: User | null = null;
 export const INITIAL_COURSES: Course[] = [];
 export const INITIAL_TIMETABLE: ClassSession[] = [];
 export const INITIAL_ATTENDANCE: AttendanceRecord[] = [];

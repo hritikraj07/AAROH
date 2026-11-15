@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import {
+  User,
+  UserRole,
   Student,
   Course,
   ClassSession,
@@ -21,7 +23,9 @@ interface ToastMessage {
 }
 
 interface AppContextType {
-  student: Student | null;
+  user: User | null;
+  role: UserRole | null;
+  student: Student | null; // Compatibility alias
   courses: Course[];
   timetable: ClassSession[];
   attendance: AttendanceRecord[];
@@ -52,9 +56,11 @@ interface AppContextType {
   showToast: (toast: Omit<ToastMessage, 'id'>) => void;
   dismissToast: (id: string) => void;
 
-  // Authentication & Actions
-  loginWithDomain: (email: string, password: string) => { success: boolean; error?: string };
+  // Authentication
+  loginWithDomain: (email: string, password: string) => { success: boolean; error?: string; role?: UserRole };
   logout: () => void;
+
+  // Student & Academic Actions
   updateAttendanceThreshold: (min: number) => void;
   toggleAssignmentSubmission: (id: string) => void;
   markNoticeRead: (id: string, read?: boolean) => void;
@@ -68,17 +74,29 @@ interface AppContextType {
   markAllNotificationsRead: () => void;
   resetDemoData: () => void;
   refreshData: () => void;
+
+  // Faculty & Admin Management Actions
+  createNotice: (notice: Omit<Notice, 'id' | 'publishedDate' | 'readByCurrentUser'>) => Notice;
+  deleteNotice: (id: string) => void;
+  togglePinNotice: (id: string) => void;
+  createEvent: (event: Omit<CampusEvent, 'id' | 'registeredCount' | 'isRegistered'>) => CampusEvent;
+  deleteEvent: (id: string) => void;
+  createCourse: (course: Omit<Course, 'id'>) => Course;
+  deleteCourse: (id: string) => void;
+  createTimetableSession: (session: Omit<ClassSession, 'id'>) => ClassSession;
+  deleteTimetableSession: (id: string) => void;
+  recordAttendanceEntry: (courseId: string, attendedDelta?: number, totalDelta?: number) => void;
+  createAssignment: (asg: Omit<Assignment, 'id' | 'status'>) => Assignment;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Ensure storage is initialized on mount
   useEffect(() => {
     StorageService.initializeData(false);
   }, []);
 
-  const [student, setStudent] = useState<Student | null>(() => StorageService.getStudent());
+  const [user, setUser] = useState<User | null>(() => StorageService.getAuthUser());
   const [courses, setCourses] = useState<Course[]>(() => StorageService.getCourses());
   const [timetable, setTimetable] = useState<ClassSession[]>(() => StorageService.getTimetable());
   const [attendance, setAttendance] = useState<AttendanceRecord[]>(() => StorageService.getAttendance());
@@ -95,7 +113,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const refreshData = useCallback(() => {
-    setStudent(StorageService.getStudent());
+    setUser(StorageService.getAuthUser());
     setCourses(StorageService.getCourses());
     setTimetable(StorageService.getTimetable());
     setAttendance(StorageService.getAttendance());
@@ -120,7 +138,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setToasts(prev => prev.filter(t => t.id !== id));
   }, []);
 
-  // Keyboard shortcut for Cmd+K / Ctrl+K search
+  // Keyboard shortcut for Cmd+K search
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -132,27 +150,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Computed counts
+  // Counts
   const unreadNoticeCount = notices.filter(n => !n.readByCurrentUser).length;
   const pendingAssignmentsCount = assignments.filter(a => a.status === 'pending' || a.status === 'overdue').length;
   const lowAttendanceCount = attendance.filter(rec => {
     const pct = rec.total > 0 ? (rec.attended / rec.total) * 100 : 100;
-    return pct < (student?.attendanceMinimum || 75);
+    return pct < (user?.attendanceMinimum || 75);
   }).length;
   const unreadNotificationsCount = notifications.filter(n => !n.read).length;
 
-  // Domain-Restricted Auth Login
+  // Domain Auth Login
   const loginWithDomain = (email: string, password: string) => {
     const result = StorageService.loginWithDomain(email, password);
-    if (result.success && result.student) {
-      setStudent(result.student);
+    if (result.success && result.user) {
+      setUser(result.user);
       setIsAuthenticated(true);
       showToast({
         type: 'success',
-        title: 'Authentication Successful',
-        message: `Welcome, ${result.student.name} (${result.student.email})`,
+        title: `Authenticated as ${result.user.role.toUpperCase()}`,
+        message: `Welcome, ${result.user.name} (${result.user.email})`,
       });
-      return { success: true };
+      return { success: true, role: result.user.role };
     } else {
       return { success: false, error: result.error || 'Authentication failed' };
     }
@@ -160,15 +178,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const logout = () => {
     StorageService.logout();
-    setStudent(null);
+    setUser(null);
     setIsAuthenticated(false);
-    showToast({ type: 'info', title: 'Session Ended', message: 'You have been signed out safely.' });
+    showToast({ type: 'info', title: 'Session Terminated', message: 'You have signed out.' });
   };
 
   const updateAttendanceThreshold = (min: number) => {
     const updated = StorageService.updateAttendanceThreshold(min);
     if (updated) {
-      setStudent(updated);
+      setUser(updated);
       showToast({ type: 'info', title: `Minimum attendance threshold updated to ${min}%` });
     }
   };
@@ -280,14 +298,94 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast({
       type: 'info',
       title: 'Foundation Reset',
-      message: 'All collections have been reset to clean production foundation.',
+      message: 'All collections have been reset to empty foundation.',
     });
+  };
+
+  // Admin & Faculty Management Actions
+  const createNotice = (notice: Omit<Notice, 'id' | 'publishedDate' | 'readByCurrentUser'>) => {
+    const created = StorageService.createNotice(notice);
+    setNotices(StorageService.getNotices());
+    showToast({ type: 'success', title: 'Circular Published', message: notice.title });
+    return created;
+  };
+
+  const deleteNotice = (id: string) => {
+    StorageService.deleteNotice(id);
+    setNotices(StorageService.getNotices());
+    showToast({ type: 'info', title: 'Notice Deleted' });
+  };
+
+  const togglePinNotice = (id: string) => {
+    const updated = StorageService.togglePinNotice(id);
+    setNotices(StorageService.getNotices());
+    if (updated) {
+      showToast({
+        type: 'info',
+        title: updated.isPinned ? 'Notice Pinned' : 'Notice Unpinned',
+      });
+    }
+  };
+
+  const createEvent = (ev: Omit<CampusEvent, 'id' | 'registeredCount' | 'isRegistered'>) => {
+    const created = StorageService.createEvent(ev);
+    setEvents(StorageService.getEvents());
+    showToast({ type: 'success', title: 'Event Created', message: ev.title });
+    return created;
+  };
+
+  const deleteEvent = (id: string) => {
+    StorageService.deleteEvent(id);
+    setEvents(StorageService.getEvents());
+    showToast({ type: 'info', title: 'Event Removed' });
+  };
+
+  const createCourse = (course: Omit<Course, 'id'>) => {
+    const created = StorageService.createCourse(course);
+    setCourses(StorageService.getCourses());
+    showToast({ type: 'success', title: 'Course Added', message: `${course.code}: ${course.name}` });
+    return created;
+  };
+
+  const deleteCourse = (id: string) => {
+    StorageService.deleteCourse(id);
+    setCourses(StorageService.getCourses());
+    setTimetable(StorageService.getTimetable());
+    showToast({ type: 'info', title: 'Course and associated sessions removed' });
+  };
+
+  const createTimetableSession = (session: Omit<ClassSession, 'id'>) => {
+    const created = StorageService.createTimetableSession(session);
+    setTimetable(StorageService.getTimetable());
+    showToast({ type: 'success', title: 'Timetable Slot Added' });
+    return created;
+  };
+
+  const deleteTimetableSession = (id: string) => {
+    StorageService.deleteTimetableSession(id);
+    setTimetable(StorageService.getTimetable());
+    showToast({ type: 'info', title: 'Timetable Slot Removed' });
+  };
+
+  const recordAttendanceEntry = (courseId: string, attendedDelta = 1, totalDelta = 1) => {
+    StorageService.recordAttendanceEntry(courseId, attendedDelta, totalDelta);
+    setAttendance(StorageService.getAttendance());
+    showToast({ type: 'success', title: 'Attendance Logged' });
+  };
+
+  const createAssignment = (asg: Omit<Assignment, 'id' | 'status'>) => {
+    const created = StorageService.createAssignment(asg);
+    setAssignments(StorageService.getAssignments());
+    showToast({ type: 'success', title: 'Assignment Posted', message: asg.title });
+    return created;
   };
 
   return (
     <AppContext.Provider
       value={{
-        student,
+        user,
+        role: user?.role || null,
+        student: user, // Compatibility alias
         courses,
         timetable,
         attendance,
@@ -326,6 +424,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         markAllNotificationsRead,
         resetDemoData,
         refreshData,
+        createNotice,
+        deleteNotice,
+        togglePinNotice,
+        createEvent,
+        deleteEvent,
+        createCourse,
+        deleteCourse,
+        createTimetableSession,
+        deleteTimetableSession,
+        recordAttendanceEntry,
+        createAssignment,
       }}
     >
       {children}

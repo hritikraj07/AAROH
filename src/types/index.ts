@@ -1,16 +1,24 @@
-export interface Student {
+export type UserRole = 'student' | 'faculty' | 'admin';
+
+export interface User {
   id: string;
   name: string;
-  rollNumber: string;
   email: string;
-  program: string;
-  department: string;
-  semester: number;
-  section: string;
-  academicYear: string;
+  role: UserRole;
   avatarInitials: string;
-  attendanceMinimum: number; // default 75%
+  department: string;
+  designation?: string; // e.g. "Assistant Professor", "Academic Registrar", "Student"
+  // Student-specific fields
+  rollNumber?: string;
+  program?: string;
+  semester?: number;
+  section?: string;
+  academicYear?: string;
+  attendanceMinimum?: number; // default 75%
 }
+
+// Student is an alias of User for full backward compatibility
+export type Student = User;
 
 export interface Course {
   id: string;
@@ -92,6 +100,7 @@ export interface CampusEvent {
   registeredCount: number;
   isRegistered: boolean;
   registrationId?: string;
+  status?: 'pending' | 'approved' | 'rejected';
 }
 
 export interface Registration {
@@ -122,7 +131,7 @@ export interface LostFoundItem {
   contactRequestsCount: number;
   hasUserRequestedContact?: boolean;
   resolvedAt?: string;
-  imageIcon?: string; // name of icon/category representation
+  imageIcon?: string;
 }
 
 export type OpportunityType = 'Internship' | 'Hackathon' | 'Competition';
@@ -136,7 +145,7 @@ export interface Opportunity {
   deadline: string; // YYYY-MM-DD
   mode: OpportunityMode;
   eligibility: string;
-  compensation: string; // e.g. "₹35,000 / month" or "₹2,50,000 Cash Prize"
+  compensation: string;
   description: string;
   applyUrl: string;
   isSaved: boolean;
@@ -148,7 +157,7 @@ export interface NotificationItem {
   id: string;
   title: string;
   message: string;
-  timestamp: string; // Relative or ISO
+  timestamp: string;
   type: NotificationType;
   read: boolean;
   actionUrl?: string;

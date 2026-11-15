@@ -48,8 +48,17 @@ assert(!emptyPassword.success, 'Rejects empty password');
 
 const validLogin = StorageService.loginWithDomain('aarav.sharma@aaroh.edu.in', 'securePass2026');
 assert(validLogin.success, 'Accepts email ending with @aaroh.edu.in');
-assert(validLogin.student?.name === 'Aarav Sharma', 'Extracts student name correctly');
-assert(validLogin.student?.email === 'aarav.sharma@aaroh.edu.in', 'Saves student email');
+assert(validLogin.user?.name === 'Aarav Sharma', 'Extracts student name correctly');
+assert(validLogin.user?.email === 'aarav.sharma@aaroh.edu.in', 'Saves student email');
+assert(validLogin.user?.role === 'student', 'Assigns student role');
+
+const facultyLogin = StorageService.loginWithDomain('prof.raman@faculty.aaroh.edu.in', 'facPass2026');
+assert(facultyLogin.success, 'Accepts faculty institutional email');
+assert(facultyLogin.user?.role === 'faculty', 'Assigns faculty role');
+
+const adminLogin = StorageService.loginWithDomain('registrar@admin.aaroh.edu.in', 'admPass2026');
+assert(adminLogin.success, 'Accepts admin institutional email');
+assert(adminLogin.user?.role === 'admin', 'Assigns admin role');
 assert(StorageService.isAuthenticated(), 'Storage confirms authenticated state');
 assert(!!StorageService.getSessionToken(), 'Session token generated and stored');
 

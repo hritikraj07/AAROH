@@ -12,20 +12,56 @@ export const Layout: React.FC = () => {
   const location = useLocation();
 
   const getPageTitle = (pathname: string): string => {
-    switch (pathname) {
+    // Strip trailing slashes
+    const cleanPath = pathname.replace(/\/+$/, '') || '/';
+
+    switch (cleanPath) {
+      // Student Routes
       case '/':
+      case '/student':
+      case '/student/dashboard':
       case '/dashboard':
         return 'Student Dashboard';
+      case '/student/academics':
       case '/academics':
         return 'Academics & Timetable';
+      case '/student/notices':
       case '/notices':
         return 'Campus Updates';
+      case '/student/events':
       case '/events':
         return 'Campus Events & Activities';
+      case '/student/lost-found':
       case '/lost-found':
         return 'Lost & Found Registry';
+      case '/student/opportunities':
       case '/opportunities':
         return 'Opportunity Board';
+
+      // Faculty Routes
+      case '/faculty':
+      case '/faculty/dashboard':
+        return 'Faculty Overview';
+      case '/faculty/classes':
+        return 'Assigned Courses & Curriculum';
+      case '/faculty/attendance':
+        return 'Lecture Attendance Logger';
+      case '/faculty/assignments':
+        return 'Coursework & Grading';
+
+      // Admin Routes
+      case '/admin':
+      case '/admin/dashboard':
+        return 'Administration Console';
+      case '/admin/notices':
+        return 'Notice Board Publisher';
+      case '/admin/events':
+        return 'Events Scheduling & Approvals';
+      case '/admin/timetable':
+        return 'Institutional Timetable Scheduler';
+      case '/admin/settings':
+        return 'System Configuration';
+
       default:
         return 'Aaroh';
     }

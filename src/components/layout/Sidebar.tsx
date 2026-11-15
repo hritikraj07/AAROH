@@ -10,6 +10,11 @@ import {
   Settings,
   LogOut,
   AlertTriangle,
+  BookOpen,
+  ClipboardList,
+  Clock,
+  ShieldCheck,
+  UserCheck
 } from 'lucide-react';
 import { APP_CONFIG } from '../../config';
 import { useApp } from '../../context/AppContext';
@@ -18,9 +23,17 @@ export interface SidebarProps {
   onCloseMobile?: () => void;
 }
 
+interface NavItem {
+  to: string;
+  label: string;
+  icon: React.ReactNode;
+  badge?: React.ReactNode;
+}
+
 export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
   const {
-    student,
+    user,
+    role,
     unreadNoticeCount,
     pendingAssignmentsCount,
     lowAttendanceCount,
@@ -28,9 +41,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
     logout,
   } = useApp();
 
-  const navItems = [
+  // Student Navigation Items
+  const studentNavItems: NavItem[] = [
     {
-      to: '/',
+      to: '/student',
       label: 'Dashboard',
       icon: <LayoutDashboard className="w-4 h-4" />,
       badge: lowAttendanceCount > 0 ? (
@@ -41,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       ) : null,
     },
     {
-      to: '/academics',
+      to: '/student/academics',
       label: 'Academics',
       icon: <GraduationCap className="w-4 h-4" />,
       badge: pendingAssignmentsCount > 0 ? (
@@ -51,7 +65,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       ) : null,
     },
     {
-      to: '/notices',
+      to: '/student/notices',
       label: 'Campus Updates',
       icon: <Bell className="w-4 h-4" />,
       badge: unreadNoticeCount > 0 ? (
@@ -61,21 +75,122 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       ) : null,
     },
     {
-      to: '/events',
+      to: '/student/events',
       label: 'Events',
       icon: <Calendar className="w-4 h-4" />,
     },
     {
-      to: '/lost-found',
+      to: '/student/lost-found',
       label: 'Lost & Found',
       icon: <HelpCircle className="w-4 h-4" />,
     },
     {
-      to: '/opportunities',
+      to: '/student/opportunities',
       label: 'Opportunities',
       icon: <Briefcase className="w-4 h-4" />,
     },
   ];
+
+  // Faculty Navigation Items
+  const facultyNavItems: NavItem[] = [
+    {
+      to: '/faculty',
+      label: 'Faculty Overview',
+      icon: <LayoutDashboard className="w-4 h-4" />,
+    },
+    {
+      to: '/faculty/classes',
+      label: 'Assigned Classes',
+      icon: <BookOpen className="w-4 h-4" />,
+    },
+    {
+      to: '/faculty/attendance',
+      label: 'Attendance Logger',
+      icon: <ClipboardList className="w-4 h-4" />,
+    },
+    {
+      to: '/faculty/assignments',
+      label: 'Coursework & Grading',
+      icon: <GraduationCap className="w-4 h-4" />,
+      badge: pendingAssignmentsCount > 0 ? (
+        <span className="text-[10px] font-medium text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded-full tabular-nums">
+          {pendingAssignmentsCount} active
+        </span>
+      ) : null,
+    },
+    {
+      to: '/student/notices',
+      label: 'Campus Circulars',
+      icon: <Bell className="w-4 h-4" />,
+    },
+  ];
+
+  // Admin Navigation Items
+  const adminNavItems: NavItem[] = [
+    {
+      to: '/admin',
+      label: 'Administration Console',
+      icon: <ShieldCheck className="w-4 h-4" />,
+    },
+    {
+      to: '/admin/notices',
+      label: 'Notice Board Publisher',
+      icon: <Bell className="w-4 h-4" />,
+    },
+    {
+      to: '/admin/events',
+      label: 'Events & Approvals',
+      icon: <Calendar className="w-4 h-4" />,
+    },
+    {
+      to: '/admin/timetable',
+      label: 'Timetable Scheduler',
+      icon: <Clock className="w-4 h-4" />,
+    },
+    {
+      to: '/admin/settings',
+      label: 'System Configuration',
+      icon: <Settings className="w-4 h-4" />,
+    },
+  ];
+
+  const getNavItems = () => {
+    switch (role) {
+      case 'admin':
+        return adminNavItems;
+      case 'faculty':
+        return facultyNavItems;
+      case 'student':
+      default:
+        return studentNavItems;
+    }
+  };
+
+  const getRoleHeader = () => {
+    switch (role) {
+      case 'admin':
+        return 'System Administration';
+      case 'faculty':
+        return 'Faculty Portal';
+      case 'student':
+      default:
+        return 'Student Life';
+    }
+  };
+
+  const getBadgeLabel = () => {
+    switch (role) {
+      case 'admin':
+        return 'Admin';
+      case 'faculty':
+        return 'Faculty';
+      case 'student':
+      default:
+        return 'Student';
+    }
+  };
+
+  const navItems = getNavItems();
 
   return (
     <aside className="w-64 bg-white border-r border-border h-full flex flex-col justify-between select-none">
@@ -83,12 +198,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       <div>
         <div className="px-5 py-4 border-b border-border">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="flex items-center gap-2">
               <span className="text-xl font-bold tracking-tight text-slate-900 font-sans">
                 {APP_CONFIG.appName}
               </span>
-              <span className="ml-2 text-[10px] uppercase font-semibold tracking-wider text-teal-800 bg-teal-50 border border-teal-200 px-1.5 py-0.5 rounded">
-                Campus
+              <span className="text-[10px] uppercase font-semibold tracking-wider text-teal-800 bg-teal-50 border border-teal-200 px-1.5 py-0.5 rounded">
+                {getBadgeLabel()}
               </span>
             </div>
           </div>
@@ -100,13 +215,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
         {/* Navigation Section */}
         <nav className="p-3 space-y-1">
           <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-            Student Life
+            {getRoleHeader()}
           </div>
           {navItems.map(item => (
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === '/'}
+              end={item.to === '/student' || item.to === '/faculty' || item.to === '/admin'}
               onClick={onCloseMobile}
               className={({ isActive }) =>
                 `flex items-center justify-between px-3 py-2 text-xs font-medium rounded-md transition-colors ${
@@ -126,18 +241,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
         </nav>
       </div>
 
-      {/* Student Profile & Footer Controls */}
+      {/* User Profile & Footer Controls */}
       <div className="p-3 border-t border-border bg-slate-50/50 space-y-2">
         <div className="flex items-center gap-2.5 p-2 rounded-md bg-white border border-border">
           <div className="w-8 h-8 rounded bg-teal-700 text-white font-semibold text-xs flex items-center justify-center shrink-0 font-mono">
-            {student?.avatarInitials || 'ST'}
+            {user?.avatarInitials || (role === 'admin' ? 'AD' : role === 'faculty' ? 'FA' : 'ST')}
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold text-slate-900 truncate">
-              {student?.name || 'Aaroh Student'}
+              {user?.name || (role === 'admin' ? 'Campus Admin' : role === 'faculty' ? 'Faculty Member' : 'Student')}
             </p>
             <p className="text-[11px] text-slate-500 truncate font-mono">
-              {student?.rollNumber || 'ID Pending'} • Sem {student?.semester || 1}
+              {role === 'student'
+                ? `${user?.rollNumber || '22CS042'} • Sem ${user?.semester || 5}`
+                : role === 'faculty'
+                ? user?.designation || 'Assistant Professor'
+                : 'System Administrator'}
             </p>
           </div>
         </div>
@@ -170,3 +289,5 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
     </aside>
   );
 };
+
+export default Sidebar;

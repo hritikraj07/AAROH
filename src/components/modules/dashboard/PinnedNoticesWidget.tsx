@@ -20,7 +20,7 @@ export const PinnedNoticesWidget: React.FC = () => {
           </h3>
         </div>
         <Link
-          to="/notices"
+          to="/student/notices"
           className="text-xs font-medium text-teal-700 hover:text-teal-900 flex items-center gap-1 hover:underline"
         >
           <span>Notice Board</span>
@@ -97,7 +97,7 @@ export const PinnedNoticesWidget: React.FC = () => {
         {notices.length > 0 && (
           <div className="pt-3 mt-3 border-t border-border flex items-center justify-between text-[11px] text-slate-500">
             <span>{notices.filter(n => !n.readByCurrentUser).length} unread notices in feed</span>
-            <Link to="/notices" className="text-teal-700 hover:underline">
+            <Link to="/student/notices" className="text-teal-700 hover:underline">
               View All Updates
             </Link>
           </div>

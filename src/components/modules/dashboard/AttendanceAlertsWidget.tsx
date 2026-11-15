@@ -34,7 +34,7 @@ export const AttendanceAlertsWidget: React.FC = () => {
           </span>
         </div>
         <Link
-          to="/academics?tab=attendance"
+          to="/student/academics?tab=attendance"
           className="text-xs font-medium text-teal-700 hover:text-teal-900 flex items-center gap-1 hover:underline"
         >
           <span>All Subjects</span>
@@ -113,7 +113,7 @@ export const AttendanceAlertsWidget: React.FC = () => {
         {safeAttendance.length > 0 && (
           <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] text-slate-500">
             <span>{safeAttendance.length} other subjects in good standing</span>
-            <Link to="/academics?tab=attendance" className="text-teal-700 hover:underline">
+            <Link to="/student/academics?tab=attendance" className="text-teal-700 hover:underline">
               View Breakdown
             </Link>
           </div>

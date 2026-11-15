@@ -3,10 +3,11 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { APP_CONFIG } from '../config';
 import { Button } from '../components/ui/Button';
-import { Lock, Mail, AlertCircle, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Lock, Mail, AlertCircle, ArrowRight, ShieldCheck, GraduationCap, Briefcase, ShieldAlert } from 'lucide-react';
+import { getUserRoleFromEmail } from '../data/seed';
 
 export const LoginPage: React.FC = () => {
-  const { loginWithDomain, isAuthenticated } = useApp();
+  const { loginWithDomain, isAuthenticated, role } = useApp();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -14,9 +15,9 @@ export const LoginPage: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // If already authenticated, redirect straight to dashboard
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+  // If already authenticated, redirect straight to their role portal
+  if (isAuthenticated && role) {
+    return <Navigate to={`/${role}`} replace />;
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -29,8 +30,11 @@ export const LoginPage: React.FC = () => {
       return;
     }
 
-    if (!trimmedEmail.toLowerCase().endsWith('@aaroh.edu.in')) {
-      setErrorMessage('Access restricted: Institutional email must end with @aaroh.edu.in');
+    const detectedRole = getUserRoleFromEmail(trimmedEmail);
+    if (!detectedRole) {
+      setErrorMessage(
+        'Access restricted: Must be an institutional email ending with @aaroh.edu.in (Student), @faculty.aaroh.edu.in (Faculty), or @admin.aaroh.edu.in (Admin).'
+      );
       return;
     }
 
@@ -43,8 +47,8 @@ export const LoginPage: React.FC = () => {
     const result = loginWithDomain(trimmedEmail, password);
     setLoading(false);
 
-    if (result.success) {
-      navigate('/');
+    if (result.success && result.role) {
+      navigate(`/${result.role}`);
     } else {
       setErrorMessage(result.error || 'Authentication failed. Please verify credentials.');
     }
@@ -52,7 +56,7 @@ export const LoginPage: React.FC = () => {
 
   const handleFillDemo = (demoEmail: string) => {
     setEmail(demoEmail);
-    setPassword('studentPass2026');
+    setPassword('campusSecure2026');
     setErrorMessage(null);
   };
 
@@ -73,17 +77,29 @@ export const LoginPage: React.FC = () => {
             {APP_CONFIG.collegeName}
           </p>
           <p className="text-xs text-slate-400">
-            Unified student access for academics, notifications, and campus life
+            Unified access portal for students, faculty, and administration
           </p>
         </div>
 
-        {/* Domain Restriction Notice */}
-        <div className="p-3 bg-slate-50 border border-border rounded-md text-xs text-slate-600 flex items-start gap-2.5">
-          <ShieldCheck className="w-4 h-4 text-teal-700 shrink-0 mt-0.5" />
-          <div className="leading-relaxed">
-            <span className="font-semibold text-slate-800 block">Domain Restricted Access</span>
-            Sign in is strictly permitted for verified student accounts ending with{' '}
-            <strong className="font-mono text-teal-800">@aaroh.edu.in</strong>.
+        {/* Domain-based RBAC Notice */}
+        <div className="p-3 bg-slate-50 border border-border rounded-md text-xs text-slate-600 space-y-2">
+          <div className="flex items-center gap-2 font-semibold text-slate-800">
+            <ShieldCheck className="w-4 h-4 text-teal-700 shrink-0" />
+            <span>Institutional Domain Routing</span>
+          </div>
+          <div className="grid grid-cols-1 gap-1 text-[11px] text-slate-500 pl-6">
+            <div className="flex items-center justify-between">
+              <span>Student Portal:</span>
+              <code className="font-mono text-teal-800 font-medium">@aaroh.edu.in</code>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Faculty Portal:</span>
+              <code className="font-mono text-teal-800 font-medium">@faculty.aaroh.edu.in</code>
+            </div>
+            <div className="flex items-center justify-between">
+              <span>Admin Console:</span>
+              <code className="font-mono text-teal-800 font-medium">@admin.aaroh.edu.in</code>
+            </div>
           </div>
         </div>
 
@@ -111,7 +127,7 @@ export const LoginPage: React.FC = () => {
                   setEmail(e.target.value);
                   if (errorMessage) setErrorMessage(null);
                 }}
-                placeholder="username@aaroh.edu.in"
+                placeholder="name@aaroh.edu.in"
                 className="w-full text-xs font-mono pl-9 pr-3 py-2 bg-white border border-border rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700 focus:border-teal-700 transition-colors"
               />
             </div>
@@ -144,39 +160,65 @@ export const LoginPage: React.FC = () => {
             loading={loading}
             className="w-full shadow-subtle justify-center"
           >
-            <span>Sign In to Student Account</span>
+            <span>Authenticate & Enter Portal</span>
             <ArrowRight className="w-4 h-4 ml-1.5" />
           </Button>
         </form>
 
-        {/* Quick Testing Facilitator */}
-        <div className="pt-3 border-t border-border space-y-2">
+        {/* Evaluator Quick-Fill Options */}
+        <div className="pt-3 border-t border-border space-y-2.5">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block text-center">
-            Evaluator Quick Fill Options
+            Evaluator One-Click Logins
           </span>
-          <div className="flex flex-wrap gap-2 justify-center text-xs">
+          <div className="flex flex-col gap-1.5">
             <button
               type="button"
               onClick={() => handleFillDemo('aarav.sharma@aaroh.edu.in')}
-              className="px-2.5 py-1 text-[11px] bg-slate-50 hover:bg-slate-100 border border-border rounded font-mono text-slate-700 transition-colors"
+              className="flex items-center justify-between px-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100 border border-border rounded text-slate-700 transition-colors text-left"
             >
-              aarav.sharma@aaroh.edu.in
+              <div className="flex items-center gap-2">
+                <GraduationCap className="w-3.5 h-3.5 text-teal-700" />
+                <span className="font-semibold text-slate-800">Student:</span>
+                <span className="font-mono text-[11px] text-slate-600">aarav.sharma@aaroh.edu.in</span>
+              </div>
+              <span className="text-[10px] text-slate-400 uppercase font-mono">Fill</span>
             </button>
+
             <button
               type="button"
-              onClick={() => handleFillDemo('priya.nair@aaroh.edu.in')}
-              className="px-2.5 py-1 text-[11px] bg-slate-50 hover:bg-slate-100 border border-border rounded font-mono text-slate-700 transition-colors"
+              onClick={() => handleFillDemo('prof.raman@faculty.aaroh.edu.in')}
+              className="flex items-center justify-between px-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100 border border-border rounded text-slate-700 transition-colors text-left"
             >
-              priya.nair@aaroh.edu.in
+              <div className="flex items-center gap-2">
+                <Briefcase className="w-3.5 h-3.5 text-blue-700" />
+                <span className="font-semibold text-slate-800">Faculty:</span>
+                <span className="font-mono text-[11px] text-slate-600">prof.raman@faculty.aaroh.edu.in</span>
+              </div>
+              <span className="text-[10px] text-slate-400 uppercase font-mono">Fill</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleFillDemo('registrar@admin.aaroh.edu.in')}
+              className="flex items-center justify-between px-3 py-1.5 text-xs bg-slate-50 hover:bg-slate-100 border border-border rounded text-slate-700 transition-colors text-left"
+            >
+              <div className="flex items-center gap-2">
+                <ShieldAlert className="w-3.5 h-3.5 text-amber-700" />
+                <span className="font-semibold text-slate-800">Admin:</span>
+                <span className="font-mono text-[11px] text-slate-600">registrar@admin.aaroh.edu.in</span>
+              </div>
+              <span className="text-[10px] text-slate-400 uppercase font-mono">Fill</span>
             </button>
           </div>
         </div>
 
         {/* Institutional System Footer */}
-        <div className="pt-2 text-center text-[11px] text-slate-400">
-          <span>Single institutional credential for all campus services</span>
+        <div className="pt-1 text-center text-[11px] text-slate-400">
+          <span>Role-Based Single Sign-On (RBAC) Architecture</span>
         </div>
       </div>
     </div>
   );
 };
+
+export default LoginPage;

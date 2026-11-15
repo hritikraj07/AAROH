@@ -35,7 +35,7 @@ export const WeekAssignmentsWidget: React.FC = () => {
           )}
         </div>
         <Link
-          to="/academics?tab=assignments"
+          to="/student/academics?tab=assignments"
           className="text-xs font-medium text-teal-700 hover:text-teal-900 flex items-center gap-1 hover:underline"
         >
           <span>All Assignments</span>
@@ -124,7 +124,7 @@ export const WeekAssignmentsWidget: React.FC = () => {
         {sortedAssignments.length > 0 && (
           <div className="pt-3 mt-3 border-t border-border flex items-center justify-between text-[11px] text-slate-500">
             <span>{assignments.filter(a => a.status === 'submitted').length} / {assignments.length} completed</span>
-            <Link to="/academics?tab=assignments" className="text-teal-700 hover:underline">
+            <Link to="/student/academics?tab=assignments" className="text-teal-700 hover:underline">
               Manage Submissions
             </Link>
           </div>

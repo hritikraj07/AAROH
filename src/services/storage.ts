@@ -1,4 +1,6 @@
 import {
+  User,
+  UserRole,
   Student,
   Course,
   ClassSession,
@@ -11,7 +13,6 @@ import {
   NotificationItem,
 } from '../types';
 import {
-  INITIAL_STUDENT,
   INITIAL_COURSES,
   INITIAL_TIMETABLE,
   INITIAL_ATTENDANCE,
@@ -21,14 +22,14 @@ import {
   INITIAL_LOST_FOUND,
   INITIAL_OPPORTUNITIES,
   INITIAL_NOTIFICATIONS,
-  generateStudentFromEmail,
+  generateUserFromEmail,
+  getUserRoleFromEmail,
 } from '../data/seed';
 
 const STORAGE_KEYS = {
-  INITIALIZED: 'aaroh_initialized_v2',
+  INITIALIZED: 'aaroh_initialized_v3',
   SESSION_TOKEN: 'aaroh_session_token',
   AUTH_USER: 'aaroh_auth_user',
-  STUDENT: 'aaroh_student',
   COURSES: 'aaroh_courses',
   TIMETABLE: 'aaroh_timetable',
   ATTENDANCE: 'aaroh_attendance',
@@ -40,7 +41,6 @@ const STORAGE_KEYS = {
   NOTIFICATIONS: 'aaroh_notifications',
 };
 
-// Generic localStorage reader with fallback
 function getStored<T>(key: string, fallback: T): T {
   try {
     const raw = localStorage.getItem(key);
@@ -52,7 +52,6 @@ function getStored<T>(key: string, fallback: T): T {
   }
 }
 
-// Generic localStorage writer
 function setStored<T>(key: string, data: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(data));
@@ -66,7 +65,6 @@ export const StorageService = {
   initializeData(forceReset = false): void {
     const initialized = localStorage.getItem(STORAGE_KEYS.INITIALIZED);
     if (!initialized || forceReset) {
-      // Clear all legacy mock data and seed empty collections
       setStored(STORAGE_KEYS.COURSES, INITIAL_COURSES);
       setStored(STORAGE_KEYS.TIMETABLE, INITIAL_TIMETABLE);
       setStored(STORAGE_KEYS.ATTENDANCE, INITIAL_ATTENDANCE);
@@ -78,19 +76,17 @@ export const StorageService = {
       setStored(STORAGE_KEYS.NOTIFICATIONS, INITIAL_NOTIFICATIONS);
 
       if (forceReset) {
-        // In full reset, also clear existing auth session
         localStorage.removeItem(STORAGE_KEYS.SESSION_TOKEN);
         localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
-        localStorage.removeItem(STORAGE_KEYS.STUDENT);
       }
       localStorage.setItem(STORAGE_KEYS.INITIALIZED, 'true');
     }
   },
 
-  // Authentication & Domain-Restricted Auth
+  // Authentication & RBAC Login
   isAuthenticated(): boolean {
     const token = localStorage.getItem(STORAGE_KEYS.SESSION_TOKEN);
-    const user = this.getAuthStudent();
+    const user = this.getAuthUser();
     return !!token && !!user;
   },
 
@@ -98,14 +94,14 @@ export const StorageService = {
     return localStorage.getItem(STORAGE_KEYS.SESSION_TOKEN);
   },
 
-  loginWithDomain(email: string, password: string): { success: boolean; error?: string; student?: Student; token?: string } {
+  loginWithDomain(email: string, password: string): { success: boolean; error?: string; user?: User; token?: string } {
     const trimmedEmail = email.trim().toLowerCase();
-    const domain = '@aaroh.edu.in';
+    const role = getUserRoleFromEmail(trimmedEmail);
 
-    if (!trimmedEmail.endsWith(domain)) {
+    if (!role) {
       return {
         success: false,
-        error: `Access restricted: Please enter an institutional email ending with ${domain}`,
+        error: 'Access restricted: Please enter an institutional email ending with @aaroh.edu.in (Student), @faculty.aaroh.edu.in (Faculty), or @admin.aaroh.edu.in (Admin).',
       };
     }
 
@@ -116,17 +112,15 @@ export const StorageService = {
       };
     }
 
-    // Generate authenticated student profile from verified email
-    const student = generateStudentFromEmail(trimmedEmail);
-    const token = `aaroh_session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    const user = generateUserFromEmail(trimmedEmail);
+    const token = `aaroh_session_${role}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 
     localStorage.setItem(STORAGE_KEYS.SESSION_TOKEN, token);
-    setStored(STORAGE_KEYS.AUTH_USER, student);
-    setStored(STORAGE_KEYS.STUDENT, student);
+    setStored(STORAGE_KEYS.AUTH_USER, user);
 
     return {
       success: true,
-      student,
+      user,
       token,
     };
   },
@@ -134,22 +128,25 @@ export const StorageService = {
   logout(): void {
     localStorage.removeItem(STORAGE_KEYS.SESSION_TOKEN);
     localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
-    localStorage.removeItem(STORAGE_KEYS.STUDENT);
   },
 
+  getAuthUser(): User | null {
+    return getStored<User | null>(STORAGE_KEYS.AUTH_USER, null);
+  },
+
+  // Alias for backward compatibility
   getAuthStudent(): Student | null {
-    return getStored<Student | null>(STORAGE_KEYS.AUTH_USER, null);
+    return this.getAuthUser();
   },
 
   getStudent(): Student | null {
-    return getStored<Student | null>(STORAGE_KEYS.STUDENT, this.getAuthStudent());
+    return this.getAuthUser();
   },
 
   updateStudent(studentUpdate: Partial<Student>): Student | null {
-    const current = this.getStudent();
+    const current = this.getAuthUser();
     if (!current) return null;
     const updated = { ...current, ...studentUpdate };
-    setStored(STORAGE_KEYS.STUDENT, updated);
     setStored(STORAGE_KEYS.AUTH_USER, updated);
     return updated;
   },
@@ -159,13 +156,70 @@ export const StorageService = {
     return getStored<Course[]>(STORAGE_KEYS.COURSES, INITIAL_COURSES);
   },
 
+  createCourse(course: Omit<Course, 'id'>): Course {
+    const list = this.getCourses();
+    const newCourse: Course = {
+      ...course,
+      id: `c_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    };
+    list.push(newCourse);
+    setStored(STORAGE_KEYS.COURSES, list);
+    return newCourse;
+  },
+
+  deleteCourse(id: string): boolean {
+    const list = this.getCourses().filter(c => c.id !== id);
+    setStored(STORAGE_KEYS.COURSES, list);
+    // Also remove timetable sessions for this course
+    const sessions = this.getTimetable().filter(s => s.courseId !== id);
+    setStored(STORAGE_KEYS.TIMETABLE, sessions);
+    return true;
+  },
+
   getTimetable(): ClassSession[] {
     return getStored<ClassSession[]>(STORAGE_KEYS.TIMETABLE, INITIAL_TIMETABLE);
+  },
+
+  createTimetableSession(session: Omit<ClassSession, 'id'>): ClassSession {
+    const list = this.getTimetable();
+    const newSession: ClassSession = {
+      ...session,
+      id: `ts_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    };
+    list.push(newSession);
+    setStored(STORAGE_KEYS.TIMETABLE, list);
+    return newSession;
+  },
+
+  deleteTimetableSession(id: string): boolean {
+    const list = this.getTimetable().filter(s => s.id !== id);
+    setStored(STORAGE_KEYS.TIMETABLE, list);
+    return true;
   },
 
   // Attendance
   getAttendance(): AttendanceRecord[] {
     return getStored<AttendanceRecord[]>(STORAGE_KEYS.ATTENDANCE, INITIAL_ATTENDANCE);
+  },
+
+  recordAttendanceEntry(courseId: string, attendedDelta = 1, totalDelta = 1): AttendanceRecord {
+    const list = this.getAttendance();
+    const idx = list.findIndex(a => a.courseId === courseId);
+    if (idx !== -1) {
+      list[idx].attended += attendedDelta;
+      list[idx].total += totalDelta;
+      setStored(STORAGE_KEYS.ATTENDANCE, list);
+      return list[idx];
+    } else {
+      const newRecord: AttendanceRecord = {
+        courseId,
+        attended: attendedDelta,
+        total: totalDelta,
+      };
+      list.push(newRecord);
+      setStored(STORAGE_KEYS.ATTENDANCE, list);
+      return newRecord;
+    }
   },
 
   updateAttendanceThreshold(min: number): Student | null {
@@ -175,6 +229,18 @@ export const StorageService = {
   // Assignments
   getAssignments(): Assignment[] {
     return getStored<Assignment[]>(STORAGE_KEYS.ASSIGNMENTS, INITIAL_ASSIGNMENTS);
+  },
+
+  createAssignment(asg: Omit<Assignment, 'id' | 'status'>): Assignment {
+    const list = this.getAssignments();
+    const newAsg: Assignment = {
+      ...asg,
+      id: `asg_${Date.now()}`,
+      status: 'pending',
+    };
+    list.unshift(newAsg);
+    setStored(STORAGE_KEYS.ASSIGNMENTS, list);
+    return newAsg;
   },
 
   toggleAssignmentSubmission(id: string): Assignment | null {
@@ -199,6 +265,34 @@ export const StorageService = {
     return getStored<Notice[]>(STORAGE_KEYS.NOTICES, INITIAL_NOTICES);
   },
 
+  createNotice(notice: Omit<Notice, 'id' | 'publishedDate' | 'readByCurrentUser'>): Notice {
+    const list = this.getNotices();
+    const newNotice: Notice = {
+      ...notice,
+      id: `not_${Date.now()}`,
+      publishedDate: new Date().toISOString().split('T')[0],
+      readByCurrentUser: false,
+    };
+    list.unshift(newNotice);
+    setStored(STORAGE_KEYS.NOTICES, list);
+    return newNotice;
+  },
+
+  deleteNotice(id: string): boolean {
+    const list = this.getNotices().filter(n => n.id !== id);
+    setStored(STORAGE_KEYS.NOTICES, list);
+    return true;
+  },
+
+  togglePinNotice(id: string): Notice | null {
+    const list = this.getNotices();
+    const idx = list.findIndex(n => n.id === id);
+    if (idx === -1) return null;
+    list[idx].isPinned = !list[idx].isPinned;
+    setStored(STORAGE_KEYS.NOTICES, list);
+    return list[idx];
+  },
+
   markNoticeRead(id: string, read = true): void {
     const list = this.getNotices();
     const idx = list.findIndex(n => n.id === id);
@@ -216,6 +310,26 @@ export const StorageService = {
   // Events
   getEvents(): CampusEvent[] {
     return getStored<CampusEvent[]>(STORAGE_KEYS.EVENTS, INITIAL_EVENTS);
+  },
+
+  createEvent(ev: Omit<CampusEvent, 'id' | 'registeredCount' | 'isRegistered'>): CampusEvent {
+    const list = this.getEvents();
+    const newEvent: CampusEvent = {
+      ...ev,
+      id: `evt_${Date.now()}`,
+      registeredCount: 0,
+      isRegistered: false,
+      status: 'approved',
+    };
+    list.unshift(newEvent);
+    setStored(STORAGE_KEYS.EVENTS, list);
+    return newEvent;
+  },
+
+  deleteEvent(id: string): boolean {
+    const list = this.getEvents().filter(e => e.id !== id);
+    setStored(STORAGE_KEYS.EVENTS, list);
+    return true;
   },
 
   toggleEventRegistration(eventId: string): { success: boolean; event?: CampusEvent; message?: string } {
@@ -322,7 +436,7 @@ export const StorageService = {
     setStored(STORAGE_KEYS.NOTIFICATIONS, list);
   },
 
-  // Full reset to empty foundation
+  // Full reset
   resetDemoData(): void {
     this.initializeData(true);
   },

@@ -40,7 +40,7 @@ export const GlobalSearchModal: React.FC = () => {
           type: 'Notice' as const,
           title: n.title,
           subtitle: `${n.department} • ${n.publishedDate}`,
-          url: `/notices?id=${n.id}`,
+          url: `/student/notices?id=${n.id}`,
           icon: <Bell className="w-3.5 h-3.5" />,
           tagVariant: 'teal' as const,
         })),
@@ -49,7 +49,7 @@ export const GlobalSearchModal: React.FC = () => {
           type: 'Event' as const,
           title: e.title,
           subtitle: `${e.venue} • ${e.date}`,
-          url: `/events?id=${e.id}`,
+          url: `/student/events?id=${e.id}`,
           icon: <Calendar className="w-3.5 h-3.5" />,
           tagVariant: 'blue' as const,
         })),
@@ -58,7 +58,7 @@ export const GlobalSearchModal: React.FC = () => {
           type: 'Opportunity' as const,
           title: o.title,
           subtitle: `${o.organization} • ${o.type}`,
-          url: `/opportunities?id=${o.id}`,
+          url: `/student/opportunities?id=${o.id}`,
           icon: <Briefcase className="w-3.5 h-3.5" />,
           tagVariant: 'emerald' as const,
         })),
@@ -76,7 +76,7 @@ export const GlobalSearchModal: React.FC = () => {
           type: 'Notice',
           title: n.title,
           subtitle: `${n.department} • ${n.category}`,
-          url: `/notices?id=${n.id}`,
+          url: `/student/notices?id=${n.id}`,
           icon: <Bell className="w-3.5 h-3.5" />,
           tagVariant: 'teal',
         });
@@ -91,7 +91,7 @@ export const GlobalSearchModal: React.FC = () => {
           type: 'Event',
           title: e.title,
           subtitle: `${e.venue} • ${e.date}`,
-          url: `/events?id=${e.id}`,
+          url: `/student/events?id=${e.id}`,
           icon: <Calendar className="w-3.5 h-3.5" />,
           tagVariant: 'blue',
         });
@@ -106,7 +106,7 @@ export const GlobalSearchModal: React.FC = () => {
           type: 'Opportunity',
           title: o.title,
           subtitle: `${o.organization} • ${o.compensation}`,
-          url: `/opportunities?id=${o.id}`,
+          url: `/student/opportunities?id=${o.id}`,
           icon: <Briefcase className="w-3.5 h-3.5" />,
           tagVariant: 'emerald',
         });
@@ -121,7 +121,7 @@ export const GlobalSearchModal: React.FC = () => {
           type: 'Lost & Found',
           title: lf.title,
           subtitle: `${lf.type.toUpperCase()} at ${lf.location}`,
-          url: `/lost-found?id=${lf.id}`,
+          url: `/student/lost-found?id=${lf.id}`,
           icon: <HelpCircle className="w-3.5 h-3.5" />,
           tagVariant: 'amber',
         });
@@ -130,13 +130,13 @@ export const GlobalSearchModal: React.FC = () => {
 
     // 5. Courses
     courses.forEach(c => {
-      if (c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q) || c.facultyName.toLowerCase().includes(q)) {
+      if (c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q) || (c.facultyName && c.facultyName.toLowerCase().includes(q))) {
         results.push({
           id: c.id,
           type: 'Course',
           title: `${c.code}: ${c.name}`,
           subtitle: `${c.facultyName} • ${c.credits} Credits • ${c.roomDefault}`,
-          url: `/academics?course=${c.code}`,
+          url: `/student/academics?course=${c.code}`,
           icon: <BookOpen className="w-3.5 h-3.5" />,
           tagVariant: 'indigo',
         });

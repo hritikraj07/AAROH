@@ -23,7 +23,7 @@ export const UpcomingEventsWidget: React.FC = () => {
           </h3>
         </div>
         <Link
-          to="/events"
+          to="/student/events"
           className="text-xs font-medium text-teal-700 hover:text-teal-900 flex items-center gap-1 hover:underline"
         >
           <span>All Events</span>
@@ -110,7 +110,7 @@ export const UpcomingEventsWidget: React.FC = () => {
         {events.length > 0 && (
           <div className="pt-3 mt-3 border-t border-border flex items-center justify-between text-[11px] text-slate-500">
             <span>{registeredEvents.length} registered event{registeredEvents.length === 1 ? '' : 's'}</span>
-            <Link to="/events" className="text-teal-700 hover:underline">
+            <Link to="/student/events" className="text-teal-700 hover:underline">
               Browse Event Calendar
             </Link>
           </div>

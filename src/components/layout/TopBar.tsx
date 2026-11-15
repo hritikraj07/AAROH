@@ -17,7 +17,8 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
     markNotificationRead,
     markAllNotificationsRead,
     resetDemoData,
-    student,
+    user,
+    role,
   } = useApp();
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -163,12 +164,19 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
           <span>Reset Demo</span>
         </button>
 
-        {/* Student Avatar Status Chip */}
+        {/* User Identity & Role Status Chip */}
         <div className="hidden lg:flex items-center gap-2 pl-2 border-l border-border text-xs">
           <div className="w-6 h-6 rounded bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-[10px] flex items-center justify-center font-mono">
-            {student?.avatarInitials || 'ST'}
+            {user?.avatarInitials || (role === 'admin' ? 'AD' : role === 'faculty' ? 'FA' : 'ST')}
           </div>
-          <span className="font-medium text-slate-700">{student?.name || 'Aaroh Student'}</span>
+          <div className="flex items-center gap-1.5">
+            <span className="font-medium text-slate-700 max-w-[140px] truncate">
+              {user?.name || 'Aaroh User'}
+            </span>
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 capitalize">
+              {role || 'student'}
+            </span>
+          </div>
         </div>
       </div>
     </header>

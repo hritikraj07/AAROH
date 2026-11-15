@@ -40,7 +40,7 @@ export const TodayClassesCard: React.FC = () => {
           </h3>
         </div>
         <Link
-          to="/academics?tab=timetable"
+          to="/student/academics?tab=timetable"
           className="text-xs font-medium text-teal-700 hover:text-teal-900 flex items-center gap-1 hover:underline"
         >
           <span>Full Timetable</span>
