@@ -186,10 +186,24 @@ export const EventsPage: React.FC = () => {
       {viewMode === 'list' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredEvents.length === 0 ? (
-            <div className="col-span-2 py-12 text-center text-xs text-slate-500 bg-white border border-border rounded-lg">
-              {activeTab === 'my-registrations'
-                ? "You haven't registered for any events yet. Browse events above!"
-                : 'No events match your current filter parameters.'}
+            <div className="col-span-full py-16 flex flex-col items-center justify-center text-center bg-white border border-border rounded-lg p-6">
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+                <CalendarIcon className="w-5 h-5 text-slate-400" />
+              </div>
+              <h4 className="text-sm font-semibold text-slate-900">
+                {activeTab === 'my-registrations'
+                  ? 'No event registrations found'
+                  : events.length === 0
+                  ? 'No campus events scheduled'
+                  : 'No matching events found'}
+              </h4>
+              <p className="text-xs text-slate-500 max-w-sm mt-1 leading-relaxed">
+                {activeTab === 'my-registrations'
+                  ? "You haven't registered for any events yet. Check back when new events are published!"
+                  : events.length === 0
+                  ? 'Hackathons, workshops, cultural fests, and sports championships will appear here.'
+                  : 'Try selecting a different category or search keyword.'}
+              </p>
             </div>
           ) : (
             filteredEvents.map(event => {
@@ -333,54 +347,66 @@ export const EventsPage: React.FC = () => {
             <span className="text-xs text-slate-500">Upcoming Semester Highlights</span>
           </div>
 
-          <div className="space-y-3">
-            {filteredEvents.map(event => (
-              <div
-                key={event.id}
-                onClick={() => handleOpenDetail(event)}
-                className="p-3.5 rounded-lg border border-border hover:bg-slate-50 cursor-pointer transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-16 h-14 rounded bg-teal-50 border border-teal-200 text-teal-900 flex flex-col items-center justify-center shrink-0">
-                    <span className="text-[10px] uppercase font-bold text-teal-700">
-                      {event.date.split('-')[1]}/{event.date.split('-')[2]}
-                    </span>
-                    <span className="text-xs font-mono font-bold">
-                      {event.startTime}
-                    </span>
-                  </div>
-
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="slate" size="sm">
-                        {event.category}
-                      </Badge>
-                      {event.isRegistered && (
-                        <Badge variant="teal" size="sm">
-                          Registered
-                        </Badge>
-                      )}
-                    </div>
-                    <h4 className="text-xs font-bold text-slate-900 mt-1">
-                      {event.title}
-                    </h4>
-                    <p className="text-[11px] text-slate-500">
-                      {event.venue} • {event.organizer}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 text-xs self-end sm:self-center">
-                  <span className="font-mono text-slate-500 text-[11px]">
-                    {event.registeredCount} / {event.capacity} Attendees
-                  </span>
-                  <Button variant="outline" size="sm">
-                    View
-                  </Button>
-                </div>
+          {filteredEvents.length === 0 ? (
+            <div className="py-12 flex flex-col items-center justify-center text-center">
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+                <CalendarIcon className="w-5 h-5 text-slate-400" />
               </div>
-            ))}
-          </div>
+              <p className="text-xs font-semibold text-slate-800">No events found on calendar</p>
+              <p className="text-[11px] text-slate-500 max-w-sm mt-0.5">
+                No events match your current filter selections.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredEvents.map(event => (
+                <div
+                  key={event.id}
+                  onClick={() => handleOpenDetail(event)}
+                  className="p-3.5 rounded-lg border border-border hover:bg-slate-50 cursor-pointer transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-16 h-14 rounded bg-teal-50 border border-teal-200 text-teal-900 flex flex-col items-center justify-center shrink-0">
+                      <span className="text-[10px] uppercase font-bold text-teal-700">
+                        {event.date.split('-')[1]}/{event.date.split('-')[2]}
+                      </span>
+                      <span className="text-xs font-mono font-bold">
+                        {event.startTime}
+                      </span>
+                    </div>
+
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="slate" size="sm">
+                          {event.category}
+                        </Badge>
+                        {event.isRegistered && (
+                          <Badge variant="teal" size="sm">
+                            Registered
+                          </Badge>
+                        )}
+                      </div>
+                      <h4 className="text-xs font-bold text-slate-900 mt-1">
+                        {event.title}
+                      </h4>
+                      <p className="text-[11px] text-slate-500">
+                        {event.venue} • {event.organizer}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-xs self-end sm:self-center">
+                    <span className="font-mono text-slate-500 text-[11px]">
+                      {event.registeredCount} / {event.capacity} Attendees
+                    </span>
+                    <Button variant="outline" size="sm">
+                      View
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

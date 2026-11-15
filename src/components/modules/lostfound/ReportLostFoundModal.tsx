@@ -38,8 +38,8 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
       location: location.trim(),
       date,
       reportedBy: {
-        name: student.name,
-        studentId: student.rollNumber,
+        name: student?.name || 'Aaroh Student',
+        studentId: student?.rollNumber || '22CS042',
         isCurrentUser: true,
       },
       imageIcon: icon,

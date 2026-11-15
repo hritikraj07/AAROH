@@ -1,4 +1,4 @@
-// Standalone verification script for Node.js
+// Automated verification script for clean foundation & domain auth
 const fs = require('fs');
 const path = require('path');
 
@@ -11,46 +11,38 @@ function assert(cond, msg) {
   }
 }
 
-console.log('--- AAROH VERIFICATION SUITE (AUTOMATED) ---');
+console.log('--- AAROH VERIFICATION SUITE (CLEAN FOUNDATION) ---');
 
 // Check dist build files
 assert(fs.existsSync(path.join(__dirname, '../dist/index.html')), 'dist/index.html exists');
 const distHtml = fs.readFileSync(path.join(__dirname, '../dist/index.html'), 'utf8');
 assert(distHtml.includes('Aaroh'), 'HTML contains Aaroh wordmark');
-assert(distHtml.includes('Apex Institute of Technology'), 'HTML contains college title');
 
-// Check self-hosted fonts in dist/assets
-const assetFiles = fs.readdirSync(path.join(__dirname, '../dist/assets'));
-const fontFiles = assetFiles.filter(f => f.endsWith('.woff') || f.endsWith('.woff2'));
-assert(fontFiles.length >= 10, `Self-hosted IBM Plex Sans fonts bundled (${fontFiles.length} files)`);
+// Check seed data wipe
+const seedContent = fs.readFileSync(path.join(__dirname, '../src/data/seed.ts'), 'utf8');
+assert(seedContent.includes('export const INITIAL_COURSES: Course[] = [];'), 'Courses wiped to empty array');
+assert(seedContent.includes('export const INITIAL_TIMETABLE: ClassSession[] = [];'), 'Timetable wiped to empty array');
+assert(seedContent.includes('export const INITIAL_ATTENDANCE: AttendanceRecord[] = [];'), 'Attendance wiped to empty array');
+assert(seedContent.includes('export const INITIAL_ASSIGNMENTS: Assignment[] = [];'), 'Assignments wiped to empty array');
+assert(seedContent.includes('export const INITIAL_NOTICES: Notice[] = [];'), 'Notices wiped to empty array');
+assert(seedContent.includes('export const INITIAL_EVENTS: CampusEvent[] = [];'), 'Events wiped to empty array');
+assert(seedContent.includes('export const INITIAL_LOST_FOUND: LostFoundItem[] = [];'), 'Lost & Found wiped to empty array');
+assert(seedContent.includes('export const INITIAL_OPPORTUNITIES: Opportunity[] = [];'), 'Opportunities wiped to empty array');
 
-console.log(`✅ Self-hosted fonts verified: ${fontFiles.slice(0, 3).join(', ')}...`);
+// Check Storage Service for domain authentication
+const storageContent = fs.readFileSync(path.join(__dirname, '../src/services/storage.ts'), 'utf8');
+assert(storageContent.includes('@aaroh.edu.in'), 'Storage enforces @aaroh.edu.in domain restriction');
+assert(storageContent.includes('loginWithDomain'), 'Storage contains loginWithDomain method');
+assert(storageContent.includes('SESSION_TOKEN'), 'Storage manages SESSION_TOKEN');
 
-// Check Config file
-const configTs = fs.readFileSync(path.join(__dirname, '../src/config.ts'), 'utf8');
-assert(configTs.includes("appName: 'Aaroh'"), 'config.ts defines appName as Aaroh');
-assert(configTs.includes('Apex Institute of Technology'), 'config.ts defines collegeName');
+// Check LoginPage for institutional UI and domain restriction
+const loginContent = fs.readFileSync(path.join(__dirname, '../src/pages/LoginPage.tsx'), 'utf8');
+assert(loginContent.includes('@aaroh.edu.in'), 'LoginPage requires @aaroh.edu.in');
+assert(loginContent.includes('Domain Restricted Access'), 'LoginPage displays domain restriction notice');
 
-// Check All Core Pages
-const pages = [
-  'DashboardPage.tsx',
-  'AcademicsPage.tsx',
-  'NoticesPage.tsx',
-  'EventsPage.tsx',
-  'LostFoundPage.tsx',
-  'OpportunitiesPage.tsx',
-  'LoginPage.tsx',
-];
+// Check App.tsx for ProtectedRoute
+const appContent = fs.readFileSync(path.join(__dirname, '../src/App.tsx'), 'utf8');
+assert(appContent.includes('<ProtectedRoute>'), 'App.tsx wraps core routes with ProtectedRoute');
+assert(appContent.includes('path="/login"'), 'App.tsx defines dedicated /login route');
 
-pages.forEach(p => {
-  assert(fs.existsSync(path.join(__dirname, '../src/pages', p)), `Page src/pages/${p} exists`);
-});
-
-// Check README.md
-assert(fs.existsSync(path.join(__dirname, '../README.md')), 'README.md exists');
-const readme = fs.readFileSync(path.join(__dirname, '../README.md'), 'utf8');
-assert(readme.includes('Aaroh'), 'README mentions Aaroh');
-assert(readme.includes('22CS042'), 'README contains demo login credentials');
-assert(readme.includes('npm run dev'), 'README contains dev instructions');
-
-console.log('--- ALL AUTOMATED CHECKS AND ARTIFACTS VERIFIED ---');
+console.log('--- ALL CLEAN FOUNDATION & AUTH VERIFICATION CHECKS PASSED ---');

@@ -345,10 +345,24 @@ export const OpportunitiesPage: React.FC = () => {
       {/* 1. Active Opportunities */}
       <div className="space-y-3">
         {activeOpportunities.length === 0 && expiredOpportunities.length === 0 ? (
-          <div className="py-12 text-center text-xs text-slate-500 bg-white border border-border rounded-lg">
-            {activeTab === 'saved'
-              ? "You haven't bookmarked any opportunities yet."
-              : 'No opportunities found matching your current filter criteria.'}
+          <div className="py-16 flex flex-col items-center justify-center text-center bg-white border border-border rounded-lg p-6">
+            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+              <Briefcase className="w-5 h-5 text-slate-400" />
+            </div>
+            <h4 className="text-sm font-semibold text-slate-900">
+              {activeTab === 'saved'
+                ? 'No saved opportunities'
+                : opportunities.length === 0
+                ? 'No opportunities posted yet'
+                : 'No matching opportunities found'}
+            </h4>
+            <p className="text-xs text-slate-500 max-w-sm mt-1 leading-relaxed">
+              {activeTab === 'saved'
+                ? 'Bookmark interesting internships, hackathons, and fellowship tracks to view them here.'
+                : opportunities.length === 0
+                ? 'Engineering internships, hackathon prizes, and competitions will appear here.'
+                : 'Try adjusting your type, mode, or search terms above.'}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

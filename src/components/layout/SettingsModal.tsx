@@ -14,7 +14,7 @@ export const SettingsModal: React.FC = () => {
     resetDemoData,
   } = useApp();
 
-  const [threshold, setThreshold] = useState(student.attendanceMinimum || 75);
+  const [threshold, setThreshold] = useState(student?.attendanceMinimum || 75);
   const [confirmReset, setConfirmReset] = useState(false);
 
   const handleSaveThreshold = (val: number) => {
@@ -35,7 +35,7 @@ export const SettingsModal: React.FC = () => {
         setConfirmReset(false);
         closeSettings();
       }}
-      title="Application Settings & Demo State"
+      title="Application Settings & Session State"
       subtitle={`${APP_CONFIG.appName} • ${APP_CONFIG.collegeName}`}
       maxWidth="md"
     >
@@ -44,24 +44,24 @@ export const SettingsModal: React.FC = () => {
         <div className="p-3.5 bg-slate-50 border border-border rounded-lg space-y-2">
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
             <UserCheck className="w-4 h-4 text-teal-700" />
-            <span>Active Demo Student Profile</span>
+            <span>Active Student Session</span>
           </div>
           <div className="grid grid-cols-2 gap-2 text-xs text-slate-600 pt-1">
             <div>
               <span className="text-slate-400 block text-[11px]">Full Name</span>
-              <span className="font-semibold text-slate-900">{student.name}</span>
+              <span className="font-semibold text-slate-900">{student?.name || 'Aaroh Student'}</span>
             </div>
             <div>
               <span className="text-slate-400 block text-[11px]">Roll Number</span>
-              <span className="font-mono text-slate-900">{student.rollNumber}</span>
+              <span className="font-mono text-slate-900">{student?.rollNumber || 'Unassigned'}</span>
+            </div>
+            <div>
+              <span className="text-slate-400 block text-[11px]">Institutional Email</span>
+              <span className="font-mono truncate block">{student?.email || 'N/A'}</span>
             </div>
             <div>
               <span className="text-slate-400 block text-[11px]">Program</span>
-              <span>{student.program} {student.department}</span>
-            </div>
-            <div>
-              <span className="text-slate-400 block text-[11px]">Semester</span>
-              <span>Sem {student.semester} ({student.section})</span>
+              <span>{student?.program || 'B.Tech'} {student?.department || 'Engineering'}</span>
             </div>
           </div>
         </div>

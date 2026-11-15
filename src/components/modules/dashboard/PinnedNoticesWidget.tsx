@@ -28,15 +28,21 @@ export const PinnedNoticesWidget: React.FC = () => {
         </Link>
       </div>
 
-      {/* Notices */}
+      {/* Notices / Empty State */}
       <div className="p-4 flex-1 flex flex-col justify-between">
-        <div className="space-y-2.5">
-          {pinnedNotices.length === 0 ? (
-            <div className="py-6 text-center text-xs text-slate-500">
-              No pinned circulars at this moment.
+        {pinnedNotices.length === 0 ? (
+          <div className="py-8 flex flex-col items-center justify-center text-center my-auto">
+            <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2">
+              <Pin className="w-4 h-4 rotate-45" />
             </div>
-          ) : (
-            pinnedNotices.map(notice => (
+            <p className="text-xs font-semibold text-slate-800">No pinned notices</p>
+            <p className="text-[11px] text-slate-500 max-w-xs mt-0.5 leading-relaxed">
+              Official circulars, examination memos, and high-priority announcements will be pinned here.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {pinnedNotices.map(notice => (
               <Link
                 key={notice.id}
                 to={`/notices?id=${notice.id}`}
@@ -84,16 +90,18 @@ export const PinnedNoticesWidget: React.FC = () => {
                   )}
                 </div>
               </Link>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
 
-        <div className="pt-3 mt-3 border-t border-border flex items-center justify-between text-[11px] text-slate-500">
-          <span>{notices.filter(n => !n.readByCurrentUser).length} unread notices in feed</span>
-          <Link to="/notices" className="text-teal-700 hover:underline">
-            View All Updates
-          </Link>
-        </div>
+        {notices.length > 0 && (
+          <div className="pt-3 mt-3 border-t border-border flex items-center justify-between text-[11px] text-slate-500">
+            <span>{notices.filter(n => !n.readByCurrentUser).length} unread notices in feed</span>
+            <Link to="/notices" className="text-teal-700 hover:underline">
+              View All Updates
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

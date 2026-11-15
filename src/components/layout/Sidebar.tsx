@@ -129,13 +129,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       {/* Student Profile & Footer Controls */}
       <div className="p-3 border-t border-border bg-slate-50/50 space-y-2">
         <div className="flex items-center gap-2.5 p-2 rounded-md bg-white border border-border">
-          <div className="w-8 h-8 rounded bg-teal-700 text-white font-semibold text-xs flex items-center justify-center shrink-0">
-            {student.avatarInitials}
+          <div className="w-8 h-8 rounded bg-teal-700 text-white font-semibold text-xs flex items-center justify-center shrink-0 font-mono">
+            {student?.avatarInitials || 'ST'}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-slate-900 truncate">{student.name}</p>
+            <p className="text-xs font-semibold text-slate-900 truncate">
+              {student?.name || 'Aaroh Student'}
+            </p>
             <p className="text-[11px] text-slate-500 truncate font-mono">
-              {student.rollNumber} • Sem {student.semester}
+              {student?.rollNumber || 'ID Pending'} • Sem {student?.semester || 1}
             </p>
           </div>
         </div>

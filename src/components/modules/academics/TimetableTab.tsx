@@ -12,7 +12,6 @@ export const TimetableTab: React.FC = () => {
   const now = new Date();
   const currentDayOfWeek = now.getDay(); // 0 = Sun, 1 = Mon ... 6 = Sat
   const [selectedDay, setSelectedDay] = useState<number>(() => {
-    // If today is Mon-Sat, select today; if Sun, select Mon (1)
     return currentDayOfWeek >= 1 && currentDayOfWeek <= 6 ? currentDayOfWeek : 1;
   });
 
@@ -34,7 +33,6 @@ export const TimetableTab: React.FC = () => {
     { label: '14:00 – 16:00', start: '14:00', end: '16:00' },
   ];
 
-  // Helpers
   const getSessionAtSlot = (dayNum: number, startTime: string): ClassSession | undefined => {
     return timetable.find(s => s.dayOfWeek === dayNum && s.startTime === startTime);
   };
@@ -100,8 +98,21 @@ export const TimetableTab: React.FC = () => {
         </div>
       </div>
 
-      {/* 1. Weekly Grid View */}
-      {viewMode === 'grid' && (
+      {/* Global Empty State Banner if no sessions configured */}
+      {timetable.length === 0 && (
+        <div className="p-12 bg-white border border-border rounded-lg text-center flex flex-col items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+            <Clock className="w-5 h-5 text-slate-400" />
+          </div>
+          <h4 className="text-sm font-semibold text-slate-900">No timetable schedule published yet</h4>
+          <p className="text-xs text-slate-500 max-w-sm mt-1 leading-relaxed">
+            Class lectures, tutorial sessions, and laboratory slots for your enrolled section will be synchronized here once timetables are confirmed by the academic cell.
+          </p>
+        </div>
+      )}
+
+      {/* 1. Weekly Grid View (when timetable exists) */}
+      {viewMode === 'grid' && timetable.length > 0 && (
         <div className="bg-white border border-border rounded-lg shadow-subtle overflow-x-auto">
           <div className="min-w-[800px]">
             {/* Header Row */}
@@ -183,8 +194,8 @@ export const TimetableTab: React.FC = () => {
         </div>
       )}
 
-      {/* 2. Day View */}
-      {viewMode === 'day' && (
+      {/* 2. Day View (when timetable exists) */}
+      {viewMode === 'day' && timetable.length > 0 && (
         <div className="bg-white border border-border rounded-lg shadow-subtle p-5">
           <div className="flex items-center justify-between border-b border-border pb-3 mb-4">
             <div>

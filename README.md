@@ -1,19 +1,18 @@
 # Aaroh: One Platform for College Life
 
-> Built for the college hackathon. A unified, offline-first internal operating system for undergraduate campus life at **Apex Institute of Technology (AIT)**.
+> A unified, domain-secured internal operating system for undergraduate campus life at **Apex Institute of Technology (AIT)**.
 
 Students traditionally navigate fragmented portals, paper notice boards, unofficial WhatsApp groups, and chaotic spreadsheets. **Aaroh** consolidates academics, campus circulars, events, lost & found, and career opportunities behind a single student login.
 
 ---
 
-## 🔑 Demo Credentials
-The application is pre-seeded with an active demo undergraduate profile:
+## 🔑 Institutional Authentication (`/login`)
+The entry point to the application is restricted to verified student accounts:
 
-- **Student Name:** Aarav Sharma
-- **Roll Number:** `22CS042`
-- **Department:** Computer Science & Engineering (B.Tech, Semester 5, Section A)
-- **Demo Mode:** Click **"Enter Demo as Aarav Sharma"** on the login screen for instant one-click access.
-- **Reset State:** Use the **"Reset Demo"** button in the top bar or settings modal at any time to restore fresh seed data.
+- **Domain Restriction:** Email must end with `@aaroh.edu.in` (e.g. `aarav.sharma@aaroh.edu.in`, `priya.nair@aaroh.edu.in`).
+- **Password:** Any valid password string.
+- **Session Persistence:** Session token (`aaroh_session_token`) stored in `localStorage` and synchronized across React Context.
+- **Protected Routing:** All dashboard and module routes (`/`, `/academics`, `/notices`, `/events`, `/lost-found`, `/opportunities`) are shielded by a `<ProtectedRoute>` wrapper that redirects unauthenticated visitors to `/login`.
 
 ---
 
@@ -23,8 +22,8 @@ The application is pre-seeded with an active demo undergraduate profile:
 - **Styling & Design System:** Tailwind CSS with an institutional palette (Warm off-white `#FBFBFA` canvas, clean `#FFFFFF` surfaces, crisp 1px borders `#E2E8F0`, and deep teal `#0F766E` primary accent)
 - **Typography:** Self-hosted IBM Plex Sans via `@fontsource/ibm-plex-sans` (14px base, tabular numerals `font-mono`)
 - **Icons:** Lucide React
-- **Routing:** React Router v6
-- **Offline & Storage Architecture:** 100% standalone and offline-capable. No remote APIs, CDNs, or external tracking. Typed service layer (`src/services/`) backed by browser `localStorage` persistence with dynamic date generation relative to today so the demo never looks stale.
+- **Routing:** React Router v6 with `<ProtectedRoute>` authorization barrier
+- **Clean Production Foundation:** Pre-seeded mock arrays have been removed. Every module initializes to clean empty states ("No classes scheduled today", "No attendance records logged", "No pinned notices") and gracefully updates as users interact with the app.
 - **Centralized Configuration:** Brand name (`Aaroh`) and institution name (`Apex Institute of Technology`) are configured in `src/config.ts`.
 
 ---
@@ -58,9 +57,9 @@ npm run preview
 ## 🏛️ Core Modules & Functional Walkthrough
 
 ### 1. Dashboard (`/`)
-- **Compact Profile Header:** Displays student identity, roll number, section, semester, enrolled credit hours, low attendance warnings, and pending task count.
-- **Today's Classes:** Real-time next class highlighting with countdown (`Starts in Xm` or `In Progress`), room number, and instructor. If today has no classes (or after hours/weekends), dynamically shows the next active instruction day.
-- **Attendance Summary Widget:** Highlights courses below the mandatory threshold (e.g. 75%) with exact mathematical remediation ("Attend 8 more classes to reach 75%").
+- **Compact Profile Header:** Displays authenticated student identity, roll number, section, semester, enrolled credit hours, low attendance warnings, and pending task count.
+- **Today's Classes:** Designed empty state when no timetable is published. If active sessions exist, features real-time next-class highlighting with countdowns (`Starts in Xm` or `In Progress`), room number, and instructor.
+- **Attendance Summary Widget:** Clear empty state when no logs exist; flags subjects under the mandatory minimum (75%) with mathematically calculated hints when active.
 - **Week's Assignments:** Pending and overdue assignments with one-click "Mark Done" toggle.
 - **Pinned Official Circulars:** Critical college memos and examination schedules with unread badges.
 - **Upcoming Events:** Registered campus activities with real-time class clash warnings.
@@ -91,7 +90,7 @@ Divided into three dedicated functional tabs:
 ### 4. Campus Events & Activities (`/events`)
 - **Dual Views:** Switch seamlessly between Grid List view and Month/Week Calendar view.
 - **Capacity Enforcement:** Live seat count tracking ($142 / 150$ attendees) and housefull locking.
-- **Cross-Module Timetable Clash Detection:** Cross-references the event's date and time slot against the student's personal class schedule, displaying an amber warning alert if an overlap is detected (e.g., *Hands-on Linux Workshop* overlapping with *Computer Networks Lab*).
+- **Cross-Module Timetable Clash Detection:** Cross-references event schedules against the student's timetable classes on that day and time. If an overlap is detected, an amber warning banner appears.
 - **Registration Management:** One-click registration and pass cancellation with instant e-pass token generation and a dedicated "My Registrations" view.
 
 ### 5. Lost & Found Registry (`/lost-found`)

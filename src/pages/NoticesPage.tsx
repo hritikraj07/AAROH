@@ -259,8 +259,18 @@ export const NoticesPage: React.FC = () => {
 
         <div className="bg-white border border-border rounded-lg shadow-subtle divide-y divide-border">
           {filteredNotices.length === 0 ? (
-            <div className="py-12 text-center text-xs text-slate-500">
-              No circulars found matching your current filter criteria.
+            <div className="py-16 flex flex-col items-center justify-center text-center p-6">
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+                <FileText className="w-5 h-5 text-slate-400" />
+              </div>
+              <h4 className="text-sm font-semibold text-slate-900">
+                {notices.length === 0 ? 'No campus circulars published' : 'No matching circulars found'}
+              </h4>
+              <p className="text-xs text-slate-500 max-w-sm mt-1 leading-relaxed">
+                {notices.length === 0
+                  ? 'Official academic circulars, exam schedules, and administration memos will be listed here.'
+                  : 'Try modifying your search query or category filters above.'}
+              </p>
             </div>
           ) : (
             regularList.map(notice => (

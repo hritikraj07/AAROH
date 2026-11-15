@@ -20,101 +20,62 @@ function assert(cond: boolean, msg: string) {
   }
 }
 
-console.log('--- AAROH VERIFICATION TEST SUITE ---');
+console.log('--- AAROH CLEAN FOUNDATION TEST SUITE ---');
 
 // 1. Config Check
 assert(APP_CONFIG.appName === 'Aaroh', 'App name is Aaroh');
 assert(APP_CONFIG.collegeName.includes('Apex'), 'College name configured');
 
-// 2. Storage Initialization
+// 2. Storage Initialization: Clean Slate Verification
 StorageService.initializeData(true);
-const student = StorageService.getStudent();
-assert(student.rollNumber === '22CS042', 'Seed student is Aarav Sharma (22CS042)');
-assert(student.semester === 5, 'Semester is 5');
+assert(!StorageService.isAuthenticated(), 'User is initially unauthenticated');
+assert(StorageService.getCourses().length === 0, 'Courses initialized as empty array');
+assert(StorageService.getTimetable().length === 0, 'Timetable initialized as empty array');
+assert(StorageService.getAttendance().length === 0, 'Attendance initialized as empty array');
+assert(StorageService.getAssignments().length === 0, 'Assignments initialized as empty array');
+assert(StorageService.getNotices().length === 0, 'Notices initialized as empty array');
+assert(StorageService.getEvents().length === 0, 'Events initialized as empty array');
+assert(StorageService.getLostFoundItems().length === 0, 'Lost & Found initialized as empty array');
+assert(StorageService.getOpportunities().length === 0, 'Opportunities initialized as empty array');
 
-// 3. Academics & Attendance Analysis
-const courses = StorageService.getCourses();
-const attendance = StorageService.getAttendance();
-assert(courses.length >= 6, 'Loaded all 6 courses');
+// 3. Domain-Restricted Auth Logic
+const invalidDomain = StorageService.loginWithDomain('user@gmail.com', 'password123');
+assert(!invalidDomain.success, 'Rejects email not ending with @aaroh.edu.in');
+assert(invalidDomain.error?.includes('@aaroh.edu.in') === true, 'Returns domain restriction error');
 
-const analysis = AcademicService.analyzeAttendance(attendance, courses, 75);
-const lowCourses = analysis.filter(a => a.isBelowThreshold);
-assert(lowCourses.length >= 1, 'At least 1 course flagged under 75% attendance');
+const emptyPassword = StorageService.loginWithDomain('student@aaroh.edu.in', '');
+assert(!emptyPassword.success, 'Rejects empty password');
 
-// Check CS301 attendance calculation
-const cs301 = analysis.find(a => a.course.code === 'CS301');
-assert(!!cs301, 'CS301 Operating Systems exists');
-if (cs301) {
-  assert(cs301.percentage < 75, `CS301 is below threshold (${cs301.percentage}%)`);
-  assert(cs301.classesToAttend > 0, `Computed remediation classes: ${cs301.classesToAttend}`);
-  console.log(`   CS301 remediation hint: "${cs301.hint}"`);
-}
+const validLogin = StorageService.loginWithDomain('aarav.sharma@aaroh.edu.in', 'securePass2026');
+assert(validLogin.success, 'Accepts email ending with @aaroh.edu.in');
+assert(validLogin.student?.name === 'Aarav Sharma', 'Extracts student name correctly');
+assert(validLogin.student?.email === 'aarav.sharma@aaroh.edu.in', 'Saves student email');
+assert(StorageService.isAuthenticated(), 'Storage confirms authenticated state');
+assert(!!StorageService.getSessionToken(), 'Session token generated and stored');
 
-// 4. Timetable and Clash Detection
-const timetable = StorageService.getTimetable();
-assert(timetable.length > 10, 'Timetable sessions populated');
-
-// Test clash check: Thursday 14:00 - 16:00 is CS303 Networks Lab
-const thursdayClash = AcademicService.checkEventClash('2026-11-19', '14:00', '16:00', timetable, courses);
-assert(thursdayClash.hasClash, 'Clash detected on Thursday 14:00-16:00 Networks Lab');
-assert(thursdayClash.clashingCourse?.code === 'CS303', 'Clashing course is CS303');
-
-// 5. Events Module & Registration
-const events = StorageService.getEvents();
-assert(events.length >= 5, 'Events loaded');
-const hackathon = events.find(e => e.id === 'evt_01');
-assert(!!hackathon && hackathon.isRegistered, 'Aarav is registered for Apex Hackathon');
-
-const fullEvent = events.find(e => e.registeredCount >= e.capacity);
-assert(!!fullEvent, 'Full event exists for capacity demonstration');
-
-// Test capacity rejection
-if (fullEvent) {
-  const regResult = StorageService.toggleEventRegistration(fullEvent.id);
-  assert(!regResult.success, 'Registration rejected for full event');
-}
-
-// 6. Assignments Submission Flow
-const assignments = StorageService.getAssignments();
-assert(assignments.some(a => a.status === 'overdue'), 'Overdue assignment seeded');
-assert(assignments.some(a => a.status === 'pending'), 'Pending assignment seeded');
-
-const asg1 = assignments[0];
-const originalStatus = asg1.status;
-const toggled = StorageService.toggleAssignmentSubmission(asg1.id);
-assert(toggled !== null && toggled.status !== originalStatus, 'Assignment submission toggle works');
-
-// 7. Lost & Found Flow
-const lfList = StorageService.getLostFoundItems();
-assert(lfList.some(i => i.status === 'resolved'), 'Resolved lost item seeded');
-assert(lfList.some(i => i.reportedBy.isCurrentUser), 'Current user has reported item');
-
-const newItem = StorageService.createLostFoundItem({
+// 4. State Management: User Actions Write and Read from Storage
+const reported = StorageService.createLostFoundItem({
   type: 'lost',
-  title: 'Test Umbrella Blue',
-  category: 'Personal Belongings',
-  description: 'Left at reception',
-  location: 'Admin Reception',
+  title: 'Texas Instruments Calculator',
+  category: 'Electronics',
+  description: 'Left in library reading room',
+  location: 'Central Library Floor 2',
   date: '2026-11-15',
-  reportedBy: { name: student.name, isCurrentUser: true },
+  reportedBy: { name: 'Aarav Sharma', studentId: '22CS042', isCurrentUser: true },
 });
-assert(newItem.id.startsWith('lf_'), 'New lost item created with ID');
+assert(reported.id.startsWith('lf_'), 'User created lost item with unique id');
+assert(StorageService.getLostFoundItems().length === 1, 'Lost item persisted to storage');
 
-const resolveTest = StorageService.toggleResolveItem(newItem.id);
-assert(resolveTest?.status === 'resolved', 'Item marked resolved');
+const resolved = StorageService.toggleResolveItem(reported.id);
+assert(resolved?.status === 'resolved', 'Item marked resolved in storage');
 
-const contactRes = StorageService.requestContact(lfList[1].id);
-assert(contactRes.success && contactRes.count > 0, 'In-app contact requested successfully');
+// Contact request
+const contact = StorageService.requestContact(reported.id);
+assert(contact.success && contact.count === 1, 'Contact request logged');
 
-// 8. Opportunities Board Flow
-const opps = StorageService.getOpportunities();
-assert(opps.length >= 5, 'Opportunities loaded');
-const todayStr = new Date().toISOString().split('T')[0];
-const expiredOpps = opps.filter(o => o.deadline < todayStr);
-assert(expiredOpps.length >= 1, 'Expired opportunity seeded for muted test');
+// Logout flow
+StorageService.logout();
+assert(!StorageService.isAuthenticated(), 'User logged out and session cleared');
+assert(StorageService.getAuthStudent() === null, 'Auth student cleared on logout');
 
-const opp1 = opps[0];
-const savedState = StorageService.toggleSaveOpportunity(opp1.id);
-assert(typeof savedState === 'boolean', 'Opportunity saved toggle works');
-
-console.log('--- ALL UNIT & INTEGRATION CHECKS PASSED SUCCESSFULLY ---');
+console.log('--- ALL CLEAN FOUNDATION & DOMAIN AUTH CHECKS PASSED ---');

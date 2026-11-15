@@ -166,9 +166,9 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         {/* Student Avatar Status Chip */}
         <div className="hidden lg:flex items-center gap-2 pl-2 border-l border-border text-xs">
           <div className="w-6 h-6 rounded bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-[10px] flex items-center justify-center font-mono">
-            {student.avatarInitials}
+            {student?.avatarInitials || 'ST'}
           </div>
-          <span className="font-medium text-slate-700">{student.name}</span>
+          <span className="font-medium text-slate-700">{student?.name || 'Aaroh Student'}</span>
         </div>
       </div>
     </header>

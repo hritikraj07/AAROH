@@ -11,20 +11,22 @@ import {
   NotificationItem,
 } from '../types';
 import {
-  SEED_STUDENT,
-  SEED_COURSES,
-  SEED_TIMETABLE,
-  SEED_ATTENDANCE,
-  SEED_ASSIGNMENTS,
-  SEED_NOTICES,
-  SEED_EVENTS,
-  SEED_LOST_FOUND,
-  SEED_OPPORTUNITIES,
-  SEED_NOTIFICATIONS,
+  INITIAL_STUDENT,
+  INITIAL_COURSES,
+  INITIAL_TIMETABLE,
+  INITIAL_ATTENDANCE,
+  INITIAL_ASSIGNMENTS,
+  INITIAL_NOTICES,
+  INITIAL_EVENTS,
+  INITIAL_LOST_FOUND,
+  INITIAL_OPPORTUNITIES,
+  INITIAL_NOTIFICATIONS,
+  generateStudentFromEmail,
 } from '../data/seed';
 
 const STORAGE_KEYS = {
-  INITIALIZED: 'aaroh_initialized_v1',
+  INITIALIZED: 'aaroh_initialized_v2',
+  SESSION_TOKEN: 'aaroh_session_token',
   AUTH_USER: 'aaroh_auth_user',
   STUDENT: 'aaroh_student',
   COURSES: 'aaroh_courses',
@@ -60,77 +62,119 @@ function setStored<T>(key: string, data: T): void {
 }
 
 export const StorageService = {
-  // Check & initialize seed data on first boot or forced reset
+  // Initialize clean state on first boot or forced reset
   initializeData(forceReset = false): void {
     const initialized = localStorage.getItem(STORAGE_KEYS.INITIALIZED);
     if (!initialized || forceReset) {
-      setStored(STORAGE_KEYS.STUDENT, SEED_STUDENT);
-      setStored(STORAGE_KEYS.COURSES, SEED_COURSES);
-      setStored(STORAGE_KEYS.TIMETABLE, SEED_TIMETABLE);
-      setStored(STORAGE_KEYS.ATTENDANCE, SEED_ATTENDANCE);
-      setStored(STORAGE_KEYS.ASSIGNMENTS, SEED_ASSIGNMENTS);
-      setStored(STORAGE_KEYS.NOTICES, SEED_NOTICES);
-      setStored(STORAGE_KEYS.EVENTS, SEED_EVENTS);
-      setStored(STORAGE_KEYS.LOST_FOUND, SEED_LOST_FOUND);
-      setStored(STORAGE_KEYS.OPPORTUNITIES, SEED_OPPORTUNITIES);
-      setStored(STORAGE_KEYS.NOTIFICATIONS, SEED_NOTIFICATIONS);
-      // Auto-login demo student on first boot
-      if (forceReset || !localStorage.getItem(STORAGE_KEYS.AUTH_USER)) {
-        setStored(STORAGE_KEYS.AUTH_USER, SEED_STUDENT);
+      // Clear all legacy mock data and seed empty collections
+      setStored(STORAGE_KEYS.COURSES, INITIAL_COURSES);
+      setStored(STORAGE_KEYS.TIMETABLE, INITIAL_TIMETABLE);
+      setStored(STORAGE_KEYS.ATTENDANCE, INITIAL_ATTENDANCE);
+      setStored(STORAGE_KEYS.ASSIGNMENTS, INITIAL_ASSIGNMENTS);
+      setStored(STORAGE_KEYS.NOTICES, INITIAL_NOTICES);
+      setStored(STORAGE_KEYS.EVENTS, INITIAL_EVENTS);
+      setStored(STORAGE_KEYS.LOST_FOUND, INITIAL_LOST_FOUND);
+      setStored(STORAGE_KEYS.OPPORTUNITIES, INITIAL_OPPORTUNITIES);
+      setStored(STORAGE_KEYS.NOTIFICATIONS, INITIAL_NOTIFICATIONS);
+
+      if (forceReset) {
+        // In full reset, also clear existing auth session
+        localStorage.removeItem(STORAGE_KEYS.SESSION_TOKEN);
+        localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
+        localStorage.removeItem(STORAGE_KEYS.STUDENT);
       }
       localStorage.setItem(STORAGE_KEYS.INITIALIZED, 'true');
     }
   },
 
-  // Auth & Student
-  getAuthStudent(): Student | null {
-    return getStored<Student | null>(STORAGE_KEYS.AUTH_USER, SEED_STUDENT);
+  // Authentication & Domain-Restricted Auth
+  isAuthenticated(): boolean {
+    const token = localStorage.getItem(STORAGE_KEYS.SESSION_TOKEN);
+    const user = this.getAuthStudent();
+    return !!token && !!user;
   },
 
-  loginAsDemoStudent(): Student {
-    setStored(STORAGE_KEYS.AUTH_USER, SEED_STUDENT);
-    return SEED_STUDENT;
+  getSessionToken(): string | null {
+    return localStorage.getItem(STORAGE_KEYS.SESSION_TOKEN);
+  },
+
+  loginWithDomain(email: string, password: string): { success: boolean; error?: string; student?: Student; token?: string } {
+    const trimmedEmail = email.trim().toLowerCase();
+    const domain = '@aaroh.edu.in';
+
+    if (!trimmedEmail.endsWith(domain)) {
+      return {
+        success: false,
+        error: `Access restricted: Please enter an institutional email ending with ${domain}`,
+      };
+    }
+
+    if (!password || password.trim().length === 0) {
+      return {
+        success: false,
+        error: 'Please enter a valid password',
+      };
+    }
+
+    // Generate authenticated student profile from verified email
+    const student = generateStudentFromEmail(trimmedEmail);
+    const token = `aaroh_session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
+    localStorage.setItem(STORAGE_KEYS.SESSION_TOKEN, token);
+    setStored(STORAGE_KEYS.AUTH_USER, student);
+    setStored(STORAGE_KEYS.STUDENT, student);
+
+    return {
+      success: true,
+      student,
+      token,
+    };
   },
 
   logout(): void {
+    localStorage.removeItem(STORAGE_KEYS.SESSION_TOKEN);
     localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
+    localStorage.removeItem(STORAGE_KEYS.STUDENT);
   },
 
-  getStudent(): Student {
-    return getStored<Student>(STORAGE_KEYS.STUDENT, SEED_STUDENT);
+  getAuthStudent(): Student | null {
+    return getStored<Student | null>(STORAGE_KEYS.AUTH_USER, null);
   },
 
-  updateStudent(student: Partial<Student>): Student {
+  getStudent(): Student | null {
+    return getStored<Student | null>(STORAGE_KEYS.STUDENT, this.getAuthStudent());
+  },
+
+  updateStudent(studentUpdate: Partial<Student>): Student | null {
     const current = this.getStudent();
-    const updated = { ...current, ...student };
+    if (!current) return null;
+    const updated = { ...current, ...studentUpdate };
     setStored(STORAGE_KEYS.STUDENT, updated);
-    if (this.getAuthStudent()?.id === current.id) {
-      setStored(STORAGE_KEYS.AUTH_USER, updated);
-    }
+    setStored(STORAGE_KEYS.AUTH_USER, updated);
     return updated;
   },
 
   // Courses & Timetable
   getCourses(): Course[] {
-    return getStored<Course[]>(STORAGE_KEYS.COURSES, SEED_COURSES);
+    return getStored<Course[]>(STORAGE_KEYS.COURSES, INITIAL_COURSES);
   },
 
   getTimetable(): ClassSession[] {
-    return getStored<ClassSession[]>(STORAGE_KEYS.TIMETABLE, SEED_TIMETABLE);
+    return getStored<ClassSession[]>(STORAGE_KEYS.TIMETABLE, INITIAL_TIMETABLE);
   },
 
   // Attendance
   getAttendance(): AttendanceRecord[] {
-    return getStored<AttendanceRecord[]>(STORAGE_KEYS.ATTENDANCE, SEED_ATTENDANCE);
+    return getStored<AttendanceRecord[]>(STORAGE_KEYS.ATTENDANCE, INITIAL_ATTENDANCE);
   },
 
-  updateAttendanceThreshold(min: number): Student {
+  updateAttendanceThreshold(min: number): Student | null {
     return this.updateStudent({ attendanceMinimum: min });
   },
 
   // Assignments
   getAssignments(): Assignment[] {
-    return getStored<Assignment[]>(STORAGE_KEYS.ASSIGNMENTS, SEED_ASSIGNMENTS);
+    return getStored<Assignment[]>(STORAGE_KEYS.ASSIGNMENTS, INITIAL_ASSIGNMENTS);
   },
 
   toggleAssignmentSubmission(id: string): Assignment | null {
@@ -152,7 +196,7 @@ export const StorageService = {
 
   // Notices
   getNotices(): Notice[] {
-    return getStored<Notice[]>(STORAGE_KEYS.NOTICES, SEED_NOTICES);
+    return getStored<Notice[]>(STORAGE_KEYS.NOTICES, INITIAL_NOTICES);
   },
 
   markNoticeRead(id: string, read = true): void {
@@ -171,24 +215,22 @@ export const StorageService = {
 
   // Events
   getEvents(): CampusEvent[] {
-    return getStored<CampusEvent[]>(STORAGE_KEYS.EVENTS, SEED_EVENTS);
+    return getStored<CampusEvent[]>(STORAGE_KEYS.EVENTS, INITIAL_EVENTS);
   },
 
-  toggleEventRegistration(eventId: string): { success: boolean; event: CampusEvent; message?: string } {
+  toggleEventRegistration(eventId: string): { success: boolean; event?: CampusEvent; message?: string } {
     const list = this.getEvents();
     const idx = list.findIndex(e => e.id === eventId);
-    if (idx === -1) return { success: false, event: list[0], message: 'Event not found' };
+    if (idx === -1) return { success: false, message: 'Event not found' };
 
     const ev = list[idx];
     if (ev.isRegistered) {
-      // Cancel registration
       ev.isRegistered = false;
       ev.registeredCount = Math.max(0, ev.registeredCount - 1);
       ev.registrationId = undefined;
       setStored(STORAGE_KEYS.EVENTS, list);
       return { success: true, event: ev, message: 'Registration cancelled' };
     } else {
-      // Capacity check
       if (ev.registeredCount >= ev.capacity) {
         return { success: false, event: ev, message: 'Event has reached maximum capacity.' };
       }
@@ -202,7 +244,7 @@ export const StorageService = {
 
   // Lost & Found
   getLostFoundItems(): LostFoundItem[] {
-    return getStored<LostFoundItem[]>(STORAGE_KEYS.LOST_FOUND, SEED_LOST_FOUND);
+    return getStored<LostFoundItem[]>(STORAGE_KEYS.LOST_FOUND, INITIAL_LOST_FOUND);
   },
 
   createLostFoundItem(item: Omit<LostFoundItem, 'id' | 'status' | 'contactRequestsCount'>): LostFoundItem {
@@ -248,7 +290,7 @@ export const StorageService = {
 
   // Opportunities
   getOpportunities(): Opportunity[] {
-    return getStored<Opportunity[]>(STORAGE_KEYS.OPPORTUNITIES, SEED_OPPORTUNITIES);
+    return getStored<Opportunity[]>(STORAGE_KEYS.OPPORTUNITIES, INITIAL_OPPORTUNITIES);
   },
 
   toggleSaveOpportunity(id: string): boolean {
@@ -263,7 +305,7 @@ export const StorageService = {
 
   // Notifications
   getNotifications(): NotificationItem[] {
-    return getStored<NotificationItem[]>(STORAGE_KEYS.NOTIFICATIONS, SEED_NOTIFICATIONS);
+    return getStored<NotificationItem[]>(STORAGE_KEYS.NOTIFICATIONS, INITIAL_NOTIFICATIONS);
   },
 
   markNotificationRead(id: string): void {
@@ -280,7 +322,7 @@ export const StorageService = {
     setStored(STORAGE_KEYS.NOTIFICATIONS, list);
   },
 
-  // Full Reset to Seed
+  // Full reset to empty foundation
   resetDemoData(): void {
     this.initializeData(true);
   },

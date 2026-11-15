@@ -128,8 +128,18 @@ export const AssignmentsTab: React.FC = () => {
       {/* Assignments List */}
       <div className="bg-white border border-border rounded-lg shadow-subtle divide-y divide-border">
         {filteredAssignments.length === 0 ? (
-          <div className="py-12 text-center text-xs text-slate-500">
-            No assignments match the selected filters.
+          <div className="py-16 flex flex-col items-center justify-center text-center p-6">
+            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+              <FileText className="w-5 h-5 text-slate-400" />
+            </div>
+            <h4 className="text-sm font-semibold text-slate-900">
+              {assignments.length === 0 ? 'No assignments posted yet' : 'No matching assignments found'}
+            </h4>
+            <p className="text-xs text-slate-500 max-w-sm mt-1 leading-relaxed">
+              {assignments.length === 0
+                ? 'Course assignments, lab exercises, and deadline dates will appear here.'
+                : 'Try adjusting your subject selection or status filters above.'}
+            </p>
           </div>
         ) : (
           filteredAssignments.map(asg => {

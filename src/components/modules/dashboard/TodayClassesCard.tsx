@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Clock, MapPin, User, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Clock, MapPin, User, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { AcademicService } from '../../../services/academicService';
 import { Badge } from '../../ui/Badge';
@@ -18,12 +18,13 @@ export const TodayClassesCard: React.FC = () => {
   let isDisplayingFutureDay = false;
   let headerLabel = "Today's Classes";
 
-  if (currentDayOfWeek === 0 || AcademicService.getSessionsForDay(timetable, currentDayOfWeek).length === 0) {
-    // Sunday or no classes today
-    isDisplayingFutureDay = true;
-    displayDayNum = upcomingInfo.session ? upcomingInfo.session.dayOfWeek : 1;
-    const daysName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    headerLabel = `${daysName[displayDayNum]}'s Classes (Next Active Day)`;
+  if (timetable.length > 0) {
+    if (currentDayOfWeek === 0 || AcademicService.getSessionsForDay(timetable, currentDayOfWeek).length === 0) {
+      isDisplayingFutureDay = true;
+      displayDayNum = upcomingInfo.session ? upcomingInfo.session.dayOfWeek : 1;
+      const daysName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      headerLabel = `${daysName[displayDayNum]}'s Classes (Next Active Day)`;
+    }
   }
 
   const sessionsToDisplay = AcademicService.getSessionsForDay(timetable, displayDayNum);
@@ -50,8 +51,14 @@ export const TodayClassesCard: React.FC = () => {
       {/* Classes List */}
       <div className="p-4 flex-1 flex flex-col justify-between">
         {sessionsToDisplay.length === 0 ? (
-          <div className="py-8 text-center text-xs text-slate-500">
-            No classes scheduled for this period.
+          <div className="py-12 flex flex-col items-center justify-center text-center my-auto">
+            <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-2.5">
+              <Clock className="w-4 h-4" />
+            </div>
+            <p className="text-xs font-semibold text-slate-800">No classes scheduled today</p>
+            <p className="text-[11px] text-slate-500 max-w-xs mt-1 leading-relaxed">
+              Timetable schedules and room allocations will appear here once academic instruction periods commence.
+            </p>
           </div>
         ) : (
           <div className="space-y-2.5">
@@ -115,7 +122,7 @@ export const TodayClassesCard: React.FC = () => {
           </div>
         )}
 
-        {isDisplayingFutureDay && (
+        {isDisplayingFutureDay && sessionsToDisplay.length > 0 && (
           <p className="text-[11px] text-slate-500 mt-3 pt-2 border-t border-border flex items-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-teal-600" />
             <span>No remaining classes today. Showing next lecture day for your section.</span>

@@ -21,7 +21,7 @@ interface ToastMessage {
 }
 
 interface AppContextType {
-  student: Student;
+  student: Student | null;
   courses: Course[];
   timetable: ClassSession[];
   attendance: AttendanceRecord[];
@@ -52,8 +52,8 @@ interface AppContextType {
   showToast: (toast: Omit<ToastMessage, 'id'>) => void;
   dismissToast: (id: string) => void;
 
-  // Actions
-  loginAsDemoStudent: () => void;
+  // Authentication & Actions
+  loginWithDomain: (email: string, password: string) => { success: boolean; error?: string };
   logout: () => void;
   updateAttendanceThreshold: (min: number) => void;
   toggleAssignmentSubmission: (id: string) => void;
@@ -73,12 +73,12 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Ensure storage is seeded on mount
+  // Ensure storage is initialized on mount
   useEffect(() => {
     StorageService.initializeData(false);
   }, []);
 
-  const [student, setStudent] = useState<Student>(() => StorageService.getStudent());
+  const [student, setStudent] = useState<Student | null>(() => StorageService.getStudent());
   const [courses, setCourses] = useState<Course[]>(() => StorageService.getCourses());
   const [timetable, setTimetable] = useState<ClassSession[]>(() => StorageService.getTimetable());
   const [attendance, setAttendance] = useState<AttendanceRecord[]>(() => StorageService.getAttendance());
@@ -88,7 +88,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [lostFound, setLostFound] = useState<LostFoundItem[]>(() => StorageService.getLostFoundItems());
   const [opportunities, setOpportunities] = useState<Opportunity[]>(() => StorageService.getOpportunities());
   const [notifications, setNotifications] = useState<NotificationItem[]>(() => StorageService.getNotifications());
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => !!StorageService.getAuthStudent());
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => StorageService.isAuthenticated());
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -105,7 +105,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setLostFound(StorageService.getLostFoundItems());
     setOpportunities(StorageService.getOpportunities());
     setNotifications(StorageService.getNotifications());
-    setIsAuthenticated(!!StorageService.getAuthStudent());
+    setIsAuthenticated(StorageService.isAuthenticated());
   }, []);
 
   const showToast = useCallback((toast: Omit<ToastMessage, 'id'>) => {
@@ -137,28 +137,40 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const pendingAssignmentsCount = assignments.filter(a => a.status === 'pending' || a.status === 'overdue').length;
   const lowAttendanceCount = attendance.filter(rec => {
     const pct = rec.total > 0 ? (rec.attended / rec.total) * 100 : 100;
-    return pct < student.attendanceMinimum;
+    return pct < (student?.attendanceMinimum || 75);
   }).length;
   const unreadNotificationsCount = notifications.filter(n => !n.read).length;
 
-  // Actions
-  const loginAsDemoStudent = () => {
-    const s = StorageService.loginAsDemoStudent();
-    setStudent(s);
-    setIsAuthenticated(true);
-    showToast({ type: 'success', title: `Signed in as ${s.name} (${s.rollNumber})` });
+  // Domain-Restricted Auth Login
+  const loginWithDomain = (email: string, password: string) => {
+    const result = StorageService.loginWithDomain(email, password);
+    if (result.success && result.student) {
+      setStudent(result.student);
+      setIsAuthenticated(true);
+      showToast({
+        type: 'success',
+        title: 'Authentication Successful',
+        message: `Welcome, ${result.student.name} (${result.student.email})`,
+      });
+      return { success: true };
+    } else {
+      return { success: false, error: result.error || 'Authentication failed' };
+    }
   };
 
   const logout = () => {
     StorageService.logout();
+    setStudent(null);
     setIsAuthenticated(false);
-    showToast({ type: 'info', title: 'Signed out of session' });
+    showToast({ type: 'info', title: 'Session Ended', message: 'You have been signed out safely.' });
   };
 
   const updateAttendanceThreshold = (min: number) => {
     const updated = StorageService.updateAttendanceThreshold(min);
-    setStudent(updated);
-    showToast({ type: 'info', title: `Minimum attendance threshold updated to ${min}%` });
+    if (updated) {
+      setStudent(updated);
+      showToast({ type: 'info', title: `Minimum attendance threshold updated to ${min}%` });
+    }
   };
 
   const toggleAssignmentSubmission = (id: string) => {
@@ -188,7 +200,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const toggleEventRegistration = (eventId: string) => {
     const result = StorageService.toggleEventRegistration(eventId);
     setEvents(StorageService.getEvents());
-    if (result.success) {
+    if (result.success && result.event) {
       showToast({
         type: result.event.isRegistered ? 'success' : 'info',
         title: result.message || 'Registration updated',
@@ -266,9 +278,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     StorageService.resetDemoData();
     refreshData();
     showToast({
-      type: 'success',
-      title: 'Demo data reset to initial state',
-      message: 'All mock dates, records, and student states have been reloaded.',
+      type: 'info',
+      title: 'Foundation Reset',
+      message: 'All collections have been reset to clean production foundation.',
     });
   };
 
@@ -299,7 +311,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         toasts,
         showToast,
         dismissToast,
-        loginAsDemoStudent,
+        loginWithDomain,
         logout,
         updateAttendanceThreshold,
         toggleAssignmentSubmission,

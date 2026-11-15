@@ -221,8 +221,26 @@ export const LostFoundPage: React.FC = () => {
       {/* Grid of Items */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredItems.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-xs text-slate-500 bg-white border border-border rounded-lg">
-            No lost or found items found matching your current filters.
+          <div className="col-span-full py-16 flex flex-col items-center justify-center text-center bg-white border border-border rounded-lg p-6">
+            <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+              <HelpCircle className="w-5 h-5 text-slate-400" />
+            </div>
+            <h4 className="text-sm font-semibold text-slate-900">
+              {lostFound.length === 0 ? 'No lost or found items reported' : 'No items match your filter'}
+            </h4>
+            <p className="text-xs text-slate-500 max-w-sm mt-1 mb-4 leading-relaxed">
+              {lostFound.length === 0
+                ? 'Misplaced personal belongings, electronics, and student IDs reported on campus will be cataloged here.'
+                : 'Try clearing your category or status filters.'}
+            </p>
+            <Button
+              variant="primary"
+              size="sm"
+              icon={<PlusCircle className="w-4 h-4" />}
+              onClick={() => setIsReportOpen(true)}
+            >
+              Report an Item
+            </Button>
           </div>
         ) : (
           filteredItems.map(item => {
