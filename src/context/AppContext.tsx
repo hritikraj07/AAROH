@@ -13,6 +13,8 @@ import {
   Opportunity,
   NotificationItem,
   GlobalSearchResult,
+  GradeRecord,
+  AssessmentType,
 } from '../types';
 import { StorageService } from '../services/storage';
 
@@ -37,6 +39,7 @@ interface AppContextType {
   lostFound: LostFoundItem[];
   opportunities: Opportunity[];
   notifications: NotificationItem[];
+  grades: GradeRecord[];
   isAuthenticated: boolean;
 
   // Counts
@@ -104,6 +107,18 @@ interface AppContextType {
   submitCodingAssignment: (id: string, studentCode: string, testResultsSummary?: string) => Assignment | null;
   createOpportunity: (opp: Omit<Opportunity, 'id' | 'isSaved'>) => Opportunity;
   deleteOpportunity: (id: string) => void;
+  saveBatchGrades: (
+    courseId: string,
+    assessmentType: AssessmentType,
+    semester: number,
+    records: Array<{
+      studentId: string;
+      marksScored: number;
+      maxMarks: number;
+      grade?: string;
+      credits?: number;
+    }>
+  ) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -120,6 +135,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [lostFound, setLostFound] = useState<LostFoundItem[]>(() => StorageService.getLostFoundItems());
   const [opportunities, setOpportunities] = useState<Opportunity[]>(() => StorageService.getOpportunities());
   const [notifications, setNotifications] = useState<NotificationItem[]>(() => StorageService.getNotifications());
+  const [grades, setGrades] = useState<GradeRecord[]>(() => StorageService.getGrades());
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => StorageService.isAuthenticated());
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -138,6 +154,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setLostFound(StorageService.getLostFoundItems());
     setOpportunities(StorageService.getOpportunities());
     setNotifications(StorageService.getNotifications());
+    setGrades(StorageService.getGrades());
     setIsAuthenticated(StorageService.isAuthenticated());
   }, []);
 
@@ -524,6 +541,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
+  const saveBatchGrades = (
+    courseId: string,
+    assessmentType: AssessmentType,
+    semester: number,
+    records: Array<{
+      studentId: string;
+      marksScored: number;
+      maxMarks: number;
+      grade?: string;
+      credits?: number;
+    }>
+  ) => {
+    StorageService.saveBatchGrades(courseId, assessmentType, semester, records);
+    setGrades(StorageService.getGrades());
+    showToast({
+      type: 'success',
+      title: 'Grades Saved Successfully',
+      message: `Updated marks for ${records.length} students (${assessmentType}).`,
+    });
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -540,6 +578,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         lostFound,
         opportunities,
         notifications,
+        grades,
+        saveBatchGrades,
         isAuthenticated,
         unreadNoticeCount,
         pendingAssignmentsCount,

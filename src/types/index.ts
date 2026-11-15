@@ -59,6 +59,26 @@ export interface AttendanceRecord {
   total: number;
 }
 
+export type AssessmentType = 'Mid-Sem' | 'End-Sem';
+
+export interface GradeRecord {
+  id: string;
+  studentId: string;
+  studentName?: string;
+  studentRoll?: string;
+  studentEmail?: string;
+  courseId: string;
+  courseCode?: string;
+  courseName?: string;
+  semester: number;
+  assessmentType: AssessmentType;
+  marksScored: number;
+  maxMarks: number;
+  grade?: string; // 'A+', 'A', 'B+', 'B', 'C', 'F'
+  credits?: number;
+  updatedAt?: string;
+}
+
 export type AssignmentStatus = 'pending' | 'submitted' | 'overdue' | 'graded' | 'failed';
 export type AssignmentType = 'standard' | 'coding';
 export type LabStatus = 'locked' | 'active' | 'closed';

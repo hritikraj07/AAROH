@@ -25,6 +25,7 @@ import { AttendanceAlertsWidget } from '../components/modules/dashboard/Attendan
 import { WeekAssignmentsWidget } from '../components/modules/dashboard/WeekAssignmentsWidget';
 import { PinnedNoticesWidget } from '../components/modules/dashboard/PinnedNoticesWidget';
 import { UpcomingEventsWidget } from '../components/modules/dashboard/UpcomingEventsWidget';
+import { LostAndFoundMatcherWidget } from '../components/modules/dashboard/LostAndFoundMatcherWidget';
 import { ReportLostFoundModal } from '../components/modules/lostfound/ReportLostFoundModal';
 
 export const DashboardPage: React.FC = () => {
@@ -474,6 +475,9 @@ export const DashboardPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* AI Lost & Found Matcher Widget */}
+      <LostAndFoundMatcherWidget />
 
       {/* 4. Primary Data Modules (Tables: Today's Schedule & Coursework) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">

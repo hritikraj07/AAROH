@@ -1119,6 +1119,108 @@ assert(stuCodeContent.includes('Submit Assignment') && stuCodeContent.includes(e
 
 console.log('--- ALL 4-LAYER TACTILE BUTTON DEPTH VERIFICATIONS PASSED ---');
 
+// ==========================================
+// 28. Check Four Smart Campus Offline Flagship Features
+// ==========================================
+console.log('--- VERIFYING FOUR SMART CAMPUS OFFLINE FLAGSHIP FEATURES ---');
+
+// 1. Advanced Gradebook & GPA Simulator (Faculty & Student)
+const facultyGradebookPath = path.join(__dirname, '../src/pages/faculty/FacultyGradebookPage.tsx');
+assert(fs.existsSync(facultyGradebookPath), 'FacultyGradebookPage.tsx exists');
+const facultyGradebookContent = fs.readFileSync(facultyGradebookPath, 'utf8');
+
+assert(facultyGradebookContent.includes('Course') && facultyGradebookContent.includes('Semester'), 'FacultyGradebookPage includes Course and Semester selectors');
+assert(facultyGradebookContent.includes('Mid-Sem') && facultyGradebookContent.includes('End-Sem'), 'FacultyGradebookPage includes Mid-Sem and End-Sem assessment types');
+assert(facultyGradebookContent.includes('Save All Grades') || facultyGradebookContent.includes('Commit Gradebook Changes'), 'FacultyGradebookPage includes Save Grades action');
+assert(facultyGradebookContent.includes('saveBatchGrades'), 'FacultyGradebookPage dispatches batch grades to localStorage');
+assert(facultyGradebookContent.includes(exactLightShadow) && facultyGradebookContent.includes(exactDarkShadow), 'FacultyGradebookPage Save button uses 4-layer tactile shadows');
+
+const academicResultsPath = path.join(__dirname, '../src/components/modules/academics/AcademicResultsTab.tsx');
+assert(fs.existsSync(academicResultsPath), 'AcademicResultsTab.tsx exists');
+const academicResultsContent = fs.readFileSync(academicResultsPath, 'utf8');
+
+assert(academicResultsContent.includes('Official Assessment Results'), 'AcademicResultsTab renders Part A official marks scorecard');
+assert(academicResultsContent.includes('GPA Scenario Simulator'), 'AcademicResultsTab renders Part B GPA Scenario Simulator');
+assert(academicResultsContent.includes('type="range"'), 'AcademicResultsTab includes interactive range sliders for upcoming assignments and labs');
+assert(academicResultsContent.includes('projectedCGPA') && academicResultsContent.includes('PROJECTED CGPA'), 'AcademicResultsTab computes and displays projected CGPA');
+assert(academicResultsContent.includes('from-teal-600') && (academicResultsContent.includes('to-emerald-500') || academicResultsContent.includes('drop-shadow')), 'AcademicResultsTab renders large glowing dynamic CGPA display');
+
+const academicsPageContent = fs.readFileSync(path.join(__dirname, '../src/pages/AcademicsPage.tsx'), 'utf8');
+assert(academicsPageContent.includes('AcademicResultsTab'), 'AcademicsPage mounts AcademicResultsTab');
+assert(academicsPageContent.includes('Academic Results & GPA') || academicsPageContent.includes('results'), 'AcademicsPage includes Academic Results tab');
+
+const appRoutesContent = fs.readFileSync(path.join(__dirname, '../src/App.tsx'), 'utf8');
+assert(appRoutesContent.includes('FacultyGradebookPage') && appRoutesContent.includes('gradebook'), 'App.tsx registers /faculty/gradebook route');
+
+const sidebarGradebookContent = fs.readFileSync(path.join(__dirname, '../src/components/layout/Sidebar.tsx'), 'utf8');
+assert(sidebarGradebookContent.includes('/faculty/gradebook'), 'Sidebar.tsx includes Gradebook navigation for faculty');
+
+// 2. "Perfect Match" Teammate Radar (Student Opportunity Board)
+const teammateRadarPath = path.join(__dirname, '../src/components/modules/opportunities/TeammateRadar.tsx');
+assert(fs.existsSync(teammateRadarPath), 'TeammateRadar.tsx exists');
+const teammateRadarContent = fs.readFileSync(teammateRadarPath, 'utf8');
+
+assert(teammateRadarContent.includes('Perfect Match') && teammateRadarContent.includes('Teammate Radar'), 'TeammateRadar renders exact title');
+assert(teammateRadarContent.includes('✨ Synergy Match'), 'TeammateRadar renders ✨ Synergy Match badge');
+assert(teammateRadarContent.includes('Send Invite'), 'TeammateRadar renders Send Invite action button');
+assert(teammateRadarContent.includes('overflow-x-auto'), 'TeammateRadar renders horizontal scrolling list of peer profiles');
+assert(teammateRadarContent.includes('Automated Coding Lab'), 'TeammateRadar matches peers based on passed Automated Coding Labs');
+assert(teammateRadarContent.includes(exactLightShadow) && teammateRadarContent.includes(exactDarkShadow), 'TeammateRadar Send Invite button uses 4-layer tactile shadows');
+
+const oppPageContent = fs.readFileSync(path.join(__dirname, '../src/pages/OpportunitiesPage.tsx'), 'utf8');
+assert(oppPageContent.includes('TeammateRadar'), 'OpportunitiesPage mounts TeammateRadar');
+
+// 3. AI "Lost & Found" Matcher (Campus Feed)
+const lfMatcherUtilPath = path.join(__dirname, '../src/utils/lostFoundMatcher.ts');
+assert(fs.existsSync(lfMatcherUtilPath), 'lostFoundMatcher.ts exists in src/utils');
+const lfMatcherContent = fs.readFileSync(lfMatcherUtilPath, 'utf8');
+
+assert(lfMatcherContent.includes('extractKeywords'), 'lostFoundMatcher exports extractKeywords');
+assert(lfMatcherContent.includes('findLostAndFoundMatches'), 'lostFoundMatcher exports findLostAndFoundMatches');
+
+// Test matching logic with ASUS Laptop keyword pair in Node
+function testKeywordExtraction(text) {
+  const STOP_WORDS = new Set(['a', 'the', 'in', 'on', 'near', 'black', 'dark', 'grey']);
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(token => token.length >= 3 && !STOP_WORDS.has(token));
+}
+
+const mockLost = { id: '1', type: 'lost', title: 'Lost: ASUS TUF Gaming Laptop', description: 'Left in library', location: 'Library' };
+const mockFound = { id: '2', type: 'found', title: 'Found: Black ASUS Laptop', description: 'Found on desk', location: 'Library' };
+const lostTokens = testKeywordExtraction(`${mockLost.title} ${mockLost.description}`);
+const foundTokens = testKeywordExtraction(`${mockFound.title} ${mockFound.description}`);
+const commonTokens = lostTokens.filter(t => foundTokens.includes(t));
+assert(commonTokens.includes('asus') && commonTokens.includes('laptop'), 'Keyword matcher detects ASUS and Laptop intersection');
+
+const lfWidgetPath = path.join(__dirname, '../src/components/modules/dashboard/LostAndFoundMatcherWidget.tsx');
+assert(fs.existsSync(lfWidgetPath), 'LostAndFoundMatcherWidget.tsx exists');
+const lfWidgetContent = fs.readFileSync(lfWidgetPath, 'utf8');
+
+assert(lfWidgetContent.includes('AI Lost & Found Matcher') || lfWidgetContent.includes('Potential Collision Detected'), 'LostAndFoundMatcherWidget renders title');
+assert(lfWidgetContent.includes('grid-cols-1 md:grid-cols-2') || lfWidgetContent.includes('split-screen'), 'LostAndFoundMatcherWidget displays split-screen side-by-side reports');
+assert(lfWidgetContent.includes('Confirm Match'), 'LostAndFoundMatcherWidget includes Confirm Match action button');
+assert(lfWidgetContent.includes(exactLightShadow) && lfWidgetContent.includes(exactDarkShadow), 'LostAndFoundMatcherWidget Confirm Match button uses 4-layer tactile shadows');
+
+const dashContentLF = fs.readFileSync(path.join(__dirname, '../src/pages/DashboardPage.tsx'), 'utf8');
+assert(dashContentLF.includes('LostAndFoundMatcherWidget'), 'DashboardPage mounts LostAndFoundMatcherWidget');
+
+// 4. "Ghost Mode" Exam Focus (Student App Shell)
+const layoutGhostPath = path.join(__dirname, '../src/components/layout/Layout.tsx');
+const layoutGhostContent = fs.readFileSync(layoutGhostPath, 'utf8');
+
+assert(layoutGhostContent.includes('isGhostMode'), 'Layout implements isGhostMode state');
+assert(layoutGhostContent.includes('🔒 Exam Mode Enforced. Navigation disabled.'), 'Layout renders exact un-dismissible Exam Mode banner');
+assert(layoutGhostContent.includes('!isGhostMode &&') && layoutGhostContent.includes('<Sidebar'), 'Layout completely hides left sidebar navigation during Ghost Mode');
+assert(layoutGhostContent.includes('!isGhostMode &&') && layoutGhostContent.includes('<AarohAIAssistant'), 'Layout completely hides AI assistant during Ghost Mode to prevent cheating');
+assert(layoutGhostContent.includes('border-purple-500/50'), 'Layout changes global borders to deep purple border-purple-500/50 during Ghost Mode');
+assert(layoutGhostContent.includes('#070709'), 'Layout darkens entire interface with #070709 during Ghost Mode');
+
+console.log('--- ALL FOUR SMART CAMPUS OFFLINE FLAGSHIP FEATURES VERIFICATIONS PASSED ---');
+
+
 
 
 

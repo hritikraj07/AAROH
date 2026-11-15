@@ -12,6 +12,8 @@ import {
   Opportunity,
   NotificationItem,
   GlobalSearchResult,
+  GradeRecord,
+  AssessmentType,
 } from '../types';
 import {
   INITIAL_COURSES,
@@ -24,6 +26,7 @@ import {
   INITIAL_OPPORTUNITIES,
   INITIAL_NOTIFICATIONS,
   INITIAL_USERS,
+  INITIAL_GRADES,
   generateUserFromEmail,
   getUserRoleFromEmail,
 } from '../data/seed';
@@ -42,6 +45,7 @@ const STORAGE_KEYS = {
   LOST_FOUND: 'aaroh_lost_found',
   OPPORTUNITIES: 'aaroh_opportunities',
   NOTIFICATIONS: 'aaroh_notifications',
+  GRADES: 'aaroh_grades',
 };
 
 function getStored<T>(key: string, fallback: T): T {
@@ -86,6 +90,9 @@ export const StorageService = {
       setStored(STORAGE_KEYS.LOST_FOUND, INITIAL_LOST_FOUND);
       setStored(STORAGE_KEYS.OPPORTUNITIES, INITIAL_OPPORTUNITIES);
       setStored(STORAGE_KEYS.NOTIFICATIONS, INITIAL_NOTIFICATIONS);
+      setStored(STORAGE_KEYS.GRADES, INITIAL_GRADES);
+      setStored('grades', INITIAL_GRADES);
+      setStored('lostAndFound', INITIAL_LOST_FOUND);
 
       if (forceReset) {
         localStorage.removeItem(STORAGE_KEYS.SESSION_TOKEN);
@@ -785,6 +792,80 @@ export const StorageService = {
     });
 
     return results;
+  },
+
+  // ==========================================
+  // Grades & Academic Results
+  // ==========================================
+  getGrades(): GradeRecord[] {
+    const rawDirect = getStored<GradeRecord[]>('grades', []);
+    if (rawDirect.length > 0) return rawDirect;
+    const rawAaroh = getStored<GradeRecord[]>(STORAGE_KEYS.GRADES, []);
+    if (rawAaroh.length > 0) return rawAaroh;
+    return INITIAL_GRADES;
+  },
+
+  saveGrades(grades: GradeRecord[]): void {
+    setStored(STORAGE_KEYS.GRADES, grades);
+    setStored('grades', grades);
+  },
+
+  saveBatchGrades(
+    courseId: string,
+    assessmentType: AssessmentType,
+    semester: number,
+    records: Array<{
+      studentId: string;
+      marksScored: number;
+      maxMarks: number;
+      grade?: string;
+      credits?: number;
+    }>
+  ): void {
+    const existing = this.getGrades();
+    const users = this.getUsers();
+    const courses = this.getCourses();
+    const course = courses.find(c => c.id === courseId);
+
+    const now = new Date().toISOString();
+    const updated = [...existing];
+
+    records.forEach(rec => {
+      const student = users.find(u => u.id === rec.studentId);
+      const existingIdx = updated.findIndex(
+        g => g.studentId === rec.studentId && g.courseId === courseId && g.assessmentType === assessmentType
+      );
+
+      const ratio = rec.maxMarks > 0 ? rec.marksScored / rec.maxMarks : 0;
+      const computedGrade =
+        ratio >= 0.9 ? 'A+' : ratio >= 0.8 ? 'A' : ratio >= 0.7 ? 'B+' : ratio >= 0.6 ? 'B' : ratio >= 0.5 ? 'C' : 'F';
+
+      const record: GradeRecord = {
+        id: existingIdx >= 0 ? updated[existingIdx].id : `grd_${Date.now()}_${rec.studentId}`,
+        studentId: rec.studentId,
+        studentName: student?.name || 'Student',
+        studentRoll: student?.rollNumber || '',
+        studentEmail: student?.email || '',
+        courseId,
+        courseCode: course?.code || courseId,
+        courseName: course?.name || 'Course',
+        semester,
+        assessmentType,
+        marksScored: rec.marksScored,
+        maxMarks: rec.maxMarks,
+        grade: rec.grade || computedGrade,
+        credits: rec.credits || course?.credits || 4,
+        updatedAt: now,
+      };
+
+      if (existingIdx >= 0) {
+        updated[existingIdx] = record;
+      } else {
+        updated.push(record);
+      }
+    });
+
+    this.saveGrades(updated);
   },
 
   // Full reset

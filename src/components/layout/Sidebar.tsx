@@ -14,7 +14,8 @@ import {
   ClipboardList,
   Clock,
   ShieldCheck,
-  Users
+  Users,
+  Award
 } from 'lucide-react';
 import { APP_CONFIG } from '../../config';
 import { useApp } from '../../context/AppContext';
@@ -143,6 +144,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
           to: '/faculty/attendance',
           label: 'Attendance Logger',
           icon: <ClipboardList className="w-4 h-4" />,
+        },
+        {
+          to: '/faculty/gradebook',
+          label: 'Gradebook',
+          icon: <Award className="w-4 h-4" />,
         },
         {
           to: '/faculty/assignments',

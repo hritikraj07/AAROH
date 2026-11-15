@@ -5,6 +5,7 @@ import { Opportunity, OpportunityMode, OpportunityType } from '../types';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { OpportunityDetailModal } from '../components/modules/opportunities/OpportunityDetailModal';
+import { TeammateRadar } from '../components/modules/opportunities/TeammateRadar';
 import {
   Briefcase,
   Building,
@@ -282,6 +283,9 @@ export const OpportunitiesPage: React.FC = () => {
           />
         </div>
       </div>
+
+      {/* Teammate Radar: Complementary skills based on Automated Coding Labs */}
+      <TeammateRadar />
 
       {/* Find a Team / Study Partner Matchmaker (Above Hackathons / Opportunities List) */}
       <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6 transition-all duration-300">

@@ -4,8 +4,9 @@ import { Tabs } from '../components/ui/Tabs';
 import { TimetableTab } from '../components/modules/academics/TimetableTab';
 import { AttendanceTab } from '../components/modules/academics/AttendanceTab';
 import { AssignmentsTab } from '../components/modules/academics/AssignmentsTab';
+import { AcademicResultsTab } from '../components/modules/academics/AcademicResultsTab';
 import { useApp } from '../context/AppContext';
-import { Clock, CheckSquare, Calendar } from 'lucide-react';
+import { Clock, CheckSquare, Calendar, Award } from 'lucide-react';
 
 export const AcademicsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,6 +35,11 @@ export const AcademicsPage: React.FC = () => {
       count: pendingAssignmentsCount > 0 ? pendingAssignmentsCount : undefined,
       icon: <CheckSquare className="w-4 h-4" />,
     },
+    {
+      id: 'results',
+      label: 'Academic Results & GPA',
+      icon: <Award className="w-4 h-4" />,
+    },
   ];
 
   return (
@@ -41,9 +47,9 @@ export const AcademicsPage: React.FC = () => {
       {/* Header and Tab Bar */}
       <div>
         <div className="mb-2">
-          <h2 className="text-lg font-bold text-slate-900">Academic Operations</h2>
-          <p className="text-xs text-slate-500">
-            View section timetables, track attendance regulations, and submit assignments.
+          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Academic Operations</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            View section timetables, track attendance regulations, submit assignments, and predict graduation GPA.
           </p>
         </div>
 
@@ -60,6 +66,7 @@ export const AcademicsPage: React.FC = () => {
         {activeTab === 'timetable' && <TimetableTab />}
         {activeTab === 'attendance' && <AttendanceTab />}
         {activeTab === 'assignments' && <AssignmentsTab />}
+        {activeTab === 'results' && <AcademicResultsTab />}
       </div>
     </div>
   );
