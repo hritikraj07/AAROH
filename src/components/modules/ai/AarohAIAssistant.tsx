@@ -291,12 +291,12 @@ export const AarohAIAssistant: React.FC = () => {
       {/* Chat Window Panel */}
       {isOpen && (
         <div
-          className="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[400px] max-h-[560px] h-[520px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in fade-in duration-150 font-sans"
+          className="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[400px] max-h-[560px] h-[520px] bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in fade-in duration-150 font-sans"
           role="dialog"
           aria-label="Aaroh AI Campus Assistant"
         >
           {/* Header */}
-          <div className="bg-white dark:bg-slate-900 px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
+          <div className="bg-white dark:bg-[#18181B] px-4 py-3 border-b border-slate-200 dark:border-[#27272A] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-950/50 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 flex items-center justify-center shrink-0">
                 <Sparkles className="w-4 h-4 text-teal-700 dark:text-teal-400" />
@@ -325,14 +325,14 @@ export const AarohAIAssistant: React.FC = () => {
             <div className="flex items-center gap-1">
               <button
                 onClick={handleResetChat}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors"
                 title="Reset conversation"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors"
                 title="Close chat"
               >
                 <X className="w-4 h-4" />
@@ -341,7 +341,7 @@ export const AarohAIAssistant: React.FC = () => {
           </div>
 
           {/* Quick Query Suggestion Chips */}
-          <div className="px-3 py-2 bg-slate-50 dark:bg-slate-950/60 border-b border-slate-100 dark:border-slate-800 flex items-center gap-1.5 overflow-x-auto shrink-0">
+          <div className="px-3 py-2 bg-slate-50 dark:bg-[#0E0E11] border-b border-slate-100 dark:border-[#27272A] flex items-center gap-1.5 overflow-x-auto shrink-0">
             <span className="text-[10px] uppercase font-semibold text-slate-400 dark:text-slate-500 shrink-0 mr-0.5">
               Ask:
             </span>
@@ -350,7 +350,7 @@ export const AarohAIAssistant: React.FC = () => {
                 key={chip.label}
                 onClick={() => handleSendMessage(chip.query)}
                 disabled={isLoading}
-                className="text-[11px] px-2.5 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 rounded-md hover:border-teal-300 dark:hover:border-teal-700 hover:text-teal-800 dark:hover:text-teal-300 hover:bg-teal-50/50 dark:hover:bg-teal-950/30 whitespace-nowrap transition-colors disabled:opacity-50"
+                className="text-[11px] px-2.5 py-1 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] text-slate-600 dark:text-slate-300 rounded-md hover:border-teal-300 dark:hover:border-teal-700 hover:text-teal-800 dark:hover:text-teal-300 hover:bg-teal-50/50 dark:hover:bg-teal-950/30 whitespace-nowrap transition-colors disabled:opacity-50"
               >
                 {chip.label}
               </button>
@@ -358,7 +358,7 @@ export const AarohAIAssistant: React.FC = () => {
           </div>
 
           {/* Message History Body */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#FBFBFA]/60 dark:bg-slate-950">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#FBFBFA]/60 dark:bg-[#18181B]">
             {messages.map(msg => {
               const isUser = msg.sender === 'user';
               return (
@@ -369,8 +369,8 @@ export const AarohAIAssistant: React.FC = () => {
                   <div
                     className={`max-w-[88%] rounded-xl px-3.5 py-2.5 text-xs leading-relaxed ${
                       isUser
-                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700'
-                        : 'bg-teal-50/70 dark:bg-teal-950/30 text-slate-800 dark:text-slate-200 border border-teal-200/80 dark:border-teal-900/60 shadow-xs'
+                        ? 'bg-slate-100 text-slate-900 border border-slate-200 dark:bg-[#27272A] dark:text-white dark:border-[#27272A]'
+                        : 'bg-teal-50/70 text-slate-800 border border-teal-200/80 shadow-xs dark:bg-teal-950/30 dark:border-teal-900/50 dark:text-teal-50'
                     }`}
                   >
                     {!isUser && (
@@ -398,7 +398,7 @@ export const AarohAIAssistant: React.FC = () => {
             {/* Sleek Animated Typing Indicator (three small pulsing teal dots using animate-pulse) */}
             {isLoading && (
               <div className="flex flex-col items-start animate-in fade-in duration-150">
-                <div className="rounded-xl px-3.5 py-2.5 bg-teal-50/70 dark:bg-teal-950/30 text-slate-800 dark:text-slate-200 border border-teal-200/80 dark:border-teal-900/60 shadow-xs">
+                <div className="rounded-xl px-3.5 py-2.5 bg-teal-50/70 text-slate-800 border border-teal-200/80 shadow-xs dark:bg-teal-950/30 dark:border-teal-900/50 dark:text-teal-50">
                   <div className="flex items-center gap-1.5 mb-1.5 text-[10px] font-semibold text-teal-800 dark:text-teal-400">
                     <Sparkles className="w-3 h-3 text-teal-700 dark:text-teal-400 animate-spin" />
                     <span>Aaroh is thinking...</span>
@@ -416,7 +416,7 @@ export const AarohAIAssistant: React.FC = () => {
           </div>
 
           {/* Chat Input Field */}
-          <div className="p-3 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shrink-0">
+          <div className="p-3 bg-white dark:bg-[#18181B] border-t border-slate-200 dark:border-[#27272A] shrink-0">
             <form
               onSubmit={e => {
                 e.preventDefault();
@@ -432,7 +432,7 @@ export const AarohAIAssistant: React.FC = () => {
                 onKeyDown={handleKeyDown}
                 disabled={isLoading}
                 placeholder="Ask about next class, attendance, deadlines..."
-                className="flex-1 text-xs px-3.5 py-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-700/20 dark:focus:ring-teal-500/20 focus:border-teal-700 dark:focus:border-teal-500 transition-all duration-150 disabled:opacity-60"
+                className="flex-1 text-xs px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#0E0E11] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-700/20 dark:focus:ring-teal-500/20 focus:border-teal-700 dark:focus:border-teal-500 transition-all duration-150 disabled:opacity-60"
               />
               <button
                 type="submit"

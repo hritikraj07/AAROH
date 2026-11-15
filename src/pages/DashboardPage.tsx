@@ -231,8 +231,8 @@ export const DashboardPage: React.FC = () => {
 
       {/* Prominent Focus Mode Expanded Section: Current Class */}
       {isFocusMode && activeFocusSession && (
-        <div className="animate-in fade-in zoom-in-95 duration-500 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="animate-in fade-in zoom-in-95 duration-500 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-6 sm:p-8 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-[#27272A]">
             <div>
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
@@ -243,7 +243,7 @@ export const DashboardPage: React.FC = () => {
                   {activeFocusSession.startTime} – {activeFocusSession.endTime}
                 </span>
                 {activeFocusSession.room && (
-                  <span className="text-xs font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                  <span className="text-xs font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-[#27272A] px-2 py-0.5 rounded">
                     Room {activeFocusSession.room}
                   </span>
                 )}
@@ -269,7 +269,7 @@ export const DashboardPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleViewResources}
-                className="rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs px-4 py-2 font-medium transition-colors active:scale-95 shadow-sm inline-flex items-center gap-1.5"
+                className="rounded-full bg-white dark:bg-[#27272A] border border-slate-200 dark:border-[#27272A] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs px-4 py-2 font-medium transition-colors active:scale-95 shadow-sm inline-flex items-center gap-1.5"
               >
                 <BookOpen className="w-3.5 h-3.5 text-slate-400" />
                 <span>View Resources</span>
@@ -278,19 +278,19 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+            <div className="p-4 bg-slate-50 dark:bg-[#27272A]/50 rounded-xl border border-slate-100 dark:border-[#27272A]">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Class Progress</div>
               <div className="mt-1 text-sm font-bold text-slate-900 dark:text-slate-100 font-mono">
                 {activeFocusSession.startTime} – {activeFocusSession.endTime}
               </div>
               <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Focus mode auto-disengages when class concludes</div>
             </div>
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+            <div className="p-4 bg-slate-50 dark:bg-[#27272A]/50 rounded-xl border border-slate-100 dark:border-[#27272A]">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Attendance Sync</div>
               <div className="mt-1 text-sm font-bold text-teal-700 dark:text-teal-400 font-mono">Roll Call Active</div>
               <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Faculty roll call synchronized with student record</div>
             </div>
-            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+            <div className="p-4 bg-slate-50 dark:bg-[#27272A]/50 rounded-xl border border-slate-100 dark:border-[#27272A]">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Notifications</div>
               <div className="mt-1 text-sm font-bold text-slate-900 dark:text-slate-100 font-mono">Muted & Filtered</div>
               <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Campus notices & events held until session ends</div>
@@ -304,7 +304,7 @@ export const DashboardPage: React.FC = () => {
         {/* Metric 1: Attendance */}
         <div
           onClick={() => navigate('/student/academics?tab=attendance')}
-          className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+          className="bg-white border border-slate-200 text-slate-900 dark:bg-[#18181B] dark:border-[#27272A] dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
@@ -333,7 +333,7 @@ export const DashboardPage: React.FC = () => {
         {/* Metric 2: Today's Classes */}
         <div
           onClick={() => navigate('/student/academics?tab=timetable')}
-          className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+          className="bg-white border border-slate-200 text-slate-900 dark:bg-[#18181B] dark:border-[#27272A] dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
@@ -356,7 +356,7 @@ export const DashboardPage: React.FC = () => {
         {/* Metric 3: Pending Coursework */}
         <div
           onClick={() => navigate('/student/academics?tab=assignments')}
-          className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+          className="bg-white border border-slate-200 text-slate-900 dark:bg-[#18181B] dark:border-[#27272A] dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
@@ -384,7 +384,7 @@ export const DashboardPage: React.FC = () => {
         {/* Metric 4: Saved Opportunities */}
         <div
           onClick={() => navigate('/student/opportunities?tab=saved')}
-          className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
+          className="bg-white border border-slate-200 text-slate-900 dark:bg-[#18181B] dark:border-[#27272A] dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
@@ -403,7 +403,7 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. Data Cards Section: Opportunities, Events, Courses matching reference spec */}
+      {/* 3. Data Cards Section: Dynamically rendered from localStorage opportunities */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono">
@@ -413,119 +413,65 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1: Opportunity */}
-          <div
-            onClick={() => navigate('/student/opportunities')}
-            className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 flex flex-col justify-between group cursor-pointer"
-          >
-            <div>
-              {/* Top half placeholder image/cover */}
-              <div className="h-32 bg-gradient-to-br from-teal-600 to-teal-800 p-4 relative flex items-end">
-                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]" />
-                <span className="relative z-10 text-[10px] font-mono font-semibold text-teal-100 bg-black/25 px-2 py-0.5 rounded backdrop-blur-sm">
-                  Summer 2026
-                </span>
-              </div>
-
-              {/* Middle: Tiny category badge + bold title */}
-              <div className="p-5 space-y-2">
-                <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300 font-mono">
-                  INTERNSHIP
-                </span>
-                <h3 className="font-bold text-base text-slate-900 dark:text-slate-50 leading-snug group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
-                  Google Summer of Code: Systems Research
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
-                  Open-source research program for kernel algorithms and distributed caching.
-                </p>
-              </div>
+          {opportunities.length === 0 ? (
+            <div className="col-span-full bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-8 text-center text-slate-500 dark:text-slate-400 text-xs">
+              No active opportunities. Hackathons and internships will appear here.
             </div>
+          ) : (
+            opportunities.slice(0, 3).map((opp, idx) => {
+              const gradients = [
+                'from-teal-600 to-teal-800',
+                'from-indigo-600 to-indigo-900',
+                'from-slate-800 to-slate-950',
+              ];
+              const gradient = gradients[idx % gradients.length];
+              return (
+                <div
+                  key={opp.id}
+                  onClick={() => navigate('/student/opportunities')}
+                  className="bg-white border border-slate-200 text-slate-900 dark:bg-[#18181B] dark:border-[#27272A] dark:text-slate-50 rounded-2xl overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 flex flex-col justify-between group cursor-pointer"
+                >
+                  <div>
+                    {/* Top half placeholder image/cover */}
+                    <div className={`h-32 bg-gradient-to-br ${gradient} p-4 relative flex items-end`}>
+                      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]" />
+                      <span className="relative z-10 text-[10px] font-mono font-semibold text-teal-100 bg-black/25 px-2 py-0.5 rounded backdrop-blur-sm">
+                        {opp.mode || 'Active'}
+                      </span>
+                    </div>
 
-            {/* Bottom: small avatar / name */}
-            <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-teal-700 text-white font-mono text-[9px] flex items-center justify-center font-bold">
-                  G
+                    {/* Middle: Tiny category badge + bold title */}
+                    <div className="p-5 space-y-2">
+                      <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300 font-mono">
+                        {(opp.type || 'Opportunity').toUpperCase()}
+                      </span>
+                      <h3 className="font-bold text-base text-slate-900 dark:text-slate-50 leading-snug group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors line-clamp-1">
+                        {opp.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                        {opp.description || `${opp.organization} · ${opp.eligibility || 'All students eligible'}`}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bottom: small avatar / name */}
+                  <div className="px-5 py-3 border-t border-slate-100 dark:border-[#27272A] flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
+                    <div className="flex items-center gap-2">
+                      <div className="w-5 h-5 rounded-full bg-teal-700 text-white font-mono text-[9px] flex items-center justify-center font-bold">
+                        {opp.organization ? opp.organization.slice(0, 2).toUpperCase() : 'OP'}
+                      </div>
+                      <span className="font-medium text-slate-700 dark:text-slate-300 truncate max-w-[120px]">
+                        {opp.organization}
+                      </span>
+                    </div>
+                    <span className="font-mono text-[10px] text-teal-700 dark:text-teal-400 font-semibold">
+                      {opp.stipendPrize || opp.compensation || 'View Details'}
+                    </span>
+                  </div>
                 </div>
-                <span className="font-medium text-slate-700 dark:text-slate-300">Google Open Source</span>
-              </div>
-              <span className="font-mono text-[10px] text-teal-700 dark:text-teal-400 font-semibold">$3,000 Stipend</span>
-            </div>
-          </div>
-
-          {/* Card 2: Hackathon / Event */}
-          <div
-            onClick={() => navigate('/student/events')}
-            className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 flex flex-col justify-between group cursor-pointer"
-          >
-            <div>
-              <div className="h-32 bg-gradient-to-br from-indigo-600 to-indigo-900 p-4 relative flex items-end">
-                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]" />
-                <span className="relative z-10 text-[10px] font-mono font-semibold text-indigo-100 bg-black/25 px-2 py-0.5 rounded backdrop-blur-sm">
-                  48h Offline
-                </span>
-              </div>
-
-              <div className="p-5 space-y-2">
-                <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300 font-mono">
-                  HACKATHON
-                </span>
-                <h3 className="font-bold text-base text-slate-900 dark:text-slate-50 leading-snug group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
-                  Aarambh AI Builder Summit 2026
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
-                  Build next-generation campus AI tooling and real-time offline assistants.
-                </p>
-              </div>
-            </div>
-
-            <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-indigo-700 text-white font-mono text-[9px] flex items-center justify-center font-bold">
-                  K
-                </div>
-                <span className="font-medium text-slate-700 dark:text-slate-300">KRMU AI Club</span>
-              </div>
-              <span className="font-mono text-[10px] text-teal-700 dark:text-teal-400 font-semibold">₹1,00,000 Pool</span>
-            </div>
-          </div>
-
-          {/* Card 3: Course */}
-          <div
-            onClick={() => navigate('/student/academics?tab=timetable')}
-            className="bg-white border border-slate-200 text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-50 rounded-2xl overflow-hidden hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 flex flex-col justify-between group cursor-pointer"
-          >
-            <div>
-              <div className="h-32 bg-gradient-to-br from-slate-800 to-slate-950 p-4 relative flex items-end">
-                <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]" />
-                <span className="relative z-10 text-[10px] font-mono font-semibold text-slate-200 bg-black/25 px-2 py-0.5 rounded backdrop-blur-sm">
-                  Core Curriculum
-                </span>
-              </div>
-
-              <div className="p-5 space-y-2">
-                <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300 font-mono">
-                  COURSE
-                </span>
-                <h3 className="font-bold text-base text-slate-900 dark:text-slate-50 leading-snug group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
-                  Distributed Systems & Architecture
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
-                  Concurrency, consensus protocols, Paxos/Raft, and high-throughput pipelines.
-                </p>
-              </div>
-            </div>
-
-            <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
-              <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-slate-700 text-white font-mono text-[9px] flex items-center justify-center font-bold">
-                  KR
-                </div>
-                <span className="font-medium text-slate-700 dark:text-slate-300">Prof. K. Ramanujam</span>
-              </div>
-              <span className="font-mono text-[10px] text-teal-700 dark:text-teal-400 font-semibold">4 Credits</span>
-            </div>
-          </div>
+              );
+            })
+          )}
         </div>
       </div>
 

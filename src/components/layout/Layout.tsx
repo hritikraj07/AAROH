@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { QrCode } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { MobileDrawer } from './MobileDrawer';
@@ -7,9 +8,13 @@ import { GlobalSearchModal } from './GlobalSearchModal';
 import { SettingsModal } from './SettingsModal';
 import { ToastContainer } from '../ui/ToastContainer';
 import { AarohAIAssistant } from '../modules/ai/AarohAIAssistant';
+import { StudentQRScannerModal } from '../modules/attendance/StudentQRScannerModal';
+import { useApp } from '../../context/AppContext';
 
 export const Layout: React.FC = () => {
+  const { role } = useApp();
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
   const location = useLocation();
 
   const getPageTitle = (pathname: string): string => {
@@ -82,7 +87,7 @@ export const Layout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#FBFBFA] dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
+    <div className="flex h-screen overflow-hidden bg-[#FBFBFA] dark:bg-[#0E0E11] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
       {/* Desktop Sidebar (Persistent left panel) */}
       <div className="hidden md:flex md:shrink-0">
         <Sidebar />
@@ -101,18 +106,36 @@ export const Layout: React.FC = () => {
           pageTitle={getPageTitle(location.pathname)}
         />
 
-        <main className="flex-1 overflow-y-auto bg-[#FBFBFA] dark:bg-slate-950 transition-colors duration-200">
+        <main className="flex-1 overflow-y-auto bg-[#FBFBFA] dark:bg-[#0E0E11] transition-colors duration-200">
           <div className="max-w-7xl mx-auto p-6 sm:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
             <Outlet />
           </div>
         </main>
       </div>
 
+      {/* Floating Scan Attendance QR Button for Students */}
+      {role === 'student' && (
+        <div className="fixed bottom-6 right-20 sm:right-22 z-40">
+          <button
+            onClick={() => setIsQRScannerOpen(true)}
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-[#18181B] dark:bg-[#18181B] hover:bg-slate-800 text-white shadow-lg border border-[#27272A] text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer"
+            title="Scan Attendance QR"
+          >
+            <QrCode className="w-4 h-4 text-teal-400" />
+            <span className="hidden sm:inline">Scan Attendance QR</span>
+          </button>
+        </div>
+      )}
+
       {/* Modals, Floating AI Assistant & Notifications */}
       <GlobalSearchModal />
       <SettingsModal />
       <ToastContainer />
       <AarohAIAssistant />
+      <StudentQRScannerModal
+        isOpen={isQRScannerOpen}
+        onClose={() => setIsQRScannerOpen(false)}
+      />
     </div>
   );
 };

@@ -846,13 +846,13 @@ const topBarPath = path.join(__dirname, '../src/components/layout/TopBar.tsx');
 const topBar = fs.readFileSync(topBarPath, 'utf8');
 assert(topBar.includes('toggleTheme') && topBar.includes('Sun') && topBar.includes('Moon'), 'TopBar renders Theme Toggle button with Sun/Moon icons');
 assert(topBar.includes('SlidersHorizontal'), 'TopBar search bar features SlidersHorizontal filter icon');
-assert(topBar.includes('dark:bg-slate-950') && topBar.includes('dark:border-slate-800'), 'TopBar styles support dark:bg-slate-950 and dark:border-slate-800');
+assert((topBar.includes('dark:bg-slate-950') || topBar.includes('dark:bg-[#18181B]')) && (topBar.includes('dark:border-slate-800') || topBar.includes('dark:border-[#27272A]')), 'TopBar styles support dark mode surfaces and borders');
 
 const sidebarPath = path.join(__dirname, '../src/components/layout/Sidebar.tsx');
 const sidebar = fs.readFileSync(sidebarPath, 'utf8');
 assert(sidebar.includes('OVERVIEW') && sidebar.includes('ACADEMICS'), 'Sidebar organizes navigation under uppercase categorized section headers');
 assert(sidebar.includes('dark:bg-teal-900/30 dark:text-teal-400'), 'Sidebar active nav link uses dark:bg-teal-900/30 dark:text-teal-400');
-assert(sidebar.includes('dark:bg-slate-950') && sidebar.includes('dark:border-slate-800'), 'Sidebar background and borders adapt to dark mode');
+assert((sidebar.includes('dark:bg-slate-950') || sidebar.includes('dark:bg-[#18181B]')) && (sidebar.includes('dark:border-slate-800') || sidebar.includes('dark:border-[#27272A]')), 'Sidebar background and borders adapt to dark mode');
 assert(sidebar.includes('LogOut') && sidebar.includes('Logout'), 'Sidebar renders clean Logout link at the bottom');
 
 const studentDashboardPath = path.join(__dirname, '../src/pages/DashboardPage.tsx');
@@ -896,7 +896,7 @@ assert(updatedAiComponent.includes('Running in offline mode'), 'AarohAIAssistant
 assert(updatedAiComponent.includes('animate-pulse'), 'AarohAIAssistant includes animated typing indicator using animate-pulse');
 assert(updatedAiComponent.includes('bg-teal-600') || updatedAiComponent.includes('bg-teal-400') || updatedAiComponent.includes('teal'), 'Typing indicator uses pulsing teal dots');
 assert(updatedAiComponent.includes('renderInlineMarkdown') || updatedAiComponent.includes('MarkdownBubble'), 'AarohAIAssistant includes Markdown rendering support');
-assert(updatedAiComponent.includes('dark:bg-slate-900') && updatedAiComponent.includes('dark:border-slate-800'), 'AarohAIAssistant chat panel supports dark mode styling');
+assert((updatedAiComponent.includes('dark:bg-slate-900') || updatedAiComponent.includes('dark:bg-[#18181B]')) && (updatedAiComponent.includes('dark:border-slate-800') || updatedAiComponent.includes('dark:border-[#27272A]')), 'AarohAIAssistant chat panel supports dark mode styling');
 assert(updatedAiComponent.includes('dark:bg-teal-950') || updatedAiComponent.includes('dark:bg-slate-800'), 'Chat bubbles support dark mode styling');
 
 console.log('--- ALL AAROH AI GEMINI LLM INTEGRATION VERIFICATIONS PASSED ---');
@@ -927,4 +927,56 @@ assert(
 );
 
 console.log('--- ALL LOGIN PAGE DEMO QUICK ACCESS VERIFICATIONS PASSED ---');
+
+// SECTION 25: TRUE DARK THEME OVERHAUL, WIPED OPPORTUNITIES & DYNAMIC QR ATTENDANCE
+console.log('--- VERIFYING TRUE DARK THEME, DYNAMIC OPPORTUNITIES & QR ATTENDANCE ---');
+
+// 1. True Dark Theme Overhaul
+const cssContent = fs.readFileSync(path.join(__dirname, '../src/index.css'), 'utf8');
+assert(cssContent.includes('#0E0E11'), 'index.css configures true dark root background #0E0E11');
+
+const layoutContent = fs.readFileSync(path.join(__dirname, '../src/components/layout/Layout.tsx'), 'utf8');
+assert(layoutContent.includes('dark:bg-[#0E0E11]'), 'Layout shell configures dark:bg-[#0E0E11]');
+
+const aiChatContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/ai/AarohAIAssistant.tsx'), 'utf8');
+assert(aiChatContent.includes('dark:bg-[#27272A] dark:text-white'), 'AI Chat user messages use dark:bg-[#27272A] dark:text-white');
+assert(aiChatContent.includes('dark:bg-teal-950/30 dark:border-teal-900/50 dark:text-teal-50'), 'Aaroh AI messages use dark:bg-teal-950/30 dark:border-teal-900/50 dark:text-teal-50');
+assert(aiChatContent.includes('dark:bg-[#18181B]'), 'AI Chat container and body use dark:bg-[#18181B]');
+
+// 2. Wipe Hardcoded Opportunities in DashboardPage.tsx
+const studentDashLatest = fs.readFileSync(path.join(__dirname, '../src/pages/DashboardPage.tsx'), 'utf8');
+assert(!studentDashLatest.includes('Google Summer of Code: Systems Research'), 'Dashboard completely removed hardcoded Google Summer of Code card');
+assert(!studentDashLatest.includes('Aarambh AI Builder Summit 2026'), 'Dashboard completely removed hardcoded Aarambh AI Summit card');
+assert(!studentDashLatest.includes('Distributed Systems & Architecture</h3>'), 'Dashboard completely removed hardcoded Distributed Systems card');
+assert(studentDashLatest.includes('opportunities.length === 0'), 'Dashboard checks opportunities.length');
+assert(studentDashLatest.includes('No active opportunities. Hackathons and internships will appear here.'), 'Dashboard displays exact empty state message');
+assert(studentDashLatest.includes('opportunities.slice(0, 3).map') || studentDashLatest.includes('opportunities.map'), 'Dashboard dynamically maps over localStorage opportunities');
+
+// 3. Dynamic QR Attendance System: Faculty & Student
+const facultyQRPath = path.join(__dirname, '../src/components/modules/attendance/FacultyQRSessionModal.tsx');
+assert(fs.existsSync(facultyQRPath), 'FacultyQRSessionModal.tsx exists');
+const facultyQRContent = fs.readFileSync(facultyQRPath, 'utf8');
+assert(facultyQRContent.includes('5000') && facultyQRContent.includes('setInterval'), 'Faculty QR modal implements 5-second dynamic token interval');
+assert(facultyQRContent.includes('secondsRemaining') && (facultyQRContent.includes('progressPercent') || facultyQRContent.includes('progress')), 'Faculty QR modal displays countdown / progress bar');
+assert(facultyQRContent.includes('aaroh_active_qr_session'), 'Faculty QR modal synchronizes active token session with localStorage');
+
+const studentQRPath = path.join(__dirname, '../src/components/modules/attendance/StudentQRScannerModal.tsx');
+assert(fs.existsSync(studentQRPath), 'StudentQRScannerModal.tsx exists');
+const studentQRContent = fs.readFileSync(studentQRPath, 'utf8');
+assert(studentQRContent.includes('min="1"') && studentQRContent.includes('max="3"') && studentQRContent.includes('step="0.1"'), 'Student QR scanner has zoom slider with min="1" max="3" step="0.1"');
+assert(studentQRContent.includes('transform:') && studentQRContent.includes('scale('), 'Student QR scanner scales camera viewfinder with CSS transform: scale()');
+assert(studentQRContent.includes('Simulate Scan'), 'Student QR scanner provides Simulate Scan button');
+assert(studentQRContent.includes('recordAttendanceEntry'), 'Student QR scanner increments attendance in localStorage');
+assert(studentQRContent.includes('Attendance marked for '), 'Student QR scanner triggers green toast with "Attendance marked for [Class Name]"');
+
+const facultyAttendancePath = path.join(__dirname, '../src/pages/faculty/FacultyAttendancePage.tsx');
+const facultyAttendanceContent = fs.readFileSync(facultyAttendancePath, 'utf8');
+assert(facultyAttendanceContent.includes('Start QR Session'), 'FacultyAttendancePage includes Start QR Session button');
+assert(facultyAttendanceContent.includes('FacultyQRSessionModal'), 'FacultyAttendancePage mounts FacultyQRSessionModal');
+
+assert(layoutContent.includes('Scan Attendance QR'), 'Layout provides Scan Attendance QR button for students');
+assert(layoutContent.includes('StudentQRScannerModal'), 'Layout mounts StudentQRScannerModal');
+
+console.log('--- ALL TRUE DARK THEME, DYNAMIC OPPORTUNITIES & QR ATTENDANCE VERIFICATIONS PASSED ---');
+
 

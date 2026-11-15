@@ -15,9 +15,11 @@ import {
   CheckCircle2,
   AlertTriangle,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  QrCode
 } from 'lucide-react';
 import { ClassSession } from '../../types';
+import { FacultyQRSessionModal } from '../../components/modules/attendance/FacultyQRSessionModal';
 
 export const FacultyAttendancePage: React.FC = () => {
   const { user, courses, timetable, users, attendance, recordBatchAttendance, showToast } = useApp();
@@ -81,6 +83,7 @@ export const FacultyAttendancePage: React.FC = () => {
   // Attendance Marks State: studentId -> boolean (true = present, false = absent)
   const [marks, setMarks] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isQROpen, setIsQROpen] = useState(false);
 
   // Reset marks whenever selected session or enrolled students change
   useEffect(() => {
@@ -198,26 +201,37 @@ export const FacultyAttendancePage: React.FC = () => {
               </div>
 
               {selectedSession && (
-                <div className="flex items-center gap-3 text-xs text-slate-600 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-md font-mono flex-wrap">
-                  <span className="flex items-center gap-1 font-semibold text-teal-800">
-                    <BookOpen className="w-3.5 h-3.5" />
-                    {selectedSession.courseCode || selectedCourse?.code || 'CRS'}
-                  </span>
-                  <span>•</span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-slate-400" />
-                    {selectedSession.startTime} – {selectedSession.endTime}
-                  </span>
-                  <span>•</span>
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                    {selectedSession.room}
-                  </span>
-                  <span>•</span>
-                  <span className="font-sans font-medium text-slate-700">
-                    {selectedSession.program || 'B.Tech CSE'}{' '}
-                    {selectedSession.semester ? `(Sem ${selectedSession.semester})` : ''}
-                  </span>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <div className="flex items-center gap-3 text-xs text-slate-600 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-md font-mono flex-wrap">
+                    <span className="flex items-center gap-1 font-semibold text-teal-800">
+                      <BookOpen className="w-3.5 h-3.5" />
+                      {selectedSession.courseCode || selectedCourse?.code || 'CRS'}
+                    </span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      {selectedSession.startTime} – {selectedSession.endTime}
+                    </span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                      {selectedSession.room}
+                    </span>
+                    <span>•</span>
+                    <span className="font-sans font-medium text-slate-700">
+                      {selectedSession.program || 'B.Tech CSE'}{' '}
+                      {selectedSession.semester ? `(Sem ${selectedSession.semester})` : ''}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsQROpen(true)}
+                    className="px-3.5 py-2 text-xs font-semibold text-white bg-teal-700 hover:bg-teal-800 rounded-md transition-all active:scale-95 flex items-center gap-1.5 shadow-sm cursor-pointer whitespace-nowrap"
+                  >
+                    <QrCode className="w-3.5 h-3.5" />
+                    <span>Start QR Session</span>
+                  </button>
                 </div>
               )}
             </div>
@@ -425,6 +439,15 @@ export const FacultyAttendancePage: React.FC = () => {
             )}
           </div>
         </div>
+      )}
+
+      {/* Dynamic Faculty QR Attendance Modal */}
+      {selectedSession && (
+        <FacultyQRSessionModal
+          isOpen={isQROpen}
+          session={selectedSession}
+          onClose={() => setIsQROpen(false)}
+        />
       )}
     </div>
   );

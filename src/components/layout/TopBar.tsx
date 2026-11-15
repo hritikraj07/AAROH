@@ -94,12 +94,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-[#FBFBFA] dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 h-16 px-4 sm:px-6 flex items-center justify-between gap-4 transition-colors duration-200">
+    <header className="sticky top-0 z-30 bg-[#FBFBFA] dark:bg-[#18181B] border-b border-slate-200 dark:border-[#27272A] h-16 px-4 sm:px-6 flex items-center justify-between gap-4 transition-colors duration-200">
       {/* Left: Mobile Menu & Breadcrumb */}
       <div className="flex items-center gap-3 shrink-0">
         <button
           onClick={onOpenMobileMenu}
-          className="md:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all duration-150"
+          className="md:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-all duration-150"
           aria-label="Open sidebar menu"
         >
           <Menu className="w-5 h-5" />
@@ -132,7 +132,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
               }
             }}
             placeholder="Search notices, events, opportunities..."
-            className="w-full pl-9 pr-16 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 dark:focus:border-teal-500 transition-all duration-150 font-sans shadow-none"
+            className="w-full pl-9 pr-16 py-2 text-xs bg-white dark:bg-[#0E0E11] border border-slate-200 dark:border-[#27272A] rounded-lg text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 dark:focus:border-teal-500 transition-all duration-150 font-sans shadow-none"
             aria-label="Search notices, events, opportunities"
           />
           <div className="absolute right-2.5 flex items-center gap-1.5">
@@ -165,15 +165,15 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
 
         {/* Results Dropdown */}
         {isSearchOpen && searchQuery.trim().length > 1 && (
-          <div className="absolute left-auto mt-1 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm py-1 z-50 animate-in fade-in duration-150 font-sans">
-            <div className="flex items-center justify-between px-3 py-1.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-950/60 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+          <div className="absolute left-auto mt-1 w-80 sm:w-96 bg-white dark:bg-[#18181B] rounded-lg border border-slate-200 dark:border-[#27272A] shadow-sm py-1 z-50 animate-in fade-in duration-150 font-sans">
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-slate-200 dark:border-[#27272A] bg-slate-50/60 dark:bg-[#0E0E11]/60 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
               <span>Search Results</span>
               <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">
                 {searchResults.length} {searchResults.length === 1 ? 'match' : 'matches'}
               </span>
             </div>
 
-            <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[#27272A]">
               {searchResults.length === 0 ? (
                 <div className="p-4 text-center text-xs text-slate-500 dark:text-slate-400">
                   No results found for '{searchQuery}'
@@ -187,7 +187,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                       setIsSearchOpen(false);
                       setSearchQuery('');
                     }}
-                    className="block p-3 text-xs hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors group"
+                    className="block p-3 text-xs hover:bg-slate-50 dark:hover:bg-[#27272A]/60 transition-colors group"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <span className="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors truncate">
@@ -217,7 +217,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         {/* Dark Mode Theme Toggle Button */}
         <button
           onClick={toggleTheme}
-          className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors select-none"
+          className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors select-none"
           title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           aria-label="Toggle color theme"
         >
@@ -233,24 +233,24 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
           <button
             type="button"
             onClick={() => setIsNotifOpen(prev => !prev)}
-            className="relative p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+            className="relative p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors"
             title="Approaching deadlines & urgent alerts"
             aria-label="Notifications"
           >
             <Bell className="w-4 h-4" />
             {urgentDeadlines.length > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-600 ring-2 ring-white dark:ring-slate-950" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-600 ring-2 ring-white dark:ring-[#18181B]" />
             )}
           </button>
 
           {isNotifOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm z-50 overflow-hidden animate-in fade-in duration-150 font-sans">
-              <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200">
+            <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white dark:bg-[#18181B] rounded-lg border border-slate-200 dark:border-[#27272A] shadow-sm z-50 overflow-hidden animate-in fade-in duration-150 font-sans">
+              <div className="px-4 py-2.5 bg-slate-50 dark:bg-[#0E0E11] border-b border-slate-200 dark:border-[#27272A] flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200">
                 <span>Urgent Approaching Deadlines</span>
                 <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">Next 48 Hours</span>
               </div>
 
-              <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
+              <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[#27272A]">
                 {urgentDeadlines.length === 0 ? (
                   <div className="p-6 text-center text-xs text-slate-600 dark:text-slate-400 font-medium">
                     You're all caught up. No deadlines in the next 48 hours.
@@ -261,7 +261,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                       key={`${item.type}-${item.id}`}
                       to={item.route}
                       onClick={() => setIsNotifOpen(false)}
-                      className="block p-3.5 text-xs transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 group"
+                      className="block p-3.5 text-xs transition-colors hover:bg-slate-50 dark:hover:bg-[#27272A]/60 group"
                     >
                       <div className="flex items-start gap-2.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-600 mt-1.5 shrink-0" />
@@ -292,7 +292,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
             logout();
             navigate('/login');
           }}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-rose-700 dark:hover:text-rose-400 bg-white dark:bg-slate-900 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-slate-200 dark:border-slate-800 transition-all duration-150 select-none active:scale-95 group"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-rose-700 dark:hover:text-rose-400 bg-white dark:bg-[#18181B] hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg border border-slate-200 dark:border-[#27272A] transition-all duration-150 select-none active:scale-95 group"
           title="Sign out of active account"
         >
           <LogOut className="w-3.5 h-3.5 text-slate-400 group-hover:text-rose-600 transition-colors" />
