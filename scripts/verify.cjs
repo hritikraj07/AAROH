@@ -901,6 +901,34 @@ assert(updatedAiComponent.includes('dark:bg-teal-950') || updatedAiComponent.inc
 
 console.log('--- ALL AAROH AI GEMINI LLM INTEGRATION VERIFICATIONS PASSED ---');
 
+// SECTION 24: LOGIN PAGE DEMO QUICK ACCESS ROLE SWITCHER
+console.log('--- VERIFYING LOGIN PAGE DEMO QUICK ACCESS ROLE SWITCHER ---');
+
+const loginDemoPath = path.join(__dirname, '../src/pages/LoginPage.tsx');
+const loginDemoContent = fs.readFileSync(loginDemoPath, 'utf8');
+
+assert(loginDemoContent.includes('or continue with demo'), 'LoginPage renders "or continue with demo" divider');
+assert(loginDemoContent.includes('border-t border-slate-200 dark:border-slate-800'), 'LoginPage uses subtle light/dark divider line');
+assert(loginDemoContent.includes('Admin Demo') && loginDemoContent.includes('Faculty Demo') && loginDemoContent.includes('Student Demo'), 'LoginPage renders Admin, Faculty, and Student Demo buttons');
+assert(
+  loginDemoContent.includes('bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors'),
+  'Demo buttons use specified light mode classes'
+);
+assert(
+  loginDemoContent.includes('dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800'),
+  'Demo buttons use specified dark mode classes'
+);
+assert(
+  loginDemoContent.includes('handleQuickDemoLogin') &&
+  loginDemoContent.includes('registrar@admin.aaroh.edu.in') &&
+  loginDemoContent.includes('prof.raman@faculty.aaroh.edu.in') &&
+  loginDemoContent.includes('aarav.sharma@aaroh.edu.in'),
+  'Quick demo buttons automatically inject correct role credentials and trigger login'
+);
+
+console.log('--- ALL LOGIN PAGE DEMO QUICK ACCESS VERIFICATIONS PASSED ---');
+
+
 
 
 

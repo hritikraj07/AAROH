@@ -93,6 +93,35 @@ export const LoginPage: React.FC = () => {
     }
   };
 
+  // Demo Quick Access Handler - immediately injects credentials and executes login
+  const handleQuickDemoLogin = (targetRole: UserRole) => {
+    let demoEmail = '';
+    const demoPassword = 'campusSecure2026';
+
+    if (targetRole === 'admin') {
+      demoEmail = 'registrar@admin.aaroh.edu.in';
+    } else if (targetRole === 'faculty') {
+      demoEmail = 'prof.raman@faculty.aaroh.edu.in';
+    } else {
+      demoEmail = 'aarav.sharma@aaroh.edu.in';
+    }
+
+    setSelectedRole(targetRole);
+    setEmail(demoEmail);
+    setPassword(demoPassword);
+    setErrorMessage(null);
+
+    setLoading(true);
+    const result = login(demoEmail, demoPassword);
+    setLoading(false);
+
+    if (result.success && result.role) {
+      navigate(`/${result.role}`);
+    } else {
+      setErrorMessage(result.error || 'Authentication failed. Please verify credentials.');
+    }
+  };
+
   return (
     <div
       onMouseMove={handleMouseMove}
@@ -224,6 +253,48 @@ export const LoginPage: React.FC = () => {
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </form>
+
+        {/* 1. Demo Quick Access Section with subtle divider */}
+        <div className="space-y-3 pt-1">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+            </div>
+            <div className="relative flex justify-center text-[10px] uppercase tracking-wider font-mono">
+              <span className="bg-white dark:bg-slate-900 px-2.5 text-slate-400 dark:text-slate-500">
+                or continue with demo
+              </span>
+            </div>
+          </div>
+
+          {/* 2 & 4. Role Buttons Row */}
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => handleQuickDemoLogin('admin')}
+              disabled={loading}
+              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-teal-600 dark:hover:border-teal-500 hover:text-teal-700 dark:hover:text-teal-400 text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer"
+            >
+              Admin Demo
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickDemoLogin('faculty')}
+              disabled={loading}
+              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-teal-600 dark:hover:border-teal-500 hover:text-teal-700 dark:hover:text-teal-400 text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer"
+            >
+              Faculty Demo
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickDemoLogin('student')}
+              disabled={loading}
+              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-teal-600 dark:hover:border-teal-500 hover:text-teal-700 dark:hover:text-teal-400 text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer"
+            >
+              Student Demo
+            </button>
+          </div>
+        </div>
 
         {/* Institutional System Footer */}
         <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-mono">
