@@ -14,7 +14,6 @@ import {
   ClipboardList,
   Clock,
   ShieldCheck,
-  UserCheck,
   Users
 } from 'lucide-react';
 import { APP_CONFIG } from '../../config';
@@ -47,10 +46,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
   const studentNavItems: NavItem[] = [
     {
       to: '/student',
-      label: 'Dashboard',
+      label: 'Overview',
       icon: <LayoutDashboard className="w-4 h-4" />,
       badge: lowAttendanceCount > 0 ? (
-        <span className="flex items-center text-[10px] font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded">
+        <span className="flex items-center text-[10px] font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded tabular-nums">
           <AlertTriangle className="w-3 h-3 mr-0.5" />
           {lowAttendanceCount}
         </span>
@@ -61,8 +60,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       label: 'Academics',
       icon: <GraduationCap className="w-4 h-4" />,
       badge: pendingAssignmentsCount > 0 ? (
-        <span className="text-[10px] font-medium text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded tabular-nums">
-          {pendingAssignmentsCount} due
+        <span className="text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded tabular-nums">
+          {pendingAssignmentsCount}
         </span>
       ) : null,
     },
@@ -71,8 +70,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       label: 'Campus Updates',
       icon: <Bell className="w-4 h-4" />,
       badge: unreadNoticeCount > 0 ? (
-        <span className="text-[10px] font-semibold text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded tabular-nums">
-          {unreadNoticeCount} new
+        <span className="text-[10px] font-semibold text-teal-800 bg-teal-50 border border-teal-200 px-1.5 py-0.5 rounded tabular-nums">
+          {unreadNoticeCount}
         </span>
       ) : null,
     },
@@ -97,7 +96,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
   const facultyNavItems: NavItem[] = [
     {
       to: '/faculty',
-      label: 'Faculty Overview',
+      label: 'Overview',
       icon: <LayoutDashboard className="w-4 h-4" />,
     },
     {
@@ -115,8 +114,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       label: 'Coursework & Grading',
       icon: <GraduationCap className="w-4 h-4" />,
       badge: pendingAssignmentsCount > 0 ? (
-        <span className="text-[10px] font-medium text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded tabular-nums">
-          {pendingAssignmentsCount} active
+        <span className="text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded tabular-nums">
+          {pendingAssignmentsCount}
         </span>
       ) : null,
     },
@@ -141,7 +140,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
     },
     {
       to: '/admin/notices',
-      label: 'Notice Board Publisher',
+      label: 'Notice Publisher',
       icon: <Bell className="w-4 h-4" />,
     },
     {
@@ -186,7 +185,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
         return 'Faculty Portal';
       case 'student':
       default:
-        return 'Student Life';
+        return 'Student Portal';
     }
   };
 
@@ -208,23 +207,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
     <aside className="w-64 bg-white border-r border-slate-200 h-full flex flex-col justify-between select-none">
       {/* Brand Header */}
       <div>
-        <div className="px-5 py-4 border-b border-slate-200">
+        <div className="px-6 py-5 border-b border-slate-200">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <Logo size="md" />
-              <span className="text-[10px] uppercase font-semibold tracking-wider text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">
-                {getBadgeLabel()}
-              </span>
-            </div>
+            <Logo size="md" />
+            <span className="text-[10px] uppercase font-semibold tracking-wider text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">
+              {getBadgeLabel()}
+            </span>
           </div>
-          <p className="text-[11px] text-slate-500 font-medium truncate mt-0.5">
+          <p className="text-[11px] font-medium text-slate-400 tracking-tight mt-1 truncate">
             {APP_CONFIG.collegeName}
           </p>
         </div>
 
         {/* Navigation Section */}
         <nav className="p-3 space-y-1">
-          <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          <div className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
             {getRoleHeader()}
           </div>
           {navItems.map(item => (
@@ -234,9 +231,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
               end={item.to === '/student' || item.to === '/faculty' || item.to === '/admin'}
               onClick={onCloseMobile}
               className={({ isActive }) =>
-                `flex items-center justify-between px-3 py-2 text-xs font-medium rounded-md transition-all duration-150 ease-in-out ${
+                `flex items-center justify-between px-3 py-2.5 text-xs font-medium rounded-md transition-all duration-150 ease-in-out active:scale-95 transition-transform ${
                   isActive
-                    ? 'bg-teal-50 text-teal-900 font-semibold border border-teal-200'
+                    ? 'bg-teal-50 text-teal-900 font-semibold border border-teal-200 shadow-none'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-transparent'
                 }`
               }
@@ -251,9 +248,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
         </nav>
       </div>
 
-      {/* User Profile & Footer Controls */}
-      <div className="p-3 border-t border-slate-200 bg-slate-50/50 space-y-2">
-        <div className="flex items-center gap-2.5 p-2 rounded-md bg-white border border-slate-200">
+      {/* User Identity & Utility Actions */}
+      <div className="p-4 border-t border-slate-200 bg-white space-y-3">
+        <div className="flex items-center gap-3 p-2.5 rounded-lg border border-slate-200 bg-[#FAFAFA]">
           <div className="w-8 h-8 rounded-md bg-teal-700 text-white font-semibold text-xs flex items-center justify-center shrink-0 font-mono">
             {user?.avatarInitials || (role === 'admin' ? 'AD' : role === 'faculty' ? 'FA' : 'ST')}
           </div>
@@ -271,13 +268,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-1">
+        <div className="flex items-center justify-between">
           <button
             onClick={() => {
               if (onCloseMobile) onCloseMobile();
               openSettings();
             }}
-            className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 px-2 py-1 rounded-md hover:bg-slate-200/50 transition-all duration-150 ease-in-out"
+            className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-900 px-2 py-1.5 rounded-md hover:bg-slate-100 active:scale-95 transition-transform duration-150 ease-in-out"
           >
             <Settings className="w-3.5 h-3.5 text-slate-500" />
             <span>Settings</span>
@@ -288,7 +285,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
               if (onCloseMobile) onCloseMobile();
               logout();
             }}
-            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-rose-700 px-2 py-1 rounded-md hover:bg-rose-50 transition-all duration-150 ease-in-out"
+            className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-rose-700 px-2 py-1.5 rounded-md hover:bg-rose-50 active:scale-95 transition-transform duration-150 ease-in-out"
             title="Log out"
           >
             <LogOut className="w-3.5 h-3.5" />
