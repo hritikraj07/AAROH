@@ -380,4 +380,10 @@ assert(currentSidebarContent.includes('<Logo'), 'Sidebar.tsx renders Logo compon
 const currentLoginContent = fs.readFileSync(path.join(__dirname, '../src/pages/LoginPage.tsx'), 'utf8');
 assert(currentLoginContent.includes('<Logo'), 'LoginPage.tsx renders Logo component');
 
-console.log('--- ALL NOTIFICATIONS, SEARCH & CUSTOM LOGO VERIFICATIONS PASSED ---');
+// 13. Check Vercel SPA Routing Configuration
+const vercelConfigPath = path.join(__dirname, '../vercel.json');
+assert(fs.existsSync(vercelConfigPath), 'vercel.json exists in root directory');
+const vercelConfig = JSON.parse(fs.readFileSync(vercelConfigPath, 'utf8'));
+assert(Array.isArray(vercelConfig.rewrites) && vercelConfig.rewrites.some(r => r.source === '/(.*)' && r.destination === '/index.html'), 'vercel.json rewrites all routes to /index.html for SPA routing');
+
+console.log('--- ALL NOTIFICATIONS, SEARCH, CUSTOM LOGO & VERCEL CONFIG VERIFICATIONS PASSED ---');
