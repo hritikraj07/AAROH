@@ -93,6 +93,8 @@ interface AppContextType {
   recordAttendanceEntry: (courseId: string, attendedDelta?: number, totalDelta?: number) => void;
   recordBatchAttendance: (courseId: string, studentMarks: { studentId: string; isPresent: boolean }[]) => void;
   createAssignment: (asg: Omit<Assignment, 'id' | 'status'>) => Assignment;
+  createOpportunity: (opp: Omit<Opportunity, 'id' | 'isSaved'>) => Opportunity;
+  deleteOpportunity: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -432,6 +434,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
+  const createOpportunity = (opp: Omit<Opportunity, 'id' | 'isSaved'>) => {
+    const created = StorageService.createOpportunity(opp);
+    setOpportunities(StorageService.getOpportunities());
+    showToast({
+      type: 'success',
+      title: 'Opportunity posted successfully',
+      message: opp.title,
+    });
+    return created;
+  };
+
+  const deleteOpportunity = (id: string) => {
+    StorageService.deleteOpportunity(id);
+    setOpportunities(StorageService.getOpportunities());
+    showToast({
+      type: 'info',
+      title: 'Opportunity removed',
+      message: 'The listing has been removed from the opportunity board.',
+    });
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -493,6 +516,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         recordAttendanceEntry,
         recordBatchAttendance,
         createAssignment,
+        createOpportunity,
+        deleteOpportunity,
       }}
     >
       {children}

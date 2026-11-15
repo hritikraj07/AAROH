@@ -647,6 +647,13 @@ export const StorageService = {
     return newOpp;
   },
 
+  deleteOpportunity(id: string): boolean {
+    const list = getStored<Opportunity[]>(STORAGE_KEYS.OPPORTUNITIES, INITIAL_OPPORTUNITIES);
+    const updated = list.filter(o => o.id !== id);
+    setStored(STORAGE_KEYS.OPPORTUNITIES, updated);
+    return true;
+  },
+
   // Notifications
   getNotifications(): NotificationItem[] {
     return getStored<NotificationItem[]>(STORAGE_KEYS.NOTIFICATIONS, INITIAL_NOTIFICATIONS);

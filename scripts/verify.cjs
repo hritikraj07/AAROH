@@ -151,4 +151,17 @@ assert(typesContent.includes('stipendPrize: string;'), 'Opportunity interface de
 assert(typesContent.includes('applyLink: string;'), 'Opportunity interface defines applyLink');
 assert(storageContent.includes('savedOpportunityIds'), 'StorageService persists savedOpportunityIds per user in localStorage');
 
+// 20. Check Admin Opportunities Publisher Module
+assert(fs.existsSync(path.join(__dirname, '../src/pages/admin/AdminOpportunitiesPage.tsx')), 'AdminOpportunitiesPage.tsx exists');
+const adminOppContent = fs.readFileSync(path.join(__dirname, '../src/pages/admin/AdminOpportunitiesPage.tsx'), 'utf8');
+assert(adminOppContent.includes('Opportunity Board Publisher'), 'AdminOpportunitiesPage renders publisher header');
+assert(adminOppContent.includes('createOpportunity'), 'AdminOpportunitiesPage calls createOpportunity handler');
+assert(adminOppContent.includes('stipendPrize'), 'AdminOpportunitiesPage includes stipend / prize input');
+assert(adminOppContent.includes('applyLink'), 'AdminOpportunitiesPage includes apply link input');
+assert(adminOppContent.includes('eligibility'), 'AdminOpportunitiesPage includes eligibility input');
+assert(sidebarContent.includes('/admin/opportunities'), 'Sidebar includes Opportunity Board route for admins');
+assert(appContent.includes('path="opportunities" element={<AdminOpportunitiesPage />}'), 'App.tsx mounts /admin/opportunities route');
+assert(contextContent.includes('createOpportunity: (opp: Omit<Opportunity'), 'AppContextType exposes createOpportunity');
+assert(contextContent.includes('deleteOpportunity: (id: string'), 'AppContextType exposes deleteOpportunity');
+
 console.log('--- ALL USER MANAGEMENT, RBAC, TIMETABLE, FACULTY, LOST & FOUND & OPPORTUNITIES VERIFICATIONS PASSED ---');

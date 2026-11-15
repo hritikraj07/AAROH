@@ -154,6 +154,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
       icon: <Clock className="w-4 h-4" />,
     },
     {
+      to: '/admin/opportunities',
+      label: 'Opportunity Board',
+      icon: <Briefcase className="w-4 h-4" />,
+    },
+    {
       to: '/admin/settings',
       label: 'System Configuration',
       icon: <Settings className="w-4 h-4" />,

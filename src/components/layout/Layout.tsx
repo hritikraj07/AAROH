@@ -65,6 +65,8 @@ export const Layout: React.FC = () => {
         return 'Events Scheduling & Approvals';
       case '/admin/timetable':
         return 'Institutional Timetable Scheduler';
+      case '/admin/opportunities':
+        return 'Opportunity Board Publisher';
       case '/admin/settings':
         return 'System Configuration';
 

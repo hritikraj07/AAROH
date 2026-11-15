@@ -27,6 +27,7 @@ import { AdminPeoplePage } from './pages/admin/AdminPeoplePage';
 import { AdminNoticesPage } from './pages/admin/AdminNoticesPage';
 import { AdminEventsPage } from './pages/admin/AdminEventsPage';
 import { AdminTimetablePage } from './pages/admin/AdminTimetablePage';
+import { AdminOpportunitiesPage } from './pages/admin/AdminOpportunitiesPage';
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
 
 // Root Dispatcher: routes authenticated users to their specific portal
@@ -110,6 +111,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="notices" element={<AdminNoticesPage />} />
         <Route path="events" element={<AdminEventsPage />} />
         <Route path="timetable" element={<AdminTimetablePage />} />
+        <Route path="opportunities" element={<AdminOpportunitiesPage />} />
         <Route path="settings" element={<AdminSettingsPage />} />
       </Route>
 
