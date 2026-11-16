@@ -387,28 +387,32 @@ export const OpportunitiesPage: React.FC = () => {
 
       {/* Opportunities List / Dense Grid */}
       {displayOpportunities.length === 0 ? (
-        <div className="py-16 flex flex-col items-center justify-center text-center bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-6">
-          <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3">
-            <Briefcase className="w-5 h-5 text-slate-400" />
+        <div className="py-16 flex flex-col items-center justify-center text-center bg-white border border-slate-200 text-slate-500 dark:bg-[#18181B] dark:border-white/5 dark:text-slate-400 rounded-2xl p-8">
+          <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-3 border border-slate-200 dark:border-white/5">
+            <Briefcase className="w-5 h-5 text-slate-400 dark:text-teal-400" />
           </div>
-          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
             {viewTab === 'saved'
               ? 'No saved opportunities'
               : opportunities.length === 0
-              ? 'No opportunities cataloged'
+              ? 'No active opportunities posted yet.'
               : 'No matching opportunities found'}
           </h4>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mt-1 mb-4 leading-relaxed">
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mb-4 leading-relaxed">
             {viewTab === 'saved'
               ? 'Bookmark internships, hackathons, or fellowships in the Browse tab to review them here.'
               : opportunities.length === 0
-              ? 'Verified industry opportunities will appear here once published by the Career Development Cell.'
+              ? 'Verified industry opportunities, hackathons, and research fellowships will appear here once published.'
               : 'Try clearing your type, mode, or keyword search filters.'}
           </p>
           {viewTab === 'saved' && (
-            <Button variant="secondary" size="sm" onClick={() => setViewTab('browse')}>
-              Explore Opportunities
-            </Button>
+            <button
+              type="button"
+              onClick={() => setViewTab('browse')}
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] cursor-pointer select-none"
+            >
+              <span>Explore Opportunities</span>
+            </button>
           )}
         </div>
       ) : (

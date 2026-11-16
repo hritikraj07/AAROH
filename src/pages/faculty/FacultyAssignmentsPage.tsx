@@ -203,19 +203,22 @@ export const FacultyAssignmentsPage: React.FC = () => {
         </div>
 
         {codingAssignments.length === 0 ? (
-          <div className="py-8 text-center text-xs text-slate-500 space-y-2">
-            <p className="font-semibold text-slate-800 dark:text-slate-200">No live coding assignments created yet.</p>
-            <p className="text-slate-400 max-w-md mx-auto">
-              Click "Create Coding Assignment" to configure LeetCode-style automated grading with starter code and test cases.
+          <div className="py-12 text-center text-xs bg-white border border-slate-200 text-slate-500 dark:bg-[#18181B] dark:border-white/5 dark:text-slate-400 rounded-2xl space-y-3 p-6 flex flex-col items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-1 border border-slate-200 dark:border-white/5">
+              <Code className="w-5 h-5 text-slate-400 dark:text-teal-400" />
+            </div>
+            <p className="font-semibold text-sm text-slate-900 dark:text-slate-100">No Automated Coding Labs assigned yet.</p>
+            <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+              Configure automated test cases, starter code templates, and proctored live evaluation for your course students.
             </p>
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<Code className="w-3.5 h-3.5 text-teal-700" />}
+            <button
+              type="button"
               onClick={() => setIsCodingModalOpen(true)}
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] cursor-pointer select-none"
             >
-              Configure First Coding Lab
-            </Button>
+              <Code className="w-3.5 h-3.5 text-white" />
+              <span>Configure Automated Coding Lab</span>
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

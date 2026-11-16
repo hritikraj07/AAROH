@@ -266,16 +266,16 @@ export const AcademicResultsTab: React.FC = () => {
 
         {/* Results Data Table OR Empty State */}
         {!currentSemesterMetric || currentSemesterMetric.courses.length === 0 ? (
-          <div className="p-12 text-center bg-white dark:bg-[#18181B] border border-slate-200 dark:border-white/5 rounded-xl flex flex-col items-center justify-center space-y-3">
-            <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#27272A] flex items-center justify-center text-slate-400 dark:text-teal-400">
+          <div className="p-12 text-center bg-white dark:bg-[#18181B] border border-slate-200 dark:border-white/5 rounded-2xl flex flex-col items-center justify-center space-y-3">
+            <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-1 border border-slate-200 dark:border-white/5">
               <Calendar className="w-5 h-5 text-slate-400 dark:text-teal-400" />
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                No grades published yet for this semester.
+              <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
+                No assessment marks published yet.
               </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mt-1 leading-relaxed">
-                Faculty marks for Semester {selectedSemester} assessments and Automated Coding Labs will appear here once finalized.
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm leading-relaxed">
+                No grades published yet for this semester. Faculty marks for Semester {selectedSemester} assessments and Automated Coding Labs will appear here once finalized.
               </p>
             </div>
           </div>

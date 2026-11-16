@@ -74,7 +74,7 @@ function setStored<T>(key: string, data: T): void {
 export const StorageService = {
   // Initialize clean state on first boot or forced reset
   initializeData(forceReset = false): void {
-    const cleanDbFlag = localStorage.getItem('aaroh_krmu_clean_v1');
+    const cleanDbFlag = localStorage.getItem('aaroh_zero_data_v2');
     const initialized = localStorage.getItem(STORAGE_KEYS.INITIALIZED);
 
     // If never initialized, forced reset, or migrating from old mock database
@@ -84,26 +84,28 @@ export const StorageService = {
       const usersToStore = existingUsers.length > 0 ? existingUsers : INITIAL_USERS;
       setStored(STORAGE_KEYS.USERS, usersToStore);
 
-      // Clean empty arrays for database entities so admin can build from scratch
-      setStored(STORAGE_KEYS.COURSES, INITIAL_COURSES);
-      setStored(STORAGE_KEYS.TIMETABLE, INITIAL_TIMETABLE);
-      setStored(STORAGE_KEYS.ATTENDANCE, INITIAL_ATTENDANCE);
-      setStored(STORAGE_KEYS.ASSIGNMENTS, INITIAL_ASSIGNMENTS);
-      setStored(STORAGE_KEYS.NOTICES, INITIAL_NOTICES);
-      setStored(STORAGE_KEYS.EVENTS, INITIAL_EVENTS);
-      setStored(STORAGE_KEYS.LOST_FOUND, INITIAL_LOST_FOUND);
-      setStored(STORAGE_KEYS.OPPORTUNITIES, INITIAL_OPPORTUNITIES);
-      setStored(STORAGE_KEYS.NOTIFICATIONS, INITIAL_NOTIFICATIONS);
-      setStored(STORAGE_KEYS.GRADES, INITIAL_GRADES);
-      setStored('grades', INITIAL_GRADES);
-      setStored('lostAndFound', INITIAL_LOST_FOUND);
+      // Clean empty arrays for database entities for complete zero-data initialization
+      setStored(STORAGE_KEYS.COURSES, []);
+      setStored(STORAGE_KEYS.TIMETABLE, []);
+      setStored(STORAGE_KEYS.ATTENDANCE, []);
+      setStored(STORAGE_KEYS.ASSIGNMENTS, []);
+      setStored(STORAGE_KEYS.NOTICES, []);
+      setStored(STORAGE_KEYS.EVENTS, []);
+      setStored(STORAGE_KEYS.LOST_FOUND, []);
+      setStored(STORAGE_KEYS.OPPORTUNITIES, []);
+      setStored(STORAGE_KEYS.NOTIFICATIONS, []);
+      setStored(STORAGE_KEYS.GRADES, []);
+      setStored('grades', []);
+      setStored('lostAndFound', []);
+      setStored('semesterGrades', []);
+      setStored(STORAGE_KEYS.SKILL_TREES, []);
 
       if (forceReset) {
         localStorage.removeItem(STORAGE_KEYS.SESSION_TOKEN);
         localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
       }
       localStorage.setItem(STORAGE_KEYS.INITIALIZED, 'true');
-      localStorage.setItem('aaroh_krmu_clean_v1', 'true');
+      localStorage.setItem('aaroh_zero_data_v2', 'true');
     }
 
     // Ensure users directory is seeded and includes all default accounts

@@ -118,11 +118,10 @@ export const AdminEventsPage: React.FC = () => {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-2.5 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap capitalize ${
-                selectedCategory === cat
+              className={`px-2.5 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap capitalize ${selectedCategory === cat
                   ? 'bg-teal-50 text-teal-900 border border-teal-200 font-semibold dark:bg-[#0F766E] dark:text-white dark:border-teal-700'
                   : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 dark:bg-[#111115] dark:border-[#27272A] dark:text-slate-300 dark:hover:bg-[#202025]'
-              }`}
+                }`}
             >
               {cat === 'all' ? 'All Events' : cat}
             </button>

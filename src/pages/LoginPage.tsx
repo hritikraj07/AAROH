@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Logo } from '../components/ui/Logo';
-import { Lock, Mail, AlertCircle, ShieldCheck, Sun, Moon } from 'lucide-react';
+import { Lock, Mail, AlertCircle, Sun, Moon } from 'lucide-react';
 import { getUserRoleFromEmail } from '../data/seed';
 import { UserRole } from '../types';
 
@@ -131,22 +131,15 @@ export const LoginPage: React.FC = () => {
       onMouseMove={handleMouseMove}
       className="min-h-screen w-full h-screen overflow-hidden flex items-center justify-center sm:justify-end px-4 sm:px-10 lg:px-24 relative bg-[#FBFBFA] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
     >
-      {/* 1. Global Background: Full-Screen Isometric Tech Mesh SVG Background Pattern */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Full-Screen Isometric Grid / Tech Mesh SVG Pattern */}
-        <svg
-          className="absolute inset-0 w-full h-full stroke-slate-200/90 dark:stroke-teal-500/[0.08]"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <pattern id="isometric-tech-mesh" width="80" height="46" patternUnits="userSpaceOnUse">
-              <path d="M 0 23 L 40 0 L 80 23 L 40 46 Z" fill="none" strokeWidth="0.75" />
-              <path d="M 40 0 L 40 46" fill="none" strokeWidth="0.5" strokeDasharray="3,3" />
-              <circle cx="40" cy="23" r="1.5" className="fill-slate-300 dark:fill-teal-400/25" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#isometric-tech-mesh)" />
-        </svg>
+      {/* 1. Global Background: Full-Screen K.R. Mangalam University Campus Photograph */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <img
+          src="/campus.jpg"
+          alt="K.R. Mangalam University Campus"
+          className="w-full h-full min-h-screen object-cover object-center"
+        />
+        {/* Ambient overlay for dark/light mode readability */}
+        <div className="absolute inset-0 bg-slate-900/10 dark:bg-black/60 transition-colors duration-500" />
 
         {/* Ambient Interactive Blurred Geometric Blobs for Depth */}
         <div
@@ -157,7 +150,6 @@ export const LoginPage: React.FC = () => {
           className="absolute -bottom-24 -right-24 w-[480px] h-[480px] rounded-full bg-teal-700/10 dark:bg-teal-500/10 blur-[100px] pointer-events-none transition-transform duration-300 ease-out"
           style={{ transform: `translate(${-mouseOffset.x * 1.3}px, ${-mouseOffset.y * 1.3}px)` }}
         />
-        <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-96 h-96 rounded-full bg-teal-600/5 dark:bg-teal-400/5 blur-[90px] pointer-events-none" />
       </div>
 
       {/* Theme Toggle in Login Viewport */}
@@ -305,15 +297,6 @@ export const LoginPage: React.FC = () => {
               Student Demo
             </button>
           </div>
-        </div>
-
-        {/* Institutional System Footer */}
-        <div className="pt-2 border-t border-slate-200/50 dark:border-white/5 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-mono">
-          <span>Enterprise SSO Gateway</span>
-          <span className="text-teal-700 dark:text-teal-400 font-medium flex items-center gap-1">
-            <ShieldCheck className="w-3 h-3" />
-            256-bit TLS
-          </span>
         </div>
       </div>
     </div>

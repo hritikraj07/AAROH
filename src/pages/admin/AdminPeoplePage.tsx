@@ -152,14 +152,14 @@ export const AdminPeoplePage: React.FC = () => {
       designation: role === 'student' ? 'Undergraduate Scholar' : designation.trim(),
       ...(role === 'student'
         ? {
-            rollNumber: rollNumber.trim().toUpperCase(),
-            program: program.trim(),
-            semester: Number(semester) || 1,
-            section: section.trim(),
-            academicYear: APP_CONFIG.academicSession,
-            attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
-            classCoordinator: classCoordinator.trim() || undefined,
-          }
+          rollNumber: rollNumber.trim().toUpperCase(),
+          program: program.trim(),
+          semester: Number(semester) || 1,
+          section: section.trim(),
+          academicYear: APP_CONFIG.academicSession,
+          attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
+          classCoordinator: classCoordinator.trim() || undefined,
+        }
         : {}),
     };
 
@@ -265,41 +265,37 @@ export const AdminPeoplePage: React.FC = () => {
         <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
           <button
             onClick={() => setRoleFilter('all')}
-            className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${
-              roleFilter === 'all'
+            className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${roleFilter === 'all'
                 ? 'bg-slate-900 text-white font-semibold'
                 : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
-            }`}
+              }`}
           >
             All Accounts ({users.length})
           </button>
           <button
             onClick={() => setRoleFilter('student')}
-            className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${
-              roleFilter === 'student'
+            className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${roleFilter === 'student'
                 ? 'bg-teal-700 text-white font-semibold'
                 : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
-            }`}
+              }`}
           >
             Students ({studentCount})
           </button>
           <button
             onClick={() => setRoleFilter('faculty')}
-            className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${
-              roleFilter === 'faculty'
+            className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${roleFilter === 'faculty'
                 ? 'bg-blue-700 text-white font-semibold'
                 : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
-            }`}
+              }`}
           >
             Faculty ({facultyCount})
           </button>
           <button
             onClick={() => setRoleFilter('admin')}
-            className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${
-              roleFilter === 'admin'
+            className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${roleFilter === 'admin'
                 ? 'bg-slate-700 text-white font-semibold'
                 : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
-            }`}
+              }`}
           >
             Admins ({adminCount})
           </button>
@@ -347,13 +343,12 @@ export const AdminPeoplePage: React.FC = () => {
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2.5">
                           <div
-                            className={`w-8 h-8 rounded text-white font-mono font-bold text-xs flex items-center justify-center shrink-0 ${
-                              u.role === 'admin'
+                            className={`w-8 h-8 rounded text-white font-mono font-bold text-xs flex items-center justify-center shrink-0 ${u.role === 'admin'
                                 ? 'bg-slate-800'
                                 : u.role === 'faculty'
-                                ? 'bg-blue-800'
-                                : 'bg-teal-700'
-                            }`}
+                                  ? 'bg-blue-800'
+                                  : 'bg-teal-700'
+                              }`}
                           >
                             {u.avatarInitials}
                           </div>
@@ -376,13 +371,12 @@ export const AdminPeoplePage: React.FC = () => {
                       {/* Role Badge */}
                       <td className="py-3 px-4">
                         <span
-                          className={`text-[10px] font-semibold px-2 py-0.5 rounded font-mono capitalize ${
-                            u.role === 'student'
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded font-mono capitalize ${u.role === 'student'
                               ? 'bg-teal-50 text-teal-800 border border-teal-200'
                               : u.role === 'faculty'
-                              ? 'bg-blue-50 text-blue-800 border border-blue-200'
-                              : 'bg-purple-50 text-purple-800 border border-purple-200'
-                          }`}
+                                ? 'bg-blue-50 text-blue-800 border border-blue-200'
+                                : 'bg-purple-50 text-purple-800 border border-purple-200'
+                            }`}
                         >
                           {u.role}
                         </span>
@@ -478,11 +472,10 @@ export const AdminPeoplePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleRoleChange('student')}
-                    className={`p-3 rounded-md border text-left transition-colors flex items-center gap-2.5 ${
-                      role === 'student'
+                    className={`p-3 rounded-md border text-left transition-colors flex items-center gap-2.5 ${role === 'student'
                         ? 'border-teal-700 dark:border-teal-500 bg-teal-50/60 dark:bg-teal-950/50 text-teal-900 dark:text-teal-200 font-semibold ring-1 ring-teal-700'
                         : 'border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#111115] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#202025]'
-                    }`}
+                      }`}
                   >
                     <GraduationCap className={`w-4 h-4 ${role === 'student' ? 'text-teal-700 dark:text-teal-400' : 'text-slate-400 dark:text-slate-500'}`} />
                     <div>
@@ -494,11 +487,10 @@ export const AdminPeoplePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleRoleChange('faculty')}
-                    className={`p-3 rounded-md border text-left transition-colors flex items-center gap-2.5 ${
-                      role === 'faculty'
+                    className={`p-3 rounded-md border text-left transition-colors flex items-center gap-2.5 ${role === 'faculty'
                         ? 'border-blue-700 dark:border-blue-500 bg-blue-50/60 dark:bg-blue-950/50 text-blue-900 dark:text-blue-200 font-semibold ring-1 ring-blue-700'
                         : 'border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#111115] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#202025]'
-                    }`}
+                      }`}
                   >
                     <Briefcase className={`w-4 h-4 ${role === 'faculty' ? 'text-blue-700 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`} />
                     <div>

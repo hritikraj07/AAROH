@@ -1419,7 +1419,7 @@ assert(chatModalContent.includes('Socratic Mode Enabled'), 'Chat header renders 
 console.log('--- ALL SECURITY PIVOT, SMOOTH ANIMATIONS & SOCRATIC AI VERIFICATIONS PASSED ---');
 
 // =========================================================================================
-// 33. Modern Asymmetrical Glassmorphism Login Page Redesign
+// 33. Modern Asymmetrical Glassmorphism Login Page with Full-Screen Campus Photo
 // =========================================================================================
 console.log('--- VERIFYING MODERN ASYMMETRICAL GLASSMORPHISM LOGIN PAGE ---');
 
@@ -1427,10 +1427,9 @@ const glassLoginPath = path.join(__dirname, '../src/pages/LoginPage.tsx');
 assert(fs.existsSync(glassLoginPath), 'LoginPage.tsx exists');
 const glassLoginContent = fs.readFileSync(glassLoginPath, 'utf8');
 
-// 1. Global Background (SVG Pattern)
+// 1. Global Background (Full-Screen Campus Photograph)
 assert(glassLoginContent.includes('min-h-screen') && glassLoginContent.includes('w-full'), 'LoginPage takes up full viewport min-h-screen and w-full');
-assert(glassLoginContent.includes('<svg') && (glassLoginContent.includes('isometric-tech-mesh') || glassLoginContent.includes('pattern')), 'LoginPage uses full-screen SVG background pattern');
-assert(glassLoginContent.includes('dark:bg-[#0E0E11]') && glassLoginContent.includes('dark:stroke-teal-500/[0.08]'), 'LoginPage adapts dark mode to #0E0E11 with subtle teal SVG stroke');
+assert(glassLoginContent.includes('campus.jpg') && glassLoginContent.includes('object-cover'), 'LoginPage uses full-screen campus photograph background with object-cover');
 
 // 2. The Glassmorphism Login Card
 assert(glassLoginContent.includes('justify-end') || glassLoginContent.includes('sm:justify-end'), 'LoginPage positions login card on the right side of the screen');
@@ -1452,6 +1451,43 @@ assert(glassLoginContent.includes(exactLightShadow) && glassLoginContent.include
 assert(glassLoginContent.includes('or continue with demo') || glassLoginContent.includes('OR CONTINUE WITH DEMO'), 'LoginPage renders demo divider section');
 assert(glassLoginContent.includes('Admin Demo') && glassLoginContent.includes('Faculty Demo') && glassLoginContent.includes('Student Demo'), 'LoginPage renders Admin Demo, Faculty Demo, and Student Demo buttons side-by-side');
 
+// 4. Clean Footer (Removal of Enterprise SSO Gateway & 256-bit TLS text)
+assert(!glassLoginContent.includes('Enterprise SSO Gateway'), 'Enterprise SSO Gateway footer text removed from LoginPage');
+assert(!glassLoginContent.includes('256-bit TLS'), '256-bit TLS shield footer text removed from LoginPage');
+
 console.log('--- ALL MODERN ASYMMETRICAL GLASSMORPHISM LOGIN PAGE VERIFICATIONS PASSED ---');
+
+// =========================================================================================
+// 34. Global Zero-Data Purge & Standardized Enterprise Empty States
+// =========================================================================================
+console.log('--- VERIFYING ZERO-DATA PURGE & STANDARDIZED EMPTY STATES ---');
+
+const purgedSeed = fs.readFileSync(path.join(__dirname, '../src/data/seed.ts'), 'utf8');
+assert(purgedSeed.includes('INITIAL_ATTENDANCE: AttendanceRecord[] = [];'), 'INITIAL_ATTENDANCE is purged to empty array');
+assert(purgedSeed.includes('INITIAL_ASSIGNMENTS: Assignment[] = [];'), 'INITIAL_ASSIGNMENTS is purged to empty array');
+assert(purgedSeed.includes('INITIAL_LOST_FOUND: LostFoundItem[] = [];'), 'INITIAL_LOST_FOUND is purged to empty array');
+assert(purgedSeed.includes('INITIAL_GRADES: GradeRecord[] = [];'), 'INITIAL_GRADES is purged to empty array');
+
+const noticesPageContent = fs.readFileSync(path.join(__dirname, '../src/pages/NoticesPage.tsx'), 'utf8');
+assert(noticesPageContent.includes('No institutional notices published yet.'), 'NoticesPage renders "No institutional notices published yet." empty state');
+
+const latestFacultyClassesContent = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyClassesPage.tsx'), 'utf8');
+assert(latestFacultyClassesContent.includes('No courses enrolled for this academic term.'), 'FacultyClassesPage renders "No courses enrolled for this academic term." empty state');
+
+const latestAssignmentsTabContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/academics/AssignmentsTab.tsx'), 'utf8');
+assert(latestAssignmentsTabContent.includes('No Automated Coding Labs assigned yet.'), 'AssignmentsTab renders "No Automated Coding Labs assigned yet." empty state');
+
+const latestAcademicResultsContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/academics/AcademicResultsTab.tsx'), 'utf8');
+assert(latestAcademicResultsContent.includes('No assessment marks published yet.'), 'AcademicResultsTab renders "No assessment marks published yet." empty state');
+
+const latestOppsPageContent = fs.readFileSync(path.join(__dirname, '../src/pages/OpportunitiesPage.tsx'), 'utf8');
+assert(latestOppsPageContent.includes('No active opportunities posted yet.'), 'OpportunitiesPage renders "No active opportunities posted yet." empty state');
+
+const emptyStateComponent = fs.readFileSync(path.join(__dirname, '../src/components/ui/EmptyState.tsx'), 'utf8');
+assert(emptyStateComponent.includes('dark:bg-[#18181B]'), 'EmptyState component enforces dark:bg-[#18181B]');
+assert(emptyStateComponent.includes('dark:border-white/5'), 'EmptyState component enforces dark:border-white/5');
+assert(emptyStateComponent.includes('dark:text-slate-400'), 'EmptyState component enforces dark:text-slate-400');
+
+console.log('--- ALL ZERO-DATA PURGE & STANDARDIZED EMPTY STATES VERIFICATIONS PASSED ---');
 
 module.exports = { assert };

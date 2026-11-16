@@ -44,47 +44,49 @@ export const FacultyClassesPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-[#27272A]">
         <div>
-          <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
+          <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
             Assigned Courses & Curriculum
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Manage your teaching subjects, credit allocations, and class assignments.
           </p>
         </div>
 
         {/* RBAC: Faculty cannot create/assign courses. Strictly hidden for faculty role */}
         {!isFaculty && (
-          <Button
-            variant="primary"
-            size="sm"
-            icon={<Plus className="w-3.5 h-3.5" />}
+          <button
+            type="button"
             onClick={() => setIsAddModalOpen(true)}
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] cursor-pointer select-none"
           >
-            Add Course
-          </Button>
+            <Plus className="w-3.5 h-3.5 text-white" />
+            <span>Add Course</span>
+          </button>
         )}
       </div>
 
       {/* Courses List */}
       {courses.length === 0 ? (
-        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-10 text-center space-y-3">
-          <BookOpen className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">No courses currently assigned</h3>
+        <div className="bg-white border border-slate-200 text-slate-500 dark:bg-[#18181B] dark:border-white/5 dark:text-slate-400 rounded-2xl p-12 text-center space-y-3 flex flex-col items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-1 border border-slate-200 dark:border-white/5">
+            <BookOpen className="w-5 h-5 text-slate-400 dark:text-teal-400" />
+          </div>
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">No courses enrolled for this academic term.</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
             No courses currently assigned. Your department admin will allocate your subjects here.
           </p>
           {/* RBAC: Strictly hidden for faculty role */}
           {!isFaculty && (
-            <Button
-              variant="primary"
-              size="sm"
-              icon={<Plus className="w-3.5 h-3.5" />}
+            <button
+              type="button"
               onClick={() => setIsAddModalOpen(true)}
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] cursor-pointer select-none"
             >
-              Assign Course
-            </Button>
+              <Plus className="w-3.5 h-3.5 text-white" />
+              <span>Assign Course</span>
+            </button>
           )}
         </div>
       ) : (

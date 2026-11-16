@@ -257,16 +257,16 @@ export const NoticesPage: React.FC = () => {
           </div>
         )}
 
-        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg divide-y divide-slate-200 dark:divide-[#27272A]">
+        <div className="bg-white border border-slate-200 text-slate-500 dark:bg-[#18181B] dark:border-white/5 dark:text-slate-400 rounded-2xl divide-y divide-slate-200 dark:divide-[#27272A]">
           {filteredNotices.length === 0 ? (
-            <div className="py-16 flex flex-col items-center justify-center text-center p-6">
-              <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mb-3">
-                <FileText className="w-5 h-5 text-slate-400" />
+            <div className="py-16 flex flex-col items-center justify-center text-center p-8">
+              <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-3 border border-slate-200 dark:border-white/5">
+                <FileText className="w-5 h-5 text-slate-400 dark:text-teal-400" />
               </div>
-              <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                {notices.length === 0 ? 'No campus circulars published' : 'No matching circulars found'}
+              <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
+                {notices.length === 0 ? 'No institutional notices published yet.' : 'No matching circulars found'}
               </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mt-1 leading-relaxed">
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm leading-relaxed">
                 {notices.length === 0
                   ? 'Official academic circulars, exam schedules, and administration memos will be listed here.'
                   : 'Try modifying your search query or category filters above.'}
