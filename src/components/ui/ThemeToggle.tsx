@@ -81,14 +81,13 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         {/* Clip all elements strictly within the pill capsule */}
         <g clipPath="url(#landscape-capsule-clip)">
           {/* ========================================================= */}
-          {/* LAYER 1: SKY BACKGROUNDS (Cross-fading)                   */}
+          {/* LAYER 1: SKY BACKGROUNDS (Instant Toggle)                 */}
           {/* ========================================================= */}
           {/* Daytime Sky */}
           <rect
             width="104"
             height="46"
             fill="url(#toggle-day-sky)"
-            className="transition-opacity duration-500 ease-in-out"
             style={{ opacity: isDark ? 0 : 1 }}
           />
           {/* Nighttime Sky */}
@@ -96,7 +95,6 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
             width="104"
             height="46"
             fill="url(#toggle-night-sky)"
-            className="transition-opacity duration-500 ease-in-out"
             style={{ opacity: isDark ? 1 : 0 }}
           />
 
@@ -105,7 +103,6 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
           {/* ========================================================= */}
           {/* Daytime Distant City & Clouds */}
           <g
-            className="transition-opacity duration-500 ease-in-out"
             style={{ opacity: isDark ? 0 : 1 }}
           >
             {/* Soft Distant Skyline on Left */}
@@ -128,7 +125,6 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
 
           {/* Nighttime Distant City with Lit Windows & Twinkling Stars */}
           <g
-            className="transition-opacity duration-500 ease-in-out"
             style={{ opacity: isDark ? 1 : 0 }}
           >
             {/* Distant Midnight Skyline */}
@@ -160,7 +156,6 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
           {/* ========================================================= */}
           {/* Daytime Landscape */}
           <g
-            className="transition-opacity duration-500 ease-in-out"
             style={{ opacity: isDark ? 0 : 1 }}
           >
             {/* Back Hill (Right) */}
@@ -219,7 +214,6 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
 
           {/* Nighttime Landscape */}
           <g
-            className="transition-opacity duration-500 ease-in-out"
             style={{ opacity: isDark ? 1 : 0 }}
           >
             {/* Back Hill (Right) in Midnight Indigo */}
@@ -282,14 +276,12 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
           {/* ========================================================= */}
           <g
             filter="url(#thumb-drop-shadow)"
-            className="transition-transform duration-500 ease-in-out"
             style={{
               transform: isDark ? 'translateX(56px)' : 'translateX(0px)',
             }}
           >
             {/* The Sun (Visible in Light Mode) - Glowing Foreground Celestial Body */}
             <g
-              className="transition-all duration-500 ease-in-out"
               style={{
                 opacity: isDark ? 0 : 1,
                 transform: isDark ? 'rotate(90deg) scale(0.6)' : 'rotate(0deg) scale(1)',
@@ -306,7 +298,6 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
 
             {/* The Crescent Moon (Visible in Dark Mode) - Glowing Night Thumb */}
             <g
-              className="transition-all duration-500 ease-in-out"
               style={{
                 opacity: isDark ? 1 : 0,
                 transform: isDark ? 'rotate(0deg) scale(1)' : 'rotate(-90deg) scale(0.6)',

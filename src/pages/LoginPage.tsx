@@ -16,8 +16,8 @@ export const LoginPage: React.FC = () => {
   const { login, users, isAuthenticated, role, theme, toggleTheme } = useApp();
   const navigate = useNavigate();
 
-  const [selectedRole, setSelectedRole] = useState<UserRole>('student');
-  const [email, setEmail] = useState('aarav.sharma@aaroh.edu.in');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('admin');
+  const [email, setEmail] = useState('registrar@admin.aaroh.edu.in');
   const [password, setPassword] = useState('campusSecure2026');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -130,59 +130,17 @@ export const LoginPage: React.FC = () => {
   return (
     <div
       onMouseMove={handleMouseMove}
-      className="min-h-screen w-full h-screen overflow-hidden flex items-center justify-center sm:justify-end px-4 sm:px-10 lg:px-24 relative bg-[#FBFBFA] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
+      className="min-h-screen w-full h-screen overflow-hidden flex items-center justify-center sm:justify-end px-4 sm:px-10 lg:px-24 relative bg-[#FBFBFA] dark:bg-[#0E0E11] font-sans select-none"
     >
-      {/* 1. Global Background: Full-Screen SVG Pattern (Isometric Tech Mesh / Hex Grid) */}
+      {/* 1. Global Campus Background: Converted from JPG to SVG format */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Full-Screen Vector SVG Pattern */}
-        <svg
-          className="absolute inset-0 w-full h-full object-cover text-slate-300/40 dark:text-teal-900/25 transition-colors duration-500"
-          xmlns="http://www.w3.org/2000/svg"
-          width="100%"
-          height="100%"
-        >
-          <defs>
-            {/* Tech Mesh Isometric Grid Pattern */}
-            <pattern
-              id="login-tech-mesh"
-              width="60"
-              height="60"
-              patternUnits="userSpaceOnUse"
-              patternTransform="rotate(45)"
-            >
-              <path
-                d="M 60 0 L 0 0 0 60"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="0.8"
-                className="transition-colors duration-500"
-              />
-              <circle cx="0" cy="0" r="1.5" fill="#0F766E" className="opacity-40 dark:opacity-80" />
-              <circle cx="60" cy="60" r="1.5" fill="#0F766E" className="opacity-40 dark:opacity-80" />
-            </pattern>
-
-            {/* Hex Dot Matrix Overlay */}
-            <pattern
-              id="login-dot-matrix"
-              width="30"
-              height="30"
-              patternUnits="userSpaceOnUse"
-            >
-              <circle cx="15" cy="15" r="0.75" fill="currentColor" opacity="0.6" />
-            </pattern>
-
-            {/* Radial Vignette Mask */}
-            <radialGradient id="login-vignette" cx="50%" cy="50%" r="70%">
-              <stop offset="0%" stopColor="#0F766E" stopOpacity="0.06" />
-              <stop offset="70%" stopColor="#0F766E" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-
-          {/* Grid Fill */}
-          <rect width="100%" height="100%" fill="url(#login-tech-mesh)" />
-          <rect width="100%" height="100%" fill="url(#login-dot-matrix)" />
-          <rect width="100%" height="100%" fill="url(#login-vignette)" />
-        </svg>
+        <img
+          src="/campus.svg"
+          alt="K.R. Mangalam University Campus"
+          className="w-full h-full min-h-screen object-cover object-center"
+        />
+        {/* Ambient overlay for dark/light mode readability */}
+        <div className="absolute inset-0 bg-slate-900/10 dark:bg-black/60" />
 
         {/* Ambient Interactive Blurred Geometric Blobs for Depth */}
         <div

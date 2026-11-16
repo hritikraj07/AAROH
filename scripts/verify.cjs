@@ -23,8 +23,8 @@ assert(distHtml.includes('Aaroh'), 'HTML contains Aaroh wordmark');
 const seedContent = fs.readFileSync(path.join(__dirname, '../src/data/seed.ts'), 'utf8');
 assert(seedContent.includes('export const INITIAL_USERS: User[] = ['), 'INITIAL_USERS defined in seed.ts');
 assert(seedContent.includes('registrar@admin.aaroh.edu.in'), 'Demo admin seeded in INITIAL_USERS');
-assert(seedContent.includes('aarav.sharma@aaroh.edu.in'), 'Demo student seeded in INITIAL_USERS');
-assert(seedContent.includes('prof.raman@faculty.aaroh.edu.in'), 'Demo faculty seeded in INITIAL_USERS');
+assert(!seedContent.includes('aarav.sharma@aaroh.edu.in'), 'Pre-fed student purged from INITIAL_USERS');
+assert(!seedContent.includes('prof.raman@faculty.aaroh.edu.in'), 'Pre-fed faculty purged from INITIAL_USERS');
 
 // 3. Check Storage Service for Users Collection & Auth querying localStorage
 const storageContent = fs.readFileSync(path.join(__dirname, '../src/services/storage.ts'), 'utf8');
@@ -1388,13 +1388,13 @@ assert(!settingsModalContent.includes('Minimum Attendance Threshold Target'), 'A
 
 // 2. Smooth Theme Transition Animation
 const indexHtmlContent = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-assert(indexHtmlContent.includes('transition-colors duration-500 ease-in-out'), 'index.html body implements transition-colors duration-500 ease-in-out');
+assert(!indexHtmlContent.includes('transition-colors duration-500 ease-in-out'), 'index.html body implements instant theme toggling without animation lag');
 
 const currentLayoutTransition = fs.readFileSync(path.join(__dirname, '../src/components/layout/Layout.tsx'), 'utf8');
-assert(currentLayoutTransition.includes('transition-colors duration-500 ease-in-out'), 'Layout.tsx implements transition-colors duration-500 ease-in-out');
+assert(!currentLayoutTransition.includes('transition-colors duration-500 ease-in-out'), 'Layout.tsx implements instant theme toggling without animation lag');
 
 const currentLoginPageTransition = fs.readFileSync(path.join(__dirname, '../src/pages/LoginPage.tsx'), 'utf8');
-assert(currentLoginPageTransition.includes('transition-colors duration-500 ease-in-out'), 'LoginPage.tsx implements transition-colors duration-500 ease-in-out');
+assert(!currentLoginPageTransition.includes('transition-colors duration-500 ease-in-out'), 'LoginPage.tsx implements instant theme toggling without animation lag');
 
 // 3. "Zero-Trust" Exam Proctoring (Browser API Hack)
 const codeWorkspacePath = path.join(__dirname, '../src/pages/StudentCodeWorkspacePage.tsx');
@@ -1429,7 +1429,7 @@ const glassLoginContent = fs.readFileSync(glassLoginPath, 'utf8');
 
 // 1. Global Background (Full-Screen Campus Photograph)
 assert(glassLoginContent.includes('min-h-screen') && glassLoginContent.includes('w-full'), 'LoginPage takes up full viewport min-h-screen and w-full');
-assert(glassLoginContent.includes('<svg') && glassLoginContent.includes('login-tech-mesh'), 'LoginPage uses full-screen SVG pattern background with tech mesh');
+assert(glassLoginContent.includes('campus.svg') && glassLoginContent.includes('object-cover'), 'LoginPage uses full-screen campus SVG background with object-cover');
 
 // 2. The Glassmorphism Login Card
 assert(glassLoginContent.includes('justify-end') || glassLoginContent.includes('sm:justify-end'), 'LoginPage positions login card on the right side of the screen');

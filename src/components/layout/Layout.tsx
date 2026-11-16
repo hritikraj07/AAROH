@@ -92,9 +92,9 @@ export const Layout: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden font-sans bg-[#FBFBFA] dark:bg-[#0E0E11] transition-colors duration-500 ease-in-out">
+    <div className="flex flex-col h-screen overflow-hidden font-sans bg-[#FBFBFA] dark:bg-[#0E0E11]">
       {/* Main Shell Layout - Seamless dark:bg-[#0E0E11] matched with Login Page */}
-      <div className="flex flex-1 overflow-hidden transition-colors duration-500 ease-in-out bg-[#FBFBFA] dark:bg-[#0E0E11] text-slate-900 dark:text-slate-100">
+      <div className="flex flex-1 overflow-hidden bg-[#FBFBFA] dark:bg-[#0E0E11] text-slate-900 dark:text-slate-100">
         {/* Desktop Sidebar: Always accessible and uncluttered */}
         <div className="hidden md:flex md:shrink-0">
           <Sidebar />

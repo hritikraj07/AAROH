@@ -91,7 +91,7 @@ export const generateStudentFromEmail = generateUserFromEmail;
 export const INITIAL_USER: User | null = null;
 export const INITIAL_STUDENT: User | null = null;
 
-// Initial directory users: default demo admin, one demo student, and one demo faculty member
+// Initial directory users: default admin preserved as sole initialized user; all other accounts purged
 export const INITIAL_USERS: User[] = [
   {
     id: 'usr_adm_demo',
@@ -101,66 +101,6 @@ export const INITIAL_USERS: User[] = [
     designation: 'Campus Administrator',
     department: 'Central Administration',
     avatarInitials: 'AR',
-  },
-  {
-    id: 'usr_std_demo',
-    name: 'Aarav Sharma',
-    email: 'aarav.sharma@aaroh.edu.in',
-    role: 'student',
-    designation: 'Undergraduate Scholar',
-    rollNumber: '22CS042',
-    program: 'B.Tech CSE',
-    department: 'Computer Science & Engineering',
-    semester: 5,
-    section: 'Section A',
-    academicYear: APP_CONFIG.academicSession,
-    avatarInitials: 'AS',
-    attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
-    classCoordinator: 'Prof. K. Ramanujam',
-    savedOpportunityIds: [],
-  },
-  {
-    id: 'usr_std_priya',
-    name: 'Priya Patel',
-    email: 'priya.patel@aaroh.edu.in',
-    role: 'student',
-    designation: 'Undergraduate Scholar',
-    rollNumber: '22CS088',
-    program: 'B.Tech CSE',
-    department: 'Computer Science & Engineering',
-    semester: 5,
-    section: 'Section B',
-    academicYear: APP_CONFIG.academicSession,
-    avatarInitials: 'PP',
-    attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
-    classCoordinator: 'Prof. K. Ramanujam',
-    savedOpportunityIds: [],
-  },
-  {
-    id: 'usr_std_rohan',
-    name: 'Rohan Verma',
-    email: 'rohan.verma@aaroh.edu.in',
-    role: 'student',
-    designation: 'Undergraduate Scholar',
-    rollNumber: '22CS104',
-    program: 'B.Tech CSE',
-    department: 'Computer Science & Engineering',
-    semester: 5,
-    section: 'Section A',
-    academicYear: APP_CONFIG.academicSession,
-    avatarInitials: 'RV',
-    attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
-    classCoordinator: 'Prof. K. Ramanujam',
-    savedOpportunityIds: [],
-  },
-  {
-    id: 'usr_fac_demo',
-    name: 'Prof. K. Ramanujam',
-    email: 'prof.raman@faculty.aaroh.edu.in',
-    role: 'faculty',
-    designation: 'Assistant Professor & Class Coordinator',
-    department: 'Department of Computer Science & Engineering',
-    avatarInitials: 'KR',
   },
 ];
 

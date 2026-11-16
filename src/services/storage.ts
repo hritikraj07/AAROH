@@ -74,14 +74,15 @@ function setStored<T>(key: string, data: T): void {
 export const StorageService = {
   // Initialize clean state on first boot or forced reset
   initializeData(forceReset = false): void {
-    const cleanDbFlag = localStorage.getItem('aaroh_zero_data_v2');
+    const cleanDbFlag = localStorage.getItem('aaroh_zero_data_v3');
     const initialized = localStorage.getItem(STORAGE_KEYS.INITIALIZED);
 
     // If never initialized, forced reset, or migrating from old mock database
     if (!initialized || !cleanDbFlag || forceReset) {
-      // Keep existing users if already in localStorage, or seed default initial users
+      // Purge all pre-fed student/faculty mock users; preserve solely admin account
       const existingUsers = getStored<User[]>(STORAGE_KEYS.USERS, []);
-      const usersToStore = existingUsers.length > 0 ? existingUsers : INITIAL_USERS;
+      const adminUsers = existingUsers.filter(u => u.role === 'admin');
+      const usersToStore = adminUsers.length > 0 ? adminUsers : INITIAL_USERS;
       setStored(STORAGE_KEYS.USERS, usersToStore);
 
       // Clean empty arrays for database entities for complete zero-data initialization
@@ -105,13 +106,14 @@ export const StorageService = {
         localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
       }
       localStorage.setItem(STORAGE_KEYS.INITIALIZED, 'true');
-      localStorage.setItem('aaroh_zero_data_v2', 'true');
+      localStorage.setItem('aaroh_zero_data_v3', 'true');
     }
 
-    // Ensure users directory is seeded and includes all default accounts
+    // Ensure users directory is seeded and includes admin account, purging legacy demo students/faculty
     const currentUsers = getStored<User[]>(STORAGE_KEYS.USERS, []);
-    let usersUpdated = false;
-    const mergedUsers = [...currentUsers];
+    const filteredUsers = currentUsers.filter(u => u.role === 'admin' || (!['usr_std_demo', 'usr_std_priya', 'usr_std_rohan', 'usr_fac_demo'].includes(u.id)));
+    let usersUpdated = filteredUsers.length !== currentUsers.length;
+    const mergedUsers = [...filteredUsers];
     INITIAL_USERS.forEach(initUser => {
       if (!mergedUsers.some(u => u.email.toLowerCase() === initUser.email.toLowerCase())) {
         mergedUsers.push(initUser);

@@ -171,12 +171,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return () => window.removeEventListener('storage', refreshData);
   }, [refreshData]);
 
-  // Theme Management
+  // Theme Management: Light mode by default for new visitors
   const [theme, setThemeState] = useState<'light' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('aaroh_theme');
       if (saved === 'dark' || saved === 'light') return saved;
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
     }
     return 'light';
   });
