@@ -11,6 +11,8 @@ export const SettingsModal: React.FC = () => {
     isSettingsOpen,
     closeSettings,
     student,
+    user,
+    role,
     resetDemoData,
   } = useApp();
 
@@ -34,28 +36,32 @@ export const SettingsModal: React.FC = () => {
       maxWidth="md"
     >
       <div className="space-y-6">
-        {/* Student Profile Overview */}
-        <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-800">
-            <UserCheck className="w-4 h-4 text-teal-700" />
-            <span>Active Student Session</span>
+        {/* Session Profile Overview */}
+        <div className="p-3.5 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg space-y-2">
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-800 dark:text-slate-200">
+            <UserCheck className="w-4 h-4 text-teal-700 dark:text-teal-400" />
+            <span className="capitalize">Active {role || 'Student'} Session</span>
           </div>
-          <div className="grid grid-cols-2 gap-2 text-xs text-slate-600 pt-1">
+          <div className="grid grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-400 pt-1">
             <div>
-              <span className="text-slate-400 block text-[11px]">Full Name</span>
-              <span className="font-semibold text-slate-900">{student?.name || 'Aaroh Student'}</span>
+              <span className="text-slate-400 dark:text-slate-500 block text-[11px]">Full Name</span>
+              <span className="font-semibold text-slate-900 dark:text-slate-100">{user?.name || student?.name || 'Aaroh User'}</span>
             </div>
             <div>
-              <span className="text-slate-400 block text-[11px]">Roll Number</span>
-              <span className="font-mono text-slate-900">{student?.rollNumber || 'Unassigned'}</span>
+              <span className="text-slate-400 dark:text-slate-500 block text-[11px]">
+                {role === 'student' ? 'Roll Number' : 'Designation / ID'}
+              </span>
+              <span className="font-mono text-slate-900 dark:text-slate-100">
+                {user?.rollNumber || student?.rollNumber || user?.designation || (role === 'admin' ? 'SYS-ADM-01' : 'FAC-01')}
+              </span>
             </div>
             <div>
-              <span className="text-slate-400 block text-[11px]">Institutional Email</span>
-              <span className="font-mono truncate block">{student?.email || 'N/A'}</span>
+              <span className="text-slate-400 dark:text-slate-500 block text-[11px]">Institutional Email</span>
+              <span className="font-mono truncate block text-slate-900 dark:text-slate-100">{user?.email || student?.email || 'N/A'}</span>
             </div>
             <div>
-              <span className="text-slate-400 block text-[11px]">Program</span>
-              <span>{student?.program || 'B.Tech'} {student?.department || 'Engineering'}</span>
+              <span className="text-slate-400 dark:text-slate-500 block text-[11px]">Department / Program</span>
+              <span className="text-slate-900 dark:text-slate-100">{user?.department || student?.program || 'Engineering & Technology'}</span>
             </div>
           </div>
         </div>
@@ -80,51 +86,53 @@ export const SettingsModal: React.FC = () => {
           <ThemeToggle size="md" />
         </div>
 
-        {/* Demo Data Reset Section */}
-        <div className="p-3.5 bg-rose-50/40 border border-rose-200/60 rounded-lg space-y-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-900">
-              <RotateCcw className="w-4 h-4 text-rose-600" />
-              <span>Reset Demo Data</span>
-            </div>
-            {!confirmReset ? (
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-rose-700 hover:bg-rose-50 border-rose-200"
-                onClick={() => setConfirmReset(true)}
-              >
-                Reset to Seed Data
-              </Button>
-            ) : null}
-          </div>
-          <p className="text-[11px] text-slate-600 leading-relaxed">
-            Re-populates initial seed state (clears custom registrations, restored mock dates relative to today, un-submits test assignments).
-          </p>
-
-          {confirmReset && (
-            <div className="flex items-center gap-2 pt-2 border-t border-rose-200/70">
-              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
-              <span className="text-xs text-rose-800 font-medium">Are you sure?</span>
-              <div className="flex items-center gap-2 ml-auto">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setConfirmReset(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  variant="danger"
-                  onClick={handleReset}
-                >
-                  Confirm Reset
-                </Button>
+        {/* Demo Data Reset Section: Available strictly to System Administrators */}
+        {role === 'admin' && (
+          <div className="p-3.5 bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/60 dark:border-rose-900/40 rounded-lg space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-900 dark:text-slate-100">
+                <RotateCcw className="w-4 h-4 text-rose-600" />
+                <span>Reset Demo Data</span>
               </div>
+              {!confirmReset ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-rose-700 hover:bg-rose-50 border-rose-200 dark:border-rose-900/60 dark:text-rose-400 dark:hover:bg-rose-950/50"
+                  onClick={() => setConfirmReset(true)}
+                >
+                  Reset to Seed Data
+                </Button>
+              ) : null}
             </div>
-          )}
-        </div>
+            <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
+              Re-populates initial seed state (clears custom registrations, restored mock dates relative to today, un-submits test assignments).
+            </p>
+
+            {confirmReset && (
+              <div className="flex items-center gap-2 pt-2 border-t border-rose-200/70 dark:border-rose-900/50">
+                <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                <span className="text-xs text-rose-800 dark:text-rose-300 font-medium">Are you sure?</span>
+                <div className="flex items-center gap-2 ml-auto">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setConfirmReset(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    onClick={handleReset}
+                  >
+                    Confirm Reset
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </Modal>
   );

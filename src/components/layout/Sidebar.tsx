@@ -21,7 +21,6 @@ import {
 import { APP_CONFIG } from '../../config';
 import { useApp } from '../../context/AppContext';
 import { Logo } from '../ui/Logo';
-import { ThemeToggle } from '../ui/ThemeToggle';
 
 export interface SidebarProps {
   onCloseMobile?: () => void;
@@ -344,17 +343,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
             <span>Settings</span>
           </button>
 
-          <div className="flex items-center gap-2">
-            <ThemeToggle size="sm" />
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 px-2 py-1.5 rounded-md hover:bg-rose-50 dark:hover:bg-rose-950/30 active:scale-95 transition-all duration-150"
-              title="Log out"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Logout</span>
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 px-2 py-1.5 rounded-md hover:bg-rose-50 dark:hover:bg-rose-950/30 active:scale-95 transition-all duration-150"
+            title="Log out"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Logout</span>
+          </button>
         </div>
       </div>
     </aside>

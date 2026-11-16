@@ -15,7 +15,8 @@ import {
   ExternalLink,
   CheckCircle2,
   Users,
-  Network
+  Network,
+  Coffee
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { APP_CONFIG } from '../config';
@@ -273,9 +274,11 @@ export const DashboardPage: React.FC = () => {
         /* "Free Period" UI State: Subtle, subdued banner */
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-300 px-4 py-3 rounded-2xl flex items-center justify-between text-xs sm:text-sm font-medium shadow-sm">
           <div className="flex items-center gap-2.5">
-            <span className="text-base select-none">☕</span>
+            <div className="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 flex items-center justify-center text-amber-700 dark:text-amber-400 shadow-sm shrink-0">
+              <Coffee className="w-4 h-4" />
+            </div>
             <span className="font-semibold text-slate-800 dark:text-slate-200">
-              ☕ Free Period: Good time to catch up on assignments.
+              Free Period: Good time to catch up on assignments.
             </span>
           </div>
           <div className="flex items-center gap-2">

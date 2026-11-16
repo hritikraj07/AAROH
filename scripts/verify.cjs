@@ -1319,7 +1319,7 @@ assert(adaptiveDashContent.includes('Live Pulse'), 'Dashboard shifts Live Pulse 
 assert(adaptiveDashContent.includes('!isFocusMode') && adaptiveDashContent.includes('FEATURED CAMPUS HIGHLIGHTS'), 'Dashboard blocks distractions by hiding Opportunity Board during active class sessions');
 
 // 3. Free Period UI State (Build Mode)
-assert(adaptiveDashContent.includes('☕ Free Period: Good time to catch up on assignments.'), 'Dashboard renders subtle Free Period banner with exact text');
+assert(adaptiveDashContent.includes('Free Period: Good time to catch up on assignments.') && adaptiveDashContent.includes('Coffee'), 'Dashboard renders subtle Free Period banner with styled coffee cup');
 assert(adaptiveDashContent.includes('dark:border-white/5'), 'Dashboard Free Period banner implements dark:border-white/5 border');
 assert(adaptiveDashContent.includes('Automated Coding Labs • Pending Tasks'), 'Dashboard prioritizes Automated Coding Labs pending tasks list in Free Period mode');
 assert(adaptiveDashContent.includes('Launch Workspace'), 'Automated Coding Labs cards provide Launch Workspace action buttons');
@@ -1429,7 +1429,7 @@ const glassLoginContent = fs.readFileSync(glassLoginPath, 'utf8');
 
 // 1. Global Background (Full-Screen Campus Photograph)
 assert(glassLoginContent.includes('min-h-screen') && glassLoginContent.includes('w-full'), 'LoginPage takes up full viewport min-h-screen and w-full');
-assert(glassLoginContent.includes('campus.jpg') && glassLoginContent.includes('object-cover'), 'LoginPage uses full-screen campus photograph background with object-cover');
+assert(glassLoginContent.includes('<svg') && glassLoginContent.includes('login-tech-mesh'), 'LoginPage uses full-screen SVG pattern background with tech mesh');
 
 // 2. The Glassmorphism Login Card
 assert(glassLoginContent.includes('justify-end') || glassLoginContent.includes('sm:justify-end'), 'LoginPage positions login card on the right side of the screen');
@@ -1514,10 +1514,14 @@ const latestLoginPage = fs.readFileSync(path.join(__dirname, '../src/pages/Login
 assert(latestLoginPage.includes('<ThemeToggle'), 'LoginPage renders ThemeToggle component');
 
 const latestSidebar = fs.readFileSync(path.join(__dirname, '../src/components/layout/Sidebar.tsx'), 'utf8');
-assert(latestSidebar.includes('<ThemeToggle'), 'Sidebar renders ThemeToggle component');
+assert(!latestSidebar.includes('<ThemeToggle'), 'Sidebar does not render ThemeToggle to prevent clutter');
 
 const latestSettingsModal = fs.readFileSync(path.join(__dirname, '../src/components/layout/SettingsModal.tsx'), 'utf8');
 assert(latestSettingsModal.includes('<ThemeToggle'), 'SettingsModal renders ThemeToggle component');
+assert(latestSettingsModal.includes("role === 'admin'") && latestSettingsModal.includes('Reset Demo Data'), 'SettingsModal restricts demo data reset strictly to admin role');
+
+const facultyDashboardContent = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyDashboardPage.tsx'), 'utf8');
+assert(facultyDashboardContent.includes("user?.name || 'Dr. K. Ramanujam'"), 'FacultyDashboardPage renders full faculty name instead of abbreviated Prof.');
 
 console.log('--- ALL ANIMATED LANDSCAPE THEME TOGGLE VERIFICATIONS PASSED ---');
 

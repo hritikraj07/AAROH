@@ -132,23 +132,65 @@ export const LoginPage: React.FC = () => {
       onMouseMove={handleMouseMove}
       className="min-h-screen w-full h-screen overflow-hidden flex items-center justify-center sm:justify-end px-4 sm:px-10 lg:px-24 relative bg-[#FBFBFA] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
     >
-      {/* 1. Global Background: Full-Screen K.R. Mangalam University Campus Photograph */}
+      {/* 1. Global Background: Full-Screen SVG Pattern (Isometric Tech Mesh / Hex Grid) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <img
-          src="/campus.jpg"
-          alt="K.R. Mangalam University Campus"
-          className="w-full h-full min-h-screen object-cover object-center"
-        />
-        {/* Ambient overlay for dark/light mode readability */}
-        <div className="absolute inset-0 bg-slate-900/10 dark:bg-black/60 transition-colors duration-500" />
+        {/* Full-Screen Vector SVG Pattern */}
+        <svg
+          className="absolute inset-0 w-full h-full object-cover text-slate-300/40 dark:text-teal-900/25 transition-colors duration-500"
+          xmlns="http://www.w3.org/2000/svg"
+          width="100%"
+          height="100%"
+        >
+          <defs>
+            {/* Tech Mesh Isometric Grid Pattern */}
+            <pattern
+              id="login-tech-mesh"
+              width="60"
+              height="60"
+              patternUnits="userSpaceOnUse"
+              patternTransform="rotate(45)"
+            >
+              <path
+                d="M 60 0 L 0 0 0 60"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="0.8"
+                className="transition-colors duration-500"
+              />
+              <circle cx="0" cy="0" r="1.5" fill="#0F766E" className="opacity-40 dark:opacity-80" />
+              <circle cx="60" cy="60" r="1.5" fill="#0F766E" className="opacity-40 dark:opacity-80" />
+            </pattern>
+
+            {/* Hex Dot Matrix Overlay */}
+            <pattern
+              id="login-dot-matrix"
+              width="30"
+              height="30"
+              patternUnits="userSpaceOnUse"
+            >
+              <circle cx="15" cy="15" r="0.75" fill="currentColor" opacity="0.6" />
+            </pattern>
+
+            {/* Radial Vignette Mask */}
+            <radialGradient id="login-vignette" cx="50%" cy="50%" r="70%">
+              <stop offset="0%" stopColor="#0F766E" stopOpacity="0.06" />
+              <stop offset="70%" stopColor="#0F766E" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+
+          {/* Grid Fill */}
+          <rect width="100%" height="100%" fill="url(#login-tech-mesh)" />
+          <rect width="100%" height="100%" fill="url(#login-dot-matrix)" />
+          <rect width="100%" height="100%" fill="url(#login-vignette)" />
+        </svg>
 
         {/* Ambient Interactive Blurred Geometric Blobs for Depth */}
         <div
-          className="absolute -top-24 -left-24 w-[480px] h-[480px] rounded-full bg-teal-700/10 dark:bg-teal-500/10 blur-[100px] pointer-events-none transition-transform duration-300 ease-out"
+          className="absolute -top-24 -left-24 w-[480px] h-[480px] rounded-full bg-teal-600/10 dark:bg-teal-500/15 blur-[100px] pointer-events-none transition-transform duration-300 ease-out"
           style={{ transform: `translate(${mouseOffset.x}px, ${mouseOffset.y}px)` }}
         />
         <div
-          className="absolute -bottom-24 -right-24 w-[480px] h-[480px] rounded-full bg-teal-700/10 dark:bg-teal-500/10 blur-[100px] pointer-events-none transition-transform duration-300 ease-out"
+          className="absolute -bottom-24 -right-24 w-[480px] h-[480px] rounded-full bg-teal-700/15 dark:bg-teal-500/20 blur-[100px] pointer-events-none transition-transform duration-300 ease-out"
           style={{ transform: `translate(${-mouseOffset.x * 1.3}px, ${-mouseOffset.y * 1.3}px)` }}
         />
       </div>

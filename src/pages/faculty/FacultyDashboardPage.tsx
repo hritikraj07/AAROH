@@ -108,7 +108,7 @@ export const FacultyDashboardPage: React.FC = () => {
             <span>Faculty Portal • {APP_CONFIG.academicSession}</span>
           </div>
           <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-white font-sans">
-            Welcome back, {user?.name?.split(' ')[0] || 'Professor'}
+            Welcome back, {user?.name || 'Dr. K. Ramanujam'}
           </h1>
           <p className="text-xs sm:text-sm text-teal-100 font-normal leading-relaxed max-w-xl">
             {user?.department || 'Department of Computer Science & Engineering'} • Manage your lecture schedules, student roll calls, and coursework submissions.

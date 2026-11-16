@@ -15,9 +15,8 @@ const SIZE_CONFIG = {
 /**
  * Landscape Theme Toggle
  * Recreates the premium animated landscape toggle with day/night scenery,
- * an animated sliding Sun that morphs into a Crescent Moon, rolling hills,
- * stylized tree, winding path, starry night sky with city window lights,
- * and high-gloss glass reflection sheens.
+ * with the sliding Sun/Moon thumb brought to the foreground as an illuminated
+ * tactile knob gliding across the landscape track.
  */
 export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   className = '',
@@ -72,6 +71,11 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
             <stop offset="0%" stopColor="#FFF2A8" />
             <stop offset="100%" stopColor="#FEE486" />
           </linearGradient>
+
+          {/* Tactile Thumb Drop Shadow */}
+          <filter id="thumb-drop-shadow" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="1.5" stdDeviation="2" floodColor="#000000" floodOpacity="0.35" />
+          </filter>
         </defs>
 
         {/* Clip all elements strictly within the pill capsule */}
@@ -152,54 +156,9 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
           </g>
 
           {/* ========================================================= */}
-          {/* LAYER 3: CELESTIAL THUMB (Sun <-> Moon Sliding Motion)    */}
-          {/* Positioned BEHIND foreground hills as in reference video  */}
+          {/* LAYER 3: BACKGROUND LANDSCAPES (Hills, Tree, Path, Bushes) */}
           {/* ========================================================= */}
-          <g
-            className="transition-transform duration-500 ease-in-out"
-            style={{
-              transform: isDark ? 'translateX(56px)' : 'translateX(0px)',
-            }}
-          >
-            {/* The Sun (Visible in Light Mode) */}
-            <g
-              className="transition-all duration-500 ease-in-out"
-              style={{
-                opacity: isDark ? 0 : 1,
-                transform: isDark ? 'rotate(90deg) scale(0.6)' : 'rotate(0deg) scale(1)',
-                transformOrigin: '23px 23px',
-              }}
-            >
-              {/* Outer Radiant Glow */}
-              <circle cx="23" cy="23" r="14.5" fill="#FFFFFF" opacity="0.28" />
-              {/* Core Sun Body */}
-              <circle cx="23" cy="23" r="12" fill="url(#toggle-sun-gradient)" />
-            </g>
-
-            {/* The Crescent Moon (Visible in Dark Mode) */}
-            <g
-              className="transition-all duration-500 ease-in-out"
-              style={{
-                opacity: isDark ? 1 : 0,
-                transform: isDark ? 'rotate(0deg) scale(1)' : 'rotate(-90deg) scale(0.6)',
-                transformOrigin: '23px 23px',
-              }}
-            >
-              {/* Soft Moon Halo */}
-              <circle cx="23" cy="23" r="13" fill="#FEE486" opacity="0.22" />
-              {/* Crescent Moon Arc */}
-              <path
-                d="M 22,10 A 13,13 0 0 0 35,27 A 11.5,11.5 0 1 1 22,10 Z"
-                fill="url(#toggle-moon-gradient)"
-              />
-            </g>
-          </g>
-
-          {/* ========================================================= */}
-          {/* LAYER 4: FOREGROUND LANDSCAPES (Hills, Tree, Path, Bushes) */}
-          {/* Placed in front of the celestial thumb                    */}
-          {/* ========================================================= */}
-          {/* Daytime Foreground Landscape */}
+          {/* Daytime Landscape */}
           <g
             className="transition-opacity duration-500 ease-in-out"
             style={{ opacity: isDark ? 0 : 1 }}
@@ -258,7 +217,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
             />
           </g>
 
-          {/* Nighttime Foreground Landscape */}
+          {/* Nighttime Landscape */}
           <g
             className="transition-opacity duration-500 ease-in-out"
             style={{ opacity: isDark ? 1 : 0 }}
@@ -315,6 +274,56 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
               strokeLinecap="round"
               fill="none"
             />
+          </g>
+
+          {/* ========================================================= */}
+          {/* LAYER 4: CELESTIAL THUMB (Sun <-> Moon in FOREGROUND)     */}
+          {/* Brought to the most forward as the tactile sliding handle */}
+          {/* ========================================================= */}
+          <g
+            filter="url(#thumb-drop-shadow)"
+            className="transition-transform duration-500 ease-in-out"
+            style={{
+              transform: isDark ? 'translateX(56px)' : 'translateX(0px)',
+            }}
+          >
+            {/* The Sun (Visible in Light Mode) - Glowing Foreground Celestial Body */}
+            <g
+              className="transition-all duration-500 ease-in-out"
+              style={{
+                opacity: isDark ? 0 : 1,
+                transform: isDark ? 'rotate(90deg) scale(0.6)' : 'rotate(0deg) scale(1)',
+                transformOrigin: '23px 23px',
+              }}
+            >
+              {/* Outer Radiant Glow */}
+              <circle cx="23" cy="23" r="15" fill="#FFFFFF" opacity="0.32" />
+              {/* Outer Sun Ring */}
+              <circle cx="23" cy="23" r="13" fill="#FFFBE6" opacity="0.8" />
+              {/* Core Sun Body */}
+              <circle cx="23" cy="23" r="11.5" fill="url(#toggle-sun-gradient)" />
+            </g>
+
+            {/* The Crescent Moon (Visible in Dark Mode) - Glowing Night Thumb */}
+            <g
+              className="transition-all duration-500 ease-in-out"
+              style={{
+                opacity: isDark ? 1 : 0,
+                transform: isDark ? 'rotate(0deg) scale(1)' : 'rotate(-90deg) scale(0.6)',
+                transformOrigin: '23px 23px',
+              }}
+            >
+              {/* Soft Moon Halo */}
+              <circle cx="23" cy="23" r="14" fill="#FEE486" opacity="0.25" />
+              {/* Crescent Moon Arc */}
+              <path
+                d="M 22,10 A 13,13 0 0 0 35,27 A 11.5,11.5 0 1 1 22,10 Z"
+                fill="url(#toggle-moon-gradient)"
+              />
+              {/* Subtle Moon Crater details */}
+              <circle cx="25" cy="20" r="1" fill="#E6C852" opacity="0.4" />
+              <circle cx="28" cy="23" r="1.3" fill="#E6C852" opacity="0.35" />
+            </g>
           </g>
 
           {/* ========================================================= */}
