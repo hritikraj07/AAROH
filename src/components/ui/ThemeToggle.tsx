@@ -81,21 +81,27 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         {/* Clip all elements strictly within the pill capsule */}
         <g clipPath="url(#landscape-capsule-clip)">
           {/* ========================================================= */}
-          {/* LAYER 1: SKY BACKGROUNDS (Instant Toggle)                 */}
+          {/* LAYER 1: SKY BACKGROUNDS (500ms Smooth Crossfade)         */}
           {/* ========================================================= */}
           {/* Daytime Sky */}
           <rect
             width="104"
             height="46"
             fill="url(#toggle-day-sky)"
-            style={{ opacity: isDark ? 0 : 1 }}
+            style={{
+              opacity: isDark ? 0 : 1,
+              transition: 'opacity 500ms ease-in-out',
+            }}
           />
           {/* Nighttime Sky */}
           <rect
             width="104"
             height="46"
             fill="url(#toggle-night-sky)"
-            style={{ opacity: isDark ? 1 : 0 }}
+            style={{
+              opacity: isDark ? 1 : 0,
+              transition: 'opacity 500ms ease-in-out',
+            }}
           />
 
           {/* ========================================================= */}
@@ -103,7 +109,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
           {/* ========================================================= */}
           {/* Daytime Distant City & Clouds */}
           <g
-            style={{ opacity: isDark ? 0 : 1 }}
+            style={{
+              opacity: isDark ? 0 : 1,
+              transition: 'opacity 500ms ease-in-out',
+            }}
           >
             {/* Soft Distant Skyline on Left */}
             <rect x="7" y="19" width="5" height="13" fill="#78BAEA" rx="0.5" />
@@ -125,7 +134,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
 
           {/* Nighttime Distant City with Lit Windows & Twinkling Stars */}
           <g
-            style={{ opacity: isDark ? 1 : 0 }}
+            style={{
+              opacity: isDark ? 1 : 0,
+              transition: 'opacity 500ms ease-in-out',
+            }}
           >
             {/* Distant Midnight Skyline */}
             <rect x="7" y="19" width="5" height="13" fill="#2E4369" rx="0.5" />
@@ -156,7 +168,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
           {/* ========================================================= */}
           {/* Daytime Landscape */}
           <g
-            style={{ opacity: isDark ? 0 : 1 }}
+            style={{
+              opacity: isDark ? 0 : 1,
+              transition: 'opacity 500ms ease-in-out',
+            }}
           >
             {/* Back Hill (Right) */}
             <path d="M 32 28 Q 62 19 104 22 L 104 46 L 32 46 Z" fill="#45A169" />
@@ -214,7 +229,10 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
 
           {/* Nighttime Landscape */}
           <g
-            style={{ opacity: isDark ? 1 : 0 }}
+            style={{
+              opacity: isDark ? 1 : 0,
+              transition: 'opacity 500ms ease-in-out',
+            }}
           >
             {/* Back Hill (Right) in Midnight Indigo */}
             <path d="M 32 28 Q 62 19 104 22 L 104 46 L 32 46 Z" fill="#1C2740" />
@@ -278,6 +296,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
             filter="url(#thumb-drop-shadow)"
             style={{
               transform: isDark ? 'translateX(56px)' : 'translateX(0px)',
+              transition: 'transform 500ms cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           >
             {/* The Sun (Visible in Light Mode) - Glowing Foreground Celestial Body */}
@@ -286,6 +305,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                 opacity: isDark ? 0 : 1,
                 transform: isDark ? 'rotate(90deg) scale(0.6)' : 'rotate(0deg) scale(1)',
                 transformOrigin: '23px 23px',
+                transition: 'all 500ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
               {/* Outer Radiant Glow */}
@@ -302,6 +322,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
                 opacity: isDark ? 1 : 0,
                 transform: isDark ? 'rotate(0deg) scale(1)' : 'rotate(-90deg) scale(0.6)',
                 transformOrigin: '23px 23px',
+                transition: 'all 500ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
               {/* Soft Moon Halo */}

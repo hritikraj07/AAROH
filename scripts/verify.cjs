@@ -1388,13 +1388,13 @@ assert(!settingsModalContent.includes('Minimum Attendance Threshold Target'), 'A
 
 // 2. Smooth Theme Transition Animation
 const indexHtmlContent = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
-assert(!indexHtmlContent.includes('transition-colors duration-500 ease-in-out'), 'index.html body implements instant theme toggling without animation lag');
+assert(indexHtmlContent.includes('transition-colors duration-500 ease-in-out'), 'index.html body implements smooth theme transition animation');
 
 const currentLayoutTransition = fs.readFileSync(path.join(__dirname, '../src/components/layout/Layout.tsx'), 'utf8');
-assert(!currentLayoutTransition.includes('transition-colors duration-500 ease-in-out'), 'Layout.tsx implements instant theme toggling without animation lag');
+assert(currentLayoutTransition.includes('transition-colors duration-500 ease-in-out'), 'Layout.tsx implements smooth theme transition animation');
 
 const currentLoginPageTransition = fs.readFileSync(path.join(__dirname, '../src/pages/LoginPage.tsx'), 'utf8');
-assert(!currentLoginPageTransition.includes('transition-colors duration-500 ease-in-out'), 'LoginPage.tsx implements instant theme toggling without animation lag');
+assert(currentLoginPageTransition.includes('transition-colors duration-500 ease-in-out'), 'LoginPage.tsx implements smooth theme transition animation');
 
 // 3. "Zero-Trust" Exam Proctoring (Browser API Hack)
 const codeWorkspacePath = path.join(__dirname, '../src/pages/StudentCodeWorkspacePage.tsx');
@@ -1454,6 +1454,12 @@ assert(glassLoginContent.includes('Admin Demo') && glassLoginContent.includes('F
 // 4. Clean Footer (Removal of Enterprise SSO Gateway & 256-bit TLS text)
 assert(!glassLoginContent.includes('Enterprise SSO Gateway'), 'Enterprise SSO Gateway footer text removed from LoginPage');
 assert(!glassLoginContent.includes('256-bit TLS'), '256-bit TLS shield footer text removed from LoginPage');
+
+// 5. Institutional Banner & Show/Hide Password Controls
+assert(glassLoginContent.includes('krmu_banner.svg'), 'LoginPage renders enhanced K.R. Mangalam University SVG banner in yellow-box top-left position');
+assert(glassLoginContent.includes('right-6'), 'LoginPage positions ThemeToggle in top-right viewport per red-line guide');
+assert(glassLoginContent.includes('Eye') && glassLoginContent.includes('EyeOff'), 'LoginPage includes interactive show/hide password toggle');
+assert(fs.existsSync(path.join(__dirname, '../public/krmu_banner.svg')), 'krmu_banner.svg exists in public directory');
 
 console.log('--- ALL MODERN ASYMMETRICAL GLASSMORPHISM LOGIN PAGE VERIFICATIONS PASSED ---');
 

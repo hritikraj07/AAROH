@@ -3,7 +3,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Logo } from '../components/ui/Logo';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
-import { Lock, Mail, AlertCircle } from 'lucide-react';
+import { Lock, Mail, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { getUserRoleFromEmail } from '../data/seed';
 import { UserRole } from '../types';
 
@@ -19,6 +19,7 @@ export const LoginPage: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<UserRole>('admin');
   const [email, setEmail] = useState('registrar@admin.aaroh.edu.in');
   const [password, setPassword] = useState('campusSecure2026');
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -130,7 +131,7 @@ export const LoginPage: React.FC = () => {
   return (
     <div
       onMouseMove={handleMouseMove}
-      className="min-h-screen w-full h-screen overflow-hidden flex items-center justify-center sm:justify-end px-4 sm:px-10 lg:px-24 relative bg-[#FBFBFA] dark:bg-[#0E0E11] font-sans select-none"
+      className="min-h-screen w-full h-screen overflow-hidden flex items-center justify-center sm:justify-end px-4 sm:px-10 lg:px-24 relative bg-[#FBFBFA] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
     >
       {/* 1. Global Campus Background: Converted from JPG to SVG format */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -153,8 +154,19 @@ export const LoginPage: React.FC = () => {
         />
       </div>
 
-      {/* Theme Toggle in Login Viewport */}
-      <div className="absolute top-6 left-6 z-30">
+      {/* 2. Institutional Header Banner (Top-Left Yellow Box Position) */}
+      <div className="absolute top-6 left-6 sm:top-8 sm:left-8 z-30 flex items-center">
+        <div className="p-2 sm:p-2.5 rounded-2xl bg-white/85 dark:bg-black/60 border border-white/50 dark:border-white/10 backdrop-blur-xl shadow-lg transition-transform duration-200 hover:scale-[1.02]">
+          <img
+            src="/krmu_banner.svg"
+            alt="K.R. Mangalam University - The Complete World of Education - NAAC Grade A"
+            className="h-8 sm:h-10 w-auto object-contain block"
+          />
+        </div>
+      </div>
+
+      {/* 3. Theme Toggle in Login Viewport (Top-Right as indicated by red arrow) */}
+      <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-30">
         <ThemeToggle size="lg" />
       </div>
 
@@ -207,7 +219,7 @@ export const LoginPage: React.FC = () => {
               Institutional Email
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Mail className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
               <input
                 type="email"
                 required
@@ -225,9 +237,9 @@ export const LoginPage: React.FC = () => {
               Password
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Lock className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 required
                 value={password}
                 onChange={e => {
@@ -235,8 +247,17 @@ export const LoginPage: React.FC = () => {
                   if (errorMessage) setErrorMessage(null);
                 }}
                 placeholder="••••••••••••"
-                className="w-full text-xs font-mono pl-9 pr-3 py-2 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors"
+                className="w-full text-xs font-mono pl-9 pr-10 py-2 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(prev => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200 z-10 p-0.5 focus:outline-none cursor-pointer transition-colors"
+                title={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
           </div>
 
