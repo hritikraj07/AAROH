@@ -15,6 +15,8 @@ import {
   GlobalSearchResult,
   GradeRecord,
   AssessmentType,
+  SkillTree,
+  SkillTreeNode,
 } from '../types';
 import { StorageService } from '../services/storage';
 
@@ -40,6 +42,7 @@ interface AppContextType {
   opportunities: Opportunity[];
   notifications: NotificationItem[];
   grades: GradeRecord[];
+  skillTrees: SkillTree[];
   isAuthenticated: boolean;
 
   // Counts
@@ -119,6 +122,8 @@ interface AppContextType {
       credits?: number;
     }>
   ) => void;
+  saveSkillTree: (tree: Omit<SkillTree, 'updatedAt'>) => SkillTree;
+  getSkillTreeForCourse: (courseId: string) => SkillTree | null;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -136,6 +141,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [opportunities, setOpportunities] = useState<Opportunity[]>(() => StorageService.getOpportunities());
   const [notifications, setNotifications] = useState<NotificationItem[]>(() => StorageService.getNotifications());
   const [grades, setGrades] = useState<GradeRecord[]>(() => StorageService.getGrades());
+  const [skillTrees, setSkillTrees] = useState<SkillTree[]>(() => StorageService.getSkillTrees());
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => StorageService.isAuthenticated());
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -155,6 +161,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setOpportunities(StorageService.getOpportunities());
     setNotifications(StorageService.getNotifications());
     setGrades(StorageService.getGrades());
+    setSkillTrees(StorageService.getSkillTrees());
     setIsAuthenticated(StorageService.isAuthenticated());
   }, []);
 
@@ -562,6 +569,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
+  const saveSkillTree = (treeData: Omit<SkillTree, 'updatedAt'>) => {
+    const saved = StorageService.saveSkillTree(treeData);
+    setSkillTrees(StorageService.getSkillTrees());
+    showToast({
+      type: 'success',
+      title: 'Skill Tree Saved',
+      message: `Updated curriculum nodes for ${saved.courseCode || saved.courseName}.`,
+    });
+    return saved;
+  };
+
+  const getSkillTreeForCourse = (courseId: string) => {
+    return StorageService.getSkillTreeByCourse(courseId);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -580,6 +602,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         notifications,
         grades,
         saveBatchGrades,
+        skillTrees,
+        saveSkillTree,
+        getSkillTreeForCourse,
         isAuthenticated,
         unreadNoticeCount,
         pendingAssignmentsCount,

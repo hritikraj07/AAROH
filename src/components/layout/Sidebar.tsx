@@ -15,7 +15,8 @@ import {
   Clock,
   ShieldCheck,
   Users,
-  Award
+  Award,
+  Network
 } from 'lucide-react';
 import { APP_CONFIG } from '../../config';
 import { useApp } from '../../context/AppContext';
@@ -198,6 +199,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
           to: '/admin/timetable',
           label: 'Timetable Scheduler',
           icon: <Clock className="w-4 h-4" />,
+        },
+        {
+          to: '/admin/curriculum',
+          label: 'Curriculum Builder',
+          icon: <Network className="w-4 h-4" />,
         },
       ],
     },

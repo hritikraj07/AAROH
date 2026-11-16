@@ -226,3 +226,26 @@ export interface GlobalSearchResult {
   subtitle: string;
   url: string;
 }
+
+// B.Tech Skill Tree & Gamified RPG Curriculum
+export interface SkillTreeNode {
+  id: string;
+  courseId: string;
+  title: string;
+  description?: string;
+  prerequisiteId?: string;
+  prerequisiteTitle?: string;
+  level: number; // Tier 1, 2, 3, 4, 5
+  requiredLabKeyword?: string;
+  isCompleted?: boolean;
+}
+
+export interface SkillTree {
+  id: string;
+  courseId: string;
+  courseCode: string;
+  courseName: string;
+  nodes: SkillTreeNode[];
+  updatedAt: string;
+}
+

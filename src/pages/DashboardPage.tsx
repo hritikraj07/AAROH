@@ -14,7 +14,8 @@ import {
   Sparkles,
   ExternalLink,
   CheckCircle2,
-  Users
+  Users,
+  Network
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { APP_CONFIG } from '../config';
@@ -27,13 +28,17 @@ import { PinnedNoticesWidget } from '../components/modules/dashboard/PinnedNotic
 import { UpcomingEventsWidget } from '../components/modules/dashboard/UpcomingEventsWidget';
 import { LostAndFoundMatcherWidget } from '../components/modules/dashboard/LostAndFoundMatcherWidget';
 import { ReportLostFoundModal } from '../components/modules/lostfound/ReportLostFoundModal';
+import { getFacultyFullName } from '../utils/facultyUtils';
+import { SkillTreeModal } from '../components/modules/academics/SkillTreeModal';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isSkillTreeModalOpen, setIsSkillTreeModalOpen] = useState(false);
 
   const {
     user,
+    users,
     student,
     attendance,
     courses,
@@ -253,7 +258,7 @@ export const DashboardPage: React.FC = () => {
                 Current Class: {currentSubjectName}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                Instructor: {activeFocusSession.facultyName || 'Course Faculty'} • Type: {activeFocusSession.type || 'Lecture'}
+                Instructor: {getFacultyFullName(activeFocusSession, activeCourse, users)} • Type: {activeFocusSession.type || 'Lecture'}
               </p>
             </div>
 
@@ -265,6 +270,15 @@ export const DashboardPage: React.FC = () => {
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>Take Live Notes</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsSkillTreeModalOpen(true)}
+                className="rounded-full bg-white dark:bg-[#27272A] border border-slate-200 dark:border-[#27272A] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 text-xs px-4 py-2 font-medium transition-colors active:scale-95 shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
+              >
+                <Network className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+                <span>View Skill Tree</span>
               </button>
 
               <button
@@ -500,6 +514,15 @@ export const DashboardPage: React.FC = () => {
       <ReportLostFoundModal
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
+      />
+
+      {/* Gamified RPG Skill Tree Modal */}
+      <SkillTreeModal
+        courseId={activeFocusSession?.courseId || 'all_cs'}
+        courseCode={activeCourse?.code || activeFocusSession?.courseCode || 'CS301'}
+        courseName={currentSubjectName || 'Operating Systems'}
+        isOpen={isSkillTreeModalOpen}
+        onClose={() => setIsSkillTreeModalOpen(false)}
       />
     </div>
   );

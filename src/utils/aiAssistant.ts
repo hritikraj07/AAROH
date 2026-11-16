@@ -115,8 +115,53 @@ export function gatherStudentContextFromStorage(fallbackUser?: User | null): Stu
  * "You are Aaroh, the smart campus assistant for K.R. Mangalam University. Be concise, helpful, and professional. Here is the current student's real-time data: [Insert stringified localStorage data]. Answer the user's query strictly based on this data. If they ask about classes, check the timetable. If they ask about deadlines, check assignments."
  */
 export function buildCampusAISystemPrompt(studentData: StudentStorageContext): string {
-  const stringifiedData = JSON.stringify(studentData);
-  return `You are Aaroh, the smart campus assistant for K.R. Mangalam University. Be concise, helpful, and professional. Here is the current student's real-time data: ${stringifiedData}. Answer the user's query strictly based on this data. If they ask about classes, check the timetable. If they ask about deadlines, check assignments.`;
+  const cleanProfile = studentData.profile ? {
+    name: studentData.profile.name,
+    email: studentData.profile.email,
+    rollNumber: studentData.profile.rollNumber,
+    program: studentData.profile.program,
+    semester: studentData.profile.semester,
+    attendanceMinimum: studentData.profile.attendanceMinimum,
+  } : null;
+
+  const cleanTimetable = (studentData.timetable || []).slice(0, 20).map((t: any) => ({
+    courseCode: t.courseCode || t.courseId,
+    courseName: t.courseName,
+    dayOfWeek: t.dayOfWeek,
+    startTime: t.startTime,
+    endTime: t.endTime,
+    room: t.room,
+  }));
+
+  const cleanAttendance = (studentData.attendance || []).slice(0, 15).map((a: any) => ({
+    courseId: a.courseId,
+    attended: a.attended,
+    total: a.total,
+  }));
+
+  const cleanAssignments = (studentData.assignments || []).slice(0, 15).map((asg: any) => ({
+    title: asg.title,
+    dueDate: asg.dueDate,
+    status: asg.status,
+    maxMarks: asg.maxMarks,
+  }));
+
+  const cleanOpportunities = (studentData.savedOpportunities || []).slice(0, 10).map((o: any) => ({
+    title: o.title,
+    organization: o.organization,
+    deadline: o.deadline,
+  }));
+
+  const compactData = {
+    profile: cleanProfile,
+    timetable: cleanTimetable,
+    attendance: cleanAttendance,
+    assignments: cleanAssignments,
+    savedOpportunities: cleanOpportunities,
+  };
+
+  const stringifiedData = JSON.stringify(compactData);
+  return `You are Aaroh, the smart campus assistant for K.R. Mangalam University. Be concise, accurate, helpful, and professional. Here is the current student's real-time data: ${stringifiedData}. Answer the user's query strictly based on this data when asking about campus life (timetable, deadlines, attendance, opportunities). If they ask about classes, check the timetable. If they ask about deadlines, check assignments. For general queries, mathematics, science, or logic (for example, simple arithmetic like '2+2'), answer directly, concisely, and accurately (e.g. return '4'). Never concatenate arithmetic numbers as strings.`;
 }
 
 export interface ChatMessagePayload {
@@ -199,6 +244,24 @@ export function processCampusAIQuery(query: string, context: AIAssistantContext,
 
   if (!q) {
     return "I'm your Aaroh campus assistant. Try asking me about your next class, attendance, or upcoming deadlines!";
+  }
+
+  // 0. Arithmetic / Math Evaluation (Prevent string concatenation or hallucinations)
+  const mathClean = q
+    .replace(/^(what is|calculate|solve|eval|evaluate)\s+/i, '')
+    .replace(/[=?]+$/g, '')
+    .trim();
+
+  if (/^[\d\s+\-*/().%]+$/.test(mathClean) && /\d/.test(mathClean) && /[+\-*/%]/.test(mathClean)) {
+    try {
+      const sanitized = mathClean.replace(/[^0-9+\-*/().%]/g, '');
+      const result = Function(`'use strict'; return (${sanitized})`)();
+      if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
+        return String(result);
+      }
+    } catch {
+      // Continue to next rule if evaluation fails
+    }
   }
 
   // 1. Check for Next Class or Timetable Queries

@@ -3,11 +3,14 @@ import { useApp } from '../../../context/AppContext';
 import { AcademicService } from '../../../services/academicService';
 import { ClassSession } from '../../../types';
 import { Badge } from '../../ui/Badge';
-import { Clock, MapPin, User, Calendar } from 'lucide-react';
+import { Clock, MapPin, User, Calendar, Network } from 'lucide-react';
+import { getFacultyFullName } from '../../../utils/facultyUtils';
+import { SkillTreeModal } from './SkillTreeModal';
 
 export const TimetableTab: React.FC = () => {
-  const { timetable, courses, user } = useApp();
+  const { timetable, courses, user, users } = useApp();
   const [viewMode, setViewMode] = useState<'grid' | 'day'>('grid');
+  const [selectedCourseForTree, setSelectedCourseForTree] = useState<{ id: string; code: string; name: string } | null>(null);
 
   // Filter timetable if logged-in user is a student with program/semester
   const filteredTimetable = timetable.filter(s => {
@@ -190,7 +193,9 @@ export const TimetableTab: React.FC = () => {
 
                           <div className="mt-2 pt-1 border-t border-slate-200/60 flex items-center justify-between text-[10px] text-slate-500">
                             <span className="truncate">{session.room}</span>
-                            <span className="truncate text-slate-400">{session.facultyName.split(' ').pop()}</span>
+                            <span className="truncate text-slate-600 dark:text-slate-400 font-medium">
+                              {getFacultyFullName(session, course, users)}
+                            </span>
                           </div>
                         </div>
                       ) : (
@@ -263,13 +268,22 @@ export const TimetableTab: React.FC = () => {
                             <MapPin className="w-3.5 h-3.5 text-slate-400" />
                             {session.room}
                           </span>
-                          <span className="flex items-center gap-1">
+                          <span className="flex items-center gap-1 font-medium text-slate-700 dark:text-slate-300">
                             <User className="w-3.5 h-3.5 text-slate-400" />
-                            {session.facultyName} ({course?.facultyEmail})
+                            {getFacultyFullName(session, course, users)}
                           </span>
                           <span className="hidden sm:inline text-slate-400">
-                            {course?.credits} Credits
+                            {course?.credits || 4} Credits
                           </span>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCourseForTree({ id: session.courseId, code: course?.code || 'CS', name: course?.name || session.courseName || 'Course' })}
+                            className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 transition-colors ml-auto cursor-pointer"
+                            title="View B.Tech Skill Tree"
+                          >
+                            <Network className="w-3 h-3 text-teal-600" />
+                            <span>View Skill Tree</span>
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -279,6 +293,16 @@ export const TimetableTab: React.FC = () => {
             </div>
           )}
         </div>
+      )}
+
+      {selectedCourseForTree && (
+        <SkillTreeModal
+          courseId={selectedCourseForTree.id}
+          courseCode={selectedCourseForTree.code}
+          courseName={selectedCourseForTree.name}
+          isOpen={Boolean(selectedCourseForTree)}
+          onClose={() => setSelectedCourseForTree(null)}
+        />
       )}
     </div>
   );

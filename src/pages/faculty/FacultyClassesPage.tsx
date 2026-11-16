@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Button } from '../../components/ui/Button';
-import { BookOpen, Plus, Users, Clock, Building, X, Trash2 } from 'lucide-react';
+import { BookOpen, Plus, Users, Clock, Building, X, Trash2, Network } from 'lucide-react';
 import { Course } from '../../types';
+import { getFacultyFullName } from '../../utils/facultyUtils';
+import { SkillTreeModal } from '../../components/modules/academics/SkillTreeModal';
 
 export const FacultyClassesPage: React.FC = () => {
-  const { courses, timetable, createCourse, deleteCourse, user, role } = useApp();
+  const { courses, timetable, createCourse, deleteCourse, user, users, role } = useApp();
   const currentUser = user;
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedCourseForTree, setSelectedCourseForTree] = useState<Course | null>(null);
 
   // Form State (Admin course creation modal)
   const [code, setCode] = useState('');
@@ -113,7 +116,7 @@ export const FacultyClassesPage: React.FC = () => {
                     <h3 className="text-sm font-semibold text-slate-900">{course.name}</h3>
                     <p className="text-xs text-slate-500 mt-1 flex items-center gap-1.5 font-mono">
                       <Building className="w-3.5 h-3.5 text-slate-400" />
-                      {course.facultyName}
+                      {getFacultyFullName(course, null, users)}
                     </p>
                   </div>
 
@@ -138,9 +141,14 @@ export const FacultyClassesPage: React.FC = () => {
                   <span className="text-slate-500 text-[11px]">
                     {courseSessions.length} weekly sessions
                   </span>
-                  <span className="text-[11px] font-semibold text-teal-800 bg-teal-50 px-2 py-0.5 rounded">
-                    Active Semester
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedCourseForTree(course)}
+                    className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-1 rounded-full bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 transition-colors cursor-pointer"
+                  >
+                    <Network className="w-3 h-3 text-teal-600" />
+                    <span>View Skill Tree</span>
+                  </button>
                 </div>
               </div>
             );
@@ -256,6 +264,16 @@ export const FacultyClassesPage: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {selectedCourseForTree && (
+        <SkillTreeModal
+          courseId={selectedCourseForTree.id}
+          courseCode={selectedCourseForTree.code}
+          courseName={selectedCourseForTree.name}
+          isOpen={Boolean(selectedCourseForTree)}
+          onClose={() => setSelectedCourseForTree(null)}
+        />
       )}
     </div>
   );

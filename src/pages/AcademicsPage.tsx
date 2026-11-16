@@ -5,8 +5,9 @@ import { TimetableTab } from '../components/modules/academics/TimetableTab';
 import { AttendanceTab } from '../components/modules/academics/AttendanceTab';
 import { AssignmentsTab } from '../components/modules/academics/AssignmentsTab';
 import { AcademicResultsTab } from '../components/modules/academics/AcademicResultsTab';
+import { SkillTreeTab } from '../components/modules/academics/SkillTreeTab';
 import { useApp } from '../context/AppContext';
-import { Clock, CheckSquare, Calendar, Award } from 'lucide-react';
+import { Clock, CheckSquare, Calendar, Award, Network } from 'lucide-react';
 
 export const AcademicsPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -40,6 +41,11 @@ export const AcademicsPage: React.FC = () => {
       label: 'Academic Results & GPA',
       icon: <Award className="w-4 h-4" />,
     },
+    {
+      id: 'skill-tree',
+      label: 'B.Tech Skill Tree',
+      icon: <Network className="w-4 h-4" />,
+    },
   ];
 
   return (
@@ -49,7 +55,7 @@ export const AcademicsPage: React.FC = () => {
         <div className="mb-2">
           <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Academic Operations</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            View section timetables, track attendance regulations, submit assignments, and predict graduation GPA.
+            View section timetables, track attendance regulations, submit assignments, predict graduation GPA, and explore the RPG Skill Tree.
           </p>
         </div>
 
@@ -67,6 +73,7 @@ export const AcademicsPage: React.FC = () => {
         {activeTab === 'attendance' && <AttendanceTab />}
         {activeTab === 'assignments' && <AssignmentsTab />}
         {activeTab === 'results' && <AcademicResultsTab />}
+        {(activeTab === 'skill-tree' || activeTab === 'curriculum' || activeTab === 'courses') && <SkillTreeTab />}
       </div>
     </div>
   );

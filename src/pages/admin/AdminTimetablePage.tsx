@@ -15,6 +15,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { ClassSession, ClassType } from '../../types';
+import { getFacultyFullName } from '../../utils/facultyUtils';
 
 export const AdminTimetablePage: React.FC = () => {
   const { timetable, courses, users, createTimetableSession, deleteTimetableSession } = useApp();
@@ -296,7 +297,7 @@ export const AdminTimetablePage: React.FC = () => {
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-1 text-slate-700 font-medium">
                           <User className="w-3.5 h-3.5 text-slate-400" />
-                          <span>{slot.facultyName}</span>
+                          <span>{getFacultyFullName(slot, null, users)}</span>
                         </div>
                         {slot.facultyEmail && (
                           <div className="text-[10px] text-slate-400 font-mono pl-4.5">

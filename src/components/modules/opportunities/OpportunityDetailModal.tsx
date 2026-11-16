@@ -71,11 +71,11 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
           <button
             type="button"
             onClick={() => toggleSaveOpportunity(opportunity.id)}
-            className="text-xs text-slate-600 hover:text-slate-900 flex items-center gap-1.5"
+            className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 flex items-center gap-1.5"
           >
             <Bookmark
               className={`w-4 h-4 ${
-                opportunity.isSaved ? 'fill-teal-700 text-teal-700' : 'text-slate-400'
+                opportunity.isSaved ? 'fill-teal-700 text-teal-700 dark:fill-teal-400 dark:text-teal-400' : 'text-slate-400'
               }`}
             />
             <span>{opportunity.isSaved ? 'Saved to Bookmarks' : 'Save for Later'}</span>
@@ -109,10 +109,10 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
         <div
           className={`p-4 rounded-lg border text-xs transition-all duration-200 ${
             !skillAnalysis.hasRequirements
-              ? 'bg-slate-50 border-slate-200 text-slate-800'
+              ? 'bg-slate-50 dark:bg-[#27272A]/50 border-slate-200 dark:border-[#27272A] text-slate-800 dark:text-slate-200'
               : skillAnalysis.isMatch
-              ? 'bg-green-50 border-green-200 text-green-900'
-              : 'bg-amber-50 border-amber-200 text-amber-900'
+              ? 'bg-green-50 dark:bg-emerald-950/30 border-green-200 dark:border-emerald-800 text-green-900 dark:text-emerald-300'
+              : 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-300'
           }`}
         >
           <div className="flex items-center justify-between gap-2 pb-2">
@@ -120,10 +120,10 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
               <Sparkles
                 className={`w-4 h-4 ${
                   !skillAnalysis.hasRequirements
-                    ? 'text-slate-500'
+                    ? 'text-slate-500 dark:text-slate-400'
                     : skillAnalysis.isMatch
-                    ? 'text-green-700'
-                    : 'text-amber-700'
+                    ? 'text-green-700 dark:text-emerald-400'
+                    : 'text-amber-700 dark:text-amber-400'
                 }`}
               />
               <span className="text-sm font-semibold">✨ AI Skill Match</span>
@@ -133,8 +133,8 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
               <span
                 className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider ${
                   skillAnalysis.isMatch
-                    ? 'bg-green-200/60 text-green-800'
-                    : 'bg-amber-200/60 text-amber-800'
+                    ? 'bg-green-200/60 dark:bg-emerald-900/50 text-green-800 dark:text-emerald-300'
+                    : 'bg-amber-200/60 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300'
                 }`}
               >
                 {skillAnalysis.isMatch ? 'Match Verified' : 'Gap Detected'}
@@ -150,7 +150,7 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
           {skillAnalysis.hasRequirements && (
             <div className="mt-3 pt-2.5 border-t border-current/10 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-[11px] font-semibold text-slate-500">Role Skills:</span>
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">Role Skills:</span>
                 {skillAnalysis.requiredSkills.map(skill => {
                   const isOwned = skillAnalysis.matchedSkills.includes(skill);
                   return (
@@ -158,14 +158,14 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
                       key={skill}
                       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono font-medium ${
                         isOwned
-                          ? 'bg-green-100 text-green-800 border border-green-300'
-                          : 'bg-amber-100 text-amber-800 border border-amber-300'
+                          ? 'bg-green-100 dark:bg-emerald-900/40 text-green-800 dark:text-emerald-300 border border-green-300 dark:border-emerald-700'
+                          : 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700'
                       }`}
                     >
                       {isOwned ? (
-                        <CheckCircle2 className="w-3 h-3 text-green-700" />
+                        <CheckCircle2 className="w-3 h-3 text-green-700 dark:text-emerald-400" />
                       ) : (
-                        <AlertTriangle className="w-3 h-3 text-amber-700" />
+                        <AlertTriangle className="w-3 h-3 text-amber-700 dark:text-amber-400" />
                       )}
                       {skill}
                     </span>
@@ -192,7 +192,7 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
         </div>
 
         {/* Banner with Org, Mode, Compensation */}
-        <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+        <div className="p-4 bg-slate-50 dark:bg-[#27272A]/50 border border-slate-200 dark:border-[#27272A] rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <Badge
@@ -211,14 +211,14 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
                 {opportunity.mode}
               </Badge>
             </div>
-            <h4 className="text-base font-bold text-slate-900">{opportunity.organization}</h4>
+            <h4 className="text-base font-bold text-slate-900 dark:text-slate-100">{opportunity.organization}</h4>
           </div>
 
-          <div className="sm:text-right border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200">
-            <span className="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">
+          <div className="sm:text-right border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200 dark:border-[#27272A]">
+            <span className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-400 block font-semibold">
               Stipend / Prize Pool
             </span>
-            <span className="text-sm font-bold text-emerald-700 font-mono">
+            <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400 font-mono">
               {opportunity.stipendPrize || opportunity.compensation}
             </span>
           </div>
@@ -228,10 +228,10 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
         <div
           className={`p-3 rounded-md border text-xs flex items-center justify-between ${
             isExpired
-              ? 'bg-rose-50/50 border-rose-200 text-rose-900'
+              ? 'bg-rose-50/50 dark:bg-rose-950/30 border-rose-200 dark:border-rose-900 text-rose-900 dark:text-rose-300'
               : daysLeft <= 2
-              ? 'bg-amber-50/70 border-amber-200 text-amber-900'
-              : 'bg-teal-50/40 border-teal-200 text-teal-900'
+              ? 'bg-amber-50/70 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-300'
+              : 'bg-teal-50/40 dark:bg-teal-950/30 border-teal-200 dark:border-teal-800 text-teal-900 dark:text-teal-300'
           }`}
         >
           <div className="flex items-center gap-2">
@@ -243,9 +243,9 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
 
           <div className="font-semibold font-mono">
             {isExpired ? (
-              <span className="text-rose-700">Expired ({Math.abs(daysLeft)} days ago)</span>
+              <span className="text-rose-700 dark:text-rose-400">Expired ({Math.abs(daysLeft)} days ago)</span>
             ) : daysLeft === 0 ? (
-              <span className="text-amber-700">Closes Today!</span>
+              <span className="text-amber-700 dark:text-amber-400">Closes Today!</span>
             ) : (
               <span>{daysLeft} days remaining</span>
             )}
@@ -253,21 +253,21 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
         </div>
 
         {/* Eligibility Criteria */}
-        <div className="space-y-1.5 p-3 bg-white border border-slate-200 rounded-md">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+        <div className="space-y-1.5 p-3 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-md">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Eligibility & Prerequisites
           </h4>
-          <p className="text-xs text-slate-800 leading-relaxed font-medium">
+          <p className="text-xs text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
             {opportunity.eligibility}
           </p>
         </div>
 
         {/* Role & Problem Description */}
         <div className="space-y-1.5">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Description & Key Deliverables
           </h4>
-          <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-line">
+          <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
             {opportunity.description}
           </p>
         </div>

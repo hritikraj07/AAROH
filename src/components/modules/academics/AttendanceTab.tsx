@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useApp } from '../../../context/AppContext';
 import { AcademicService } from '../../../services/academicService';
 import { Badge } from '../../ui/Badge';
-import { AlertCircle, CheckCircle2, Sliders, Calendar } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Sliders, Calendar, Network } from 'lucide-react';
 import { APP_CONFIG } from '../../../config';
+import { getFacultyFullName } from '../../../utils/facultyUtils';
+import { SkillTreeModal } from './SkillTreeModal';
 
 export const AttendanceTab: React.FC = () => {
-  const { attendance, courses, student, updateAttendanceThreshold } = useApp();
+  const { attendance, courses, student, users, updateAttendanceThreshold } = useApp();
   const minThreshold = student?.attendanceMinimum || APP_CONFIG.defaultAttendanceThreshold;
+  const [selectedCourseForTree, setSelectedCourseForTree] = useState<{ id: string; code: string; name: string } | null>(null);
 
   // Filter attendance records specifically for the logged-in student
   const studentAttendance = attendance.filter(rec => {
@@ -145,9 +148,20 @@ export const AttendanceTab: React.FC = () => {
 
                       {/* Course Name */}
                       <td className="py-3 px-4">
-                        <div className="font-semibold text-slate-900">{item.course.name}</div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-slate-900">{item.course.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCourseForTree({ id: item.course.id, code: item.course.code, name: item.course.name })}
+                            className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 transition-colors"
+                            title="View B.Tech Skill Tree"
+                          >
+                            <Network className="w-3 h-3 text-teal-600" />
+                            <span>Skill Tree</span>
+                          </button>
+                        </div>
                         <div className="text-[11px] text-slate-500 mt-0.5">
-                          {item.course.facultyName} • {item.course.credits} Credits • {item.course.roomDefault}
+                          {getFacultyFullName(item.course, null, users)} • {item.course.credits} Credits • {item.course.roomDefault}
                         </div>
                       </td>
 
@@ -227,6 +241,16 @@ export const AttendanceTab: React.FC = () => {
           </p>
         </div>
       </div>
+
+      {selectedCourseForTree && (
+        <SkillTreeModal
+          courseId={selectedCourseForTree.id}
+          courseCode={selectedCourseForTree.code}
+          courseName={selectedCourseForTree.name}
+          isOpen={Boolean(selectedCourseForTree)}
+          onClose={() => setSelectedCourseForTree(null)}
+        />
+      )}
     </div>
   );
 };

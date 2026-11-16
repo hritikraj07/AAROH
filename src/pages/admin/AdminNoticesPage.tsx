@@ -80,12 +80,12 @@ export const AdminNoticesPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-[#27272A]">
         <div>
-          <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
+          <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
             Campus Circulars & Notice Board
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Publish official university notifications, pin administrative decrees, and manage circular broadcasts.
           </p>
         </div>
@@ -101,7 +101,7 @@ export const AdminNoticesPage: React.FC = () => {
       </div>
 
       {/* Filters & Search */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-lg border border-slate-200">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white dark:bg-[#18181B] p-3 rounded-lg border border-slate-200 dark:border-[#27272A]">
         {/* Search */}
         <div className="relative w-full sm:w-72">
           <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -110,7 +110,7 @@ export const AdminNoticesPage: React.FC = () => {
             placeholder="Search circulars..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full text-xs pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+            className="w-full text-xs pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700"
           />
         </div>
 
@@ -122,8 +122,8 @@ export const AdminNoticesPage: React.FC = () => {
               onClick={() => setSelectedCategory(cat)}
               className={`px-2.5 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap capitalize ${
                 selectedCategory === cat
-                  ? 'bg-teal-50 text-teal-900 border border-teal-200 font-semibold'
-                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
+                  ? 'bg-teal-50 dark:bg-teal-950/40 text-teal-900 dark:text-teal-300 border border-teal-200 dark:border-teal-800 font-semibold'
+                  : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
               }`}
             >
               {cat === 'all' ? 'All Circulars' : cat}
@@ -134,10 +134,10 @@ export const AdminNoticesPage: React.FC = () => {
 
       {/* Notices Table */}
       {filteredNotices.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-lg p-10 text-center space-y-3">
-          <Bell className="w-10 h-10 text-slate-300 mx-auto" />
-          <h3 className="text-sm font-semibold text-slate-900">No circulars found</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-10 text-center space-y-3">
+          <Bell className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">No circulars found</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
             {searchQuery || selectedCategory !== 'all'
               ? 'No notices match your active query. Try clearing filters.'
               : 'The official campus notice board is currently empty. Click "Publish Circular" to issue your first university circular.'}
@@ -152,11 +152,11 @@ export const AdminNoticesPage: React.FC = () => {
           </Button>
         </div>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-mono uppercase text-[10px]">
+                <tr className="bg-slate-50 dark:bg-[#27272A]/70 border-b border-slate-200 dark:border-[#27272A] text-slate-500 dark:text-slate-400 font-mono uppercase text-[10px]">
                   <th className="py-3 px-4 w-12 text-center">Pin</th>
                   <th className="py-3 px-4">Circular Title</th>
                   <th className="py-3 px-4">Category</th>
@@ -165,16 +165,16 @@ export const AdminNoticesPage: React.FC = () => {
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody className="divide-y divide-slate-200 dark:divide-[#27272A]">
                 {filteredNotices.map(notice => (
-                  <tr key={notice.id} className="hover:bg-slate-50/50">
+                  <tr key={notice.id} className="hover:bg-slate-50/50 dark:hover:bg-[#27272A]/40">
                     <td className="py-3 px-4 text-center">
                       <button
                         onClick={() => togglePinNotice(notice.id)}
                         className={`p-1 rounded transition-colors ${
                           notice.isPinned
-                            ? 'text-teal-700 hover:text-teal-900 bg-teal-50'
-                            : 'text-slate-300 hover:text-slate-600'
+                            ? 'text-teal-700 dark:text-teal-400 hover:text-teal-900 bg-teal-50 dark:bg-teal-950/40'
+                            : 'text-slate-300 dark:text-slate-600 hover:text-slate-600 dark:hover:text-slate-300'
                         }`}
                         title={notice.isPinned ? 'Unpin notice' : 'Pin to top of notice board'}
                       >
@@ -183,32 +183,32 @@ export const AdminNoticesPage: React.FC = () => {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-slate-900">{notice.title}</span>
+                        <span className="font-semibold text-slate-900 dark:text-slate-100">{notice.title}</span>
                         {notice.isPinned && (
-                          <span className="text-[10px] font-semibold text-teal-800 bg-teal-50 border border-teal-200 px-1.5 py-0.2 rounded font-mono">
+                          <span className="text-[10px] font-semibold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 px-1.5 py-0.2 rounded font-mono">
                             Pinned
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
                         {notice.content}
                       </p>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200 font-mono">
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono">
                         {notice.category}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-slate-600 font-mono">
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400 font-mono">
                       {notice.department}
                     </td>
-                    <td className="py-3 px-4 text-slate-500 font-mono whitespace-nowrap">
+                    <td className="py-3 px-4 text-slate-500 dark:text-slate-400 font-mono whitespace-nowrap">
                       {notice.publishedDate}
                     </td>
                     <td className="py-3 px-4 text-right whitespace-nowrap space-x-2">
                       <button
                         onClick={() => deleteNotice(notice.id)}
-                        className="text-slate-400 hover:text-rose-600 p-1 rounded transition-colors"
+                        className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1 rounded transition-colors"
                         title="Delete circular"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -225,15 +225,15 @@ export const AdminNoticesPage: React.FC = () => {
       {/* Publish Notice Modal */}
       {isPublishModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-lg shadow-sm max-w-lg w-full p-6 space-y-4 animate-in fade-in duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-sm max-w-lg w-full p-6 space-y-4 animate-in fade-in duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A]">
               <div className="flex items-center gap-2">
-                <Bell className="w-4 h-4 text-teal-800" />
-                <h3 className="text-sm font-semibold text-slate-900">Publish Campus Circular</h3>
+                <Bell className="w-4 h-4 text-teal-800 dark:text-teal-400" />
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Publish Campus Circular</h3>
               </div>
               <button
                 onClick={() => setIsPublishModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -241,7 +241,7 @@ export const AdminNoticesPage: React.FC = () => {
 
             <form onSubmit={handlePublishNotice} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Circular Title <span className="text-rose-600">*</span>
                 </label>
                 <input
@@ -250,17 +250,17 @@ export const AdminNoticesPage: React.FC = () => {
                   placeholder="e.g. Schedule for End-Semester Practical Examinations"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Category</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Category</label>
                   <select
                     value={category}
                     onChange={e => setCategory(e.target.value as NoticeCategory)}
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                   >
                     <option value="Administration">Administration</option>
                     <option value="Academic">Academic</option>
@@ -271,20 +271,20 @@ export const AdminNoticesPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Issuing Authority
                   </label>
                   <input
                     type="text"
                     value={department}
                     onChange={e => setDepartment(e.target.value)}
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Full Circular Text & Directives <span className="text-rose-600">*</span>
                 </label>
                 <textarea
@@ -293,12 +293,12 @@ export const AdminNoticesPage: React.FC = () => {
                   placeholder="Enter the official notification details, guidelines, venue instructions, and dates..."
                   value={content}
                   onChange={e => setContent(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700 resize-none"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 resize-none"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Official Attachment Name (Optional)
                 </label>
                 <input
@@ -306,7 +306,7 @@ export const AdminNoticesPage: React.FC = () => {
                   placeholder="e.g. End_Sem_TimeTable_Nov2026.pdf"
                   value={attachmentName}
                   onChange={e => setAttachmentName(e.target.value)}
-                  className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700"
                 />
               </div>
 
@@ -318,12 +318,12 @@ export const AdminNoticesPage: React.FC = () => {
                   onChange={e => setIsPinned(e.target.checked)}
                   className="rounded border-slate-200 text-teal-700 focus:ring-teal-700"
                 />
-                <label htmlFor="pinToTop" className="text-xs font-medium text-slate-700 cursor-pointer">
+                <label htmlFor="pinToTop" className="text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
                   Pin this circular to the top of all student and faculty feeds
                 </label>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-[#27272A]">
                 <Button
                   type="button"
                   variant="secondary"

@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Clock, MapPin, UserCheck } from 'lucide-react';
+import { ArrowRight, Clock, MapPin, UserCheck, Network } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { AcademicService } from '../../../services/academicService';
 import { Badge } from '../../ui/Badge';
+import { getFacultyFullName } from '../../../utils/facultyUtils';
+import { SkillTreeModal } from '../academics/SkillTreeModal';
 
 export const TodayClassesCard: React.FC = () => {
-  const { timetable, courses, user } = useApp();
+  const { timetable, courses, user, users } = useApp();
+  const [selectedCourseForTree, setSelectedCourseForTree] = useState<{ id: string; code: string; name: string } | null>(null);
   const courseMap = new Map(courses.map(c => [c.id, c]));
 
   // Filter timetable if logged-in user is a student with program/semester
@@ -109,14 +112,23 @@ export const TodayClassesCard: React.FC = () => {
                           <MapPin className="w-3 h-3 text-slate-400 dark:text-slate-500" />
                           {session.room}
                         </span>
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center gap-1 font-medium text-slate-700 dark:text-slate-300">
                           <UserCheck className="w-3 h-3 text-slate-400 dark:text-slate-500" />
-                          {session.facultyName}
+                          {getFacultyFullName(session, course, users)}
                         </span>
                       </div>
                     </div>
 
-                    <div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCourseForTree({ id: session.courseId, code: course?.code || 'CS', name: course?.name || session.courseName || 'Course' })}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-teal-700 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                        title="View B.Tech Skill Tree"
+                      >
+                        <Network className="w-3.5 h-3.5" />
+                      </button>
+
                       {isNext ? (
                         <span className="rounded-full bg-teal-100 dark:bg-teal-900/60 text-teal-800 dark:text-teal-300 text-[10px] font-bold font-mono uppercase px-2.5 py-1">
                           {upcomingInfo.isHappeningNow
@@ -140,6 +152,16 @@ export const TodayClassesCard: React.FC = () => {
           <span>{sessionsToDisplay.length} sessions listed</span>
           <span>Cohort: {user?.program || 'B.Tech'} Sem {user?.semester || 5}</span>
         </div>
+      )}
+
+      {selectedCourseForTree && (
+        <SkillTreeModal
+          courseId={selectedCourseForTree.id}
+          courseCode={selectedCourseForTree.code}
+          courseName={selectedCourseForTree.name}
+          isOpen={Boolean(selectedCourseForTree)}
+          onClose={() => setSelectedCourseForTree(null)}
+        />
       )}
     </div>
   );

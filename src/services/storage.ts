@@ -14,6 +14,8 @@ import {
   GlobalSearchResult,
   GradeRecord,
   AssessmentType,
+  SkillTree,
+  SkillTreeNode,
 } from '../types';
 import {
   INITIAL_COURSES,
@@ -46,6 +48,7 @@ const STORAGE_KEYS = {
   OPPORTUNITIES: 'aaroh_opportunities',
   NOTIFICATIONS: 'aaroh_notifications',
   GRADES: 'aaroh_grades',
+  SKILL_TREES: 'skillTrees',
 };
 
 function getStored<T>(key: string, fallback: T): T {
@@ -866,6 +869,129 @@ export const StorageService = {
     });
 
     this.saveGrades(updated);
+  },
+
+  // B.Tech Skill Tree & Curriculum Management
+  getSkillTrees(): SkillTree[] {
+    const defaultTrees: SkillTree[] = [
+      {
+        id: 'tree_default_cs',
+        courseId: 'all_cs',
+        courseCode: 'CS301',
+        courseName: 'Operating Systems & System Architecture',
+        updatedAt: new Date().toISOString(),
+        nodes: [
+          {
+            id: 'node_py_basics',
+            courseId: 'all_cs',
+            title: 'Python Basics',
+            description: 'Core syntax, variables, conditionals, and functional primitives.',
+            level: 1,
+            requiredLabKeyword: 'python',
+          },
+          {
+            id: 'node_ds_oop',
+            courseId: 'all_cs',
+            title: 'Data Structures & OOP',
+            description: 'Object-oriented programming, classes, stacks, queues, and linked lists.',
+            prerequisiteId: 'node_py_basics',
+            prerequisiteTitle: 'Python Basics',
+            level: 2,
+            requiredLabKeyword: 'data',
+          },
+          {
+            id: 'node_ml_core',
+            courseId: 'all_cs',
+            title: 'Machine Learning',
+            description: 'Regression, classification models, feature engineering, and inference.',
+            prerequisiteId: 'node_py_basics',
+            prerequisiteTitle: 'Python Basics',
+            level: 2,
+            requiredLabKeyword: 'learning',
+          },
+          {
+            id: 'node_algo_opt',
+            courseId: 'all_cs',
+            title: 'Algorithm Optimization',
+            description: 'Dynamic programming, graph traversals, and amortized complexity.',
+            prerequisiteId: 'node_ds_oop',
+            prerequisiteTitle: 'Data Structures & OOP',
+            level: 3,
+            requiredLabKeyword: 'algorithm',
+          },
+          {
+            id: 'node_neural_nets',
+            courseId: 'all_cs',
+            title: 'Neural Networks & Deep Learning',
+            description: 'Multilayer perceptrons, backpropagation, and transformer attention.',
+            prerequisiteId: 'node_ml_core',
+            prerequisiteTitle: 'Machine Learning',
+            level: 3,
+            requiredLabKeyword: 'neural',
+          },
+          {
+            id: 'node_capstone',
+            courseId: 'all_cs',
+            title: 'Autonomous Systems Capstone',
+            description: 'Full-stack production integration of ML models and systems engineering.',
+            prerequisiteId: 'node_neural_nets',
+            prerequisiteTitle: 'Neural Networks & Deep Learning',
+            level: 4,
+            requiredLabKeyword: 'autonomous',
+          },
+        ],
+      },
+    ];
+
+    const trees = getStored<SkillTree[]>(STORAGE_KEYS.SKILL_TREES, defaultTrees);
+    if (!trees || trees.length === 0) {
+      this.saveSkillTrees(defaultTrees);
+      return defaultTrees;
+    }
+    return trees;
+  },
+
+  saveSkillTrees(trees: SkillTree[]): void {
+    setStored(STORAGE_KEYS.SKILL_TREES, trees);
+  },
+
+  getSkillTreeByCourse(courseId: string): SkillTree | null {
+    const trees = this.getSkillTrees();
+    const match = trees.find(t => t.courseId === courseId || t.courseCode.toLowerCase() === courseId.toLowerCase());
+    if (match) return match;
+    // Fallback to first available curriculum tree
+    return trees[0] || null;
+  },
+
+  saveSkillTree(treeData: Omit<SkillTree, 'updatedAt'>): SkillTree {
+    const trees = this.getSkillTrees();
+    const now = new Date().toISOString();
+    const existingIdx = trees.findIndex(t => t.id === treeData.id || t.courseId === treeData.courseId);
+
+    const fullTree: SkillTree = {
+      ...treeData,
+      id: treeData.id || `tree_${Date.now()}`,
+      updatedAt: now,
+    };
+
+    if (existingIdx >= 0) {
+      trees[existingIdx] = fullTree;
+    } else {
+      trees.push(fullTree);
+    }
+
+    this.saveSkillTrees(trees);
+    return fullTree;
+  },
+
+  deleteSkillTree(id: string): boolean {
+    const trees = this.getSkillTrees();
+    const filtered = trees.filter(t => t.id !== id);
+    if (filtered.length !== trees.length) {
+      this.saveSkillTrees(filtered);
+      return true;
+    }
+    return false;
   },
 
   // Full reset

@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { QrCode, ShieldAlert, Lock } from 'lucide-react';
+import { QrCode } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { MobileDrawer } from './MobileDrawer';
@@ -12,49 +12,10 @@ import { StudentQRScannerModal } from '../modules/attendance/StudentQRScannerMod
 import { useApp } from '../../context/AppContext';
 
 export const Layout: React.FC = () => {
-  const { role, timetable, assignments } = useApp();
+  const { role } = useApp();
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [isQRScannerOpen, setIsQRScannerOpen] = useState(false);
-  const [manualGhostMode, setManualGhostMode] = useState<boolean | null>(null);
   const location = useLocation();
-
-  // "Ghost Mode" Exam Focus Logic:
-  // Detect if an Exam is scheduled or an Automated Coding Lab is active
-  const isAutoGhostMode = useMemo(() => {
-    if (role !== 'student') return false;
-
-    // Check if an Automated Coding Lab is currently active
-    const hasActiveCodingLab = assignments.some(
-      a => a.type === 'coding' && a.labStatus === 'active'
-    );
-    if (hasActiveCodingLab) return true;
-
-    // Check timetable for scheduled exams
-    const now = new Date();
-    const currentDay = (now.getDay() === 0 ? 7 : now.getDay()) as any;
-    const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-    const isExamNow = timetable.some(session => {
-      const isExam =
-        session.type === ('Exam' as any) ||
-        session.courseName?.toLowerCase().includes('exam') ||
-        session.courseCode?.toLowerCase().includes('exam');
-
-      if (!isExam) return false;
-      if (session.dayOfWeek !== currentDay) return false;
-
-      const [startH, startM] = session.startTime.split(':').map(Number);
-      const [endH, endM] = session.endTime.split(':').map(Number);
-      const startTotal = startH * 60 + startM;
-      const endTotal = endH * 60 + endM;
-
-      return currentMinutes >= startTotal && currentMinutes <= endTotal;
-    });
-
-    return isExamNow;
-  }, [role, assignments, timetable]);
-
-  const isGhostMode = manualGhostMode !== null ? manualGhostMode : isAutoGhostMode;
 
   const getPageTitle = (pathname: string): string => {
     const cleanPath = pathname.replace(/\/+$/, '') || '/';
@@ -111,6 +72,9 @@ export const Layout: React.FC = () => {
       case '/admin/directory':
       case '/admin/users':
         return 'Campus User Directory & Onboarding';
+      case '/admin/curriculum':
+      case '/admin/curriculum-builder':
+        return 'Curriculum & Skill Tree Builder';
       case '/admin/notices':
         return 'Notice Board Publisher';
       case '/admin/events':
@@ -128,72 +92,28 @@ export const Layout: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden font-sans">
-      {/* Ghost Mode Exam Focus: Prominent, Un-dismissible Banner */}
-      {isGhostMode && (
-        <div className="w-full bg-[#1e102d] text-purple-200 border-b border-purple-500/50 px-4 py-2.5 text-xs font-mono font-bold flex items-center justify-between z-50 shrink-0 shadow-lg animate-in fade-in duration-300">
-          <div className="flex items-center gap-2.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-purple-400 animate-ping" />
-            <Lock className="w-4 h-4 text-purple-300" />
-            <span>🔒 Exam Mode Enforced. Navigation disabled.</span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-[11px] text-purple-300/80 uppercase tracking-wider hidden sm:inline">
-              Anti-Cheating Architecture Active
-            </span>
-            <button
-              type="button"
-              onClick={() => setManualGhostMode(false)}
-              className="text-[11px] text-purple-300 hover:text-white underline font-mono cursor-pointer"
-            >
-              Exit Ghost Mode
-            </button>
-          </div>
+    <div className="flex flex-col h-screen overflow-hidden font-sans bg-[#FBFBFA] dark:bg-slate-950">
+      {/* Main Shell Layout - Seamless dark:bg-slate-950 matched with Login Page */}
+      <div className="flex flex-1 overflow-hidden transition-all duration-300 bg-[#FBFBFA] dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+        {/* Desktop Sidebar: Always accessible and uncluttered */}
+        <div className="hidden md:flex md:shrink-0">
+          <Sidebar />
         </div>
-      )}
 
-      {/* Main Shell Layout */}
-      <div
-        className={`flex flex-1 overflow-hidden transition-all duration-300 ${
-          isGhostMode
-            ? 'bg-[#070709] dark:bg-[#070709] border-t-2 border-purple-500/50'
-            : 'bg-[#FBFBFA] dark:bg-[#0E0E11] text-slate-900 dark:text-slate-100'
-        }`}
-      >
-        {/* Desktop Sidebar: Completely HIDDEN in Ghost Mode */}
-        {!isGhostMode && (
-          <div className="hidden md:flex md:shrink-0">
-            <Sidebar />
-          </div>
-        )}
-
-        {/* Mobile Drawer: Disabled in Ghost Mode */}
-        {!isGhostMode && (
-          <MobileDrawer
-            isOpen={isMobileDrawerOpen}
-            onClose={() => setIsMobileDrawerOpen(false)}
-          />
-        )}
+        {/* Mobile Drawer */}
+        <MobileDrawer
+          isOpen={isMobileDrawerOpen}
+          onClose={() => setIsMobileDrawerOpen(false)}
+        />
 
         {/* Main Content Area */}
-        <div
-          className={`flex flex-col flex-1 min-w-0 overflow-hidden ${
-            isGhostMode ? 'border-l border-r border-purple-500/50' : ''
-          }`}
-        >
+        <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
           <TopBar
-            onOpenMobileMenu={() => {
-              if (!isGhostMode) setIsMobileDrawerOpen(true);
-            }}
+            onOpenMobileMenu={() => setIsMobileDrawerOpen(true)}
             pageTitle={getPageTitle(location.pathname)}
           />
 
-          <main
-            className={`flex-1 overflow-y-auto transition-colors duration-200 ${
-              isGhostMode ? 'bg-[#070709] dark:bg-[#070709]' : 'bg-[#FBFBFA] dark:bg-[#0E0E11]'
-            }`}
-          >
+          <main className="flex-1 overflow-y-auto transition-colors duration-200 bg-[#FBFBFA] dark:bg-slate-950">
             <div className="max-w-7xl mx-auto p-6 sm:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
               <Outlet />
             </div>
@@ -201,8 +121,8 @@ export const Layout: React.FC = () => {
         </div>
       </div>
 
-      {/* Floating Scan Attendance QR Button for Students (hidden in Ghost Mode) */}
-      {role === 'student' && !isGhostMode && (
+      {/* Floating Scan Attendance QR Button for Students */}
+      {role === 'student' && (
         <div className="fixed bottom-6 right-20 sm:right-22 z-40">
           <button
             onClick={() => setIsQRScannerOpen(true)}
@@ -215,26 +135,11 @@ export const Layout: React.FC = () => {
         </div>
       )}
 
-      {/* Demo Floating Exam Mode Trigger (for demonstration purposes) */}
-      {role === 'student' && !isGhostMode && (
-        <div className="fixed bottom-6 left-6 z-40 hidden sm:block">
-          <button
-            onClick={() => setManualGhostMode(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-950/80 hover:bg-purple-900 text-purple-200 border border-purple-500/50 text-[11px] font-mono font-semibold transition-all duration-150 active:scale-95 cursor-pointer shadow-md"
-            title="Simulate Ghost Mode Exam Focus"
-          >
-            <Lock className="w-3.5 h-3.5" />
-            <span>Simulate Ghost Mode</span>
-          </button>
-        </div>
-      )}
-
       {/* Modals, Floating AI Assistant & Notifications */}
       <GlobalSearchModal />
       <SettingsModal />
       <ToastContainer />
-      {/* Floating AI Assistant: completely hidden in Ghost Mode to prevent cheating */}
-      {!isGhostMode && <AarohAIAssistant />}
+      <AarohAIAssistant />
       <StudentQRScannerModal
         isOpen={isQRScannerOpen}
         onClose={() => setIsQRScannerOpen(false)}
@@ -245,4 +150,3 @@ export const Layout: React.FC = () => {
 
 export const AppLayout = Layout;
 export default Layout;
-
