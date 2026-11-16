@@ -1301,4 +1301,34 @@ assert(academicsPageLatest.includes('B.Tech Skill Tree'), 'AcademicsPage include
 
 console.log('--- ALL B.TECH SKILL TREE & PROFESSOR NAME DISPLAY VERIFICATIONS PASSED ---');
 
+// ==========================================
+// 30. Check Context-Aware Adaptive Dashboard
+// ==========================================
+console.log('--- VERIFYING CONTEXT-AWARE ADAPTIVE DASHBOARD ---');
+
+const adaptiveDashContent = fs.readFileSync(path.join(__dirname, '../src/pages/DashboardPage.tsx'), 'utf8');
+
+// 1. Time-Aware Logic (The Engine)
+assert(adaptiveDashContent.includes('currentContext') && adaptiveDashContent.includes("'IN_CLASS'") && adaptiveDashContent.includes("'FREE_PERIOD'"), 'DashboardPage defines currentContext with IN_CLASS and FREE_PERIOD states');
+assert(adaptiveDashContent.includes('60000'), 'DashboardPage sets 1-minute interval timer to re-evaluate schedule in real time');
+assert(adaptiveDashContent.includes('aaroh_timetable'), 'DashboardPage cross-references localStorage aaroh_timetable');
+
+// 2. In-Class UI State (Focus Mode)
+assert(adaptiveDashContent.includes('🟢 Current Lecture:'), 'Dashboard renders prominent pulsing Deep Teal banner with "🟢 Current Lecture:"');
+assert(adaptiveDashContent.includes('Quick Notes') && adaptiveDashContent.includes('<textarea'), 'Dashboard shifts Quick Notes widget with markdown textarea to the top in class mode');
+assert(adaptiveDashContent.includes('Live Pulse'), 'Dashboard shifts Live Pulse widget to the top in class mode');
+assert(adaptiveDashContent.includes('!isFocusMode') && adaptiveDashContent.includes('FEATURED CAMPUS HIGHLIGHTS'), 'Dashboard blocks distractions by hiding Opportunity Board during active class sessions');
+
+// 3. Free Period UI State (Build Mode)
+assert(adaptiveDashContent.includes('☕ Free Period: Good time to catch up on assignments.'), 'Dashboard renders subtle Free Period banner with exact text');
+assert(adaptiveDashContent.includes('dark:border-white/5'), 'Dashboard Free Period banner implements dark:border-white/5 border');
+assert(adaptiveDashContent.includes('Automated Coding Labs • Pending Tasks'), 'Dashboard prioritizes Automated Coding Labs pending tasks list in Free Period mode');
+assert(adaptiveDashContent.includes('Launch Workspace'), 'Automated Coding Labs cards provide Launch Workspace action buttons');
+
+// 4. Animation & 4-Layer Tactile Shadow System
+assert(adaptiveDashContent.includes('animate-in fade-in slide-in-from-bottom-4 duration-500'), 'Dashboard enforces smooth layout transitions with animate-in fade-in slide-in-from-bottom-4 duration-500');
+assert(adaptiveDashContent.includes(exactLightShadow) && adaptiveDashContent.includes(exactDarkShadow), 'New banner and quick notes buttons implement custom 4-layer tactile button shadows');
+
+console.log('--- ALL CONTEXT-AWARE ADAPTIVE DASHBOARD VERIFICATIONS PASSED ---');
+
 module.exports = { assert };
