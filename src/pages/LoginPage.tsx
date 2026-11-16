@@ -125,7 +125,7 @@ export const LoginPage: React.FC = () => {
   return (
     <div
       onMouseMove={handleMouseMove}
-      className="h-screen w-screen overflow-hidden flex items-center justify-center bg-[#FBFBFA] dark:bg-[#0E0E11] font-sans p-4 relative select-none transition-colors duration-300"
+      className="h-screen w-screen overflow-hidden flex items-center justify-center bg-[#FBFBFA] dark:bg-[#0E0E11] font-sans p-4 relative select-none transition-colors duration-500 ease-in-out"
     >
       {/* Theme Toggle in Login Viewport */}
       <button

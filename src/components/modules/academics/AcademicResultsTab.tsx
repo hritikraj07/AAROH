@@ -3,7 +3,6 @@ import { useApp } from '../../../context/AppContext';
 import { AssessmentType, SemesterGrade } from '../../../types';
 import {
   Award,
-  Sliders,
   TrendingUp,
   BookOpen,
   CheckCircle,
@@ -12,7 +11,6 @@ import {
   Layers,
   ChevronDown,
   ChevronRight,
-  Calculator,
   Code2
 } from 'lucide-react';
 import {
@@ -70,105 +68,6 @@ export const AcademicResultsTab: React.FC = () => {
   // Overall Verified CGPA
   const currentCGPA = studentSummary.overallCGPA > 0 ? studentSummary.overallCGPA : 0;
   const totalCreditsEarned = studentSummary.totalCreditsEarned;
-
-  // ==========================================
-  // Part B: Active Semester "What-If" Simulator
-  // ==========================================
-  // Sliders for upcoming End-Sem exams and pending Automated Coding Labs for CURRENT semester
-  const [simulatedScenarios, setSimulatedScenarios] = useState([
-    {
-      id: 'sim_end_sem_1',
-      title: 'Current Semester End-Sem Theory Examination',
-      type: 'End-Sem',
-      credits: 4,
-      targetScore: 85,
-      maxScore: 100,
-    },
-    {
-      id: 'sim_coding_lab_1',
-      title: 'Automated Coding Labs: Full-Stack Microservices',
-      type: 'Automated Coding Labs',
-      credits: 4,
-      targetScore: 92,
-      maxScore: 100,
-    },
-    {
-      id: 'sim_end_sem_2',
-      title: 'Operating Systems & Architecture End-Sem',
-      type: 'End-Sem',
-      credits: 3,
-      targetScore: 88,
-      maxScore: 100,
-    },
-    {
-      id: 'sim_coding_lab_2',
-      title: 'Automated Coding Labs: Algorithmic Verification',
-      type: 'Automated Coding Labs',
-      credits: 3,
-      targetScore: 95,
-      maxScore: 100,
-    },
-  ]);
-
-  const handleSliderChange = (id: string, newScore: number) => {
-    setSimulatedScenarios(prev =>
-      prev.map(sc => (sc.id === id ? { ...sc, targetScore: newScore } : sc))
-    );
-  };
-
-  // Real-time Math for What-If Simulator:
-  // Predicts SGPA for the current active semester and projects overall CGPA
-  const { predictedCurrentSGPA, projectedCGPA, gpaDelta } = useMemo(() => {
-    // 1. Gather baseline marks already recorded for the current active semester
-    const activeSemData = studentSummary.semesters.find(s => s.semester === currentActiveSemester);
-    let activeSemPoints = 0;
-    let activeSemCredits = 0;
-
-    if (activeSemData && activeSemData.courses.length > 0) {
-      activeSemData.courses.forEach(c => {
-        activeSemPoints += c.gradePoint * c.credits;
-        activeSemCredits += c.credits;
-      });
-    }
-
-    // 2. Add simulated additions for active semester
-    simulatedScenarios.forEach(sc => {
-      const pct = (sc.targetScore / sc.maxScore) * 100;
-      const gp = marksToGradePoint(pct);
-      activeSemPoints += gp * sc.credits;
-      activeSemCredits += sc.credits;
-    });
-
-    const predictedSGPA = activeSemCredits > 0 ? Number((activeSemPoints / activeSemCredits).toFixed(2)) : 0;
-
-    // 3. Overall Projected CGPA = Average of completed past semesters SGPAs + predicted current semester SGPA
-    const pastCompletedSemesters = studentSummary.semesters.filter(
-      s => s.semester !== currentActiveSemester && s.isCompleted && s.sgpa > 0
-    );
-
-    const allSGPAs = pastCompletedSemesters.map(s => s.sgpa);
-    if (predictedSGPA > 0) {
-      allSGPAs.push(predictedSGPA);
-    }
-
-    const calculatedProjectedCGPA =
-      allSGPAs.length > 0
-        ? Number((allSGPAs.reduce((sum, val) => sum + val, 0) / allSGPAs.length).toFixed(2))
-        : predictedSGPA;
-
-    const delta = currentCGPA > 0 ? Number((calculatedProjectedCGPA - currentCGPA).toFixed(2)) : 0;
-
-    return {
-      predictedCurrentSGPA: predictedSGPA,
-      projectedCGPA: calculatedProjectedCGPA,
-      gpaDelta: delta,
-    };
-  }, [studentSummary, currentActiveSemester, simulatedScenarios, currentCGPA]);
-
-  // Check if active semester has any grades published
-  const activeSemesterHasGrades = Boolean(
-    studentSummary.semesters.find(s => s.semester === currentActiveSemester)?.courses.length
-  );
 
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
@@ -448,117 +347,6 @@ export const AcademicResultsTab: React.FC = () => {
             </table>
           </div>
         )}
-      </div>
-
-      {/* 4. Part B: Current Semester "What-If" GPA Scenario Simulator */}
-      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-6 sm:p-8 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-[#27272A]">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="p-1 rounded-lg bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800/60">
-                <Sliders className="w-4 h-4" />
-              </span>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-                GPA Scenario Simulator
-              </h3>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Active Semester {currentActiveSemester} &quot;What-If&quot; engine. Adjust projected scores for upcoming End-Sem exams and pending Automated Coding Labs to forecast honors.
-            </p>
-          </div>
-
-          {/* Large Glowing Dynamic Projected CGPA Display */}
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#222226] border border-slate-200 dark:border-[#323236] flex items-center gap-4 shrink-0">
-            <div>
-              <div className="text-[10px] uppercase font-mono font-semibold text-slate-400 dark:text-slate-500 tracking-wider">
-                PROJECTED CGPA
-              </div>
-              <div className="text-4xl sm:text-5xl font-black font-mono tracking-tight bg-gradient-to-r from-teal-600 via-teal-500 to-emerald-500 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(15,118,110,0.35)]">
-                {projectedCGPA.toFixed(2)}
-              </div>
-            </div>
-
-            <div className="border-l border-slate-200 dark:border-[#323236] pl-3">
-              <div className="text-[10px] text-slate-400 uppercase font-mono">Predicted SGPA</div>
-              <div className="text-base font-bold font-mono text-teal-700 dark:text-teal-400">
-                {predictedCurrentSGPA.toFixed(2)}
-              </div>
-              <span
-                className={`text-[11px] font-mono font-bold flex items-center gap-0.5 mt-0.5 ${
-                  gpaDelta >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
-                }`}
-              >
-                {gpaDelta >= 0 ? `+${gpaDelta.toFixed(2)}` : gpaDelta.toFixed(2)} vs current
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Warning / Notice when no baseline grades are published for this semester */}
-        {!activeSemesterHasGrades && (
-          <div className="p-4 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-white/5 rounded-xl flex items-center gap-3 text-xs text-slate-600 dark:text-slate-400">
-            <Calculator className="w-4 h-4 text-teal-700 dark:text-teal-400 shrink-0" />
-            <div>
-              <span className="font-semibold text-slate-900 dark:text-slate-200">
-                No grades published yet for this semester.
-              </span>{' '}
-              Simulator is computing projections from a clean baseline using your anticipated scores below.
-            </div>
-          </div>
-        )}
-
-        {/* Sliders Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-          {simulatedScenarios.map(sc => (
-            <div
-              key={sc.id}
-              className="p-4 rounded-xl bg-slate-50/80 dark:bg-[#222226]/50 border border-slate-200/80 dark:border-[#27272A] space-y-3"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 leading-snug">
-                    {sc.title}
-                  </h4>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-[10px] font-mono text-teal-800 dark:text-teal-400 font-semibold bg-teal-50 dark:bg-teal-950/40 px-2 py-0.5 rounded border border-teal-200 dark:border-teal-800/60">
-                      {sc.type}
-                    </span>
-                    <span className="text-[10px] font-mono text-slate-400">
-                      {sc.credits} Credits
-                    </span>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <span className="text-base font-bold font-mono text-teal-700 dark:text-teal-400">
-                    {sc.targetScore}
-                  </span>
-                  <span className="text-xs font-mono text-slate-400">/{sc.maxScore}</span>
-                </div>
-              </div>
-
-              {/* Range Slider */}
-              <div className="space-y-1">
-                <input
-                  type="range"
-                  min="0"
-                  max={sc.maxScore}
-                  step="1"
-                  value={sc.targetScore}
-                  onChange={e => handleSliderChange(sc.id, parseInt(e.target.value, 10))}
-                  className="w-full h-2 bg-slate-200 dark:bg-[#323236] rounded-lg appearance-none cursor-pointer accent-teal-600 dark:accent-teal-500"
-                />
-                <div className="flex justify-between text-[10px] font-mono text-slate-400">
-                  <span>0 (F)</span>
-                  <span>40 (E)</span>
-                  <span>60 (B)</span>
-                  <span>80 (A)</span>
-                  <span>90+ (A+ 10-pt)</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
     </div>
   );

@@ -16,13 +16,15 @@ import {
   RotateCcw,
   Sparkles,
   FileCode2,
-  Layers
+  Layers,
+  ShieldAlert,
+  ShieldCheck
 } from 'lucide-react';
 import { Assignment } from '../types';
 
 export const StudentCodeWorkspacePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { courses, submitCodingAssignment, showToast } = useApp();
+  const { courses, submitCodingAssignment, showToast, user } = useApp();
 
   const [assignment, setAssignment] = useState<Assignment | null>(() => {
     const list = StorageService.getAssignments();
@@ -38,6 +40,106 @@ export const StudentCodeWorkspacePage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState<boolean>(() => {
     return assignment?.status === 'submitted';
   });
+
+  // ==========================================
+  // Zero-Trust Exam Proctoring State & Storage
+  // ==========================================
+  const [cheatingStrikes, setCheatingStrikes] = useState<number>(() => {
+    try {
+      const stored = localStorage.getItem('cheatingStrikes');
+      if (stored) return parseInt(stored, 10) || 0;
+      const userRaw = localStorage.getItem('aaroh_auth_user');
+      if (userRaw) {
+        const u = JSON.parse(userRaw);
+        return u.cheatingStrikes || 0;
+      }
+    } catch {
+      // fallback
+    }
+    return 0;
+  });
+
+  const [isFocusLost, setIsFocusLost] = useState<boolean>(false);
+  const [lastViolationTime, setLastViolationTime] = useState<string>('');
+
+  const course = courses.find(c => c.id === assignment?.courseId);
+  const labStatus = assignment?.labStatus || 'locked';
+
+  // Strict Browser API Hack: Page Visibility API + window.onblur
+  useEffect(() => {
+    // Only proctor during active, unsubmitted live coding labs
+    if (labStatus !== 'active' || isSubmitted) return;
+
+    const recordFocusLoss = () => {
+      const now = new Date().toLocaleTimeString();
+      setLastViolationTime(now);
+      setIsFocusLost(true);
+
+      // Increment Cheating Strike in student's localStorage profile
+      setCheatingStrikes(prev => {
+        const next = prev + 1;
+        try {
+          localStorage.setItem('cheatingStrikes', String(next));
+
+          // Persist to aaroh_auth_user
+          const authRaw = localStorage.getItem('aaroh_auth_user');
+          if (authRaw) {
+            const authObj = JSON.parse(authRaw);
+            authObj.cheatingStrikes = next;
+            localStorage.setItem('aaroh_auth_user', JSON.stringify(authObj));
+          }
+
+          // Persist to aaroh_student
+          const stdRaw = localStorage.getItem('aaroh_student');
+          if (stdRaw) {
+            const stdObj = JSON.parse(stdRaw);
+            stdObj.cheatingStrikes = next;
+            localStorage.setItem('aaroh_student', JSON.stringify(stdObj));
+          }
+
+          // Persist to aaroh_users
+          const usersRaw = localStorage.getItem('aaroh_users');
+          if (usersRaw) {
+            const usersList = JSON.parse(usersRaw);
+            if (Array.isArray(usersList)) {
+              const updatedUsers = usersList.map((u: any) =>
+                u.id === user?.id || u.email === user?.email
+                  ? { ...u, cheatingStrikes: next }
+                  : u
+              );
+              localStorage.setItem('aaroh_users', JSON.stringify(updatedUsers));
+            }
+          }
+          window.dispatchEvent(new Event('storage'));
+        } catch (e) {
+          console.error('Failed to log cheating strike:', e);
+        }
+        return next;
+      });
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        recordFocusLoss();
+      }
+    };
+
+    const handleBlur = () => {
+      recordFocusLoss();
+    };
+
+    // 1. Page Visibility API listener
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    // 2. Window blur listener and window.onblur assignment
+    window.addEventListener('blur', handleBlur);
+    window.onblur = handleBlur;
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleBlur);
+      window.onblur = null;
+    };
+  }, [labStatus, isSubmitted, user?.id, user?.email]);
 
   // Feature 4: Real-Time Offline Sync via window 'storage' listener
   // Detects if the instructor changes labStatus in another tab/window without page refresh
@@ -94,9 +196,6 @@ export const StudentCodeWorkspacePage: React.FC = () => {
     );
   }
 
-  const course = courses.find(c => c.id === assignment.courseId);
-  const labStatus = assignment.labStatus || 'locked';
-
   // Feature 5: Run Code Action (1.5s simulated compilation + mock evaluation)
   const handleRunCode = () => {
     if (isCompiling) return;
@@ -138,31 +237,92 @@ export const StudentCodeWorkspacePage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Zero-Trust Exam Proctoring Overlay Banner / Flash */}
+      {isFocusLost && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="max-w-lg w-full bg-[#18181B] border-2 border-rose-500 rounded-2xl p-6 sm:p-8 text-center space-y-5 shadow-2xl relative overflow-hidden animate-pulse">
+            {/* Top red & deep teal accent band */}
+            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-teal-600 via-rose-500 to-teal-700" />
+
+            <div className="w-16 h-16 rounded-full bg-rose-950/80 border border-rose-500/50 flex items-center justify-center mx-auto text-rose-500">
+              <ShieldAlert className="w-8 h-8 text-rose-500" />
+            </div>
+
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-950/80 border border-teal-700 text-teal-300 text-xs font-mono font-bold">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Zero-Trust Proctoring Lockdown</span>
+              </div>
+              <h2 className="text-xl font-black text-rose-400 font-mono tracking-tight">
+                🚨 Focus Lost. Tab switching is recorded during live coding labs.
+              </h2>
+              <p className="text-xs text-slate-300 leading-relaxed max-w-md mx-auto">
+                The exam proctoring engine detected a window defocus or tab switch via the Page Visibility API. This violation has been logged to your profile.
+              </p>
+            </div>
+
+            <div className="p-3.5 bg-rose-950/50 border border-rose-900/60 rounded-xl flex items-center justify-around font-mono text-xs">
+              <div>
+                <span className="text-slate-400 block text-[10px] uppercase">Cheating Strikes</span>
+                <span className="text-lg font-bold text-rose-400">#{cheatingStrikes}</span>
+              </div>
+              <div className="border-l border-rose-900/60 pl-4">
+                <span className="text-slate-400 block text-[10px] uppercase">Logged At</span>
+                <span className="text-xs font-semibold text-slate-200">{lastViolationTime || 'Live'}</span>
+              </div>
+              <div className="border-l border-rose-900/60 pl-4">
+                <span className="text-slate-400 block text-[10px] uppercase">Status</span>
+                <span className="text-xs font-bold text-amber-400">Flagged</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsFocusLost(false)}
+              className="w-full px-5 py-2.5 text-xs font-bold text-white bg-teal-700 hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)] flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>Acknowledge & Return to Lab</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Top Breadcrumb & Status Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-[#27272A]">
         <div className="flex items-center gap-3">
           <Link
             to="/student/academics?tab=assignments"
-            className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-900 p-1.5 rounded-md hover:bg-slate-100 transition-colors"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Assignments</span>
           </Link>
-          <span className="text-slate-300">/</span>
-          <span className="font-mono text-xs font-bold text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">
+          <span className="text-slate-300 dark:text-slate-600">/</span>
+          <span className="font-mono text-xs font-bold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 px-2 py-0.5 rounded">
             {course?.code || 'CS301'}
           </span>
-          <h1 className="text-sm font-bold text-slate-900 truncate max-w-md">
+          <h1 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate max-w-md">
             {assignment.title}
           </h1>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono uppercase text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Zero-Trust Proctoring Indicator */}
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 font-mono text-[11px] font-semibold">
+            <ShieldCheck className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+            <span>Zero-Trust Proctoring: Active</span>
+            {cheatingStrikes > 0 && (
+              <span className="ml-1 px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[10px] font-bold">
+                {cheatingStrikes} Strike{cheatingStrikes === 1 ? '' : 's'}
+              </span>
+            )}
+          </div>
+
+          <span className="text-xs font-mono uppercase text-slate-500 dark:text-slate-400 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] px-2 py-0.5 rounded">
             Language: {assignment.language || 'python'}
           </span>
-          <span className="text-xs font-mono text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded">
+          <span className="text-xs font-mono text-slate-500 dark:text-slate-400 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] px-2 py-0.5 rounded">
             Max: {assignment.maxMarks} Pts
           </span>
         </div>

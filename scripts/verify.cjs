@@ -1141,9 +1141,8 @@ assert(fs.existsSync(academicResultsPath), 'AcademicResultsTab.tsx exists');
 const academicResultsContent = fs.readFileSync(academicResultsPath, 'utf8');
 
 assert(academicResultsContent.includes('Official Assessment Results'), 'AcademicResultsTab renders Part A official marks scorecard');
-assert(academicResultsContent.includes('GPA Scenario Simulator'), 'AcademicResultsTab renders Part B GPA Scenario Simulator');
-assert(academicResultsContent.includes('type="range"'), 'AcademicResultsTab includes interactive range sliders for upcoming assignments and labs');
-assert(academicResultsContent.includes('projectedCGPA') && academicResultsContent.includes('PROJECTED CGPA'), 'AcademicResultsTab computes and displays projected CGPA');
+assert(!academicResultsContent.includes('GPA Scenario Simulator'), 'GPA Scenario Simulator slider interface and math logic completely removed from AcademicResultsTab');
+assert(!academicResultsContent.includes('type="range"'), 'Range sliders removed from AcademicResultsTab for clutter reduction');
 assert(academicResultsContent.includes('from-teal-600') && (academicResultsContent.includes('to-emerald-500') || academicResultsContent.includes('drop-shadow')), 'AcademicResultsTab renders large glowing dynamic CGPA display');
 
 const academicsPageContent = fs.readFileSync(path.join(__dirname, '../src/pages/AcademicsPage.tsx'), 'utf8');
@@ -1361,17 +1360,62 @@ assert(facultyGradebookContent.includes('saveStoredSemesterGrades') || facultyGr
 assert(facultyGradebookContent.includes('Save Marks'), 'Faculty Gradebook renders Save Marks action button');
 assert(facultyGradebookContent.includes(exactLightShadow) && facultyGradebookContent.includes(exactDarkShadow), 'Save Marks button uses 4-layer tactile shadows');
 
-// Student Results Tab: Semester Breakdown + SGPA Bars + What-If Engine
+// Student Results Tab: Semester Breakdown + SGPA Bars
 const latestAcademicResults = fs.readFileSync(academicResultsPath, 'utf8');
 assert(latestAcademicResults.includes('computeStudentSemesterMetrics'), 'AcademicResultsTab uses computeStudentSemesterMetrics math engine');
 assert(latestAcademicResults.includes('Semester-Wise Performance Trajectory (SGPA)') || latestAcademicResults.includes('SGPA'), 'AcademicResultsTab renders sleek SGPA bar chart / list for completed semesters');
 assert(latestAcademicResults.includes('allSemesters') || latestAcademicResults.includes('Semester 1'), 'AcademicResultsTab organizes grades grouped by semester');
 assert(latestAcademicResults.includes('No grades published yet for this semester.'), 'AcademicResultsTab renders clean empty state when no marks published');
 assert(latestAcademicResults.includes('dark:border-white/5'), 'Clean empty state enforces dark:border-white/5 border styling');
-assert(latestAcademicResults.includes('currentActiveSemester') || latestAcademicResults.includes('Active Semester'), 'What-If simulator applies strictly to current active semester');
-assert(latestAcademicResults.includes('simulatedScenarios') && latestAcademicResults.includes('Automated Coding Labs'), 'What-If simulator includes interactive sliders for Automated Coding Labs and End-Sem');
-assert(latestAcademicResults.includes('PROJECTED CGPA') && latestAcademicResults.includes('projectedCGPA'), 'What-If simulator recalculates and renders projected CGPA');
+assert(!latestAcademicResults.includes('GPA Scenario Simulator'), 'GPA Scenario Simulator removed from student view for clutter reduction');
 
-console.log('--- ALL SEMESTER-WISE GRADEBOOK & CGPA WHAT-IF ENGINE VERIFICATIONS PASSED ---');
+console.log('--- ALL SEMESTER-WISE GRADEBOOK & CGPA METRICS VERIFICATIONS PASSED ---');
+
+// =========================================================================================
+// 32. Security Pivot: Feature Deletions, Smooth Transitions, Zero-Trust Proctoring & Socratic AI
+// =========================================================================================
+console.log('--- VERIFYING SECURITY PIVOT, SMOOTH ANIMATIONS & SOCRATIC AI ---');
+
+// 1. Feature Deletions
+assert(!latestAcademicResults.includes('GPA Scenario Simulator'), 'GPA Scenario Simulator completely removed from student results');
+const attendanceTabPath = path.join(__dirname, '../src/components/modules/academics/AttendanceTab.tsx');
+const attendanceTabContent = fs.readFileSync(attendanceTabPath, 'utf8');
+assert(!attendanceTabContent.includes('Target Threshold:'), 'Attendance Target Threshold toggles/buttons completely removed from AttendanceTab');
+
+const settingsModalPath = path.join(__dirname, '../src/components/layout/SettingsModal.tsx');
+const settingsModalContent = fs.readFileSync(settingsModalPath, 'utf8');
+assert(!settingsModalContent.includes('Minimum Attendance Threshold Target'), 'Attendance Target Threshold completely removed from SettingsModal');
+
+// 2. Smooth Theme Transition Animation
+const indexHtmlContent = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
+assert(indexHtmlContent.includes('transition-colors duration-500 ease-in-out'), 'index.html body implements transition-colors duration-500 ease-in-out');
+
+const currentLayoutTransition = fs.readFileSync(path.join(__dirname, '../src/components/layout/Layout.tsx'), 'utf8');
+assert(currentLayoutTransition.includes('transition-colors duration-500 ease-in-out'), 'Layout.tsx implements transition-colors duration-500 ease-in-out');
+
+const currentLoginPageTransition = fs.readFileSync(path.join(__dirname, '../src/pages/LoginPage.tsx'), 'utf8');
+assert(currentLoginPageTransition.includes('transition-colors duration-500 ease-in-out'), 'LoginPage.tsx implements transition-colors duration-500 ease-in-out');
+
+// 3. "Zero-Trust" Exam Proctoring (Browser API Hack)
+const codeWorkspacePath = path.join(__dirname, '../src/pages/StudentCodeWorkspacePage.tsx');
+assert(fs.existsSync(codeWorkspacePath), 'StudentCodeWorkspacePage.tsx exists');
+const codeWorkspaceContent = fs.readFileSync(codeWorkspacePath, 'utf8');
+
+assert(codeWorkspaceContent.includes('visibilitychange') && codeWorkspaceContent.includes('document.addEventListener'), 'StudentCodeWorkspacePage attaches native Page Visibility API listener');
+assert(codeWorkspaceContent.includes('window.addEventListener') && (codeWorkspaceContent.includes("'blur'") || codeWorkspaceContent.includes('window.onblur')), 'StudentCodeWorkspacePage attaches window.onblur listener');
+assert(codeWorkspaceContent.includes('🚨 Focus Lost. Tab switching is recorded during live coding labs.'), 'StudentCodeWorkspacePage overlays exact Deep Teal and Red warning message');
+assert(codeWorkspaceContent.includes('cheatingStrikes') && codeWorkspaceContent.includes('localStorage.setItem'), 'StudentCodeWorkspacePage logs Cheating Strike counter to localStorage profile');
+assert(codeWorkspaceContent.includes(exactLightShadow) && codeWorkspaceContent.includes(exactDarkShadow), 'Proctoring acknowledge button implements 4-layer tactile button shadows');
+
+// 4. The Socratic AI Debugger (Anti-Spoonfeeding Engine)
+const aiAssistantPath = path.join(__dirname, '../src/utils/aiAssistant.ts');
+const aiAssistantContent = fs.readFileSync(aiAssistantPath, 'utf8');
+assert(aiAssistantContent.includes('You are a strict Socratic professor. The student has a bug in their code. YOU ARE STRICTLY FORBIDDEN from giving them the correct code or the direct answer. You must ask exactly ONE guiding question that forces them to figure out the bug themselves.'), 'buildCampusAISystemPrompt injects hidden strict Socratic instruction into system prompt');
+
+const chatModalPath = path.join(__dirname, '../src/components/modules/ai/AarohAIAssistant.tsx');
+const chatModalContent = fs.readFileSync(chatModalPath, 'utf8');
+assert(chatModalContent.includes('Socratic Mode Enabled'), 'Chat header renders Socratic Mode Enabled badge/subtitle');
+
+console.log('--- ALL SECURITY PIVOT, SMOOTH ANIMATIONS & SOCRATIC AI VERIFICATIONS PASSED ---');
 
 module.exports = { assert };

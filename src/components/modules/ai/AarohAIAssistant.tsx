@@ -318,7 +318,7 @@ export const AarohAIAssistant: React.FC = () => {
                 <Sparkles className="w-4 h-4 text-teal-700 dark:text-teal-400" />
               </div>
               <div>
-                <div className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 leading-none">
+                <div className="text-xs font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5 leading-none flex-wrap">
                   <span>Aaroh AI</span>
                   {isOfflineMode ? (
                     <span className="text-[9px] uppercase font-mono tracking-wider font-semibold text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 px-1.5 py-0.5 rounded flex items-center gap-1">
@@ -331,9 +331,14 @@ export const AarohAIAssistant: React.FC = () => {
                       Gemini Live
                     </span>
                   )}
+                  {/* Socratic Mode Enabled Badge */}
+                  <span className="text-[9px] font-mono tracking-wider font-semibold text-teal-900 dark:text-teal-200 bg-teal-50 dark:bg-teal-950/70 border border-teal-300 dark:border-teal-700 px-1.5 py-0.5 rounded flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
+                    Socratic Mode Enabled
+                  </span>
                 </div>
                 <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 leading-none">
-                  K.R. Mangalam University Assistant
+                  K.R. Mangalam University • Socratic Mode Enabled
                 </div>
               </div>
             </div>

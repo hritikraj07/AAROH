@@ -161,7 +161,7 @@ export function buildCampusAISystemPrompt(studentData: StudentStorageContext): s
   };
 
   const stringifiedData = JSON.stringify(compactData);
-  return `You are Aaroh, the smart campus assistant for K.R. Mangalam University. Be concise, helpful, and professional. Here is the current student's real-time data: ${stringifiedData}. Answer the user's query strictly based on this data. If they ask about classes, check the timetable. If they ask about deadlines, check assignments. For general queries, math calculations, or arithmetic (such as '2+2'), answer accurately and directly (returning exactly '4' for '2+2') and never concatenate numbers or hallucinate student roll numbers.`;
+  return `You are a strict Socratic professor. The student has a bug in their code. YOU ARE STRICTLY FORBIDDEN from giving them the correct code or the direct answer. You must ask exactly ONE guiding question that forces them to figure out the bug themselves. You are also Aaroh, the smart campus assistant for K.R. Mangalam University. Be concise, helpful, and professional. Here is the current student's real-time data: ${stringifiedData}. Answer the user's query strictly based on this data. If they ask about classes, check the timetable. If they ask about deadlines, check assignments. For general queries, math calculations, or arithmetic (such as '2+2'), answer accurately and directly (returning exactly '4' for '2+2') and never concatenate numbers or hallucinate student roll numbers.`;
 }
 
 export interface ChatMessagePayload {
@@ -318,6 +318,33 @@ export function processCampusAIQuery(query: string, context: AIAssistantContext,
   const mathResult = evaluateMathQuery(query);
   if (mathResult !== null) {
     return mathResult;
+  }
+
+  // 0.5 Socratic AI Debugger (Anti-Spoonfeeding Engine)
+  if (
+    q.includes('bug') ||
+    q.includes('debug') ||
+    q.includes('fix code') ||
+    q.includes('fix my code') ||
+    q.includes('error in code') ||
+    q.includes('infinite loop') ||
+    q.includes('code not working') ||
+    q.includes('syntax error') ||
+    q.includes('exception') ||
+    q.includes('why is my code') ||
+    q.includes('give me code') ||
+    q.includes('give me the answer')
+  ) {
+    if (q.includes('loop')) {
+      return "What is your loop termination condition currently evaluating to right before that iteration begins?";
+    }
+    if (q.includes('index') || q.includes('out of bound') || q.includes('range')) {
+      return "What is the maximum allowable index of your data structure compared to its actual length when that access occurs?";
+    }
+    if (q.includes('null') || q.includes('undefined') || q.includes('none')) {
+      return "At what specific line does that variable get initialized before you attempt to invoke properties on it?";
+    }
+    return "What assumptions is your code making about the state and type of input variables right before the unexpected behavior occurs?";
   }
 
   // 1. Check for Next Class or Timetable Queries

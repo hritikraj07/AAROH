@@ -23,11 +23,13 @@
   body {
     background-color: #FAFAFA;
     color: #0F172A;
+    transition: background-color 500ms ease-in-out, color 500ms ease-in-out, border-color 500ms ease-in-out;
   }
 
   html.dark body {
     background-color: #0E0E11;
     color: #F8FAFC;
+    transition: background-color 500ms ease-in-out, color 500ms ease-in-out, border-color 500ms ease-in-out;
   }
 
   /* Strict global form input standards */

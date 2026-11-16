@@ -10,17 +10,10 @@ export const SettingsModal: React.FC = () => {
     isSettingsOpen,
     closeSettings,
     student,
-    updateAttendanceThreshold,
     resetDemoData,
   } = useApp();
 
-  const [threshold, setThreshold] = useState(student?.attendanceMinimum || 75);
   const [confirmReset, setConfirmReset] = useState(false);
-
-  const handleSaveThreshold = (val: number) => {
-    setThreshold(val);
-    updateAttendanceThreshold(val);
-  };
 
   const handleReset = () => {
     resetDemoData();
@@ -63,33 +56,6 @@ export const SettingsModal: React.FC = () => {
               <span className="text-slate-400 block text-[11px]">Program</span>
               <span>{student?.program || 'B.Tech'} {student?.department || 'Engineering'}</span>
             </div>
-          </div>
-        </div>
-
-        {/* Configurable Attendance Threshold */}
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-slate-800 block">
-            Minimum Attendance Threshold Target
-          </label>
-          <p className="text-xs text-slate-500">
-            College requirement rule used to calculate shortfall warnings and class margins. Default is 75%.
-          </p>
-
-          <div className="flex items-center gap-2 pt-1">
-            {[70, 75, 80, 85].map(val => (
-              <button
-                key={val}
-                type="button"
-                onClick={() => handleSaveThreshold(val)}
-                className={`px-3 py-1.5 text-xs font-medium rounded border transition-colors ${
-                  threshold === val
-                    ? 'bg-teal-50 text-teal-800 border-teal-600 font-semibold ring-1 ring-teal-600'
-                    : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
-                }`}
-              >
-                {val}% {val === 75 ? '(Default)' : ''}
-              </button>
-            ))}
           </div>
         </div>
 
