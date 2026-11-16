@@ -845,7 +845,7 @@ assert(appContext.includes("document.documentElement.classList.add('dark')") && 
 
 const topBarPath = path.join(__dirname, '../src/components/layout/TopBar.tsx');
 const topBar = fs.readFileSync(topBarPath, 'utf8');
-assert(topBar.includes('toggleTheme') && topBar.includes('Sun') && topBar.includes('Moon'), 'TopBar renders Theme Toggle button with Sun/Moon icons');
+assert(topBar.includes('ThemeToggle'), 'TopBar renders animated Landscape ThemeToggle component');
 assert(topBar.includes('SlidersHorizontal'), 'TopBar search bar features SlidersHorizontal filter icon');
 assert((topBar.includes('dark:bg-slate-950') || topBar.includes('dark:bg-[#18181B]')) && (topBar.includes('dark:border-slate-800') || topBar.includes('dark:border-[#27272A]')), 'TopBar styles support dark mode surfaces and borders');
 
@@ -1489,5 +1489,36 @@ assert(emptyStateComponent.includes('dark:border-white/5'), 'EmptyState componen
 assert(emptyStateComponent.includes('dark:text-slate-400'), 'EmptyState component enforces dark:text-slate-400');
 
 console.log('--- ALL ZERO-DATA PURGE & STANDARDIZED EMPTY STATES VERIFICATIONS PASSED ---');
+
+// =========================================================================================
+// 35. Animated Landscape Theme Toggle & Global Component Integration
+// =========================================================================================
+console.log('--- VERIFYING ANIMATED LANDSCAPE THEME TOGGLE & GLOBAL INTEGRATION ---');
+
+const themeToggleComponentPath = path.join(__dirname, '../src/components/ui/ThemeToggle.tsx');
+assert(fs.existsSync(themeToggleComponentPath), 'ThemeToggle.tsx component exists');
+const themeToggleContent = fs.readFileSync(themeToggleComponentPath, 'utf8');
+
+assert(themeToggleContent.includes('toggle-day-sky') && themeToggleContent.includes('toggle-night-sky'), 'ThemeToggle defines day and night sky gradients');
+assert(themeToggleContent.includes('landscape-capsule-clip'), 'ThemeToggle implements pill capsule clipping mask');
+assert(themeToggleContent.includes('toggle-sun-gradient') && themeToggleContent.includes('toggle-moon-gradient'), 'ThemeToggle includes glowing Sun and Moon gradients');
+assert(themeToggleContent.includes('translateX(56px)'), 'ThemeToggle implements horizontal translation sliding for celestial thumb');
+assert(themeToggleContent.includes('useApp') && themeToggleContent.includes('toggleTheme'), 'ThemeToggle hooks directly into AppContext toggleTheme');
+assert(themeToggleContent.includes("size = 'md'"), 'ThemeToggle supports responsive sizes (sm, md, lg)');
+
+// Verify global integration across TopBar, LoginPage, Sidebar, SettingsModal
+const latestTopBar = fs.readFileSync(path.join(__dirname, '../src/components/layout/TopBar.tsx'), 'utf8');
+assert(latestTopBar.includes('<ThemeToggle'), 'TopBar renders ThemeToggle component');
+
+const latestLoginPage = fs.readFileSync(path.join(__dirname, '../src/pages/LoginPage.tsx'), 'utf8');
+assert(latestLoginPage.includes('<ThemeToggle'), 'LoginPage renders ThemeToggle component');
+
+const latestSidebar = fs.readFileSync(path.join(__dirname, '../src/components/layout/Sidebar.tsx'), 'utf8');
+assert(latestSidebar.includes('<ThemeToggle'), 'Sidebar renders ThemeToggle component');
+
+const latestSettingsModal = fs.readFileSync(path.join(__dirname, '../src/components/layout/SettingsModal.tsx'), 'utf8');
+assert(latestSettingsModal.includes('<ThemeToggle'), 'SettingsModal renders ThemeToggle component');
+
+console.log('--- ALL ANIMATED LANDSCAPE THEME TOGGLE VERIFICATIONS PASSED ---');
 
 module.exports = { assert };

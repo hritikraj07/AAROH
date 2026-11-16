@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Menu, Search, Bell, LogOut, ArrowRight, X, Sun, Moon, SlidersHorizontal } from 'lucide-react';
+import { Menu, Search, Bell, LogOut, ArrowRight, X, SlidersHorizontal } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { ThemeToggle } from '../ui/ThemeToggle';
 import { APP_CONFIG } from '../../config';
 import { Link, useNavigate } from 'react-router-dom';
 import { getApproachingDeadlines } from '../../utils/deadlineUtils';
@@ -214,19 +215,8 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
 
       {/* Right Controls */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        {/* Dark Mode Theme Toggle Button */}
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors select-none"
-          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          aria-label="Toggle color theme"
-        >
-          {theme === 'dark' ? (
-            <Sun className="w-4 h-4 text-amber-400 animate-in fade-in duration-200" />
-          ) : (
-            <Moon className="w-4 h-4 text-slate-600 animate-in fade-in duration-200" />
-          )}
-        </button>
+        {/* Landscape Animated Theme Toggle */}
+        <ThemeToggle size="md" />
 
         {/* Notifications Bell Dropdown */}
         <div className="relative" ref={notifRef}>

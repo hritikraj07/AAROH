@@ -3,6 +3,7 @@ import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { useApp } from '../../context/AppContext';
 import { APP_CONFIG } from '../../config';
+import { ThemeToggle } from '../ui/ThemeToggle';
 import { RotateCcw, ShieldCheck, UserCheck, AlertTriangle } from 'lucide-react';
 
 export const SettingsModal: React.FC = () => {
@@ -68,6 +69,15 @@ export const SettingsModal: React.FC = () => {
           <p className="text-teal-950/80 leading-relaxed text-[11px]">
             All student actions (submissions, event registrations, lost & found postings) are persisted locally in your browser storage. No network queries or remote CDNs are contacted during this demo.
           </p>
+        </div>
+
+        {/* Interface Theme Section */}
+        <div className="p-3.5 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg flex items-center justify-between">
+          <div>
+            <div className="text-xs font-semibold text-slate-800 dark:text-slate-200">Interface Theme</div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Toggle between Day and Night visual landscapes</p>
+          </div>
+          <ThemeToggle size="md" />
         </div>
 
         {/* Demo Data Reset Section */}

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Logo } from '../components/ui/Logo';
-import { Lock, Mail, AlertCircle, Sun, Moon } from 'lucide-react';
+import { ThemeToggle } from '../components/ui/ThemeToggle';
+import { Lock, Mail, AlertCircle } from 'lucide-react';
 import { getUserRoleFromEmail } from '../data/seed';
 import { UserRole } from '../types';
 
@@ -153,17 +154,9 @@ export const LoginPage: React.FC = () => {
       </div>
 
       {/* Theme Toggle in Login Viewport */}
-      <button
-        onClick={toggleTheme}
-        className="absolute top-6 left-6 p-2.5 rounded-full text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 bg-white/40 dark:bg-black/40 border border-white/30 dark:border-white/10 backdrop-blur-xl shadow-sm z-30 transition-all active:scale-95 cursor-pointer"
-        title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-      >
-        {theme === 'dark' ? (
-          <Sun className="w-4 h-4 text-amber-400" />
-        ) : (
-          <Moon className="w-4 h-4 text-slate-600" />
-        )}
-      </button>
+      <div className="absolute top-6 left-6 z-30">
+        <ThemeToggle size="lg" />
+      </div>
 
       {/* 2. The Glassmorphism Login Card: Right-Aligned, Compact, Highly Transparent */}
       <div className="relative z-10 w-full max-w-sm sm:w-[400px] p-6 sm:p-7 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-3xl border border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out space-y-4">
