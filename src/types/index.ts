@@ -59,7 +59,24 @@ export interface AttendanceRecord {
   total: number;
 }
 
-export type AssessmentType = 'Mid-Sem' | 'End-Sem';
+export type AssessmentType = 'Mid-Sem' | 'End-Sem' | 'Automated Coding Labs';
+
+export interface SemesterGrade {
+  id: string;
+  studentId: string;
+  studentName?: string;
+  studentRoll?: string;
+  studentEmail?: string;
+  semester: number; // 1 to 8
+  courseId: string;
+  courseCode: string;
+  courseName: string;
+  credits: number;
+  assessmentType: AssessmentType;
+  marks: number; // 0-100
+  maxMarks: number; // 100
+  updatedAt?: string;
+}
 
 export interface GradeRecord {
   id: string;

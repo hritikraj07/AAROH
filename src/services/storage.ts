@@ -13,6 +13,7 @@ import {
   NotificationItem,
   GlobalSearchResult,
   GradeRecord,
+  SemesterGrade,
   AssessmentType,
   SkillTree,
   SkillTreeNode,
@@ -869,6 +870,46 @@ export const StorageService = {
     });
 
     this.saveGrades(updated);
+
+    // Synchronize structured semesterGrades in localStorage
+    const existingSemesterGrades: SemesterGrade[] = getStored<SemesterGrade[]>('semesterGrades', []);
+    const updatedSemGrades = [...existingSemesterGrades];
+    records.forEach(rec => {
+      const student = users.find(u => u.id === rec.studentId);
+      const semIdx = updatedSemGrades.findIndex(
+        sg => sg.studentId === rec.studentId && sg.courseId === courseId && sg.assessmentType === assessmentType && sg.semester === semester
+      );
+      const semRecord: SemesterGrade = {
+        id: semIdx >= 0 ? updatedSemGrades[semIdx].id : `sem_grd_${Date.now()}_${rec.studentId}`,
+        studentId: rec.studentId,
+        studentName: student?.name || 'Student',
+        studentRoll: student?.rollNumber || '',
+        studentEmail: student?.email || '',
+        courseId,
+        courseCode: course?.code || courseId,
+        courseName: course?.name || 'Course',
+        semester,
+        assessmentType,
+        marks: rec.marksScored,
+        maxMarks: rec.maxMarks || 100,
+        credits: rec.credits || course?.credits || 4,
+        updatedAt: now,
+      };
+      if (semIdx >= 0) {
+        updatedSemGrades[semIdx] = semRecord;
+      } else {
+        updatedSemGrades.push(semRecord);
+      }
+    });
+    setStored('semesterGrades', updatedSemGrades);
+  },
+
+  getSemesterGrades(): SemesterGrade[] {
+    return getStored<SemesterGrade[]>('semesterGrades', []);
+  },
+
+  saveSemesterGrades(grades: SemesterGrade[]): void {
+    setStored('semesterGrades', grades);
   },
 
   // B.Tech Skill Tree & Curriculum Management

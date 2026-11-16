@@ -1331,4 +1331,47 @@ assert(adaptiveDashContent.includes(exactLightShadow) && adaptiveDashContent.inc
 
 console.log('--- ALL CONTEXT-AWARE ADAPTIVE DASHBOARD VERIFICATIONS PASSED ---');
 
+// ========================================================
+// 31. Check Semester-Wise Gradebook & CGPA What-If Engine
+// ========================================================
+console.log('--- VERIFYING SEMESTER-WISE GRADEBOOK & CGPA WHAT-IF ENGINE ---');
+
+const gradeUtilsPath = path.join(__dirname, '../src/utils/gradeUtils.ts');
+assert(fs.existsSync(gradeUtilsPath), 'gradeUtils.ts exists in src/utils');
+const gradeUtilsContent = fs.readFileSync(gradeUtilsPath, 'utf8');
+
+assert(gradeUtilsContent.includes('export function marksToGradePoint'), 'gradeUtils exports marksToGradePoint');
+assert(gradeUtilsContent.includes('export function marksToLetterGrade'), 'gradeUtils exports marksToLetterGrade');
+assert(gradeUtilsContent.includes('export function getStoredSemesterGrades'), 'gradeUtils exports getStoredSemesterGrades');
+assert(gradeUtilsContent.includes('export function saveStoredSemesterGrades'), 'gradeUtils exports saveStoredSemesterGrades');
+assert(gradeUtilsContent.includes('export function computeStudentSemesterMetrics'), 'gradeUtils exports computeStudentSemesterMetrics math engine');
+assert(gradeUtilsContent.includes("'semesterGrades'"), 'gradeUtils syncs with semesterGrades in localStorage');
+
+// Verify math point conversions
+assert(gradeUtilsContent.includes('if (m >= 90) return 10;'), 'gradeUtils maps 90-100 to 10 points');
+assert(gradeUtilsContent.includes('if (m >= 80) return 9;'), 'gradeUtils maps 80-89 to 9 points');
+assert(gradeUtilsContent.includes('if (m >= 70) return 8;'), 'gradeUtils maps 70-79 to 8 points');
+
+// Faculty Gradebook: 3 Controls + Table + 4-Layer Button
+assert(facultyGradebookContent.includes('selectedSemester') && (facultyGradebookContent.includes('Semester') || facultyGradebookContent.includes('1, 2, 3, 4, 5, 6, 7, 8')), 'Faculty Gradebook includes Semester 1-8 dropdown control');
+assert(facultyGradebookContent.includes('selectedCourseId') || facultyGradebookContent.includes('facultyCourses'), 'Faculty Gradebook includes Course/Subject dropdown control');
+assert(facultyGradebookContent.includes('Automated Coding Labs'), 'Faculty Gradebook includes Automated Coding Labs assessment type');
+assert(facultyGradebookContent.includes('type="number"') && facultyGradebookContent.includes('max="100"'), 'Faculty Gradebook provides 0-100 numeric mark inputs per student');
+assert(facultyGradebookContent.includes('saveStoredSemesterGrades') || facultyGradebookContent.includes('semesterGrades'), 'Faculty Gradebook persists marks to semesterGrades in localStorage');
+assert(facultyGradebookContent.includes('Save Marks'), 'Faculty Gradebook renders Save Marks action button');
+assert(facultyGradebookContent.includes(exactLightShadow) && facultyGradebookContent.includes(exactDarkShadow), 'Save Marks button uses 4-layer tactile shadows');
+
+// Student Results Tab: Semester Breakdown + SGPA Bars + What-If Engine
+const latestAcademicResults = fs.readFileSync(academicResultsPath, 'utf8');
+assert(latestAcademicResults.includes('computeStudentSemesterMetrics'), 'AcademicResultsTab uses computeStudentSemesterMetrics math engine');
+assert(latestAcademicResults.includes('Semester-Wise Performance Trajectory (SGPA)') || latestAcademicResults.includes('SGPA'), 'AcademicResultsTab renders sleek SGPA bar chart / list for completed semesters');
+assert(latestAcademicResults.includes('allSemesters') || latestAcademicResults.includes('Semester 1'), 'AcademicResultsTab organizes grades grouped by semester');
+assert(latestAcademicResults.includes('No grades published yet for this semester.'), 'AcademicResultsTab renders clean empty state when no marks published');
+assert(latestAcademicResults.includes('dark:border-white/5'), 'Clean empty state enforces dark:border-white/5 border styling');
+assert(latestAcademicResults.includes('currentActiveSemester') || latestAcademicResults.includes('Active Semester'), 'What-If simulator applies strictly to current active semester');
+assert(latestAcademicResults.includes('simulatedScenarios') && latestAcademicResults.includes('Automated Coding Labs'), 'What-If simulator includes interactive sliders for Automated Coding Labs and End-Sem');
+assert(latestAcademicResults.includes('PROJECTED CGPA') && latestAcademicResults.includes('projectedCGPA'), 'What-If simulator recalculates and renders projected CGPA');
+
+console.log('--- ALL SEMESTER-WISE GRADEBOOK & CGPA WHAT-IF ENGINE VERIFICATIONS PASSED ---');
+
 module.exports = { assert };
