@@ -59,46 +59,46 @@ export const AdminSettingsPage: React.FC = () => {
         {/* Left Col: Institutional Parameters & Regulatory Thresholds */}
         <div className="space-y-6">
           {/* Institutional Branding */}
-          <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
-              <Building className="w-4 h-4 text-teal-800" />
-              <h3 className="text-sm font-semibold text-slate-900">Institution Identity</h3>
+          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-5 space-y-4">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-200 dark:border-[#27272A]">
+              <Building className="w-4 h-4 text-teal-800 dark:text-teal-400" />
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Institution Identity</h3>
             </div>
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-500 font-medium mb-1">Institution Full Title</label>
-                <div className="p-2.5 bg-slate-50 border border-slate-200 rounded font-semibold text-slate-800">
+                <label className="block text-slate-500 dark:text-slate-400 font-medium mb-1">Institution Full Title</label>
+                <div className="p-2.5 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded font-semibold text-slate-800 dark:text-slate-200">
                   {APP_CONFIG.collegeName}
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-500 font-medium mb-1">Software Wordmark</label>
-                  <div className="p-2 bg-slate-50 border border-slate-200 rounded font-mono font-bold text-slate-900">
+                  <label className="block text-slate-500 dark:text-slate-400 font-medium mb-1">Software Wordmark</label>
+                  <div className="p-2 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded font-mono font-bold text-slate-900 dark:text-slate-100">
                     {APP_CONFIG.appName}
                   </div>
                 </div>
                 <div>
-                  <label className="block text-slate-500 font-medium mb-1">College Short Code</label>
-                  <div className="p-2 bg-slate-50 border border-slate-200 rounded font-mono font-bold text-slate-900">
+                  <label className="block text-slate-500 dark:text-slate-400 font-medium mb-1">College Short Code</label>
+                  <div className="p-2 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded font-mono font-bold text-slate-900 dark:text-slate-100">
                     {APP_CONFIG.collegeShortName}
                   </div>
                 </div>
               </div>
 
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-slate-400 dark:text-slate-500">
                 Institutional labels are configured centrally in <code className="font-mono">src/config.ts</code> for seamless deployment branding.
               </p>
             </div>
           </div>
 
           {/* Attendance Regulation Settings */}
-          <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
-              <Sliders className="w-4 h-4 text-teal-800" />
-              <h3 className="text-sm font-semibold text-slate-900">
+          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-5 space-y-4">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-200 dark:border-[#27272A]">
+              <Sliders className="w-4 h-4 text-teal-800 dark:text-teal-400" />
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 Attendance Regulatory Policy
               </h3>
             </div>
@@ -150,47 +150,47 @@ export const AdminSettingsPage: React.FC = () => {
         {/* Right Col: RBAC Domain Routing & Demo Reset */}
         <div className="space-y-6">
           {/* RBAC Domain Security */}
-          <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
-              <ShieldCheck className="w-4 h-4 text-teal-800" />
-              <h3 className="text-sm font-semibold text-slate-900">
+          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-5 space-y-4">
+            <div className="flex items-center gap-2 pb-3 border-b border-slate-200 dark:border-[#27272A]">
+              <ShieldCheck className="w-4 h-4 text-teal-800 dark:text-teal-400" />
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 Role-Based Domain Governance
               </h3>
             </div>
 
             <div className="space-y-2.5 text-xs">
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md flex items-center justify-between">
+              <div className="p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md flex items-center justify-between">
                 <div>
-                  <span className="font-semibold text-slate-900 block">Student Clearance</span>
-                  <span className="text-[11px] text-slate-500">
+                  <span className="font-semibold text-slate-900 dark:text-slate-100 block">Student Clearance</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
                     Dashboard, Academics, Notices, Events, Opportunities
                   </span>
                 </div>
-                <code className="font-mono text-teal-800 font-bold text-[11px] bg-white px-2 py-0.5 rounded border border-slate-200">
+                <code className="font-mono text-teal-800 dark:text-teal-300 font-bold text-[11px] bg-white dark:bg-[#18181B] px-2 py-0.5 rounded border border-slate-200 dark:border-[#27272A]">
                   @aaroh.edu.in
                 </code>
               </div>
 
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md flex items-center justify-between">
+              <div className="p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md flex items-center justify-between">
                 <div>
-                  <span className="font-semibold text-slate-900 block">Faculty Clearance</span>
-                  <span className="text-[11px] text-slate-500">
+                  <span className="font-semibold text-slate-900 dark:text-slate-100 block">Faculty Clearance</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
                     Classes, Roll Logger, Coursework, Grading
                   </span>
                 </div>
-                <code className="font-mono text-teal-800 font-bold text-[11px] bg-white px-2 py-0.5 rounded border border-slate-200">
+                <code className="font-mono text-teal-800 dark:text-teal-300 font-bold text-[11px] bg-white dark:bg-[#18181B] px-2 py-0.5 rounded border border-slate-200 dark:border-[#27272A]">
                   @faculty.aaroh.edu.in
                 </code>
               </div>
 
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md flex items-center justify-between">
+              <div className="p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md flex items-center justify-between">
                 <div>
-                  <span className="font-semibold text-slate-900 block">Administration Clearance</span>
-                  <span className="text-[11px] text-slate-500">
+                  <span className="font-semibold text-slate-900 dark:text-slate-100 block">Administration Clearance</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
                     Full Console, Timetable Engine, Events, Notices
                   </span>
                 </div>
-                <code className="font-mono text-teal-800 font-bold text-[11px] bg-white px-2 py-0.5 rounded border border-slate-200">
+                <code className="font-mono text-teal-800 dark:text-teal-300 font-bold text-[11px] bg-white dark:bg-[#18181B] px-2 py-0.5 rounded border border-slate-200 dark:border-[#27272A]">
                   @admin.aaroh.edu.in
                 </code>
               </div>
@@ -198,13 +198,13 @@ export const AdminSettingsPage: React.FC = () => {
           </div>
 
           {/* Clean Reset Demo Data Card */}
-          <div className="bg-white border border-rose-200 rounded-lg p-5 space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-rose-100">
-              <RotateCcw className="w-4 h-4 text-rose-700" />
-              <h3 className="text-sm font-semibold text-rose-950">Maintenance & State Reset</h3>
+          <div className="bg-white dark:bg-[#18181B] border border-rose-200 dark:border-rose-900/60 rounded-lg p-5 space-y-4">
+            <div className="flex items-center gap-2 pb-3 border-b border-rose-100 dark:border-rose-900/40">
+              <RotateCcw className="w-4 h-4 text-rose-700 dark:text-rose-400" />
+              <h3 className="text-sm font-semibold text-rose-950 dark:text-rose-200">Maintenance & State Reset</h3>
             </div>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
               Reset all client-side storage state back to pristine empty foundation. This clears custom notices, created events, timetable entries, and reset attendance logs.
             </p>
 
@@ -212,9 +212,9 @@ export const AdminSettingsPage: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                icon={<RotateCcw className="w-3.5 h-3.5 text-rose-700" />}
+                icon={<RotateCcw className="w-3.5 h-3.5 text-rose-700 dark:text-rose-400" />}
                 onClick={() => setIsResetConfirmOpen(true)}
-                className="border-rose-200 text-rose-800 hover:bg-rose-50"
+                className="border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/40"
               >
                 Reset Demo Data
               </Button>
@@ -226,16 +226,16 @@ export const AdminSettingsPage: React.FC = () => {
       {/* Reset Confirmation Dialog */}
       {isResetConfirmOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-lg shadow-sm max-w-md w-full p-6 space-y-4 animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-sm max-w-md w-full p-6 space-y-4 animate-in fade-in duration-150">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-full bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-400 flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm font-bold text-slate-900">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
                   Confirm Demo Data Reset?
                 </h3>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   This action will reinitialize all database entities (courses, timetable, circulars, events, student records) to initial blank state. Active sessions will require re-login.
                 </p>
               </div>

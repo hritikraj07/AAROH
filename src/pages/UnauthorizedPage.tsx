@@ -35,28 +35,28 @@ export const UnauthorizedPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center items-center p-4 sm:p-6 font-sans">
-      <div className="w-full max-w-lg bg-white border border-slate-200 rounded-lg p-6 sm:p-8 space-y-6">
+    <div className="min-h-screen bg-[#FBFBFA] dark:bg-[#0E0E11] flex flex-col justify-center items-center p-4 sm:p-6 font-sans">
+      <div className="w-full max-w-lg bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-6 sm:p-8 space-y-6">
         {/* Header */}
-        <div className="text-center space-y-2 pb-4 border-b border-slate-200">
-          <div className="w-12 h-12 rounded-full bg-rose-50 border border-rose-200 text-rose-700 flex items-center justify-center mx-auto">
+        <div className="text-center space-y-2 pb-4 border-b border-slate-200 dark:border-[#27272A]">
+          <div className="w-12 h-12 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-400 flex items-center justify-center mx-auto">
             <ShieldAlert className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-rose-800 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-rose-800 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 px-2 py-0.5 rounded">
               HTTP 403 • Access Restricted
             </span>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900 mt-2">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mt-2">
               Unauthorized Portal Area
             </h1>
-            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
               Your institutional account clearance does not grant access to this module or route.
             </p>
           </div>
         </div>
 
         {/* Current Active Account Information */}
-        <div className="p-4 bg-slate-50 border border-slate-200 rounded-md space-y-3">
+        <div className="p-4 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md space-y-3">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">
             Current Active Identity
           </span>

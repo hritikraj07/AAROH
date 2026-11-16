@@ -179,15 +179,15 @@ export const StudentCodeWorkspacePage: React.FC = () => {
 
   if (!assignment) {
     return (
-      <div className="bg-white border border-slate-200 rounded-lg p-12 text-center max-w-lg mx-auto my-8 space-y-3">
+      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-12 text-center max-w-lg mx-auto my-8 space-y-3">
         <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto" />
-        <h3 className="text-sm font-semibold text-slate-900">Lab Assignment Not Found</h3>
-        <p className="text-xs text-slate-500">
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Lab Assignment Not Found</h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           The requested coding problem could not be located in the local storage registry.
         </p>
         <Link
           to="/student/academics?tab=assignments"
-          className="inline-flex items-center gap-1.5 text-xs text-teal-700 font-semibold hover:underline pt-2"
+          className="inline-flex items-center gap-1.5 text-xs text-teal-700 dark:text-teal-400 font-semibold hover:underline pt-2"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Assignments</span>
@@ -330,22 +330,22 @@ export const StudentCodeWorkspacePage: React.FC = () => {
 
       {/* State 1: LOCKED VIEW */}
       {labStatus === 'locked' && (
-        <div className="bg-white border border-slate-200 rounded-lg p-12 text-center max-w-xl mx-auto space-y-4 my-8 animate-in fade-in duration-200">
-          <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 mx-auto">
-            <Lock className="w-7 h-7 text-slate-700" />
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-12 text-center max-w-xl mx-auto space-y-4 my-8 animate-in fade-in duration-200">
+          <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-500 dark:text-slate-400 mx-auto">
+            <Lock className="w-7 h-7 text-slate-700 dark:text-slate-300" />
           </div>
           <div className="space-y-1.5">
-            <h2 className="text-base font-bold text-slate-900 tracking-tight">
+            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 tracking-tight">
               Live Lab Session Locked
             </h2>
-            <p className="text-xs text-slate-500 leading-relaxed max-w-md mx-auto">
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-md mx-auto">
               Lab Session is not active. Waiting for the instructor to open the lab...
             </p>
           </div>
-          <div className="p-3 bg-slate-50 border border-slate-200 rounded text-xs text-slate-600 font-mono">
+          <div className="p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded text-xs text-slate-600 dark:text-slate-300 font-mono">
             {assignment.title} • {course?.name || 'Computer Science'}
           </div>
-          <div className="flex items-center justify-center gap-2 text-[11px] text-teal-700 font-mono pt-2">
+          <div className="flex items-center justify-center gap-2 text-[11px] text-teal-700 dark:text-teal-400 font-mono pt-2">
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
             <span>Real-time listener active — will unlock automatically when started</span>
           </div>
@@ -356,28 +356,28 @@ export const StudentCodeWorkspacePage: React.FC = () => {
       {labStatus !== 'locked' && (
         <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
           {/* Lab Status Notice Strip */}
-          <div className="flex items-center justify-between p-3 rounded-lg border bg-white text-xs">
+          <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#18181B] text-xs">
             <div className="flex items-center gap-2">
               {labStatus === 'active' ? (
                 <>
                   <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-                  <span className="font-semibold text-emerald-800 font-mono">
+                  <span className="font-semibold text-emerald-800 dark:text-emerald-400 font-mono">
                     LIVE LAB SESSION ACTIVE
                   </span>
-                  <span className="text-slate-400">•</span>
-                  <span className="text-slate-500">
+                  <span className="text-slate-400 dark:text-slate-500">•</span>
+                  <span className="text-slate-500 dark:text-slate-400">
                     Real-time automated evaluation enabled
                   </span>
                 </>
               ) : (
-                <span className="font-semibold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-md">
+                <span className="font-semibold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 px-2.5 py-1 rounded-md">
                   Lab Session Ended. Submissions Closed.
                 </span>
               )}
             </div>
 
             {isSubmitted && (
-              <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>Assignment Submitted</span>
               </span>
@@ -387,45 +387,45 @@ export const StudentCodeWorkspacePage: React.FC = () => {
           {/* Split-Screen Workspace */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             {/* Left Pane: Problem Description & Read-Only Test Cases */}
-            <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-6">
+            <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-6 space-y-6">
               <div>
-                <span className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase font-mono">
+                <span className="text-[10px] font-semibold tracking-wider text-slate-400 dark:text-slate-500 uppercase font-mono">
                   PROBLEM SPECIFICATION
                 </span>
-                <h3 className="text-base font-bold text-slate-900 mt-1">
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mt-1">
                   {assignment.title}
                 </h3>
               </div>
 
-              <div className="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap font-sans space-y-2 border-t border-b border-slate-100 py-4">
+              <div className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap font-sans space-y-2 border-t border-b border-slate-100 dark:border-[#27272A] py-4">
                 {assignment.description}
               </div>
 
               {/* Read-Only Test Cases */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900 uppercase tracking-wider font-mono">
+                  <span className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider font-mono">
                     TEST CASES ({assignment.testCases?.length || 0})
                   </span>
-                  <span className="text-[10px] text-slate-400 font-mono">Read-Only</span>
+                  <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">Read-Only</span>
                 </div>
 
                 <div className="space-y-2.5">
                   {(assignment.testCases || []).map((tc, idx) => (
                     <div
                       key={tc.id}
-                      className="p-3 bg-slate-50 border border-slate-200 rounded-md font-mono text-xs space-y-1.5"
+                      className="p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md font-mono text-xs space-y-1.5"
                     >
-                      <div className="flex items-center justify-between text-[11px] text-slate-500 font-semibold">
+                      <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
                         <span>Test Case #{idx + 1}</span>
                       </div>
-                      <div className="bg-white p-2 rounded border border-slate-200 text-slate-800 text-[11px]">
-                        <span className="text-slate-400 select-none mr-2">Input:</span>
+                      <div className="bg-white dark:bg-[#18181B] p-2 rounded border border-slate-200 dark:border-[#27272A] text-slate-800 dark:text-slate-200 text-[11px]">
+                        <span className="text-slate-400 dark:text-slate-500 select-none mr-2">Input:</span>
                         <span>{tc.input}</span>
                       </div>
-                      <div className="bg-white p-2 rounded border border-slate-200 text-slate-800 text-[11px]">
-                        <span className="text-slate-400 select-none mr-2">Expected:</span>
-                        <span className="text-teal-900 font-semibold">{tc.expectedOutput}</span>
+                      <div className="bg-white dark:bg-[#18181B] p-2 rounded border border-slate-200 dark:border-[#27272A] text-slate-800 dark:text-slate-200 text-[11px]">
+                        <span className="text-slate-400 dark:text-slate-500 select-none mr-2">Expected:</span>
+                        <span className="text-teal-900 dark:text-teal-300 font-semibold">{tc.expectedOutput}</span>
                       </div>
                     </div>
                   ))}
@@ -434,12 +434,12 @@ export const StudentCodeWorkspacePage: React.FC = () => {
             </div>
 
             {/* Right Pane: Code Editor & Terminal Output */}
-            <div className="bg-white border border-slate-200 rounded-lg p-6 space-y-4">
+            <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-6 space-y-4">
               {/* Editor Header Bar */}
-              <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A]">
                 <div className="flex items-center gap-2">
-                  <FileCode2 className="w-4 h-4 text-teal-700" />
-                  <span className="text-xs font-mono font-bold text-slate-900 uppercase">
+                  <FileCode2 className="w-4 h-4 text-teal-700 dark:text-teal-400" />
+                  <span className="text-xs font-mono font-bold text-slate-900 dark:text-slate-100 uppercase">
                     solution.{assignment.language === 'python' ? 'py' : assignment.language === 'javascript' ? 'js' : 'cpp'}
                   </span>
                 </div>

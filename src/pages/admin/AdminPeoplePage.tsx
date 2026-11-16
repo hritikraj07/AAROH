@@ -202,62 +202,62 @@ export const AdminPeoplePage: React.FC = () => {
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Total Accounts</span>
-            <Users className="w-4 h-4 text-slate-700" />
+            <Users className="w-4 h-4 text-slate-700 dark:text-slate-300" />
           </div>
-          <div className="text-2xl font-bold tracking-tight text-slate-900 font-mono">
+          <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
             {users.length}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1">Active verified directory profiles</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Active verified directory profiles</p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Students</span>
-            <GraduationCap className="w-4 h-4 text-teal-700" />
+            <GraduationCap className="w-4 h-4 text-teal-700 dark:text-teal-400" />
           </div>
-          <div className="text-2xl font-bold tracking-tight text-teal-800 font-mono">
+          <div className="text-2xl font-bold tracking-tight text-teal-800 dark:text-teal-400 font-mono">
             {studentCount}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1 font-mono">@aaroh.edu.in</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">@aaroh.edu.in</p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Faculty</span>
-            <Briefcase className="w-4 h-4 text-blue-700" />
+            <Briefcase className="w-4 h-4 text-blue-700 dark:text-blue-400" />
           </div>
-          <div className="text-2xl font-bold tracking-tight text-blue-800 font-mono">
+          <div className="text-2xl font-bold tracking-tight text-blue-800 dark:text-blue-400 font-mono">
             {facultyCount}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1 font-mono">@faculty.aaroh.edu.in</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">@faculty.aaroh.edu.in</p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Administrators</span>
-            <ShieldAlert className="w-4 h-4 text-amber-700" />
+            <ShieldAlert className="w-4 h-4 text-amber-700 dark:text-amber-400" />
           </div>
-          <div className="text-2xl font-bold tracking-tight text-slate-900 font-mono">
+          <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
             {adminCount}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1 font-mono">@admin.aaroh.edu.in</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">@admin.aaroh.edu.in</p>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-lg border border-slate-200">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white dark:bg-[#18181B] p-3 rounded-lg border border-slate-200 dark:border-[#27272A]">
         {/* Search */}
         <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search by name, email, roll number..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full text-xs pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+            className="w-full text-xs pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
           />
         </div>
 
@@ -308,10 +308,10 @@ export const AdminPeoplePage: React.FC = () => {
 
       {/* Directory Table */}
       {filteredUsers.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-lg p-10 text-center space-y-3">
-          <Users className="w-10 h-10 text-slate-300 mx-auto" />
-          <h3 className="text-sm font-semibold text-slate-900">No users match your criteria</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-10 text-center space-y-3">
+          <Users className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">No users match your criteria</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
             {searchQuery || roleFilter !== 'all'
               ? 'No registered profiles match the active search or role filters.'
               : 'There are currently no users in the campus directory. Onboard your first user now.'}
@@ -326,11 +326,11 @@ export const AdminPeoplePage: React.FC = () => {
           </Button>
         </div>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-mono uppercase text-[10px]">
+                <tr className="bg-slate-50 dark:bg-[#111115] border-b border-slate-200 dark:border-[#27272A] text-slate-500 dark:text-slate-400 font-mono uppercase text-[10px]">
                   <th className="py-3 px-4">User</th>
                   <th className="py-3 px-4">Role</th>
                   <th className="py-3 px-4">Institutional Email</th>
@@ -445,25 +445,25 @@ export const AdminPeoplePage: React.FC = () => {
       {/* Add User Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-lg shadow-sm max-w-lg w-full p-6 space-y-4 animate-in fade-in duration-150 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-sm max-w-lg w-full p-6 space-y-4 animate-in fade-in duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A]">
               <div className="flex items-center gap-2">
-                <UserPlus className="w-4 h-4 text-teal-800" />
-                <h3 className="text-sm font-semibold text-slate-900">
+                <UserPlus className="w-4 h-4 text-teal-800 dark:text-teal-400" />
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                   Onboard Campus User
                 </h3>
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200 p-1"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {formError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-md text-xs text-rose-800 flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+              <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-md text-xs text-rose-800 dark:text-rose-300 flex items-start gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                 <span className="leading-relaxed">{formError}</span>
               </div>
             )}
@@ -471,7 +471,7 @@ export const AdminPeoplePage: React.FC = () => {
             <form onSubmit={handleAddUser} className="space-y-4">
               {/* Role Selection Tabs */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Account Role & Clearance <span className="text-rose-600">*</span>
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -480,14 +480,14 @@ export const AdminPeoplePage: React.FC = () => {
                     onClick={() => handleRoleChange('student')}
                     className={`p-3 rounded-md border text-left transition-colors flex items-center gap-2.5 ${
                       role === 'student'
-                        ? 'border-teal-700 bg-teal-50/60 text-teal-900 font-semibold ring-1 ring-teal-700'
-                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                        ? 'border-teal-700 dark:border-teal-500 bg-teal-50/60 dark:bg-teal-950/50 text-teal-900 dark:text-teal-200 font-semibold ring-1 ring-teal-700'
+                        : 'border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#111115] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#202025]'
                     }`}
                   >
-                    <GraduationCap className={`w-4 h-4 ${role === 'student' ? 'text-teal-700' : 'text-slate-400'}`} />
+                    <GraduationCap className={`w-4 h-4 ${role === 'student' ? 'text-teal-700 dark:text-teal-400' : 'text-slate-400 dark:text-slate-500'}`} />
                     <div>
                       <div className="text-xs">Student</div>
-                      <div className="text-[10px] text-slate-400 font-normal">@aaroh.edu.in</div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">@aaroh.edu.in</div>
                     </div>
                   </button>
 
@@ -496,14 +496,14 @@ export const AdminPeoplePage: React.FC = () => {
                     onClick={() => handleRoleChange('faculty')}
                     className={`p-3 rounded-md border text-left transition-colors flex items-center gap-2.5 ${
                       role === 'faculty'
-                        ? 'border-blue-700 bg-blue-50/60 text-blue-900 font-semibold ring-1 ring-blue-700'
-                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
+                        ? 'border-blue-700 dark:border-blue-500 bg-blue-50/60 dark:bg-blue-950/50 text-blue-900 dark:text-blue-200 font-semibold ring-1 ring-blue-700'
+                        : 'border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#111115] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#202025]'
                     }`}
                   >
-                    <Briefcase className={`w-4 h-4 ${role === 'faculty' ? 'text-blue-700' : 'text-slate-400'}`} />
+                    <Briefcase className={`w-4 h-4 ${role === 'faculty' ? 'text-blue-700 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`} />
                     <div>
                       <div className="text-xs">Faculty</div>
-                      <div className="text-[10px] text-slate-400 font-normal">@faculty.aaroh.edu.in</div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">@faculty.aaroh.edu.in</div>
                     </div>
                   </button>
                 </div>
@@ -511,7 +511,7 @@ export const AdminPeoplePage: React.FC = () => {
 
               {/* Common Fields: Name and Email */}
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Full Name <span className="text-rose-600">*</span>
                 </label>
                 <input
@@ -520,16 +520,16 @@ export const AdminPeoplePage: React.FC = () => {
                   placeholder={role === 'student' ? 'e.g. Devika Patel' : 'e.g. Prof. Rajesh Verma'}
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Institutional Email Address <span className="text-rose-600">*</span>
                 </label>
-                <div className="flex items-center rounded-md border border-slate-200 bg-white overflow-hidden focus-within:ring-2 focus-within:ring-teal-700/20 focus-within:border-teal-700 transition-all duration-150 ease-in-out">
-                  <div className="pl-3 pr-1 text-slate-400">
+                <div className="flex items-center rounded-md border border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#111115] overflow-hidden focus-within:ring-2 focus-within:ring-teal-700/20 focus-within:border-teal-700 transition-all duration-150 ease-in-out">
+                  <div className="pl-3 pr-1 text-slate-400 dark:text-slate-500">
                     <Mail className="w-4 h-4" />
                   </div>
                   <input
@@ -570,18 +570,18 @@ export const AdminPeoplePage: React.FC = () => {
                         placeholder="e.g. 23CS014"
                         value={rollNumber}
                         onChange={e => setRollNumber(e.target.value)}
-                        className="w-full text-xs font-mono uppercase px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                        className="w-full text-xs font-mono uppercase px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Program
                       </label>
                       <select
                         value={program}
                         onChange={e => setProgram(e.target.value)}
-                        className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                        className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                       >
                         <option value="B.Tech Computer Science">B.Tech Computer Science</option>
                         <option value="B.Tech Electronics & Comm.">B.Tech Electronics & Comm.</option>
@@ -596,13 +596,13 @@ export const AdminPeoplePage: React.FC = () => {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Semester
                       </label>
                       <select
                         value={semester}
                         onChange={e => setSemester(Number(e.target.value))}
-                        className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                        className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                       >
                         {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
                           <option key={s} value={s}>
@@ -613,27 +613,27 @@ export const AdminPeoplePage: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Section
                       </label>
                       <input
                         type="text"
                         value={section}
                         onChange={e => setSection(e.target.value)}
-                        className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                        className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                       />
                     </div>
                   </div>
 
                   {/* Class Coordinator Field */}
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                       Class Coordinator (Faculty Mentor)
                     </label>
                     <select
                       value={classCoordinator}
                       onChange={e => setClassCoordinator(e.target.value)}
-                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                     >
                       <option value="">Unassigned (Select Coordinator)</option>
                       {facultyMembers.map(fac => (
@@ -643,11 +643,11 @@ export const AdminPeoplePage: React.FC = () => {
                       ))}
                     </select>
                     {facultyMembers.length === 0 ? (
-                      <p className="text-[10px] text-amber-700 mt-1">
+                      <p className="text-[10px] text-amber-700 dark:text-amber-400 mt-1">
                         Notice: No faculty members found in directory. Onboard faculty members first to assign coordinators.
                       </p>
                     ) : (
-                      <p className="text-[10px] text-slate-400 mt-1">
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
                         Select an existing teacher from the faculty directory as this student's coordinator.
                       </p>
                     )}
@@ -657,19 +657,19 @@ export const AdminPeoplePage: React.FC = () => {
 
               {/* Dynamic Fields: Faculty */}
               {role === 'faculty' && (
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-md space-y-3">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-blue-900">
+                <div className="p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md space-y-3">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-blue-900 dark:text-blue-400">
                     Faculty Department & Title
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                       Academic Department <span className="text-rose-600">*</span>
                     </label>
                     <select
                       value={department}
                       onChange={e => setDepartment(e.target.value)}
-                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                     >
                       {FACULTY_DEPARTMENTS.map(dept => (
                         <option key={dept} value={dept}>
@@ -680,14 +680,14 @@ export const AdminPeoplePage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                       Designation
                     </label>
                     <input
                       type="text"
                       value={designation}
                       onChange={e => setDesignation(e.target.value)}
-                      className="w-full text-xs px-3 py-2 border border-slate-200 rounded-md bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                     />
                   </div>
                 </div>

@@ -75,54 +75,54 @@ export const AdminDashboardPage: React.FC = () => {
 
       {/* System Metrics Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Circulars & Notices</span>
-            <Bell className="w-4 h-4 text-teal-700" />
+            <Bell className="w-4 h-4 text-teal-700 dark:text-teal-400" />
           </div>
-          <div className="text-2xl font-bold tracking-tight text-slate-900 font-mono">
+          <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
             {notices.length}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1 font-mono">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
             {pinnedNoticesCount} pinned to top
           </p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Campus Events</span>
-            <Calendar className="w-4 h-4 text-blue-700" />
+            <Calendar className="w-4 h-4 text-blue-700 dark:text-blue-400" />
           </div>
-          <div className="text-2xl font-bold tracking-tight text-slate-900 font-mono">
+          <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
             {events.length}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1 font-mono">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
             {pendingEventsCount > 0 ? `${pendingEventsCount} pending approval` : 'All events approved'}
           </p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Master Timetable</span>
-            <Clock className="w-4 h-4 text-amber-700" />
+            <Clock className="w-4 h-4 text-amber-700 dark:text-amber-400" />
           </div>
-          <div className="text-2xl font-bold tracking-tight text-slate-900 font-mono">
+          <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
             {timetable.length}
           </div>
-          <p className="text-[11px] text-slate-500 mt-1 font-mono">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
             Across {courses.length} curriculum subjects
           </p>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-lg p-4">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">System State</span>
-            <Activity className="w-4 h-4 text-emerald-700" />
+            <Activity className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
           </div>
-          <div className="text-lg font-bold tracking-tight text-emerald-800 font-mono">
+          <div className="text-lg font-bold tracking-tight text-emerald-800 dark:text-emerald-400 font-mono">
             Healthy (Offline)
           </div>
-          <p className="text-[11px] text-slate-500 mt-1 font-mono">
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
             Local Storage Layer active
           </p>
         </div>
@@ -131,13 +131,13 @@ export const AdminDashboardPage: React.FC = () => {
       {/* Main Two-Column Administrative Split */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Administrative Jump Consoles */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-5 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A]">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">Administrative Consoles</h3>
-              <p className="text-xs text-slate-500">Direct module management</p>
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Administrative Consoles</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Direct module management</p>
             </div>
-            <span className="text-[11px] font-mono text-slate-400">v2.1 Master Control</span>
+            <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">v2.1 Master Control</span>
           </div>
 
           <div className="grid grid-cols-1 gap-2.5">
@@ -247,25 +247,25 @@ export const AdminDashboardPage: React.FC = () => {
         </div>
 
         {/* Right: System Audit & Health */}
-        <div className="bg-white border border-slate-200 rounded-lg p-5 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-5 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A]">
             <div>
-              <h3 className="text-sm font-semibold text-slate-900">System State & Compliance</h3>
-              <p className="text-xs text-slate-500">Operational status checks</p>
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">System State & Compliance</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Operational status checks</p>
             </div>
-            <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+            <span className="text-[10px] font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded">
               All Services Operational
             </span>
           </div>
 
           <div className="space-y-3">
-            <div className="p-3 rounded-md border border-slate-200 bg-slate-50/50 flex items-start gap-3">
-              <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+            <div className="p-3 rounded-md border border-slate-200 dark:border-[#27272A] bg-slate-50/50 dark:bg-[#111115] flex items-start gap-3">
+              <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
               <div>
-                <span className="text-xs font-semibold text-slate-800 block">
+                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 block">
                   Role-Based Access Control (RBAC)
                 </span>
-                <p className="text-[11px] text-slate-500 mt-0.5 leading-relaxed">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
                   Strict domain routing enforced for Student (<code className="font-mono">@aaroh.edu.in</code>), Faculty (<code className="font-mono">@faculty.aaroh.edu.in</code>), and Admin (<code className="font-mono">@admin.aaroh.edu.in</code>).
                 </p>
               </div>

@@ -146,8 +146,8 @@ export const FacultyAttendancePage: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 font-mono text-xs text-slate-600 bg-white border border-slate-200 px-3 py-1.5 rounded-md">
-          <Calendar className="w-3.5 h-3.5 text-teal-700" />
+        <div className="flex items-center gap-2 font-mono text-xs text-slate-600 dark:text-slate-300 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] px-3 py-1.5 rounded-md">
+          <Calendar className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
           <span>
             {new Date().toLocaleDateString('en-IN', {
               weekday: 'short',
@@ -160,17 +160,17 @@ export const FacultyAttendancePage: React.FC = () => {
       </div>
 
       {facultyClasses.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-lg p-12 text-center space-y-3">
-          <BookOpen className="w-10 h-10 text-slate-300 mx-auto" />
-          <h3 className="text-sm font-semibold text-slate-900">No Teaching Sessions Assigned</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-12 text-center space-y-3">
+          <BookOpen className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">No Teaching Sessions Assigned</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
             There are currently no timetable sessions linked to your faculty profile. Please contact the Academic Registrar or add sessions in the admin portal.
           </p>
         </div>
       ) : (
         <div className="space-y-6">
           {/* Class Selector Bar */}
-          <div className="bg-white border border-slate-200 rounded-lg p-4">
+          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-slate-700 uppercase tracking-wider block">
@@ -238,28 +238,28 @@ export const FacultyAttendancePage: React.FC = () => {
           </div>
 
           {/* Roster & Roll Call Table */}
-          <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg overflow-hidden">
             {/* Toolbar */}
-            <div className="p-4 border-b border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="p-4 border-b border-slate-200 dark:border-[#27272A] bg-slate-50/70 dark:bg-[#111115] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3 flex-wrap">
                 <div className="flex items-center gap-1.5">
-                  <Users className="w-4 h-4 text-teal-800" />
-                  <span className="text-xs font-bold text-slate-900">
+                  <Users className="w-4 h-4 text-teal-800 dark:text-teal-400" />
+                  <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
                     Enrolled Roster ({enrolledStudents.length} Students)
                   </span>
                 </div>
 
-                <div className="flex items-center gap-2 pl-2 border-l border-slate-300">
-                  <span className="text-[11px] font-mono text-slate-500">
-                    Present: <strong className="text-emerald-700">{presentCount}</strong>
+                <div className="flex items-center gap-2 pl-2 border-l border-slate-300 dark:border-[#27272A]">
+                  <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    Present: <strong className="text-emerald-700 dark:text-emerald-400">{presentCount}</strong>
                   </span>
-                  <span className="text-slate-300">•</span>
-                  <span className="text-[11px] font-mono text-slate-500">
-                    Absent: <strong className="text-rose-700">{absentCount}</strong>
+                  <span className="text-slate-300 dark:text-slate-600">•</span>
+                  <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    Absent: <strong className="text-rose-700 dark:text-rose-400">{absentCount}</strong>
                   </span>
-                  <span className="text-slate-300">•</span>
-                  <span className="text-[11px] font-mono text-slate-500">
-                    Rate: <strong className="text-slate-900">{attendanceRate.toFixed(0)}%</strong>
+                  <span className="text-slate-300 dark:text-slate-600">•</span>
+                  <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                    Rate: <strong className="text-slate-900 dark:text-slate-100">{attendanceRate.toFixed(0)}%</strong>
                   </span>
                 </div>
               </div>
@@ -269,7 +269,7 @@ export const FacultyAttendancePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => markAll(true)}
-                  className="px-2.5 py-1 text-xs font-semibold rounded bg-white hover:bg-emerald-50 text-emerald-800 border border-emerald-300 transition-colors flex items-center gap-1"
+                  className="px-2.5 py-1 text-xs font-semibold rounded bg-white dark:bg-[#18181B] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 transition-colors flex items-center gap-1"
                 >
                   <Check className="w-3.5 h-3.5" />
                   <span>All Present</span>
@@ -277,7 +277,7 @@ export const FacultyAttendancePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => markAll(false)}
-                  className="px-2.5 py-1 text-xs font-semibold rounded bg-white hover:bg-rose-50 text-rose-800 border border-rose-300 transition-colors flex items-center gap-1"
+                  className="px-2.5 py-1 text-xs font-semibold rounded bg-white dark:bg-[#18181B] hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-300 dark:border-rose-800 transition-colors flex items-center gap-1"
                 >
                   <X className="w-3.5 h-3.5" />
                   <span>All Absent</span>

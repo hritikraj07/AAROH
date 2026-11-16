@@ -69,10 +69,10 @@ export const FacultyClassesPage: React.FC = () => {
 
       {/* Courses List */}
       {courses.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-lg p-10 text-center space-y-3">
-          <BookOpen className="w-10 h-10 text-slate-300 mx-auto" />
-          <h3 className="text-sm font-semibold text-slate-900">No courses currently assigned</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-10 text-center space-y-3">
+          <BookOpen className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">No courses currently assigned</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
             No courses currently assigned. Your department admin will allocate your subjects here.
           </p>
           {/* RBAC: Strictly hidden for faculty role */}
@@ -94,17 +94,17 @@ export const FacultyClassesPage: React.FC = () => {
             return (
               <div
                 key={course.id}
-                className="bg-white border border-slate-200 rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-slate-300 transition-all duration-150 ease-in-out"
+                className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-5 flex flex-col justify-between space-y-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-150 ease-in-out"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
-                    <span className="font-mono text-xs font-bold text-teal-900 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                    <span className="font-mono text-xs font-bold text-teal-900 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 px-2 py-0.5 rounded border border-teal-200 dark:border-teal-800">
                       {course.code}
                     </span>
                     {!isFaculty && (
                       <button
                         onClick={() => deleteCourse(course.id)}
-                        className="text-slate-400 hover:text-rose-600 p-1 rounded transition-colors"
+                        className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1 rounded transition-colors"
                         title="Remove Course"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -113,14 +113,14 @@ export const FacultyClassesPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-semibold text-slate-900">{course.name}</h3>
-                    <p className="text-xs text-slate-500 mt-1 flex items-center gap-1.5 font-mono">
-                      <Building className="w-3.5 h-3.5 text-slate-400" />
+                    <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">{course.name}</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5 font-mono">
+                      <Building className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
                       {getFacultyFullName(course, null, users)}
                     </p>
                   </div>
 
-                  <div className="pt-2 border-t border-slate-200 grid grid-cols-2 gap-2 text-xs text-slate-600 font-mono">
+                  <div className="pt-2 border-t border-slate-200 dark:border-[#27272A] grid grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-400 font-mono">
                     <div className="flex items-center gap-1.5">
                       <span className="text-slate-400">Credits:</span>
                       <span className="font-semibold text-slate-800">{course.credits}</span>
@@ -159,15 +159,15 @@ export const FacultyClassesPage: React.FC = () => {
       {/* Add Course Modal (Admin only) */}
       {!isFaculty && isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-lg shadow-sm max-w-md w-full p-6 space-y-4 animate-in fade-in duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-sm max-w-md w-full p-6 space-y-4 animate-in fade-in duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A]">
               <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-teal-800" />
-                <h3 className="text-sm font-semibold text-slate-900">Add Curriculum Course</h3>
+                <BookOpen className="w-4 h-4 text-teal-800 dark:text-teal-400" />
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Add Curriculum Course</h3>
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200 p-1"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -175,7 +175,7 @@ export const FacultyClassesPage: React.FC = () => {
 
             <form onSubmit={handleCreateCourse} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Course Code <span className="text-rose-600">*</span>
                 </label>
                 <input
@@ -184,12 +184,12 @@ export const FacultyClassesPage: React.FC = () => {
                   placeholder="e.g. CS301"
                   value={code}
                   onChange={e => setCode(e.target.value)}
-                  className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Course Title <span className="text-rose-600">*</span>
                 </label>
                 <input
@@ -198,45 +198,45 @@ export const FacultyClassesPage: React.FC = () => {
                   placeholder="e.g. Data Structures and Algorithms"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Credits</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Credits</label>
                   <input
                     type="number"
                     min={1}
                     max={6}
                     value={credits}
                     onChange={e => setCredits(Number(e.target.value))}
-                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Default Room</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Default Room</label>
                   <input
                     type="text"
                     value={room}
                     onChange={e => setRoom(e.target.value)}
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Department</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Department</label>
                 <input
                   type="text"
                   value={department}
                   onChange={e => setDepartment(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Schedule Overview
                 </label>
                 <input
@@ -244,11 +244,11 @@ export const FacultyClassesPage: React.FC = () => {
                   placeholder="e.g. Mon, Wed, Fri 09:00 - 10:00"
                   value={scheduleDesc}
                   onChange={e => setScheduleDesc(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-[#27272A]">
                 <Button
                   type="button"
                   variant="secondary"

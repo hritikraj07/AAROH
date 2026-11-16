@@ -140,15 +140,15 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
       <form onSubmit={handleSubmit} className="space-y-4 font-sans">
         {/* Type Radio Group */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
             Listing Type <span className="text-rose-500">*</span>
           </label>
-          <div className="grid grid-cols-2 gap-3 p-2 bg-slate-50 border border-slate-200 rounded-md">
+          <div className="grid grid-cols-2 gap-3 p-2 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md">
             <label
               className={`flex items-center gap-2.5 p-2 rounded cursor-pointer transition-colors border ${
                 type === 'lost'
-                  ? 'bg-rose-50/80 border-rose-200 text-rose-950 font-semibold'
-                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                  ? 'bg-rose-50/80 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-950 dark:text-rose-200 font-semibold'
+                  : 'bg-white dark:bg-[#18181B] border-slate-200 dark:border-[#27272A] text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#202025]'
               }`}
             >
               <input
@@ -157,7 +157,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
                 value="lost"
                 checked={type === 'lost'}
                 onChange={() => setType('lost')}
-                className="text-rose-600 focus:ring-rose-500 border-slate-200"
+                className="text-rose-600 focus:ring-rose-500 border-slate-200 dark:border-[#27272A]"
               />
               <span className="text-xs">Lost Item</span>
             </label>
@@ -165,8 +165,8 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
             <label
               className={`flex items-center gap-2.5 p-2 rounded cursor-pointer transition-colors border ${
                 type === 'found'
-                  ? 'bg-teal-50/80 border-teal-200 text-teal-950 font-semibold'
-                  : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'
+                  ? 'bg-teal-50/80 dark:bg-teal-950/40 border-teal-200 dark:border-teal-800 text-teal-950 dark:text-teal-200 font-semibold'
+                  : 'bg-white dark:bg-[#18181B] border-slate-200 dark:border-[#27272A] text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#202025]'
               }`}
             >
               <input
@@ -175,7 +175,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
                 value="found"
                 checked={type === 'found'}
                 onChange={() => setType('found')}
-                className="text-teal-700 focus:ring-teal-600 border-slate-200"
+                className="text-teal-700 focus:ring-teal-600 border-slate-200 dark:border-[#27272A]"
               />
               <span className="text-xs">Found Item</span>
             </label>
@@ -184,7 +184,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
 
         {/* Title */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
             Item Title <span className="text-rose-500">*</span>
           </label>
           <input
@@ -193,20 +193,20 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder="e.g. Casio fx-991EX Scientific Calculator"
-            className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900"
+            className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
         </div>
 
         {/* Category & Date */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
               Category <span className="text-rose-500">*</span>
             </label>
             <select
               value={category}
               onChange={e => setCategory(e.target.value as LostFoundCategory)}
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900"
+              className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 text-slate-900 dark:text-slate-100"
             >
               <option value="Electronics">Electronics</option>
               <option value="ID & Cards">ID & Cards</option>
@@ -217,7 +217,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
               Date {type === 'lost' ? 'Lost' : 'Found'} <span className="text-rose-500">*</span>
             </label>
             <input
@@ -225,14 +225,14 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
               required
               value={date}
               onChange={e => setDate(e.target.value)}
-              className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900 font-mono"
+              className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 text-slate-900 dark:text-slate-100 font-mono"
             />
           </div>
         </div>
 
         {/* Location */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
             Campus Location <span className="text-rose-500">*</span>
           </label>
           <input
@@ -241,13 +241,13 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
             value={location}
             onChange={e => setLocation(e.target.value)}
             placeholder="e.g. Central Library 2nd Floor Reading Room or CS Lab 3"
-            className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900"
+            className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
             Detailed Description & Distinguishing Marks
           </label>
           <textarea
@@ -255,17 +255,17 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
             value={description}
             onChange={e => setDescription(e.target.value)}
             placeholder="Include color, brand, unique stickers, markings, serial hints, or condition..."
-            className="w-full text-xs px-3 py-2 bg-slate-50 border border-slate-200 rounded focus:outline-none focus:ring-1 focus:ring-teal-700 text-slate-900 resize-none"
+            className="w-full text-xs px-3 py-2 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 resize-none"
           />
         </div>
 
         {/* Photo Upload with Canvas Compression & 500KB Guard */}
         <div>
           <div className="flex items-center justify-between mb-1">
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
               Photo (Optional)
             </label>
-            <span className="text-[11px] text-slate-400 font-mono">
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">
               Auto-compressed &bull; Max 500KB
             </span>
           </div>
@@ -280,15 +280,15 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
           />
 
           {isCompressing ? (
-            <div className="p-6 border border-dashed border-teal-300 rounded-lg bg-teal-50/30 flex flex-col items-center justify-center gap-2">
-              <Loader2 className="w-5 h-5 text-teal-700 animate-spin" />
-              <span className="text-xs font-medium text-teal-900">
+            <div className="p-6 border border-dashed border-teal-300 dark:border-teal-700 rounded-lg bg-teal-50/30 dark:bg-teal-950/30 flex flex-col items-center justify-center gap-2">
+              <Loader2 className="w-5 h-5 text-teal-700 dark:text-teal-400 animate-spin" />
+              <span className="text-xs font-medium text-teal-900 dark:text-teal-200">
                 Compressing photo with HTML5 Canvas...
               </span>
             </div>
           ) : photoBase64 ? (
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
-              <div className="relative rounded overflow-hidden border border-slate-200 bg-slate-100 h-48 w-full flex items-center justify-center">
+            <div className="p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-lg space-y-2">
+              <div className="relative rounded overflow-hidden border border-slate-200 dark:border-[#27272A] bg-slate-100 dark:bg-[#18181B] h-48 w-full flex items-center justify-center">
                 <img
                   src={photoBase64}
                   alt="Cropped item preview"
@@ -297,10 +297,10 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
               </div>
 
               <div className="flex items-center justify-between text-xs pt-1">
-                <div className="flex items-center gap-1.5 truncate text-slate-700">
-                  <ImageIcon className="w-3.5 h-3.5 text-teal-700 shrink-0" />
+                <div className="flex items-center gap-1.5 truncate text-slate-700 dark:text-slate-300">
+                  <ImageIcon className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400 shrink-0" />
                   <span className="truncate font-mono text-[11px]">{photoFileName}</span>
-                  <span className="text-emerald-700 font-mono text-[10px] font-semibold">
+                  <span className="text-emerald-700 dark:text-emerald-400 font-mono text-[10px] font-semibold">
                     ({photoSizeKB} KB compressed)
                   </span>
                 </div>
@@ -308,7 +308,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
                 <button
                   type="button"
                   onClick={handleRemovePhoto}
-                  className="text-xs text-rose-700 hover:text-rose-900 font-medium flex items-center gap-1 px-2 py-0.5 rounded hover:bg-rose-50 transition-colors"
+                  className="text-xs text-rose-700 dark:text-rose-400 hover:text-rose-900 dark:hover:text-rose-300 font-medium flex items-center gap-1 px-2 py-0.5 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                 >
                   <Trash2 className="w-3 h-3" />
                   <span>Remove</span>
@@ -319,20 +319,20 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
             <div>
               <label
                 htmlFor="reportItemPhotoInput"
-                className="flex flex-col items-center justify-center p-4 border border-dashed border-slate-300 hover:border-teal-600 rounded-lg bg-slate-50/50 hover:bg-teal-50/20 cursor-pointer transition-colors group"
+                className="flex flex-col items-center justify-center p-4 border border-dashed border-slate-300 dark:border-slate-700 hover:border-teal-600 dark:hover:border-teal-400 rounded-lg bg-slate-50/50 dark:bg-[#111115]/50 hover:bg-teal-50/20 dark:hover:bg-teal-950/20 cursor-pointer transition-colors group"
               >
-                <UploadCloud className="w-6 h-6 text-slate-400 group-hover:text-teal-700 mb-1 transition-colors" />
-                <span className="text-xs font-semibold text-slate-700 group-hover:text-teal-900">
+                <UploadCloud className="w-6 h-6 text-slate-400 dark:text-slate-500 group-hover:text-teal-700 dark:group-hover:text-teal-400 mb-1 transition-colors" />
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 group-hover:text-teal-900 dark:group-hover:text-teal-200">
                   Select image file to upload
                 </span>
-                <span className="text-[11px] text-slate-400 mt-0.5">
+                <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
                   Resized to 800px &amp; compressed below 500KB for offline storage
                 </span>
               </label>
 
               {photoError && (
-                <div className="mt-2 p-2 bg-rose-50 border border-rose-200 rounded text-xs text-rose-800 flex items-start gap-1.5">
-                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                <div className="mt-2 p-2 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded text-xs text-rose-800 dark:text-rose-300 flex items-start gap-1.5">
+                  <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                   <span>{photoError}</span>
                 </div>
               )}
@@ -341,14 +341,14 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
         </div>
 
         {/* Notice on Privacy */}
-        <div className="p-2.5 bg-slate-50 border border-slate-200 rounded text-[11px] text-slate-500 leading-relaxed">
+        <div className="p-2.5 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
           <p>
-            <strong className="text-slate-700">Privacy Protection:</strong> Phone numbers and emails are never displayed publicly. Other students connect with you via in-app "Request Contact" tokens.
+            <strong className="text-slate-700 dark:text-slate-300">Privacy Protection:</strong> Phone numbers and emails are never displayed publicly. Other students connect with you via in-app "Request Contact" tokens.
           </p>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200">
+        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-[#27272A]">
           <Button type="button" variant="ghost" size="sm" onClick={onClose}>
             Cancel
           </Button>

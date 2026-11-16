@@ -101,15 +101,15 @@ export const AdminEventsPage: React.FC = () => {
       </div>
 
       {/* Filters & Search */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-lg border border-slate-200">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white dark:bg-[#18181B] p-3 rounded-lg border border-slate-200 dark:border-[#27272A]">
         <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search events, venues..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full text-xs pl-9 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-700"
+            className="w-full text-xs pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
           />
         </div>
 
@@ -120,8 +120,8 @@ export const AdminEventsPage: React.FC = () => {
               onClick={() => setSelectedCategory(cat)}
               className={`px-2.5 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap capitalize ${
                 selectedCategory === cat
-                  ? 'bg-teal-50 text-teal-900 border border-teal-200 font-semibold'
-                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
+                  ? 'bg-teal-50 text-teal-900 border border-teal-200 font-semibold dark:bg-[#0F766E] dark:text-white dark:border-teal-700'
+                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 dark:bg-[#111115] dark:border-[#27272A] dark:text-slate-300 dark:hover:bg-[#202025]'
               }`}
             >
               {cat === 'all' ? 'All Events' : cat}
@@ -132,10 +132,10 @@ export const AdminEventsPage: React.FC = () => {
 
       {/* Events Table */}
       {filteredEvents.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-lg p-10 text-center space-y-3">
-          <Calendar className="w-10 h-10 text-slate-300 mx-auto" />
-          <h3 className="text-sm font-semibold text-slate-900">No events found</h3>
-          <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-10 text-center space-y-3">
+          <Calendar className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">No events found</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
             {searchQuery || selectedCategory !== 'all'
               ? 'No events match your current filter parameters.'
               : 'There are currently no active campus events scheduled. Create a new event to publish it to student rosters.'}
@@ -150,11 +150,11 @@ export const AdminEventsPage: React.FC = () => {
           </Button>
         </div>
       ) : (
-        <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-mono uppercase text-[10px]">
+                <tr className="bg-slate-50 dark:bg-[#111115] border-b border-slate-200 dark:border-[#27272A] text-slate-500 dark:text-slate-400 font-mono uppercase text-[10px]">
                   <th className="py-3 px-4">Event Title</th>
                   <th className="py-3 px-4">Category</th>
                   <th className="py-3 px-4">Date & Time</th>
@@ -221,15 +221,15 @@ export const AdminEventsPage: React.FC = () => {
       {/* Create Event Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
-          <div className="bg-white border border-slate-200 rounded-lg shadow-sm max-w-lg w-full p-6 space-y-4 animate-in fade-in duration-150 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-sm max-w-lg w-full p-6 space-y-4 animate-in fade-in duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A]">
               <div className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-teal-800" />
-                <h3 className="text-sm font-semibold text-slate-900">Create Campus Event</h3>
+                <Calendar className="w-4 h-4 text-teal-800 dark:text-teal-400" />
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Create Campus Event</h3>
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200 p-1"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -237,7 +237,7 @@ export const AdminEventsPage: React.FC = () => {
 
             <form onSubmit={handleCreateEvent} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Event Title <span className="text-rose-600">*</span>
                 </label>
                 <input
@@ -246,17 +246,17 @@ export const AdminEventsPage: React.FC = () => {
                   placeholder="e.g. Annual Hackathon 2026: Build the Future"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Category</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Category</label>
                   <select
                     value={category}
                     onChange={e => setCategory(e.target.value as EventCategory)}
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                   >
                     <option value="Tech">Tech</option>
                     <option value="Cultural">Cultural</option>
@@ -267,7 +267,7 @@ export const AdminEventsPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Event Date <span className="text-rose-600">*</span>
                   </label>
                   <input
@@ -275,59 +275,59 @@ export const AdminEventsPage: React.FC = () => {
                     required
                     value={date}
                     onChange={e => setDate(e.target.value)}
-                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Start Time</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Start Time</label>
                   <input
                     type="time"
                     value={startTime}
                     onChange={e => setStartTime(e.target.value)}
-                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">End Time</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">End Time</label>
                   <input
                     type="time"
                     value={endTime}
                     onChange={e => setEndTime(e.target.value)}
-                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Venue</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Venue</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Auditorium Hall A"
                     value={venue}
                     onChange={e => setVenue(e.target.value)}
-                    className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Capacity</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Capacity</label>
                   <input
                     type="number"
                     min={10}
                     max={2000}
                     value={capacity}
                     onChange={e => setCapacity(Number(e.target.value))}
-                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Organizer / Host
                 </label>
                 <input
@@ -336,12 +336,12 @@ export const AdminEventsPage: React.FC = () => {
                   placeholder="e.g. Department of CSE & IEEE Student Branch"
                   value={organizer}
                   onChange={e => setOrganizer(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Event Description & Registration Details
                 </label>
                 <textarea
@@ -349,11 +349,11 @@ export const AdminEventsPage: React.FC = () => {
                   placeholder="Event agenda, keynote speaker details, prerequisites, and instructions..."
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 rounded bg-white focus:outline-none focus:ring-1 focus:ring-teal-700 resize-none"
+                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 resize-none"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-[#27272A]">
                 <Button
                   type="button"
                   variant="secondary"

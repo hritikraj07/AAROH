@@ -24,7 +24,7 @@ export const Tabs: React.FC<TabsProps> = ({
 }) => {
   if (variant === 'pills') {
     return (
-      <div className={`inline-flex items-center p-1 bg-slate-100/90 rounded-md border border-slate-200/80 ${className}`}>
+      <div className={`inline-flex items-center p-1 bg-slate-100/90 dark:bg-[#111115] rounded-md border border-slate-200/80 dark:border-[#27272A] ${className}`}>
         {tabs.map(tab => {
           const isActive = activeTab === tab.id;
           return (
@@ -33,8 +33,8 @@ export const Tabs: React.FC<TabsProps> = ({
               onClick={() => onChange(tab.id)}
               className={`inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded transition-all duration-150 ${
                 isActive
-                  ? 'bg-white text-slate-900  font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                  ? 'bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100 font-semibold shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-[#202025]'
               }`}
             >
               {tab.icon && <span className="shrink-0">{tab.icon}</span>}
@@ -42,7 +42,7 @@ export const Tabs: React.FC<TabsProps> = ({
               {typeof tab.count === 'number' && (
                 <span
                   className={`text-[10px] px-2 py-0.5 rounded font-mono tabular-nums ${
-                    isActive ? 'bg-teal-100 text-teal-800' : 'bg-slate-200 text-slate-600'
+                    isActive ? 'bg-teal-100 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
                   }`}
                 >
                   {tab.count}
@@ -56,7 +56,7 @@ export const Tabs: React.FC<TabsProps> = ({
   }
 
   return (
-    <div className={`border-b border-slate-200 flex items-center gap-6 ${className}`}>
+    <div className={`border-b border-slate-200 dark:border-[#27272A] flex items-center gap-6 ${className}`}>
       {tabs.map(tab => {
         const isActive = activeTab === tab.id;
         return (
@@ -65,8 +65,8 @@ export const Tabs: React.FC<TabsProps> = ({
             onClick={() => onChange(tab.id)}
             className={`inline-flex items-center gap-2 py-3 text-sm font-medium border-b-2 transition-all duration-150 ease-in-out -mb-[1px] ${
               isActive
-                ? 'border-teal-700 text-teal-700 font-semibold'
-                : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300'
+                ? 'border-teal-700 text-teal-700 dark:border-teal-500 dark:text-teal-400 font-semibold'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700'
             }`}
           >
             {tab.icon && <span className="shrink-0">{tab.icon}</span>}
@@ -74,7 +74,7 @@ export const Tabs: React.FC<TabsProps> = ({
             {typeof tab.count === 'number' && (
               <span
                 className={`text-xs px-2 py-0.5 rounded font-mono tabular-nums ${
-                  isActive ? 'bg-teal-50 text-teal-700 font-semibold' : 'bg-slate-100 text-slate-500'
+                  isActive ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-semibold' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                 }`}
               >
                 {tab.count}

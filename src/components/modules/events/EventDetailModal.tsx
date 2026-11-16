@@ -109,51 +109,51 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpe
         )}
 
         {/* Schedule & Venue Metadata */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-md text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md text-xs">
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-slate-700">
-              <Calendar className="w-4 h-4 text-teal-700 shrink-0" />
+            <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+              <Calendar className="w-4 h-4 text-teal-700 dark:text-teal-400 shrink-0" />
               <span>
-                Date: <strong className="font-mono text-slate-900">{event.date}</strong>
+                Date: <strong className="font-mono text-slate-900 dark:text-slate-100">{event.date}</strong>
               </span>
             </div>
-            <div className="flex items-center gap-2 text-slate-700">
-              <Clock className="w-4 h-4 text-teal-700 shrink-0" />
+            <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+              <Clock className="w-4 h-4 text-teal-700 dark:text-teal-400 shrink-0" />
               <span>
-                Time: <strong className="font-mono text-slate-900">{event.startTime} – {event.endTime}</strong>
+                Time: <strong className="font-mono text-slate-900 dark:text-slate-100">{event.startTime} – {event.endTime}</strong>
               </span>
             </div>
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-slate-700">
-              <MapPin className="w-4 h-4 text-teal-700 shrink-0" />
+            <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+              <MapPin className="w-4 h-4 text-teal-700 dark:text-teal-400 shrink-0" />
               <span>
-                Venue: <strong className="text-slate-900">{event.venue}</strong>
+                Venue: <strong className="text-slate-900 dark:text-slate-100">{event.venue}</strong>
               </span>
             </div>
-            <div className="flex items-center gap-2 text-slate-700">
-              <Building className="w-4 h-4 text-teal-700 shrink-0" />
+            <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+              <Building className="w-4 h-4 text-teal-700 dark:text-teal-400 shrink-0" />
               <span>
-                Organizer: <strong className="text-slate-900">{event.organizer}</strong>
+                Organizer: <strong className="text-slate-900 dark:text-slate-100">{event.organizer}</strong>
               </span>
             </div>
           </div>
         </div>
 
         {/* Capacity Bar */}
-        <div className="p-3 bg-white border border-slate-200 rounded-md space-y-2">
+        <div className="p-3 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-md space-y-2">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold text-slate-800 flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5 text-slate-500" />
+            <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+              <Users className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
               Registration Capacity
             </span>
-            <span className="font-mono text-slate-600">
-              <strong className="text-slate-900">{event.registeredCount}</strong> / {event.capacity} Attendees ({capacityPct}%)
+            <span className="font-mono text-slate-600 dark:text-slate-300">
+              <strong className="text-slate-900 dark:text-slate-100">{event.registeredCount}</strong> / {event.capacity} Attendees ({capacityPct}%)
             </span>
           </div>
 
-          <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+          <div className="w-full bg-slate-100 dark:bg-[#111115] rounded-full h-2 overflow-hidden">
             <div
               className={`h-2 rounded-full transition-all duration-300 ${
                 isFull ? 'bg-rose-500' : capacityPct > 80 ? 'bg-amber-500' : 'bg-teal-600'

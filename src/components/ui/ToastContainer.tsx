@@ -18,25 +18,25 @@ export const ToastContainer: React.FC = () => {
         }[toast.type];
 
         const borders = {
-          success: 'border-emerald-200 bg-white',
-          warning: 'border-amber-200 bg-white',
-          error: 'border-rose-200 bg-white',
-          info: 'border-teal-200 bg-white',
+          success: 'border-emerald-200 dark:border-emerald-800 bg-white dark:bg-[#18181B]',
+          warning: 'border-amber-200 dark:border-amber-800 bg-white dark:bg-[#18181B]',
+          error: 'border-rose-200 dark:border-rose-800 bg-white dark:bg-[#18181B]',
+          info: 'border-teal-200 dark:border-teal-800 bg-white dark:bg-[#18181B]',
         }[toast.type];
 
         return (
           <div
             key={toast.id}
-            className={`pointer-events-auto flex items-start gap-3 p-3 rounded-md border shadow-sm transition-all duration-150 ease-in-out text-slate-800 ${borders}`}
+            className={`pointer-events-auto flex items-start gap-3 p-3 rounded-md border shadow-sm transition-all duration-150 ease-in-out text-slate-800 dark:text-slate-200 ${borders}`}
           >
             {icons}
             <div className="flex-1 text-xs">
-              <p className="font-semibold text-slate-900">{toast.title}</p>
-              {toast.message && <p className="text-slate-600 mt-0.5">{toast.message}</p>}
+              <p className="font-semibold text-slate-900 dark:text-slate-100">{toast.title}</p>
+              {toast.message && <p className="text-slate-600 dark:text-slate-400 mt-0.5">{toast.message}</p>}
             </div>
             <button
               onClick={() => dismissToast(toast.id)}
-              className="text-slate-400 hover:text-slate-600 p-0.5"
+              className="text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200 p-0.5"
             >
               <X className="w-3.5 h-3.5" />
             </button>

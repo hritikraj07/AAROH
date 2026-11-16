@@ -821,8 +821,8 @@ assert(facultyClassesContent.includes('No courses currently assigned. Your depar
 const updatedLoginPath = path.join(__dirname, '../src/pages/LoginPage.tsx');
 assert(fs.existsSync(updatedLoginPath), 'LoginPage.tsx exists');
 const updatedLogin = fs.readFileSync(updatedLoginPath, 'utf8');
-assert(updatedLogin.includes('h-screen w-screen overflow-hidden flex items-center justify-center bg-[#FBFBFA]'), 'LoginPage layout enforces strictly unscrollable full-screen viewport');
-assert(updatedLogin.includes('bg-white max-w-md w-full p-8') && updatedLogin.includes('border-slate-200') && updatedLogin.includes('shadow-sm'), 'LoginPage card uses centered pure white card with 1px border and shadow-sm');
+assert(updatedLogin.includes('min-h-screen') && updatedLogin.includes('w-full') && updatedLogin.includes('overflow-hidden') && (updatedLogin.includes('justify-end') || updatedLogin.includes('sm:justify-end')), 'LoginPage layout enforces unscrollable full-screen viewport with right-aligned glassmorphism card');
+assert((updatedLogin.includes('bg-white/30') || updatedLogin.includes('max-w-sm') || updatedLogin.includes('w-[400px]')) && updatedLogin.includes('backdrop-blur') && (updatedLogin.includes('border-white/20') || updatedLogin.includes('border-slate-200')), 'LoginPage card implements compact glassmorphism surface with transparency and subtle border');
 assert(updatedLogin.includes('<Logo') && updatedLogin.includes('K.R. Mangalam University'), 'LoginPage prominently displays Logo and K.R. Mangalam University in header hierarchy');
 assert(updatedLogin.includes('animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out'), 'LoginPage wraps card in smooth reveal animation');
 assert(updatedLogin.includes('active:scale-95'), 'LoginPage primary Sign In button uses active:scale-95 micro-interaction');
@@ -1417,5 +1417,41 @@ const chatModalContent = fs.readFileSync(chatModalPath, 'utf8');
 assert(chatModalContent.includes('Socratic Mode Enabled'), 'Chat header renders Socratic Mode Enabled badge/subtitle');
 
 console.log('--- ALL SECURITY PIVOT, SMOOTH ANIMATIONS & SOCRATIC AI VERIFICATIONS PASSED ---');
+
+// =========================================================================================
+// 33. Modern Asymmetrical Glassmorphism Login Page Redesign
+// =========================================================================================
+console.log('--- VERIFYING MODERN ASYMMETRICAL GLASSMORPHISM LOGIN PAGE ---');
+
+const glassLoginPath = path.join(__dirname, '../src/pages/LoginPage.tsx');
+assert(fs.existsSync(glassLoginPath), 'LoginPage.tsx exists');
+const glassLoginContent = fs.readFileSync(glassLoginPath, 'utf8');
+
+// 1. Global Background (SVG Pattern)
+assert(glassLoginContent.includes('min-h-screen') && glassLoginContent.includes('w-full'), 'LoginPage takes up full viewport min-h-screen and w-full');
+assert(glassLoginContent.includes('<svg') && (glassLoginContent.includes('isometric-tech-mesh') || glassLoginContent.includes('pattern')), 'LoginPage uses full-screen SVG background pattern');
+assert(glassLoginContent.includes('dark:bg-[#0E0E11]') && glassLoginContent.includes('dark:stroke-teal-500/[0.08]'), 'LoginPage adapts dark mode to #0E0E11 with subtle teal SVG stroke');
+
+// 2. The Glassmorphism Login Card
+assert(glassLoginContent.includes('justify-end') || glassLoginContent.includes('sm:justify-end'), 'LoginPage positions login card on the right side of the screen');
+assert(glassLoginContent.includes('max-w-sm') || glassLoginContent.includes('w-[400px]'), 'LoginPage enforces compact card sizing (max-w-sm / w-[400px])');
+assert(glassLoginContent.includes('bg-white/30') && glassLoginContent.includes('dark:bg-black/30'), 'LoginPage applies heavy glassmorphism transparency bg-white/30 and dark:bg-black/30');
+assert(glassLoginContent.includes('backdrop-blur-xl'), 'LoginPage card implements strong blur backdrop-blur-xl');
+assert(glassLoginContent.includes('border-white/20'), 'LoginPage card implements subtle 1px border border-white/20');
+
+// 3. Card Content & Layout
+assert(glassLoginContent.includes('<Logo') || glassLoginContent.includes('LogoIcon'), 'LoginPage header includes logo mark');
+assert(glassLoginContent.includes('Aaroh') && glassLoginContent.includes('K.R. MANGALAM UNIVERSITY'), 'LoginPage header displays Aaroh and K.R. MANGALAM UNIVERSITY');
+assert(glassLoginContent.includes('Sign In to Aaroh'), 'LoginPage displays Sign In to Aaroh heading');
+assert(glassLoginContent.includes('Role') || glassLoginContent.includes('ROLE'), 'LoginPage contains ROLE field');
+assert(glassLoginContent.includes('aarav.sharma@aaroh.edu.in'), 'LoginPage institutional email input has exact placeholder aarav.sharma@aaroh.edu.in');
+assert(glassLoginContent.includes('Password') || glassLoginContent.includes('PASSWORD'), 'LoginPage contains PASSWORD field');
+assert(glassLoginContent.includes('Sign In ->'), 'LoginPage primary action button displays exact text "Sign In ->"');
+assert(glassLoginContent.includes('bg-[#0F766E]'), 'LoginPage primary action button uses exact Deep Teal bg-[#0F766E]');
+assert(glassLoginContent.includes(exactLightShadow) && glassLoginContent.includes(exactDarkShadow), 'LoginPage button implements custom 4-layer tactile button shadows');
+assert(glassLoginContent.includes('or continue with demo') || glassLoginContent.includes('OR CONTINUE WITH DEMO'), 'LoginPage renders demo divider section');
+assert(glassLoginContent.includes('Admin Demo') && glassLoginContent.includes('Faculty Demo') && glassLoginContent.includes('Student Demo'), 'LoginPage renders Admin Demo, Faculty Demo, and Student Demo buttons side-by-side');
+
+console.log('--- ALL MODERN ASYMMETRICAL GLASSMORPHISM LOGIN PAGE VERIFICATIONS PASSED ---');
 
 module.exports = { assert };

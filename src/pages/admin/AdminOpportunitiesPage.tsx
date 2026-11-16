@@ -93,10 +93,10 @@ export const AdminOpportunitiesPage: React.FC = () => {
       </div>
 
       {/* 1. Add Opportunity Form (Single-Column White Card Layout) */}
-      <div className="bg-white border border-slate-200 rounded-lg p-5 sm:p-6">
-        <div className="flex items-center gap-2 pb-4 mb-4 border-b border-slate-200">
-          <Briefcase className="w-4 h-4 text-teal-800" />
-          <h3 className="text-sm font-bold text-slate-900">
+      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-5 sm:p-6">
+        <div className="flex items-center gap-2 pb-4 mb-4 border-b border-slate-200 dark:border-[#27272A]">
+          <Briefcase className="w-4 h-4 text-teal-800 dark:text-teal-400" />
+          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
             Publish New Opportunity
           </h3>
         </div>
@@ -282,25 +282,25 @@ export const AdminOpportunitiesPage: React.FC = () => {
       </div>
 
       {/* 2. Currently Active Opportunities Data Table */}
-      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
-        <div className="p-4 border-b border-slate-200 bg-slate-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg overflow-hidden">
+        <div className="p-4 border-b border-slate-200 dark:border-[#27272A] bg-slate-50/60 dark:bg-[#111115] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
               Published Opportunities ({opportunities.length})
             </h3>
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
               Live listings accessible to all undergraduate students on their opportunity board.
             </p>
           </div>
 
           <div className="relative max-w-xs w-full">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search published listings..."
-              className="w-full text-xs pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700"
+              className="w-full text-xs pl-8 pr-3 py-1.5 bg-white dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
             />
           </div>
         </div>

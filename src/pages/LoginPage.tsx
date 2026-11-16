@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { APP_CONFIG } from '../config';
 import { Logo } from '../components/ui/Logo';
-import { Lock, Mail, AlertCircle, ArrowRight, ShieldCheck, Sun, Moon } from 'lucide-react';
+import { Lock, Mail, AlertCircle, ShieldCheck, Sun, Moon } from 'lucide-react';
 import { getUserRoleFromEmail } from '../data/seed';
 import { UserRole } from '../types';
+
+const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
+const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
+const exactLightHover = 'hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)]';
+const exactDarkHover = 'dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)]';
 
 export const LoginPage: React.FC = () => {
   const { login, users, isAuthenticated, role, theme, toggleTheme } = useApp();
@@ -23,8 +27,8 @@ export const LoginPage: React.FC = () => {
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { clientX, clientY, currentTarget } = e;
     const { clientWidth, clientHeight } = currentTarget;
-    const x = ((clientX / clientWidth) - 0.5) * 50;
-    const y = ((clientY / clientHeight) - 0.5) * 50;
+    const x = ((clientX / clientWidth) - 0.5) * 40;
+    const y = ((clientY / clientHeight) - 0.5) * 40;
     setMouseOffset({ x, y });
   };
 
@@ -125,12 +129,41 @@ export const LoginPage: React.FC = () => {
   return (
     <div
       onMouseMove={handleMouseMove}
-      className="h-screen w-screen overflow-hidden flex items-center justify-center bg-[#FBFBFA] dark:bg-[#0E0E11] font-sans p-4 relative select-none transition-colors duration-500 ease-in-out"
+      className="min-h-screen w-full h-screen overflow-hidden flex items-center justify-center sm:justify-end px-4 sm:px-10 lg:px-24 relative bg-[#FBFBFA] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
     >
+      {/* 1. Global Background: Full-Screen Isometric Tech Mesh SVG Background Pattern */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Full-Screen Isometric Grid / Tech Mesh SVG Pattern */}
+        <svg
+          className="absolute inset-0 w-full h-full stroke-slate-200/90 dark:stroke-teal-500/[0.08]"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <pattern id="isometric-tech-mesh" width="80" height="46" patternUnits="userSpaceOnUse">
+              <path d="M 0 23 L 40 0 L 80 23 L 40 46 Z" fill="none" strokeWidth="0.75" />
+              <path d="M 40 0 L 40 46" fill="none" strokeWidth="0.5" strokeDasharray="3,3" />
+              <circle cx="40" cy="23" r="1.5" className="fill-slate-300 dark:fill-teal-400/25" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#isometric-tech-mesh)" />
+        </svg>
+
+        {/* Ambient Interactive Blurred Geometric Blobs for Depth */}
+        <div
+          className="absolute -top-24 -left-24 w-[480px] h-[480px] rounded-full bg-teal-700/10 dark:bg-teal-500/10 blur-[100px] pointer-events-none transition-transform duration-300 ease-out"
+          style={{ transform: `translate(${mouseOffset.x}px, ${mouseOffset.y}px)` }}
+        />
+        <div
+          className="absolute -bottom-24 -right-24 w-[480px] h-[480px] rounded-full bg-teal-700/10 dark:bg-teal-500/10 blur-[100px] pointer-events-none transition-transform duration-300 ease-out"
+          style={{ transform: `translate(${-mouseOffset.x * 1.3}px, ${-mouseOffset.y * 1.3}px)` }}
+        />
+        <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-96 h-96 rounded-full bg-teal-600/5 dark:bg-teal-400/5 blur-[90px] pointer-events-none" />
+      </div>
+
       {/* Theme Toggle in Login Viewport */}
       <button
         onClick={toggleTheme}
-        className="absolute top-6 right-6 p-2.5 rounded-full text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 bg-white/80 dark:bg-[#18181B]/80 border border-slate-200 dark:border-[#27272A] backdrop-blur-md shadow-sm z-30 transition-all active:scale-95 cursor-pointer"
+        className="absolute top-6 left-6 p-2.5 rounded-full text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 bg-white/40 dark:bg-black/40 border border-white/30 dark:border-white/10 backdrop-blur-xl shadow-sm z-30 transition-all active:scale-95 cursor-pointer"
         title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
       >
         {theme === 'dark' ? (
@@ -140,73 +173,52 @@ export const LoginPage: React.FC = () => {
         )}
       </button>
 
-      {/* Subtle Interactive Dot-Grid Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] dark:bg-[radial-gradient(#27272A_1px,transparent_1px)] [background-size:24px_24px] opacity-25 dark:opacity-20 pointer-events-none" />
-
-      {/* Interactive Slow-Moving Blurred Geometric Blobs */}
-      <div
-        className="absolute -top-20 -left-20 w-[420px] h-[420px] rounded-full bg-teal-700/10 dark:bg-teal-500/10 blur-[100px] pointer-events-none transition-transform duration-300 ease-out"
-        style={{ transform: `translate(${mouseOffset.x}px, ${mouseOffset.y}px)` }}
-      />
-      <div
-        className="absolute -bottom-20 -right-20 w-[440px] h-[440px] rounded-full bg-teal-700/10 dark:bg-teal-500/10 blur-[100px] pointer-events-none transition-transform duration-300 ease-out"
-        style={{ transform: `translate(${-mouseOffset.x * 1.3}px, ${-mouseOffset.y * 1.3}px)` }}
-      />
-      <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-teal-600/5 dark:bg-teal-400/5 blur-[90px] pointer-events-none"
-      />
-
-      {/* Centered Login Card */}
-      <div className="relative z-10 bg-white max-w-md w-full p-8 dark:bg-[#18181B] rounded-2xl border border-slate-200 dark:border-[#27272A] backdrop-blur-md shadow-xl animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out space-y-6 mx-auto">
-        {/* Branding & Header Hierarchy with centered logo */}
-        <div className="flex flex-col items-center justify-center text-center space-y-2">
+      {/* 2. The Glassmorphism Login Card: Right-Aligned, Compact, Highly Transparent */}
+      <div className="relative z-10 w-full max-w-sm sm:w-[400px] p-6 sm:p-7 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-3xl border border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out space-y-4">
+        {/* Header: Logo, Aaroh, Subtitle, and Sign In heading */}
+        <div className="flex flex-col items-center justify-center text-center space-y-1">
           <div className="flex items-center justify-center">
-            <Logo size="lg" />
+            <Logo size="md" />
           </div>
-          <div className="text-center">
-            <h2 className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
-              K.R. Mangalam University
-            </h2>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mt-0.5">
-              Sign In to Aaroh
-            </h1>
-            <p className="text-xs text-slate-400 dark:text-slate-400 mt-1">
-              Unified Academic Operating System & Campus Portal
-            </p>
+          <div className="text-[10px] font-semibold tracking-widest text-slate-500 dark:text-slate-400 uppercase font-mono pt-0.5" title="K.R. Mangalam University">
+            K.R. MANGALAM UNIVERSITY
           </div>
+          <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            Sign In to Aaroh
+          </h1>
         </div>
 
         {/* Error Alert */}
         {errorMessage && (
-          <div className="p-3 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl text-xs text-rose-800 dark:text-rose-300 flex items-start gap-2 animate-in fade-in duration-150">
+          <div className="p-2.5 bg-rose-50/80 dark:bg-rose-950/50 border border-rose-200/80 dark:border-rose-900/60 rounded-xl text-xs text-rose-800 dark:text-rose-300 flex items-start gap-2 animate-in fade-in duration-150">
             <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
             <span className="leading-relaxed">{errorMessage}</span>
           </div>
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Role Dropdown */}
+        <form onSubmit={handleSubmit} className="space-y-3.5">
+          {/* 1. ROLE Dropdown */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
+            <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
               Role
             </label>
             <div className="relative">
               <select
                 value={selectedRole}
                 onChange={e => handleRoleChange(e.target.value as UserRole)}
-                className="w-full text-xs font-medium px-3 py-2.5 bg-white dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors cursor-pointer"
+                className="w-full text-xs font-medium px-3 py-2 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors cursor-pointer"
               >
-                <option value="student">Student</option>
-                <option value="faculty">Faculty</option>
-                <option value="admin">Admin</option>
+                <option value="student" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Student</option>
+                <option value="faculty" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Faculty</option>
+                <option value="admin" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Admin</option>
               </select>
             </div>
           </div>
 
-          {/* Email Address */}
+          {/* 2. INSTITUTIONAL EMAIL Input */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
+            <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
               Institutional Email
             </label>
             <div className="relative">
@@ -216,15 +228,15 @@ export const LoginPage: React.FC = () => {
                 required
                 value={email}
                 onChange={e => handleEmailChange(e.target.value)}
-                placeholder="name@aaroh.edu.in"
-                className="w-full text-xs font-mono pl-9 pr-3 py-2.5 bg-white dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors"
+                placeholder="aarav.sharma@aaroh.edu.in"
+                className="w-full text-xs font-mono pl-9 pr-3 py-2 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors"
               />
             </div>
           </div>
 
-          {/* Password */}
+          {/* 3. PASSWORD Input */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
+            <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
               Password
             </label>
             <div className="relative">
@@ -238,42 +250,41 @@ export const LoginPage: React.FC = () => {
                   if (errorMessage) setErrorMessage(null);
                 }}
                 placeholder="••••••••••••"
-                className="w-full text-xs pl-9 pr-3 py-2.5 bg-white dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors font-mono"
+                className="w-full text-xs font-mono pl-9 pr-3 py-2 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors"
               />
             </div>
           </div>
 
-          {/* Primary Action Button */}
+          {/* Primary Action Button: "Sign In ->" */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 text-xs font-semibold text-white bg-teal-700 hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)] disabled:opacity-50 select-none cursor-pointer"
+            className={`w-full inline-flex items-center justify-center gap-1.5 py-2.5 px-4 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} disabled:opacity-50 select-none cursor-pointer`}
           >
-            <span>{loading ? 'Authenticating...' : 'Sign In'}</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <span>{loading ? 'Authenticating...' : 'Sign In ->'}</span>
           </button>
         </form>
 
-        {/* 1. Demo Quick Access Section with subtle divider */}
-        <div className="space-y-3 pt-1">
+        {/* Demo Quick Access Section */}
+        <div className="space-y-2.5 pt-1">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-slate-200 dark:border-slate-800" />
             </div>
             <div className="relative flex justify-center text-[10px] uppercase tracking-wider font-mono">
-              <span className="bg-white dark:bg-[#18181B] px-2.5 text-slate-400 dark:text-slate-500">
+              <span className="bg-white/80 dark:bg-[#18181B]/80 px-2 text-slate-400 dark:text-slate-500 rounded">
                 or continue with demo
               </span>
             </div>
           </div>
 
-          {/* 2 & 4. Role Buttons Row */}
+          {/* Role Buttons Row */}
           <div className="grid grid-cols-3 gap-2">
             <button
               type="button"
               onClick={() => handleQuickDemoLogin('admin')}
               disabled={loading}
-              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-teal-600 dark:hover:border-teal-500 hover:text-teal-700 dark:hover:text-teal-400 text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer"
+              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-teal-600 dark:hover:border-teal-500 hover:text-teal-700 dark:hover:text-teal-400 text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate"
             >
               Admin Demo
             </button>
@@ -281,7 +292,7 @@ export const LoginPage: React.FC = () => {
               type="button"
               onClick={() => handleQuickDemoLogin('faculty')}
               disabled={loading}
-              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-teal-600 dark:hover:border-teal-500 hover:text-teal-700 dark:hover:text-teal-400 text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer"
+              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-teal-600 dark:hover:border-teal-500 hover:text-teal-700 dark:hover:text-teal-400 text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate"
             >
               Faculty Demo
             </button>
@@ -289,7 +300,7 @@ export const LoginPage: React.FC = () => {
               type="button"
               onClick={() => handleQuickDemoLogin('student')}
               disabled={loading}
-              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-teal-600 dark:hover:border-teal-500 hover:text-teal-700 dark:hover:text-teal-400 text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer"
+              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-teal-600 dark:hover:border-teal-500 hover:text-teal-700 dark:hover:text-teal-400 text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate"
             >
               Student Demo
             </button>
@@ -297,7 +308,7 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {/* Institutional System Footer */}
-        <div className="pt-2 border-t border-slate-100 dark:border-[#27272A] flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-mono">
+        <div className="pt-2 border-t border-slate-200/50 dark:border-white/5 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-mono">
           <span>Enterprise SSO Gateway</span>
           <span className="text-teal-700 dark:text-teal-400 font-medium flex items-center gap-1">
             <ShieldCheck className="w-3 h-3" />

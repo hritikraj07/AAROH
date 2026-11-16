@@ -185,10 +185,10 @@ export const GlobalSearchModal: React.FC = () => {
       />
 
       {/* Palette Container */}
-      <div className="relative w-full max-w-xl bg-white rounded-lg border border-slate-200 shadow-sm z-10 overflow-hidden animate-in fade-in duration-150">
+      <div className="relative w-full max-w-xl bg-white dark:bg-[#18181B] rounded-lg border border-slate-200 dark:border-[#27272A] shadow-sm z-10 overflow-hidden animate-in fade-in duration-150">
         {/* Search Input Bar */}
-        <div className="flex items-center px-4 py-3 border-b border-slate-200 gap-3 bg-slate-50/50">
-          <Search className="w-4 h-4 text-slate-400 shrink-0" />
+        <div className="flex items-center px-4 py-3 border-b border-slate-200 dark:border-[#27272A] gap-3 bg-slate-50/50 dark:bg-[#111115]">
+          <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0" />
           <input
             ref={inputRef}
             type="text"
@@ -199,17 +199,17 @@ export const GlobalSearchModal: React.FC = () => {
             }}
             onKeyDown={handleKeyDown}
             placeholder="Type a command or search notices, events, courses..."
-            className="flex-1 bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none"
+            className="flex-1 bg-transparent text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
           />
           {query ? (
             <button
               onClick={() => setQuery('')}
-              className="text-slate-400 hover:text-slate-600 p-0.5 rounded"
+              className="text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200 p-0.5 rounded"
             >
               <X className="w-4 h-4" />
             </button>
           ) : (
-            <kbd className="text-[10px] font-mono bg-white text-slate-400 border border-slate-200 px-1.5 py-0.5 rounded">
+            <kbd className="text-[10px] font-mono bg-white dark:bg-[#18181B] text-slate-400 dark:text-slate-400 border border-slate-200 dark:border-[#27272A] px-1.5 py-0.5 rounded">
               ESC
             </kbd>
           )}
@@ -218,13 +218,13 @@ export const GlobalSearchModal: React.FC = () => {
         {/* Results List */}
         <div className="max-h-80 overflow-y-auto p-2">
           {searchResults.length === 0 ? (
-            <div className="py-8 text-center text-xs text-slate-500">
+            <div className="py-8 text-center text-xs text-slate-500 dark:text-slate-400">
               No matching results found for "{query}"
             </div>
           ) : (
             <div className="space-y-0.5">
               {!query && (
-                <div className="px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                <div className="px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Quick Suggestions
                 </div>
               )}
@@ -236,16 +236,18 @@ export const GlobalSearchModal: React.FC = () => {
                     onClick={() => handleSelect(item)}
                     onMouseEnter={() => setSelectedIndex(index)}
                     className={`flex items-center justify-between px-3 py-2 rounded-md cursor-pointer text-xs transition-colors ${
-                      isSelected ? 'bg-teal-50/80 text-teal-950 font-medium' : 'hover:bg-slate-50 text-slate-700'
+                      isSelected
+                        ? 'bg-teal-50/80 dark:bg-teal-950/40 text-teal-950 dark:text-teal-200 font-medium'
+                        : 'hover:bg-slate-50 dark:hover:bg-[#111115] text-slate-700 dark:text-slate-300'
                     }`}
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <span className={`${isSelected ? 'text-teal-700' : 'text-slate-400'} shrink-0`}>
+                      <span className={`${isSelected ? 'text-teal-700 dark:text-teal-400' : 'text-slate-400 dark:text-slate-500'} shrink-0`}>
                         {item.icon}
                       </span>
                       <div className="min-w-0 truncate">
-                        <p className="truncate font-semibold text-slate-900">{item.title}</p>
-                        <p className="text-[11px] text-slate-500 truncate">{item.subtitle}</p>
+                        <p className="truncate font-semibold text-slate-900 dark:text-slate-100">{item.title}</p>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{item.subtitle}</p>
                       </div>
                     </div>
 
@@ -253,7 +255,7 @@ export const GlobalSearchModal: React.FC = () => {
                       <Badge variant={item.tagVariant} size="sm">
                         {item.type}
                       </Badge>
-                      {isSelected && <ArrowRight className="w-3.5 h-3.5 text-teal-700" />}
+                      {isSelected && <ArrowRight className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />}
                     </div>
                   </div>
                 );
@@ -263,14 +265,14 @@ export const GlobalSearchModal: React.FC = () => {
         </div>
 
         {/* Footer Hotkey Legend */}
-        <div className="px-4 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-400">
+        <div className="px-4 py-2 bg-slate-50 dark:bg-[#111115] border-t border-slate-200 dark:border-[#27272A] flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
           <div className="flex items-center gap-3">
             <span>
-              <kbd className="font-mono bg-white border border-slate-200 px-1 py-0.5 rounded mr-1">↑↓</kbd>
+              <kbd className="font-mono bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] px-1 py-0.5 rounded mr-1">↑↓</kbd>
               Navigate
             </span>
             <span>
-              <kbd className="font-mono bg-white border border-slate-200 px-1 py-0.5 rounded mr-1">↵</kbd>
+              <kbd className="font-mono bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] px-1 py-0.5 rounded mr-1">↵</kbd>
               Select
             </span>
           </div>
