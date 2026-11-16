@@ -92,9 +92,9 @@ export const Layout: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden font-sans bg-[#FBFBFA] dark:bg-slate-950">
-      {/* Main Shell Layout - Seamless dark:bg-slate-950 matched with Login Page */}
-      <div className="flex flex-1 overflow-hidden transition-all duration-300 bg-[#FBFBFA] dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <div className="flex flex-col h-screen overflow-hidden font-sans bg-[#FBFBFA] dark:bg-[#0E0E11]">
+      {/* Main Shell Layout - Seamless dark:bg-[#0E0E11] matched with Login Page */}
+      <div className="flex flex-1 overflow-hidden transition-all duration-300 bg-[#FBFBFA] dark:bg-[#0E0E11] text-slate-900 dark:text-slate-100">
         {/* Desktop Sidebar: Always accessible and uncluttered */}
         <div className="hidden md:flex md:shrink-0">
           <Sidebar />
@@ -113,7 +113,7 @@ export const Layout: React.FC = () => {
             pageTitle={getPageTitle(location.pathname)}
           />
 
-          <main className="flex-1 overflow-y-auto transition-colors duration-200 bg-[#FBFBFA] dark:bg-slate-950">
+          <main className="flex-1 overflow-y-auto transition-colors duration-200 bg-[#FBFBFA] dark:bg-[#0E0E11]">
             <div className="max-w-7xl mx-auto p-6 sm:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
               <Outlet />
             </div>

@@ -3,6 +3,7 @@ import { Sparkles, Send, X, RotateCcw, Bot, User, WifiOff, Zap } from 'lucide-re
 import { useApp } from '../../../context/AppContext';
 import {
   processCampusAIQuery,
+  evaluateMathQuery,
   gatherStudentContextFromStorage,
   buildCampusAISystemPrompt,
   askAarohGeminiAPI,
@@ -189,6 +190,21 @@ export const AarohAIAssistant: React.FC = () => {
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     setIsLoading(true);
+
+    // Instant arithmetic & logic evaluation (guarantees accurate math without hallucinations or string concatenation)
+    const mathResult = evaluateMathQuery(query);
+    if (mathResult !== null) {
+      const aiMessage: ChatMessage = {
+        id: `ai_${Date.now()}`,
+        sender: 'ai',
+        text: mathResult,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isOffline: false,
+      };
+      setMessages(prev => [...prev, aiMessage]);
+      setIsLoading(false);
+      return;
+    }
 
     // Programmatically gather the current student's data from localStorage (Profile, Timetable, Attendance, Assignments, Saved Opportunities)
     const studentData = gatherStudentContextFromStorage(user);

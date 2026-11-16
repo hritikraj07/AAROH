@@ -161,7 +161,7 @@ export function buildCampusAISystemPrompt(studentData: StudentStorageContext): s
   };
 
   const stringifiedData = JSON.stringify(compactData);
-  return `You are Aaroh, the smart campus assistant for K.R. Mangalam University. Be concise, accurate, helpful, and professional. Here is the current student's real-time data: ${stringifiedData}. Answer the user's query strictly based on this data when asking about campus life (timetable, deadlines, attendance, opportunities). If they ask about classes, check the timetable. If they ask about deadlines, check assignments. For general queries, mathematics, science, or logic (for example, simple arithmetic like '2+2'), answer directly, concisely, and accurately (e.g. return '4'). Never concatenate arithmetic numbers as strings.`;
+  return `You are Aaroh, the smart campus assistant for K.R. Mangalam University. Be concise, helpful, and professional. Here is the current student's real-time data: ${stringifiedData}. Answer the user's query strictly based on this data. If they ask about classes, check the timetable. If they ask about deadlines, check assignments. For general queries, math calculations, or arithmetic (such as '2+2'), answer accurately and directly (returning exactly '4' for '2+2') and never concatenate numbers or hallucinate student roll numbers.`;
 }
 
 export interface ChatMessagePayload {
@@ -235,6 +235,74 @@ export async function askAarohGeminiAPI(
 
 
 /**
+ * Fast, precise math and arithmetic evaluator.
+ * Evaluates expressions like "2+2", "what is 2 + 2?", "10 * 5", "15% of 200", etc.
+ * Returns exact result (e.g. "4") or null if not an arithmetic query.
+ */
+export function evaluateMathQuery(rawQuery: string): string | null {
+  if (!rawQuery) return null;
+  const q = rawQuery.trim().toLowerCase();
+
+  // Handle percentage queries like "15% of 200" or "20 percent of 500"
+  const percentMatch = q.match(/^(\d+(?:\.\d+)?)\s*(?:%|percent)\s*(?:of)?\s*(\d+(?:\.\d+)?)\s*\??$/i);
+  if (percentMatch) {
+    const rate = parseFloat(percentMatch[1]);
+    const base = parseFloat(percentMatch[2]);
+    const ans = (rate / 100) * base;
+    return `${Number(ans.toFixed(4))}`;
+  }
+
+  // Handle word-based arithmetic: "two plus two", "three times four", etc.
+  const wordMap: Record<string, string> = {
+    zero: '0', one: '1', two: '2', three: '3', four: '4', five: '5',
+    six: '6', seven: '7', eight: '8', nine: '9', ten: '10',
+    plus: '+', add: '+', minus: '-', subtract: '-', times: '*',
+    multiply: '*', multiplied: '*', divided: '/', divide: '/', over: '/',
+  };
+
+  let normalized = q
+    .replace(/^(what is|what's|calculate|compute|solve|eval|evaluate)\s+/i, '')
+    .replace(/[=?]+$/g, '')
+    .trim();
+
+  // If words are used, replace words
+  const words = normalized.split(/\s+/);
+  if (words.some(w => wordMap[w])) {
+    const mapped = words.map(w => wordMap[w] || w).join(' ');
+    if (/^[\d\s+\-*/().^]+$/.test(mapped)) {
+      normalized = mapped;
+    }
+  }
+
+  // Handle power operator ^
+  normalized = normalized.replace(/\^/g, '**');
+
+  // Strip trailing or leading whitespace
+  const sanitized = normalized.replace(/\s+/g, '');
+
+  // Must contain only digits, operators, parentheses, decimal point
+  if (/^[0-9+\-*/().%*]+$/.test(sanitized)) {
+    // Must contain at least one digit and one operator
+    if (/\d/.test(sanitized) && /[+\-*/%]/.test(sanitized)) {
+      try {
+        if (!/^[0-9+\-*/().]+$/.test(sanitized.replace(/\*\*/g, ''))) {
+          return null;
+        }
+        const result = Function(`'use strict'; return (${sanitized})`)();
+        if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
+          const cleanResult = Number(result.toFixed(6));
+          return String(cleanResult);
+        }
+      } catch {
+        return null;
+      }
+    }
+  }
+
+  return null;
+}
+
+/**
  * Smart Offline Campus AI Assistant Parser
  * Evaluates student natural language queries against local data models.
  * Completely offline, instant, zero external API keys or network latency.
@@ -247,21 +315,9 @@ export function processCampusAIQuery(query: string, context: AIAssistantContext,
   }
 
   // 0. Arithmetic / Math Evaluation (Prevent string concatenation or hallucinations)
-  const mathClean = q
-    .replace(/^(what is|calculate|solve|eval|evaluate)\s+/i, '')
-    .replace(/[=?]+$/g, '')
-    .trim();
-
-  if (/^[\d\s+\-*/().%]+$/.test(mathClean) && /\d/.test(mathClean) && /[+\-*/%]/.test(mathClean)) {
-    try {
-      const sanitized = mathClean.replace(/[^0-9+\-*/().%]/g, '');
-      const result = Function(`'use strict'; return (${sanitized})`)();
-      if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
-        return String(result);
-      }
-    } catch {
-      // Continue to next rule if evaluation fails
-    }
+  const mathResult = evaluateMathQuery(query);
+  if (mathResult !== null) {
+    return mathResult;
   }
 
   // 1. Check for Next Class or Timetable Queries

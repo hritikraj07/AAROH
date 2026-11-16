@@ -86,7 +86,7 @@ export const Logo: React.FC<LogoProps> = ({
 
   const resolvedIconClass = [
     config.icon,
-    'text-teal-700 shrink-0 transition-colors duration-150',
+    'text-teal-700 dark:text-teal-400 shrink-0 transition-colors duration-150',
     iconClassName,
   ]
     .filter(Boolean)
@@ -103,7 +103,7 @@ export const Logo: React.FC<LogoProps> = ({
 
   const resolvedTextClass = [
     config.text,
-    'font-sans font-bold tracking-tight text-slate-900 select-none leading-none',
+    'font-sans font-bold tracking-tight text-slate-900 dark:text-white select-none leading-none',
     textClassName,
   ]
     .filter(Boolean)

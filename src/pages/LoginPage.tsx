@@ -125,12 +125,12 @@ export const LoginPage: React.FC = () => {
   return (
     <div
       onMouseMove={handleMouseMove}
-      className="h-screen w-screen overflow-hidden flex items-center justify-center bg-[#FBFBFA] dark:bg-slate-950 font-sans p-4 relative select-none transition-colors duration-300"
+      className="h-screen w-screen overflow-hidden flex items-center justify-center bg-[#FBFBFA] dark:bg-[#0E0E11] font-sans p-4 relative select-none transition-colors duration-300"
     >
       {/* Theme Toggle in Login Viewport */}
       <button
         onClick={toggleTheme}
-        className="absolute top-6 right-6 p-2.5 rounded-full text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 backdrop-blur-md shadow-sm z-30 transition-all active:scale-95"
+        className="absolute top-6 right-6 p-2.5 rounded-full text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 bg-white/80 dark:bg-[#18181B]/80 border border-slate-200 dark:border-[#27272A] backdrop-blur-md shadow-sm z-30 transition-all active:scale-95 cursor-pointer"
         title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
       >
         {theme === 'dark' ? (
@@ -141,7 +141,7 @@ export const LoginPage: React.FC = () => {
       </button>
 
       {/* Subtle Interactive Dot-Grid Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] dark:bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-25 dark:opacity-20 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(#94a3b8_1px,transparent_1px)] dark:bg-[radial-gradient(#27272A_1px,transparent_1px)] [background-size:24px_24px] opacity-25 dark:opacity-20 pointer-events-none" />
 
       {/* Interactive Slow-Moving Blurred Geometric Blobs */}
       <div
@@ -157,13 +157,13 @@ export const LoginPage: React.FC = () => {
       />
 
       {/* Centered Login Card */}
-      <div className="relative z-10 bg-white max-w-md w-full p-8 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800 backdrop-blur-md shadow-xl shadow-sm animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out space-y-6">
-        {/* Branding & Header Hierarchy */}
-        <div className="text-center space-y-2">
-          <div className="flex justify-center">
+      <div className="relative z-10 bg-white max-w-md w-full p-8 dark:bg-[#18181B] rounded-2xl border border-slate-200 dark:border-[#27272A] backdrop-blur-md shadow-xl animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out space-y-6 mx-auto">
+        {/* Branding & Header Hierarchy with centered logo */}
+        <div className="flex flex-col items-center justify-center text-center space-y-2">
+          <div className="flex items-center justify-center">
             <Logo size="lg" />
           </div>
-          <div>
+          <div className="text-center">
             <h2 className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
               K.R. Mangalam University
             </h2>
@@ -195,7 +195,7 @@ export const LoginPage: React.FC = () => {
               <select
                 value={selectedRole}
                 onChange={e => handleRoleChange(e.target.value as UserRole)}
-                className="w-full text-xs font-medium px-3 py-2.5 bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors cursor-pointer"
+                className="w-full text-xs font-medium px-3 py-2.5 bg-white dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors cursor-pointer"
               >
                 <option value="student">Student</option>
                 <option value="faculty">Faculty</option>
@@ -217,7 +217,7 @@ export const LoginPage: React.FC = () => {
                 value={email}
                 onChange={e => handleEmailChange(e.target.value)}
                 placeholder="name@aaroh.edu.in"
-                className="w-full text-xs font-mono pl-9 pr-3 py-2.5 bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors"
+                className="w-full text-xs font-mono pl-9 pr-3 py-2.5 bg-white dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors"
               />
             </div>
           </div>
@@ -238,7 +238,7 @@ export const LoginPage: React.FC = () => {
                   if (errorMessage) setErrorMessage(null);
                 }}
                 placeholder="••••••••••••"
-                className="w-full text-xs pl-9 pr-3 py-2.5 bg-white dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors font-mono"
+                className="w-full text-xs pl-9 pr-3 py-2.5 bg-white dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors font-mono"
               />
             </div>
           </div>
@@ -261,7 +261,7 @@ export const LoginPage: React.FC = () => {
               <div className="w-full border-t border-slate-200 dark:border-slate-800" />
             </div>
             <div className="relative flex justify-center text-[10px] uppercase tracking-wider font-mono">
-              <span className="bg-white dark:bg-slate-900 px-2.5 text-slate-400 dark:text-slate-500">
+              <span className="bg-white dark:bg-[#18181B] px-2.5 text-slate-400 dark:text-slate-500">
                 or continue with demo
               </span>
             </div>
@@ -297,7 +297,7 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {/* Institutional System Footer */}
-        <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-mono">
+        <div className="pt-2 border-t border-slate-100 dark:border-[#27272A] flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-mono">
           <span>Enterprise SSO Gateway</span>
           <span className="text-teal-700 dark:text-teal-400 font-medium flex items-center gap-1">
             <ShieldCheck className="w-3 h-3" />

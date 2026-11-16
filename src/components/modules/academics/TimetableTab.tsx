@@ -58,7 +58,7 @@ export const TimetableTab: React.FC = () => {
   return (
     <div className="space-y-4">
       {/* Controls Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-lg border border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#18181B] p-3 rounded-lg border border-slate-200 dark:border-[#27272A]">
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           {days.map(d => {
             const isToday = currentDayOfWeek === d.num;
@@ -72,8 +72,8 @@ export const TimetableTab: React.FC = () => {
                 }}
                 className={`px-3 py-1.5 text-xs font-medium rounded transition-colors whitespace-nowrap ${
                   isSelected && viewMode === 'day'
-                    ? 'bg-teal-700 text-white font-semibold '
-                    : 'bg-slate-100/70 text-slate-700 hover:bg-slate-200/60'
+                    ? 'bg-teal-700 text-white font-semibold dark:bg-[#0F766E]'
+                    : 'bg-slate-100/70 text-slate-700 hover:bg-slate-200/60 dark:bg-[#111115] dark:text-slate-300 dark:hover:bg-[#202025]'
                 }`}
               >
                 <span>{d.short}</span>
@@ -81,8 +81,8 @@ export const TimetableTab: React.FC = () => {
                   <span
                     className={`ml-1.5 text-[9px] px-1 py-0.2 rounded font-sans uppercase ${
                       isSelected && viewMode === 'day'
-                        ? 'bg-teal-800 text-teal-100'
-                        : 'bg-teal-100 text-teal-800'
+                        ? 'bg-teal-800 text-teal-100 dark:bg-teal-950 dark:text-teal-200'
+                        : 'bg-teal-100 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300'
                     }`}
                   >
                     Today
@@ -94,11 +94,13 @@ export const TimetableTab: React.FC = () => {
         </div>
 
         {/* View Toggle */}
-        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-md border border-slate-200 text-xs shrink-0 self-start sm:self-auto">
+        <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#111115] p-1 rounded-md border border-slate-200 dark:border-[#27272A] text-xs shrink-0 self-start sm:self-auto">
           <button
             onClick={() => setViewMode('grid')}
             className={`px-3 py-1 rounded font-medium transition-colors ${
-              viewMode === 'grid' ? 'bg-white text-slate-900  font-semibold' : 'text-slate-600 hover:text-slate-900'
+              viewMode === 'grid'
+                ? 'bg-white text-slate-900 font-semibold dark:bg-[#18181B] dark:text-white'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
             }`}
           >
             Weekly Grid
@@ -106,7 +108,9 @@ export const TimetableTab: React.FC = () => {
           <button
             onClick={() => setViewMode('day')}
             className={`px-3 py-1 rounded font-medium transition-colors ${
-              viewMode === 'day' ? 'bg-white text-slate-900  font-semibold' : 'text-slate-600 hover:text-slate-900'
+              viewMode === 'day'
+                ? 'bg-white text-slate-900 font-semibold dark:bg-[#18181B] dark:text-white'
+                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
             }`}
           >
             Day View
@@ -116,12 +120,12 @@ export const TimetableTab: React.FC = () => {
 
       {/* Global Empty State Banner if no sessions configured */}
       {timetable.length === 0 && (
-        <div className="p-12 bg-white border border-slate-200 rounded-lg text-center flex flex-col items-center justify-center">
-          <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
-            <Clock className="w-5 h-5 text-slate-400" />
+        <div className="p-12 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg text-center flex flex-col items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-3">
+            <Clock className="w-5 h-5 text-slate-400 dark:text-teal-400" />
           </div>
-          <h4 className="text-sm font-semibold text-slate-900">No timetable schedule published yet</h4>
-          <p className="text-xs text-slate-500 max-w-sm mt-1 leading-relaxed">
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">No timetable schedule published yet</h4>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mt-1 leading-relaxed">
             Class lectures, tutorial sessions, and laboratory slots for your enrolled section will be synchronized here once timetables are confirmed by the academic cell.
           </p>
         </div>
@@ -129,23 +133,23 @@ export const TimetableTab: React.FC = () => {
 
       {/* 1. Weekly Grid View (when timetable exists) */}
       {viewMode === 'grid' && timetable.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-lg overflow-x-auto">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg overflow-x-auto">
           <div className="min-w-[800px]">
             {/* Header Row */}
-            <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50 text-xs font-semibold text-slate-600">
-              <div className="p-3 border-r border-slate-200 text-slate-400">Time Slot</div>
+            <div className="grid grid-cols-7 border-b border-slate-200 dark:border-[#27272A] bg-slate-50 dark:bg-[#111115] text-xs font-semibold text-slate-600 dark:text-slate-300">
+              <div className="p-3 border-r border-slate-200 dark:border-[#27272A] text-slate-400">Time Slot</div>
               {days.map(d => {
                 const isToday = currentDayOfWeek === d.num;
                 return (
                   <div
                     key={d.num}
-                    className={`p-3 border-r border-slate-200 last:border-r-0 text-center ${
-                      isToday ? 'bg-teal-50/70 text-teal-900' : ''
+                    className={`p-3 border-r border-slate-200 dark:border-[#27272A] last:border-r-0 text-center ${
+                      isToday ? 'bg-teal-50/70 dark:bg-teal-950/40 text-teal-900 dark:text-teal-200' : ''
                     }`}
                   >
                     <span className="font-bold">{d.name}</span>
                     {isToday && (
-                      <span className="block text-[10px] text-teal-700 font-medium">
+                      <span className="block text-[10px] text-teal-700 dark:text-teal-400 font-medium">
                         Today
                       </span>
                     )}
@@ -156,9 +160,9 @@ export const TimetableTab: React.FC = () => {
 
             {/* Time Slot Rows */}
             {timeSlots.map(slot => (
-              <div key={slot.start} className="grid grid-cols-7 border-b border-slate-200 last:border-b-0 min-h-[90px]">
+              <div key={slot.start} className="grid grid-cols-7 border-b border-slate-200 dark:border-[#27272A] last:border-b-0 min-h-[90px]">
                 {/* Time Label */}
-                <div className="p-3 border-r border-slate-200 bg-slate-50/30 text-xs font-mono text-slate-500 flex items-center justify-center text-center">
+                <div className="p-3 border-r border-slate-200 dark:border-[#27272A] bg-slate-50/30 dark:bg-[#111115]/50 text-xs font-mono text-slate-500 dark:text-slate-400 flex items-center justify-center text-center">
                   {slot.label}
                 </div>
 
@@ -171,27 +175,27 @@ export const TimetableTab: React.FC = () => {
                   return (
                     <div
                       key={d.num}
-                      className={`p-2 border-r border-slate-200 last:border-r-0 transition-colors ${
-                        isToday ? 'bg-teal-50/20' : ''
+                      className={`p-2 border-r border-slate-200 dark:border-[#27272A] last:border-r-0 transition-colors ${
+                        isToday ? 'bg-teal-50/20 dark:bg-teal-950/20' : ''
                       }`}
                     >
                       {session && course ? (
-                        <div className="h-full p-2.5 rounded border border-slate-200 bg-slate-50/80 hover:bg-white hover: hover:border-teal-500/50 transition-all flex flex-col justify-between text-xs">
+                        <div className="h-full p-2.5 rounded border border-slate-200 dark:border-[#27272A] bg-slate-50/80 dark:bg-[#111115] hover:bg-white dark:hover:bg-[#1c1c22] hover:border-teal-500/50 transition-all flex flex-col justify-between text-xs">
                           <div>
                             <div className="flex items-center justify-between gap-1 mb-1">
-                              <span className="font-mono font-bold text-slate-900">
+                              <span className="font-mono font-bold text-slate-900 dark:text-slate-100">
                                 {course.code}
                               </span>
                               <Badge variant="slate" size="sm">
                                 {session.type}
                               </Badge>
                             </div>
-                            <p className="text-[11px] font-medium text-slate-800 line-clamp-1 leading-snug">
+                            <p className="text-[11px] font-medium text-slate-800 dark:text-slate-200 line-clamp-1 leading-snug">
                               {course.name}
                             </p>
                           </div>
 
-                          <div className="mt-2 pt-1 border-t border-slate-200/60 flex items-center justify-between text-[10px] text-slate-500">
+                          <div className="mt-2 pt-1 border-t border-slate-200/60 dark:border-[#27272A] flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400">
                             <span className="truncate">{session.room}</span>
                             <span className="truncate text-slate-600 dark:text-slate-400 font-medium">
                               {getFacultyFullName(session, course, users)}
@@ -199,7 +203,7 @@ export const TimetableTab: React.FC = () => {
                           </div>
                         </div>
                       ) : (
-                        <div className="h-full flex items-center justify-center text-[11px] text-slate-300">
+                        <div className="h-full flex items-center justify-center text-[11px] text-slate-300 dark:text-slate-700">
                           —
                         </div>
                       )}
@@ -214,13 +218,13 @@ export const TimetableTab: React.FC = () => {
 
       {/* 2. Day View (when timetable exists) */}
       {viewMode === 'day' && timetable.length > 0 && (
-        <div className="bg-white border border-slate-200 rounded-lg p-5">
-          <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-5">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-[#27272A] pb-3 mb-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-900">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
                 {days.find(d => d.num === selectedDay)?.name} Schedule
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {daySessions.length} sessions scheduled
               </p>
             </div>
@@ -232,7 +236,7 @@ export const TimetableTab: React.FC = () => {
           </div>
 
           {daySessions.length === 0 ? (
-            <div className="py-12 text-center text-xs text-slate-500">
+            <div className="py-12 text-center text-xs text-slate-500 dark:text-slate-400">
               No classes scheduled for {days.find(d => d.num === selectedDay)?.name}.
             </div>
           ) : (
@@ -242,20 +246,20 @@ export const TimetableTab: React.FC = () => {
                 return (
                   <div
                     key={session.id}
-                    className="p-4 rounded-lg border border-slate-200 bg-slate-50/40 hover:bg-white hover: transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                    className="p-4 rounded-lg border border-slate-200 dark:border-[#27272A] bg-slate-50/40 dark:bg-[#111115] hover:bg-white dark:hover:bg-[#1c1c22] hover:border-teal-500/50 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="w-24 shrink-0 font-mono text-xs font-semibold text-slate-900 bg-white border border-slate-200 px-2.5 py-1.5 rounded text-center">
+                      <div className="w-24 shrink-0 font-mono text-xs font-semibold text-slate-900 dark:text-slate-100 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] px-2.5 py-1.5 rounded text-center">
                         {session.startTime} – {session.endTime}
                       </div>
 
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold text-teal-800">
+                          <span className="font-mono text-xs font-bold text-teal-800 dark:text-teal-400">
                             {course?.code}
                           </span>
-                          <span className="text-slate-300">•</span>
-                          <h4 className="text-xs font-semibold text-slate-900">
+                          <span className="text-slate-300 dark:text-slate-600">•</span>
+                          <h4 className="text-xs font-semibold text-slate-900 dark:text-slate-100">
                             {course?.name}
                           </h4>
                           <Badge variant="slate" size="sm">
@@ -263,7 +267,7 @@ export const TimetableTab: React.FC = () => {
                           </Badge>
                         </div>
 
-                        <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                        <div className="flex items-center gap-4 mt-2 text-xs text-slate-500 dark:text-slate-400">
                           <span className="flex items-center gap-1">
                             <MapPin className="w-3.5 h-3.5 text-slate-400" />
                             {session.room}
@@ -278,10 +282,10 @@ export const TimetableTab: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => setSelectedCourseForTree({ id: session.courseId, code: course?.code || 'CS', name: course?.name || session.courseName || 'Course' })}
-                            className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 transition-colors ml-auto cursor-pointer"
+                            className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 dark:bg-teal-950/40 dark:hover:bg-teal-900/50 dark:text-teal-300 dark:border-teal-800/60 transition-colors ml-auto cursor-pointer"
                             title="View B.Tech Skill Tree"
                           >
-                            <Network className="w-3 h-3 text-teal-600" />
+                            <Network className="w-3 h-3 text-teal-600 dark:text-teal-400" />
                             <span>View Skill Tree</span>
                           </button>
                         </div>
