@@ -94,7 +94,7 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
                 href={opportunity.applyLink || opportunity.applyUrl || '#'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1.5 text-xs font-semibold rounded inline-flex items-center gap-1.5 bg-teal-700 hover:bg-teal-800 text-white transition-colors"
+                className="px-3 py-1.5 text-xs font-semibold rounded inline-flex items-center gap-1.5 bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white transition-colors border border-[#8DA9C4]/30 shadow-sm"
               >
                 <span>Apply on Official Portal</span>
                 <ExternalLink className="w-3.5 h-3.5" />

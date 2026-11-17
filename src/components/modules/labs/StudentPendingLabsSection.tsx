@@ -238,7 +238,7 @@ export const StudentPendingLabsSection: React.FC = () => {
                             <button
                               type="button"
                               onClick={() => handleOpenLab(lab)}
-                              className={`rounded-full bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] text-white text-xs font-semibold px-4 py-1.5 transition-all duration-200 active:scale-95 cursor-pointer flex items-center gap-1.5 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+                              className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 text-white text-xs font-semibold px-4 py-1.5 transition-all duration-200 active:scale-95 cursor-pointer flex items-center gap-1.5 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
                             >
                               <span>Open Lab</span>
                               <span className="text-[10px] opacity-75 font-mono">• Launch Workspace</span>

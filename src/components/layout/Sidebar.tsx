@@ -148,11 +148,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
           icon: <BookOpen className="w-4 h-4" />,
         },
         {
-          to: '/faculty/attendance',
-          label: 'Attendance Logger',
-          icon: <ClipboardList className="w-4 h-4" />,
-        },
-        {
           to: '/faculty/gradebook',
           label: 'Gradebook',
           icon: <Award className="w-4 h-4" />,
@@ -210,6 +205,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
           to: '/admin/timetable',
           label: 'Timetable Scheduler',
           icon: <Clock className="w-4 h-4" />,
+        },
+        {
+          to: '/admin/attendance',
+          label: 'Manual Attendance',
+          icon: <ClipboardList className="w-4 h-4" />,
         },
         {
           to: '/admin/curriculum',

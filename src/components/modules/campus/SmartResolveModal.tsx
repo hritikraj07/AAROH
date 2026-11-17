@@ -224,7 +224,7 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting || !complaintText.trim()}
-              className={`rounded-full bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] text-white text-xs px-5 py-2.5 font-bold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer inline-flex items-center gap-2 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+              className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-5 py-2.5 font-bold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer inline-flex items-center gap-2 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
             >
               {isSubmitting ? (
                 <>

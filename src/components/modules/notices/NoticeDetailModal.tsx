@@ -68,7 +68,7 @@ export const NoticeDetailModal: React.FC<NoticeDetailModalProps> = ({ notice, is
           type="button"
           onClick={handleSummarize}
           disabled={isSummarizing}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-teal-700 hover:bg-[#0D6861] active:scale-95 transition-transform duration-150 rounded-md select-none disabled:opacity-60 shrink-0"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] active:scale-95 transition-all duration-150 rounded-md select-none disabled:opacity-60 shrink-0 border border-[#8DA9C4]/30"
         >
           {isSummarizing ? (
             <>

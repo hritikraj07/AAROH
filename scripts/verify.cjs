@@ -467,7 +467,7 @@ const aiComponentPath = path.join(__dirname, '../src/components/modules/ai/Aaroh
 assert(fs.existsSync(aiComponentPath), 'AarohAIAssistant.tsx exists');
 const aiComponentContent = fs.readFileSync(aiComponentPath, 'utf8');
 assert(aiComponentContent.includes('Sparkles'), 'AarohAIAssistant renders lucide Sparkles icon');
-assert(aiComponentContent.includes('bg-teal-700'), 'AarohAIAssistant FAB uses deep teal background');
+assert(aiComponentContent.includes('bg-teal-700') || aiComponentContent.includes('bg-[#134074]'), 'AarohAIAssistant FAB uses deep teal or navy background');
 assert(aiComponentContent.includes('border border-slate-200'), 'AarohAIAssistant chat window uses 1px slate-200 border');
 assert(aiComponentContent.includes('animate-in fade-in duration-150'), 'AarohAIAssistant has fade-in animation');
 assert(aiComponentContent.includes('bg-slate-100') && aiComponentContent.includes('items-end'), 'User messages align right in slate-100');
@@ -540,7 +540,7 @@ assert(noticeSummarizerContent.includes('deadline') && noticeSummarizerContent.i
 
 const noticeDetailModalContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/notices/NoticeDetailModal.tsx'), 'utf8');
 assert(noticeDetailModalContent.includes('AI Summarize'), 'NoticeDetailModal renders AI Summarize button');
-assert(noticeDetailModalContent.includes('bg-teal-700'), 'AI Summarize button styled with deep teal accent');
+assert(noticeDetailModalContent.includes('bg-teal-700') || noticeDetailModalContent.includes('bg-[#134074]'), 'AI Summarize button styled with deep teal or navy accent');
 assert(noticeDetailModalContent.includes('active:scale-95'), 'AI Summarize button has active:scale-95 click animation');
 assert(noticeDetailModalContent.includes('1500') && noticeDetailModalContent.includes('setTimeout'), 'NoticeDetailModal simulates 1.5s AI synthesis processing time');
 assert(noticeDetailModalContent.includes('Generating summary...'), 'NoticeDetailModal shows Generating summary... state with fast spinner');
@@ -1291,12 +1291,11 @@ assert(skillTreeModalContent.includes('animate-in fade-in zoom-in-95'), 'SkillTr
 const skillTreeTabPath = path.join(__dirname, '../src/components/modules/academics/SkillTreeTab.tsx');
 assert(fs.existsSync(skillTreeTabPath), 'SkillTreeTab.tsx exists');
 const skillTreeTabContent = fs.readFileSync(skillTreeTabPath, 'utf8');
-assert(skillTreeTabContent.includes('View Skill Tree'), 'SkillTreeTab renders "View Skill Tree" action button');
-assert(skillTreeTabContent.includes(exactLightShadow) && skillTreeTabContent.includes(exactDarkShadow), 'View Skill Tree button uses 4-layer tactile shadows');
+assert(skillTreeTabContent.includes('CurriculumTracker'), 'SkillTreeTab mounts CurriculumTracker per user specification');
 
 const academicsPageLatest = fs.readFileSync(path.join(__dirname, '../src/pages/AcademicsPage.tsx'), 'utf8');
 assert(academicsPageLatest.includes('SkillTreeTab'), 'AcademicsPage mounts SkillTreeTab');
-assert(academicsPageLatest.includes('B.Tech Skill Tree'), 'AcademicsPage includes B.Tech Skill Tree tab');
+assert(academicsPageLatest.includes('Course Syllabus') || academicsPageLatest.includes('B.Tech Skill Tree') || academicsPageLatest.includes('Syllabus'), 'AcademicsPage includes Course Syllabus tab per user specification');
 
 console.log('--- ALL B.TECH SKILL TREE & PROFESSOR NAME DISPLAY VERIFICATIONS PASSED ---');
 

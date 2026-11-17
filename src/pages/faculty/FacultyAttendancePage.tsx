@@ -21,6 +21,11 @@ import {
 import { ClassSession } from '../../types';
 import { FacultyQRSessionModal } from '../../components/modules/attendance/FacultyQRSessionModal';
 
+const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
+const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
+const exactLightHover = 'hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)]';
+const exactDarkHover = 'dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)]';
+
 export const FacultyAttendancePage: React.FC = () => {
   const { user, courses, timetable, users, attendance, recordBatchAttendance, showToast } = useApp();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -84,6 +89,7 @@ export const FacultyAttendancePage: React.FC = () => {
   const [marks, setMarks] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isQROpen, setIsQROpen] = useState(false);
+  const [qrVerifiedStudentIds, setQrVerifiedStudentIds] = useState<Set<string>>(new Set());
 
   // Reset marks whenever selected session or enrolled students change
   useEffect(() => {
@@ -92,7 +98,63 @@ export const FacultyAttendancePage: React.FC = () => {
       initialMarks[st.id] = true; // default all present
     });
     setMarks(initialMarks);
+    setQrVerifiedStudentIds(new Set());
   }, [selectedSessionId, enrolledStudents]);
+
+  // Real-time synchronization: Poll and listen to storage events for QR scans
+  useEffect(() => {
+    if (!selectedSession) return;
+
+    const syncQRScans = () => {
+      try {
+        const scansRaw = localStorage.getItem('aaroh_qr_attendance_scans');
+        if (!scansRaw) return;
+        const scans: Array<{ studentId: string; classId?: string; courseId?: string; timestamp: number }> = JSON.parse(scansRaw);
+
+        const matchingScans = scans.filter(
+          s => s.classId === selectedSession.id || s.courseId === selectedSession.courseId
+        );
+
+        if (matchingScans.length > 0) {
+          const verifiedIds = new Set(matchingScans.map(s => s.studentId));
+          setQrVerifiedStudentIds(prev => {
+            let changed = false;
+            const updated = new Set(prev);
+            verifiedIds.forEach(id => {
+              if (!updated.has(id)) {
+                updated.add(id);
+                changed = true;
+              }
+            });
+            return changed ? updated : prev;
+          });
+
+          // Automatically mark Present in manual roster
+          setMarks(prev => {
+            let changed = false;
+            const updated = { ...prev };
+            verifiedIds.forEach(id => {
+              if (updated[id] !== true) {
+                updated[id] = true;
+                changed = true;
+              }
+            });
+            return changed ? updated : prev;
+          });
+        }
+      } catch {
+        // ignore
+      }
+    };
+
+    syncQRScans();
+    const interval = setInterval(syncQRScans, 1000);
+    window.addEventListener('storage', syncQRScans);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', syncQRScans);
+    };
+  }, [selectedSession]);
 
   const toggleStudent = (studentId: string, isPresent: boolean) => {
     setMarks(prev => ({
@@ -147,7 +209,7 @@ export const FacultyAttendancePage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 font-mono text-xs text-slate-600 dark:text-slate-300 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] px-3 py-1.5 rounded-md">
-          <Calendar className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
+          <Calendar className="w-3.5 h-3.5 text-[#134074] dark:text-[#8DA9C4]" />
           <span>
             {new Date().toLocaleDateString('en-IN', {
               weekday: 'short',
@@ -203,7 +265,7 @@ export const FacultyAttendancePage: React.FC = () => {
               {selectedSession && (
                 <div className="flex items-center gap-3 flex-wrap">
                   <div className="flex items-center gap-3 text-xs text-slate-600 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-md font-mono flex-wrap">
-                    <span className="flex items-center gap-1 font-semibold text-teal-800">
+                    <span className="flex items-center gap-1 font-semibold text-[#134074]">
                       <BookOpen className="w-3.5 h-3.5" />
                       {selectedSession.courseCode || selectedCourse?.code || 'CRS'}
                     </span>
@@ -227,10 +289,10 @@ export const FacultyAttendancePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setIsQROpen(true)}
-                    className="px-3.5 py-2 text-xs font-semibold text-white bg-teal-700 hover:bg-[#0D6861] active:bg-[#115E59] rounded-md transition-all duration-200 active:scale-95 flex items-center gap-1.5 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)] cursor-pointer whitespace-nowrap"
+                    className={`px-3.5 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-md transition-all duration-200 active:scale-95 flex items-center gap-1.5 cursor-pointer whitespace-nowrap border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
                   >
                     <QrCode className="w-3.5 h-3.5" />
-                    <span>Start QR Session</span>
+                    <span>Generate QR (Start QR Session)</span>
                   </button>
                 </div>
               )}
@@ -243,7 +305,7 @@ export const FacultyAttendancePage: React.FC = () => {
             <div className="p-4 border-b border-slate-200 dark:border-[#27272A] bg-slate-50/70 dark:bg-[#111115] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3 flex-wrap">
                 <div className="flex items-center gap-1.5">
-                  <Users className="w-4 h-4 text-teal-800 dark:text-teal-400" />
+                  <Users className="w-4 h-4 text-[#134074] dark:text-[#8DA9C4]" />
                   <span className="text-xs font-bold text-slate-900 dark:text-slate-100">
                     Enrolled Roster ({enrolledStudents.length} Students)
                   </span>
@@ -344,7 +406,15 @@ export const FacultyAttendancePage: React.FC = () => {
                                   {st.avatarInitials || st.name.slice(0, 2).toUpperCase()}
                                 </div>
                                 <div>
-                                  <span>{st.name}</span>
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-semibold">{st.name}</span>
+                                    {qrVerifiedStudentIds.has(st.id) && (
+                                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <CheckCircle2 className="w-3 h-3" />
+                                        QR Verified
+                                      </span>
+                                    )}
+                                  </div>
                                   <span className="block text-[10px] text-slate-400 font-mono">
                                     {st.email}
                                   </span>
@@ -417,7 +487,7 @@ export const FacultyAttendancePage: React.FC = () => {
                 {/* Submit Footer */}
                 <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="text-xs text-slate-500 flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-teal-700 shrink-0" />
+                    <CheckCircle2 className="w-4 h-4 text-[#134074] shrink-0" />
                     <span>
                       Submitting updates the permanent student attendance registry immediately in local storage.
                     </span>

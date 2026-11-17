@@ -21,29 +21,29 @@ export const AcademicsPage: React.FC = () => {
   const tabs = [
     {
       id: 'timetable',
-      label: 'Class Timetable',
+      label: 'Timetable',
       icon: <Clock className="w-4 h-4" />,
     },
     {
       id: 'attendance',
-      label: 'Attendance Monitor',
+      label: 'Attendance',
       count: lowAttendanceCount > 0 ? lowAttendanceCount : undefined,
       icon: <Calendar className="w-4 h-4" />,
     },
     {
       id: 'assignments',
-      label: 'Assignments & Deadlines',
+      label: 'Assignments',
       count: pendingAssignmentsCount > 0 ? pendingAssignmentsCount : undefined,
       icon: <CheckSquare className="w-4 h-4" />,
     },
     {
       id: 'results',
-      label: 'Academic Results & GPA',
+      label: 'Results & GPA',
       icon: <Award className="w-4 h-4" />,
     },
     {
       id: 'skill-tree',
-      label: 'B.Tech Skill Tree',
+      label: 'Course Syllabus',
       icon: <Network className="w-4 h-4" />,
     },
   ];

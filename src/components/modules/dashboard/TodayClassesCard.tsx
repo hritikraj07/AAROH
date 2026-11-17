@@ -61,7 +61,7 @@ export const TodayClassesCard: React.FC = () => {
           </div>
           <Link
             to="/student/academics?tab=timetable"
-            className="rounded-full bg-teal-700 hover:bg-teal-800 text-white text-xs px-3 py-1 font-medium transition-colors flex items-center gap-1 active:scale-95"
+            className="rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-3 py-1 font-medium transition-colors flex items-center gap-1 active:scale-95 border border-[#8DA9C4]/30 shadow-sm"
           >
             <span>Full Schedule</span>
             <ArrowRight className="w-3 h-3" />

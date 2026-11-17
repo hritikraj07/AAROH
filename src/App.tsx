@@ -33,6 +33,7 @@ import { AdminTimetablePage } from './pages/admin/AdminTimetablePage';
 import { AdminOpportunitiesPage } from './pages/admin/AdminOpportunitiesPage';
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
 import { AdminCurriculumPage } from './pages/admin/AdminCurriculumPage';
+import { AdminAttendancePage } from './pages/admin/AdminAttendancePage';
 
 // Root Dispatcher: routes authenticated users to their specific portal
 const RootRedirect: React.FC = () => {
@@ -121,6 +122,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="notices" element={<AdminNoticesPage />} />
         <Route path="events" element={<AdminEventsPage />} />
         <Route path="timetable" element={<AdminTimetablePage />} />
+        <Route path="attendance" element={<AdminAttendancePage />} />
         <Route path="curriculum" element={<AdminCurriculumPage />} />
         <Route path="curriculum-builder" element={<Navigate to="/admin/curriculum" replace />} />
         <Route path="opportunities" element={<AdminOpportunitiesPage />} />

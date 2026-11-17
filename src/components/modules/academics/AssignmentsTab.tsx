@@ -224,7 +224,7 @@ export const AssignmentsTab: React.FC = () => {
                   {asg.type === 'coding' ? (
                     <Link
                       to={`/student/assignments/code/${asg.id}`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-teal-700 hover:bg-[#0D6861] active:scale-95 transition-transform duration-150 rounded-md shadow-none select-none"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] active:scale-95 transition-all duration-150 rounded-md shadow-sm select-none border border-[#8DA9C4]/30"
                     >
                       <Code className="w-3.5 h-3.5 text-teal-200" />
                       <span>Launch Live Lab</span>

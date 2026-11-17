@@ -223,7 +223,7 @@ export const FacultyAssignmentsPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsCodingModalOpen(true)}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] cursor-pointer select-none"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-xl transition-all duration-200 active:scale-95 shadow-sm border border-[#8DA9C4]/30 cursor-pointer select-none"
             >
               <Code className="w-3.5 h-3.5 text-white" />
               <span>Configure Automated Coding Lab</span>
@@ -288,7 +288,7 @@ export const FacultyAssignmentsPage: React.FC = () => {
                       {status !== 'active' ? (
                         <button
                           onClick={() => updateAssignmentLabStatus(asg.id, 'active')}
-                          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-teal-700 hover:bg-[#0D6861] active:scale-95 transition-transform duration-150 rounded-md"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] active:scale-95 transition-all duration-150 rounded-md border border-[#8DA9C4]/30"
                         >
                           <Play className="w-3 h-3 text-teal-200 fill-teal-200" />
                           <span>Start Live Lab</span>
@@ -416,7 +416,7 @@ export const FacultyAssignmentsPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => setIncidentReviewAsg(asg)}
-                            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
+                            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-xl transition-all duration-200 active:scale-95 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
                           >
                             <ShieldAlert className="w-3.5 h-3.5 text-rose-300" />
                             <span>Review Incident</span>
@@ -535,7 +535,7 @@ export const FacultyAssignmentsPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => setIncidentReviewAsg(asg)}
-                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-xl transition-all duration-200 active:scale-95 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
                           >
                             <ShieldAlert className="w-3.5 h-3.5 text-rose-300" />
                             <span>Review Incident</span>
@@ -963,7 +963,7 @@ export const FacultyAssignmentsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIncidentReviewAsg(null)}
-                className={`px-4 py-2 text-xs font-bold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
+                className={`px-4 py-2 text-xs font-bold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-xl transition-all duration-200 active:scale-95 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
               >
                 <span>Acknowledge & Close Incident</span>
               </button>

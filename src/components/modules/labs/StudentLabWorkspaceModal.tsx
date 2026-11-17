@@ -441,7 +441,7 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
                   type="button"
                   onClick={() => handleFinalSubmit('NORMAL')}
                   disabled={proctorStrikes >= 2}
-                  className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none`}
+                  className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none`}
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Submit Lab Request</span>
@@ -484,7 +484,7 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
             <button
               type="button"
               onClick={handleAcknowledgeWarning}
-              className={`w-full py-3 px-4 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
+              className={`w-full py-3 px-4 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
             >
               <span>Acknowledge Warning & Resume Exam</span>
             </button>

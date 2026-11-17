@@ -110,13 +110,12 @@ export const CampusMapPage: React.FC = () => {
                       </p>
                     </div>
                     <span
-                      className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${
-                        ticket.status === 'Resolved'
+                      className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${ticket.status === 'Resolved'
                           ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
                           : ticket.status === 'In Progress'
-                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
-                          : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
-                      }`}
+                            ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
+                            : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
+                        }`}
                     >
                       {ticket.status}
                     </span>

@@ -90,7 +90,7 @@ export const OpportunitiesPage: React.FC = () => {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
-  const types: ('All' | OpportunityType)[] = ['All', 'Internship', 'Hackathon', 'Competition'];
+  const types: ('All' | OpportunityType)[] = ['All', 'Internship', 'Hackathon'];
   const modes: ('All' | OpportunityMode)[] = ['All', 'Remote', 'On-site'];
 
   const savedCount = useMemo(() => opportunities.filter(o => o.isSaved).length, [opportunities]);
@@ -210,102 +210,28 @@ export const OpportunitiesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Filter and Search Controls Bar */}
-      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4 space-y-3.5">
-        {/* Type & Mode & Sort Filters */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          {/* Type Filter Buttons */}
-          <div className="flex items-center gap-1.5 overflow-x-auto">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mr-1">
-              Type:
-            </span>
-            {types.map(t => {
-              const isSelected = typeFilter === t;
-              return (
-                <button
-                  key={t}
-                  onClick={() => setTypeFilter(t)}
-                  className={`px-2.5 py-1 text-xs rounded transition-colors whitespace-nowrap ${
-                    isSelected
-                      ? 'bg-teal-800 text-white font-semibold'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                  }`}
-                >
-                  {t}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Mode & Sort Dropdowns */}
-          <div className="flex items-center gap-3 text-xs flex-wrap">
-            <div className="flex items-center gap-1.5">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Mode:</span>
-              <select
-                value={modeFilter}
-                onChange={e => setModeFilter(e.target.value as 'All' | OpportunityMode)}
-                className="text-xs px-2.5 py-1.5 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-700"
-              >
-                {modes.map(m => (
-                  <option key={m} value={m}>
-                    {m === 'All' ? 'All Modes' : m}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex items-center gap-1.5">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">Sort:</span>
-              <select
-                value={sortOrder}
-                onChange={e => setSortOrder(e.target.value as 'closest' | 'furthest')}
-                className="text-xs px-2.5 py-1.5 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-700"
-              >
-                <option value="closest">Deadline: Closest First</option>
-                <option value="furthest">Deadline: Furthest First</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Search Input */}
-        <div className="relative pt-1 border-t border-slate-200 dark:border-[#27272A]">
-          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 mt-0.5" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search by role title, hosting company, eligibility, or stipend keywords..."
-            className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700"
-          />
-        </div>
-      </div>
-
-      {/* Teammate Radar: Complementary skills based on Automated Coding Labs */}
-      <TeammateRadar />
-
-      {/* Find a Team / Study Partner Matchmaker (Above Hackathons / Opportunities List) */}
-      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-5 sm:p-6 transition-all duration-300">
+      {/* 1. Find a Team / Study Partner Matchmaker (Placed ABOVE search bar per user specification) */}
+      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 sm:p-6 transition-all duration-300">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-[#27272A]">
           <div>
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-teal-700 dark:text-teal-400" />
+              <Users className="w-4 h-4 text-[#134074] dark:text-[#8DA9C4]" />
               <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 tracking-tight">
                 Find a Team & Study Partner Matchmaker
               </h3>
-              <span className="text-[10px] font-semibold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 px-2 py-0.5 rounded font-mono">
+              <span className="text-[10px] font-semibold text-[#134074] dark:text-[#8DA9C4] bg-[#EEF4ED] dark:bg-[#18181B] border border-[#8DA9C4]/30 px-2 py-0.5 rounded font-mono">
                 AI MATCHMAKER
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Match with fellow students in your cohort ({user?.program || 'B.Tech CSE'} • Semester {user?.semester || 5}) for hackathons, engineering competitions, and collaborative projects.
+              Match with fellow students in your cohort ({user?.program || 'B.Tech CSE'} • Semester {user?.semester || 5}) for hackathons and collaborative projects.
             </p>
           </div>
 
           <button
             onClick={handleMatchMe}
             disabled={isSearchingMatch}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-teal-700 hover:bg-[#0D6861] active:scale-95 transition-transform duration-150 rounded-md select-none shrink-0 disabled:opacity-60 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 active:scale-95 transition-all duration-150 rounded-xl select-none shrink-0 disabled:opacity-60 cursor-pointer shadow-sm"
           >
             {isSearchingMatch ? (
               <>
@@ -314,7 +240,7 @@ export const OpportunitiesPage: React.FC = () => {
               </>
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5 text-teal-200" />
+                <Sparkles className="w-3.5 h-3.5 text-[#8DA9C4]" />
                 <span>Match Me</span>
               </>
             )}
@@ -324,9 +250,9 @@ export const OpportunitiesPage: React.FC = () => {
         {/* Matched Student Profile Card */}
         {matchedStudent && (
           <div className="mt-4 pt-1 animate-in fade-in slide-in-from-top-2 duration-300">
-            <div className="p-4 sm:p-5 rounded-lg border border-slate-200 dark:border-[#27272A] bg-[#FAFAFA] dark:bg-[#27272A]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="p-4 sm:p-5 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50 dark:bg-[#27272A]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-lg bg-teal-700 text-white font-bold text-sm flex items-center justify-center shrink-0 font-mono">
+                <div className="w-11 h-11 rounded-xl bg-[#134074] text-white font-bold text-sm flex items-center justify-center shrink-0 font-mono">
                   {matchedStudent.avatarInitials || 'ST'}
                 </div>
                 <div>
@@ -334,7 +260,7 @@ export const OpportunitiesPage: React.FC = () => {
                     <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
                       {matchedStudent.name}
                     </h4>
-                    <span className="text-[10px] font-semibold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 px-2 py-0.5 rounded flex items-center gap-1">
+                    <span className="text-[10px] font-semibold text-[#134074] dark:text-[#8DA9C4] bg-[#EEF4ED] dark:bg-[#18181B] border border-[#8DA9C4]/30 px-2 py-0.5 rounded flex items-center gap-1 font-mono">
                       <span>✨ AI Matched</span>
                     </span>
                     <span className="text-xs font-mono text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-1.5 py-0.2 rounded">
@@ -351,7 +277,7 @@ export const OpportunitiesPage: React.FC = () => {
                 <button
                   onClick={() => handleRequestConnect(matchedStudent.name)}
                   disabled={connectRequested}
-                  className={`px-3.5 py-2 text-xs font-semibold rounded-md border active:scale-95 transition-transform duration-150 flex items-center gap-1.5 ${
+                  className={`px-3.5 py-2 text-xs font-semibold rounded-xl border active:scale-95 transition-all duration-150 flex items-center gap-1.5 cursor-pointer ${
                     connectRequested
                       ? 'bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 cursor-default'
                       : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
@@ -364,7 +290,7 @@ export const OpportunitiesPage: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <UserPlus className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
+                      <UserPlus className="w-3.5 h-3.5 text-[#134074] dark:text-[#8DA9C4]" />
                       <span>Request to Connect</span>
                     </>
                   )}
@@ -375,12 +301,53 @@ export const OpportunitiesPage: React.FC = () => {
         )}
 
         {matchAttempted && !matchedStudent && !isSearchingMatch && (
-          <div className="mt-4 p-4 rounded-lg border border-slate-200 dark:border-[#27272A] bg-slate-50 dark:bg-[#27272A]/30 text-center text-xs text-slate-600 dark:text-slate-400 animate-in fade-in duration-200">
+          <div className="mt-4 p-4 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50 dark:bg-[#27272A]/30 text-center text-xs text-slate-600 dark:text-slate-400 animate-in fade-in duration-200">
             <p className="font-semibold text-slate-800 dark:text-slate-200">No other matching peers found yet in {user?.program} Semester {user?.semester}.</p>
             <p className="text-slate-500 dark:text-slate-400 mt-0.5">As more classmates onboard in your program, our matchmaker will automatically discover compatible study partners.</p>
           </div>
         )}
       </div>
+
+      {/* 2. Filter and Search Controls Bar (Mode and Sort removed per user specification) */}
+      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-4 space-y-3.5">
+        {/* Type Filter Buttons */}
+        <div className="flex items-center gap-1.5 overflow-x-auto">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mr-1 font-mono">
+            Type:
+          </span>
+          {types.map(t => {
+            const isSelected = typeFilter === t;
+            return (
+              <button
+                key={t}
+                onClick={() => setTypeFilter(t)}
+                className={`px-3 py-1.5 text-xs rounded-xl transition-all whitespace-nowrap cursor-pointer font-medium ${
+                  isSelected
+                    ? 'bg-[#134074] text-white font-semibold shadow-sm border border-[#8DA9C4]/30'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                {t}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Search Input */}
+        <div className="relative pt-1 border-t border-slate-200 dark:border-[#27272A]">
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 mt-0.5" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Search by role title, hosting company, eligibility, or stipend keywords..."
+            className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074]"
+          />
+        </div>
+      </div>
+
+      {/* Teammate Radar: Complementary skills based on Automated Coding Labs */}
+      <TeammateRadar />
 
       {/* Opportunities List / Dense Grid */}
       {displayOpportunities.length === 0 ? (
@@ -406,7 +373,7 @@ export const OpportunitiesPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setViewTab('browse')}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] cursor-pointer select-none"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 shadow-sm cursor-pointer select-none"
             >
               <span>Explore Opportunities</span>
             </button>
@@ -548,7 +515,7 @@ export const OpportunitiesPage: React.FC = () => {
                       className={`px-3 py-1.5 text-xs font-semibold rounded inline-flex items-center gap-1.5 transition-colors ${
                         isExpired
                           ? 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed pointer-events-none'
-                          : 'bg-teal-700 hover:bg-teal-800 text-white '
+                          : 'bg-[#134074] hover:bg-[#0B2545] text-white '
                       }`}
                     >
                       <span>Apply</span>

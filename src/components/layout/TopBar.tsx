@@ -438,7 +438,6 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
             <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white dark:bg-[#18181B] rounded-lg border border-slate-200 dark:border-[#27272A] shadow-sm z-50 overflow-hidden animate-in fade-in duration-150 font-sans">
               <div className="px-4 py-2.5 bg-slate-50 dark:bg-[#0E0E11] border-b border-slate-200 dark:border-[#27272A] flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200">
                 <span>Urgent Approaching Deadlines</span>
-                <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">Next 48 Hours</span>
               </div>
 
               <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[#27272A]">
@@ -457,12 +456,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                       <div className="flex items-start gap-2.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-rose-600 mt-1.5 shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs text-slate-900 dark:text-slate-100 font-medium leading-snug group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
+                          <p className="text-xs text-slate-900 dark:text-slate-100 font-medium leading-snug group-hover:text-[#134074] dark:group-hover:text-[#8DA9C4] transition-colors">
                             {item.formattedText}
                           </p>
                           <div className="flex items-center justify-between mt-1 text-[11px] text-slate-500 dark:text-slate-400">
                             <span>{item.subtitle}</span>
-                            <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 capitalize flex items-center gap-0.5 group-hover:text-teal-700 dark:group-hover:text-teal-400">
+                            <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 capitalize flex items-center gap-0.5 group-hover:text-[#134074] dark:group-hover:text-[#8DA9C4]">
                               <span>Go to {item.type === 'assignment' ? 'assignments' : 'opportunities'}</span>
                               <ArrowRight className="w-2.5 h-2.5" />
                             </span>

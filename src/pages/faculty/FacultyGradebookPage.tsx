@@ -180,7 +180,7 @@ export const FacultyGradebookPage: React.FC = () => {
             type="button"
             onClick={() => handleSaveMarks()}
             title="Save All Grades & Commit Gradebook Changes"
-            className={`px-4 py-2 text-xs font-semibold text-white bg-teal-700 hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} flex items-center gap-1.5 cursor-pointer select-none`}
+            className={`px-4 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-xl transition-all duration-200 active:scale-95 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} flex items-center gap-1.5 cursor-pointer select-none`}
           >
             <Save className="w-3.5 h-3.5" />
             <span>{isSavedToast ? 'Marks Saved ✓' : 'Save Marks'}</span>
@@ -379,7 +379,7 @@ export const FacultyGradebookPage: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               type="submit"
-              className={`px-4 py-2 text-xs font-semibold text-white bg-teal-700 hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} flex items-center justify-center gap-1.5 cursor-pointer select-none`}
+              className={`px-4 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-xl transition-all duration-200 active:scale-95 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} flex items-center justify-center gap-1.5 cursor-pointer select-none`}
             >
               <Save className="w-3.5 h-3.5" />
               <span>Save Marks (Commit Gradebook Changes)</span>

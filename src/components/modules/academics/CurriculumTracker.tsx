@@ -46,8 +46,16 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
   const { user, unlockedModules, markNodeCompleted, resetSubjectProgress, showToast } = useApp();
   const currentStudentId = user?.id || 'demo_student';
 
+  const isStudent = user?.role === 'student' || (!user?.role && !user?.designation);
+
   // 1. Dynamic Course & Subject Selectors State
-  const [selectedSpecialization, setSelectedSpecialization] = useState<SpecializationOption>(initialSpecialization);
+  const [selectedSpecialization, setSelectedSpecialization] = useState<SpecializationOption>(() => {
+    const userSpec = (user as any)?.specialization || user?.program;
+    if (userSpec && SPECIALIZATION_OPTIONS.includes(userSpec as SpecializationOption)) {
+      return userSpec as SpecializationOption;
+    }
+    return initialSpecialization;
+  });
   const subjectsForSpecialization = getSubjectsForSpecialization(selectedSpecialization);
 
   const [selectedSubjectName, setSelectedSubjectName] = useState<string>(() => {
@@ -192,16 +200,21 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-mono flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <GraduationCap className="w-3.5 h-3.5 text-[#0F766E]" />
+                <GraduationCap className="w-3.5 h-3.5 text-[#134074] dark:text-[#8DA9C4]" />
                 <span>Specialization</span>
               </span>
-              <span className="text-[10px] text-slate-400 font-mono">3 Majors Available</span>
+              <span className="text-[10px] text-[#134074] dark:text-[#8DA9C4] font-mono font-medium">
+                {isStudent ? 'Enrolled Program' : '3 Majors Available'}
+              </span>
             </label>
             <div className="relative">
               <select
                 value={selectedSpecialization}
                 onChange={e => handleSpecializationChange(e.target.value as SpecializationOption)}
-                className="w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-[#0F766E] focus:border-[#0F766E] appearance-none font-medium transition-all cursor-pointer"
+                disabled={isStudent}
+                className={`w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-[#134074] appearance-none font-medium transition-all ${
+                  isStudent ? 'cursor-default opacity-90' : 'cursor-pointer'
+                }`}
               >
                 {SPECIALIZATION_OPTIONS.map(spec => (
                   <option key={spec} value={spec}>
@@ -535,7 +548,7 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
                   <button
                     type="button"
                     onClick={() => handleMarkComplete(activeInspectNode)}
-                    className={`w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] transition-all duration-200 active:scale-95 cursor-pointer flex items-center justify-center gap-2 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+                    className={`w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] transition-all duration-200 active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Mark as Completed</span>

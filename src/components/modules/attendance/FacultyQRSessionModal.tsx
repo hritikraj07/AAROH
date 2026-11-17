@@ -95,7 +95,7 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 font-mono uppercase tracking-wider">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#134074]/10 dark:bg-[#134074]/30 text-[#134074] dark:text-[#8DA9C4] border border-[#8DA9C4]/40 font-mono uppercase tracking-wider">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Live QR Attendance Session
             </div>
@@ -125,82 +125,82 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
               aria-label="Dynamic Attendance QR Code"
             >
               {/* Corner Finder 1: Top-Left */}
-              <rect x="5" y="5" width="26" height="26" fill="#0F172A" rx="3" />
+              <rect x="5" y="5" width="26" height="26" fill="#0B2545" rx="3" />
               <rect x="9" y="9" width="18" height="18" fill="white" rx="1.5" />
-              <rect x="13" y="13" width="10" height="10" fill="#0F766E" rx="1" />
+              <rect x="13" y="13" width="10" height="10" fill="#134074" rx="1" />
 
               {/* Corner Finder 2: Top-Right */}
-              <rect x="69" y="5" width="26" height="26" fill="#0F172A" rx="3" />
+              <rect x="69" y="5" width="26" height="26" fill="#0B2545" rx="3" />
               <rect x="73" y="9" width="18" height="18" fill="white" rx="1.5" />
-              <rect x="77" y="13" width="10" height="10" fill="#0F766E" rx="1" />
+              <rect x="77" y="13" width="10" height="10" fill="#134074" rx="1" />
 
               {/* Corner Finder 3: Bottom-Left */}
-              <rect x="5" y="69" width="26" height="26" fill="#0F172A" rx="3" />
+              <rect x="5" y="69" width="26" height="26" fill="#0B2545" rx="3" />
               <rect x="9" y="73" width="18" height="18" fill="white" rx="1.5" />
-              <rect x="13" y="77" width="10" height="10" fill="#0F766E" rx="1" />
+              <rect x="13" y="77" width="10" height="10" fill="#134074" rx="1" />
 
               {/* Alignment & Data Pattern Grid based on Token Hash */}
-              <rect x="36" y="8" width="5" height="5" fill="#0F172A" />
-              <rect x="46" y="8" width="5" height="5" fill="#0F766E" />
-              <rect x="56" y="8" width="5" height="5" fill="#0F172A" />
+              <rect x="36" y="8" width="5" height="5" fill="#0B2545" />
+              <rect x="46" y="8" width="5" height="5" fill="#134074" />
+              <rect x="56" y="8" width="5" height="5" fill="#0B2545" />
 
-              <rect x="36" y="18" width="5" height="5" fill="#0F766E" />
-              <rect x="46" y="18" width="5" height="5" fill="#0F172A" />
-              <rect x="56" y="18" width="5" height="5" fill="#0F766E" />
+              <rect x="36" y="18" width="5" height="5" fill="#134074" />
+              <rect x="46" y="18" width="5" height="5" fill="#0B2545" />
+              <rect x="56" y="18" width="5" height="5" fill="#134074" />
 
-              <rect x="8" y="36" width="5" height="5" fill="#0F172A" />
-              <rect x="18" y="36" width="5" height="5" fill="#0F766E" />
-              <rect x="28" y="36" width="5" height="5" fill="#0F172A" />
-              <rect x="38" y="36" width="5" height="5" fill="#0F766E" />
-              <rect x="48" y="36" width="5" height="5" fill="#0F172A" />
-              <rect x="58" y="36" width="5" height="5" fill="#0F766E" />
-              <rect x="68" y="36" width="5" height="5" fill="#0F172A" />
-              <rect x="78" y="36" width="5" height="5" fill="#0F766E" />
-              <rect x="88" y="36" width="5" height="5" fill="#0F172A" />
+              <rect x="8" y="36" width="5" height="5" fill="#0B2545" />
+              <rect x="18" y="36" width="5" height="5" fill="#134074" />
+              <rect x="28" y="36" width="5" height="5" fill="#0B2545" />
+              <rect x="38" y="36" width="5" height="5" fill="#134074" />
+              <rect x="48" y="36" width="5" height="5" fill="#0B2545" />
+              <rect x="58" y="36" width="5" height="5" fill="#134074" />
+              <rect x="68" y="36" width="5" height="5" fill="#0B2545" />
+              <rect x="78" y="36" width="5" height="5" fill="#134074" />
+              <rect x="88" y="36" width="5" height="5" fill="#0B2545" />
 
-              <rect x="8" y="46" width="5" height="5" fill="#0F766E" />
-              <rect x="28" y="46" width="5" height="5" fill="#0F172A" />
-              <rect x="38" y="46" width="5" height="5" fill="#0F172A" />
-              <rect x="48" y="46" width="5" height="5" fill="#0F766E" />
-              <rect x="58" y="46" width="5" height="5" fill="#0F172A" />
-              <rect x="68" y="46" width="5" height="5" fill="#0F766E" />
-              <rect x="88" y="46" width="5" height="5" fill="#0F766E" />
+              <rect x="8" y="46" width="5" height="5" fill="#134074" />
+              <rect x="28" y="46" width="5" height="5" fill="#0B2545" />
+              <rect x="38" y="46" width="5" height="5" fill="#0B2545" />
+              <rect x="48" y="46" width="5" height="5" fill="#134074" />
+              <rect x="58" y="46" width="5" height="5" fill="#0B2545" />
+              <rect x="68" y="46" width="5" height="5" fill="#134074" />
+              <rect x="88" y="46" width="5" height="5" fill="#134074" />
 
-              <rect x="8" y="56" width="5" height="5" fill="#0F172A" />
-              <rect x="18" y="56" width="5" height="5" fill="#0F766E" />
-              <rect x="38" y="56" width="5" height="5" fill="#0F766E" />
-              <rect x="48" y="56" width="5" height="5" fill="#0F172A" />
-              <rect x="68" y="56" width="5" height="5" fill="#0F766E" />
-              <rect x="78" y="56" width="5" height="5" fill="#0F172A" />
+              <rect x="8" y="56" width="5" height="5" fill="#0B2545" />
+              <rect x="18" y="56" width="5" height="5" fill="#134074" />
+              <rect x="38" y="56" width="5" height="5" fill="#134074" />
+              <rect x="48" y="56" width="5" height="5" fill="#0B2545" />
+              <rect x="68" y="56" width="5" height="5" fill="#134074" />
+              <rect x="78" y="56" width="5" height="5" fill="#0B2545" />
 
-              <rect x="36" y="68" width="5" height="5" fill="#0F172A" />
-              <rect x="46" y="68" width="5" height="5" fill="#0F766E" />
-              <rect x="56" y="68" width="5" height="5" fill="#0F172A" />
-              <rect x="76" y="68" width="5" height="5" fill="#0F766E" />
-              <rect x="86" y="68" width="5" height="5" fill="#0F172A" />
+              <rect x="36" y="68" width="5" height="5" fill="#0B2545" />
+              <rect x="46" y="68" width="5" height="5" fill="#134074" />
+              <rect x="56" y="68" width="5" height="5" fill="#0B2545" />
+              <rect x="76" y="68" width="5" height="5" fill="#134074" />
+              <rect x="86" y="68" width="5" height="5" fill="#0B2545" />
 
-              <rect x="36" y="78" width="5" height="5" fill="#0F766E" />
-              <rect x="46" y="78" width="5" height="5" fill="#0F172A" />
-              <rect x="66" y="78" width="5" height="5" fill="#0F766E" />
-              <rect x="76" y="78" width="5" height="5" fill="#0F172A" />
-              <rect x="86" y="78" width="5" height="5" fill="#0F766E" />
+              <rect x="36" y="78" width="5" height="5" fill="#134074" />
+              <rect x="46" y="78" width="5" height="5" fill="#0B2545" />
+              <rect x="66" y="78" width="5" height="5" fill="#134074" />
+              <rect x="76" y="78" width="5" height="5" fill="#0B2545" />
+              <rect x="86" y="78" width="5" height="5" fill="#134074" />
 
-              <rect x="36" y="88" width="5" height="5" fill="#0F172A" />
-              <rect x="56" y="88" width="5" height="5" fill="#0F766E" />
-              <rect x="76" y="88" width="5" height="5" fill="#0F172A" />
+              <rect x="36" y="88" width="5" height="5" fill="#0B2545" />
+              <rect x="56" y="88" width="5" height="5" fill="#134074" />
+              <rect x="76" y="88" width="5" height="5" fill="#0B2545" />
             </svg>
 
             {/* Central Monogram Brand Badge */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-9 h-9 rounded-lg bg-white border border-teal-200 shadow-sm flex items-center justify-center">
-                <QrCode className="w-5 h-5 text-teal-700" />
+              <div className="w-9 h-9 rounded-lg bg-white border border-[#8DA9C4]/40 shadow-sm flex items-center justify-center">
+                <QrCode className="w-5 h-5 text-[#134074]" />
               </div>
             </div>
           </div>
 
           <div className="mt-4 text-center">
             <span className="text-[11px] font-mono font-medium text-slate-500 dark:text-slate-400">
-              Payload: <code className="text-teal-700 dark:text-teal-400 font-bold">{qrToken}</code>
+              Payload: <code className="text-[#134074] dark:text-[#8DA9C4] font-bold">{qrToken}</code>
             </span>
           </div>
         </div>
@@ -209,17 +209,17 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs font-mono">
             <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-              <RefreshCw className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400 animate-spin" />
+              <RefreshCw className="w-3.5 h-3.5 text-[#134074] dark:text-[#8DA9C4] animate-spin" />
               Auto-expiring in:
             </span>
-            <span className="font-bold text-teal-700 dark:text-teal-400">
+            <span className="font-bold text-[#134074] dark:text-[#8DA9C4]">
               {secondsRemaining.toFixed(1)}s
             </span>
           </div>
           {/* 5-second progress bar */}
           <div className="w-full h-2 bg-slate-100 dark:bg-[#27272A] rounded-full overflow-hidden">
             <div
-              className="h-full bg-teal-600 transition-all duration-100 ease-linear rounded-full"
+              className="h-full bg-[#134074] transition-all duration-100 ease-linear rounded-full"
               style={{ width: `${progressPercent}%` }}
             />
           </div>

@@ -34,7 +34,7 @@ export const WeekAssignmentsWidget: React.FC = () => {
           </div>
           <Link
             to="/student/academics?tab=assignments"
-            className="rounded-full bg-teal-700 hover:bg-teal-800 text-white text-xs px-3 py-1 font-medium transition-colors flex items-center gap-1 active:scale-95"
+            className="rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-3 py-1 font-medium transition-colors flex items-center gap-1 active:scale-95 border border-[#8DA9C4]/30 shadow-sm"
           >
             <span>All Tasks</span>
             <ArrowRight className="w-3 h-3" />
@@ -94,7 +94,7 @@ export const WeekAssignmentsWidget: React.FC = () => {
                       className={`rounded-full text-xs px-3 py-1 font-medium transition-colors shrink-0 ${
                         isSubmitted
                           ? 'border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700'
-                          : 'bg-teal-700 text-white hover:bg-teal-800'
+                          : 'bg-[#134074] text-white hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 shadow-sm'
                       }`}
                     >
                       {isSubmitted ? 'Mark Pending' : 'Submit'}

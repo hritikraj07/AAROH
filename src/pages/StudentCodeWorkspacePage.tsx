@@ -398,7 +398,7 @@ export const StudentCodeWorkspacePage: React.FC = () => {
                 setWarningModalOpen(false);
                 setIsTimerPaused(false);
               }}
-              className={`w-full py-2.5 px-4 text-xs font-bold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
+              className={`w-full py-2.5 px-4 text-xs font-bold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
             >
               <span>Acknowledge Warning & Resume Exam</span>
             </button>
@@ -443,7 +443,7 @@ export const StudentCodeWorkspacePage: React.FC = () => {
             <div className="pt-2">
               <Link
                 to="/student/academics?tab=assignments"
-                className={`inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 text-xs font-bold text-white bg-[#0F766E] hover:bg-[#0D6861] rounded-xl transition-all duration-200 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+                className={`inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 text-xs font-bold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Return to Assignments Hub</span>
@@ -705,7 +705,7 @@ export const StudentCodeWorkspacePage: React.FC = () => {
                     type="button"
                     onClick={handleSubmitAssignment}
                     disabled={isCompiling || proctorStrikes >= 2}
-                    className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] border border-transparent rounded-xl active:scale-95 transition-all duration-200 select-none disabled:opacity-50 cursor-pointer ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+                    className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl active:scale-95 transition-all duration-200 select-none disabled:opacity-50 cursor-pointer ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>{isSubmitted ? 'Resubmit Assignment' : 'Submit Assignment'}</span>

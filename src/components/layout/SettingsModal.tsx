@@ -31,15 +31,15 @@ export const SettingsModal: React.FC = () => {
         setConfirmReset(false);
         closeSettings();
       }}
-      title="Application Settings & Session State"
-      subtitle={`${APP_CONFIG.appName} • ${APP_CONFIG.collegeName}`}
+      title="Settings"
+      subtitle="Preferences and account configuration"
       maxWidth="md"
     >
       <div className="space-y-6">
         {/* Session Profile Overview */}
         <div className="p-3.5 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg space-y-2">
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-800 dark:text-slate-200">
-            <UserCheck className="w-4 h-4 text-teal-700 dark:text-teal-400" />
+            <UserCheck className="w-4 h-4 text-[#134074] dark:text-[#8DA9C4]" />
             <span className="capitalize">Active {role || 'Student'} Session</span>
           </div>
           <div className="grid grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-400 pt-1">
@@ -64,17 +64,6 @@ export const SettingsModal: React.FC = () => {
               <span className="text-slate-900 dark:text-slate-100">{user?.department || student?.program || 'Engineering & Technology'}</span>
             </div>
           </div>
-        </div>
-
-        {/* Offline & Privacy Guarantee */}
-        <div className="p-3 bg-teal-50/50 border border-teal-200/60 rounded-md text-xs text-teal-900 space-y-1">
-          <div className="flex items-center gap-1.5 font-semibold text-teal-800">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Strict Offline Guarantee</span>
-          </div>
-          <p className="text-teal-950/80 leading-relaxed text-[11px]">
-            All student actions (submissions, event registrations, lost & found postings) are persisted locally in your browser storage. No network queries or remote CDNs are contacted during this demo.
-          </p>
         </div>
 
         {/* Interface Theme Section */}

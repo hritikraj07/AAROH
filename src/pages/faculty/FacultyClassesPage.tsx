@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { Button } from '../../components/ui/Button';
-import { BookOpen, Plus, Users, Clock, Building, X, Trash2, Network } from 'lucide-react';
+import { BookOpen, Plus, Users, Clock, Building, X, Trash2, Network, ClipboardList } from 'lucide-react';
 import { Course } from '../../types';
 import { getFacultyFullName } from '../../utils/facultyUtils';
 import { SkillTreeModal } from '../../components/modules/academics/SkillTreeModal';
 
 export const FacultyClassesPage: React.FC = () => {
+  const navigate = useNavigate();
   const { courses, timetable, createCourse, deleteCourse, user, users, role } = useApp();
   const currentUser = user;
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -59,7 +61,7 @@ export const FacultyClassesPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsAddModalOpen(true)}
-            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] cursor-pointer select-none"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-xl transition-all duration-200 active:scale-95 shadow-sm border border-[#8DA9C4]/30 cursor-pointer select-none"
           >
             <Plus className="w-3.5 h-3.5 text-white" />
             <span>Add Course</span>
@@ -82,7 +84,7 @@ export const FacultyClassesPage: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsAddModalOpen(true)}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] cursor-pointer select-none"
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-xl transition-all duration-200 active:scale-95 shadow-sm border border-[#8DA9C4]/30 cursor-pointer select-none"
             >
               <Plus className="w-3.5 h-3.5 text-white" />
               <span>Assign Course</span>
@@ -139,17 +141,26 @@ export const FacultyClassesPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
-                  <span className="text-slate-500 text-[11px]">
-                    {courseSessions.length} weekly sessions
-                  </span>
+                <div className="pt-3 border-t border-slate-200 dark:border-[#27272A] flex items-center justify-between text-xs gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const targetSessionId = courseSessions[0]?.id || '';
+                      navigate(`/faculty/attendance?sessionId=${targetSessionId}`);
+                    }}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white border border-[#8DA9C4]/30 transition-all cursor-pointer shadow-sm active:scale-95"
+                  >
+                    <ClipboardList className="w-3.5 h-3.5 text-[#8DA9C4]" />
+                    <span>Take Attendance</span>
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => setSelectedCourseForTree(course)}
-                    className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-1 rounded-full bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1 text-[11px] font-mono px-2.5 py-1 rounded-full bg-slate-50 dark:bg-[#18181B] hover:bg-slate-100 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#27272A] transition-colors cursor-pointer"
                   >
-                    <Network className="w-3 h-3 text-teal-600" />
-                    <span>View Skill Tree</span>
+                    <Network className="w-3 h-3 text-[#134074] dark:text-[#8DA9C4]" />
+                    <span>Syllabus</span>
                   </button>
                 </div>
               </div>

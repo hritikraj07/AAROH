@@ -17,6 +17,11 @@ import { useApp } from '../../context/AppContext';
 import { SkillTree, SkillTreeNode, Course } from '../../types';
 import { Badge } from '../../components/ui/Badge';
 
+const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
+const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
+const exactLightHover = 'hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)]';
+const exactDarkHover = 'dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)]';
+
 export const AdminCurriculumPage: React.FC = () => {
   const { courses, skillTrees, saveSkillTree, showToast } = useApp();
 
@@ -176,7 +181,7 @@ export const AdminCurriculumPage: React.FC = () => {
         <button
           type="button"
           onClick={handleSaveTree}
-          className="rounded-full bg-teal-700 hover:bg-[#0D6861] active:bg-[#115E59] text-white text-xs px-5 py-2.5 font-medium transition-all duration-200 active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)] inline-flex items-center gap-2 cursor-pointer self-start sm:self-auto"
+          className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-5 py-2.5 font-medium transition-all duration-200 active:scale-95 border border-[#8DA9C4]/30 inline-flex items-center gap-2 cursor-pointer self-start sm:self-auto ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
         >
           <Save className="w-4 h-4" />
           <span>Save Tree</span>

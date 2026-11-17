@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { useApp } from '../../../context/AppContext';
 import { AcademicService } from '../../../services/academicService';
 import { Badge } from '../../ui/Badge';
-import { AlertCircle, CheckCircle2, Calendar, Network } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Calendar, Network, Camera } from 'lucide-react';
 import { APP_CONFIG } from '../../../config';
 import { getFacultyFullName } from '../../../utils/facultyUtils';
 import { SkillTreeModal } from './SkillTreeModal';
+import { StudentQRScannerModal } from '../attendance/StudentQRScannerModal';
 
 export const AttendanceTab: React.FC = () => {
   const { attendance, courses, student, users } = useApp();
   const minThreshold = student?.attendanceMinimum || APP_CONFIG.defaultAttendanceThreshold;
   const [selectedCourseForTree, setSelectedCourseForTree] = useState<{ id: string; code: string; name: string } | null>(null);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   // Filter attendance records specifically for the logged-in student
   const studentAttendance = attendance.filter(rec => {
@@ -70,6 +72,16 @@ export const AttendanceTab: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Scan Attendance action button */}
+        <button
+          type="button"
+          onClick={() => setIsScannerOpen(true)}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white border border-[#8DA9C4]/30 transition-all cursor-pointer shadow-sm active:scale-95 shrink-0 self-start md:self-auto"
+        >
+          <Camera className="w-3.5 h-3.5 text-[#8DA9C4]" />
+          <span>Scan Attendance</span>
+        </button>
       </div>
 
       {/* Course Attendance Table / Empty State */}
@@ -226,6 +238,12 @@ export const AttendanceTab: React.FC = () => {
           onClose={() => setSelectedCourseForTree(null)}
         />
       )}
+
+      {/* Student QR Scanner Modal */}
+      <StudentQRScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+      />
     </div>
   );
 };

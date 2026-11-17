@@ -340,7 +340,7 @@ def solution():
               <button
                 type="submit"
                 disabled={isPublishing}
-                className={`rounded-full bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] text-white text-xs font-semibold px-6 py-2.5 transition-all duration-200 active:scale-95 cursor-pointer flex items-center gap-2 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+                className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs font-semibold px-6 py-2.5 transition-all duration-200 active:scale-95 cursor-pointer flex items-center gap-2 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>{isPublishing ? 'Publishing Lab...' : 'Publish Lab'}</span>

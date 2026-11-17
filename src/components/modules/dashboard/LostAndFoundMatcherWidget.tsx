@@ -3,6 +3,11 @@ import { useApp } from '../../../context/AppContext';
 import { findLostAndFoundMatches } from '../../../utils/lostFoundMatcher';
 import { Sparkles, HelpCircle, CheckCircle2, ArrowRight, MapPin, Calendar, Check, Link2 } from 'lucide-react';
 
+const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
+const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
+const exactLightHover = 'hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)]';
+const exactDarkHover = 'dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)]';
+
 export const LostAndFoundMatcherWidget: React.FC = () => {
   const { lostFound, showToast } = useApp();
   const [confirmedMatchIds, setConfirmedMatchIds] = useState<Record<string, boolean>>({});
@@ -149,7 +154,7 @@ export const LostAndFoundMatcherWidget: React.FC = () => {
               {/* Action Bar */}
               <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                  <Link2 className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400 shrink-0" />
+                  <Link2 className="w-3.5 h-3.5 text-[#134074] dark:text-[#8DA9C4] shrink-0" />
                   <span>
                     Connecting verifies identification serials before releasing the item from the campus hub.
                   </span>
@@ -165,10 +170,10 @@ export const LostAndFoundMatcherWidget: React.FC = () => {
                     )
                   }
                   disabled={isConfirmed}
-                  className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 select-none cursor-pointer ${
+                  className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 select-none cursor-pointer border border-[#8DA9C4]/30 ${
                     isConfirmed
                       ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 shadow-none cursor-default'
-                      : 'bg-teal-700 hover:bg-[#0D6861] active:bg-[#115E59] text-white active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)]'
+                      : `bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`
                   }`}
                 >
                   {isConfirmed ? (

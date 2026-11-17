@@ -412,7 +412,7 @@ export const DashboardPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleSaveNotes}
-                  className={`rounded-full bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] text-white text-xs px-4 py-1.5 font-medium transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer inline-flex items-center gap-1.5`}
+                  className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-4 py-1.5 font-medium transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer inline-flex items-center gap-1.5 border border-[#8DA9C4]/30`}
                 >
                   <FileText className="w-3.5 h-3.5" />
                   <span>{notesSavedToast ? 'Notes Saved ✓' : 'Save Notes'}</span>
@@ -467,7 +467,7 @@ export const DashboardPage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleTakeLiveNotes}
-                className={`rounded-full bg-teal-700 hover:bg-[#0D6861] active:bg-[#115E59] text-white text-xs px-4 py-2 font-medium transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} inline-flex items-center gap-1.5 cursor-pointer`}
+                className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-4 py-2 font-medium transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} inline-flex items-center gap-1.5 cursor-pointer border border-[#8DA9C4]/30`}
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>Take Live Notes</span>
@@ -716,7 +716,7 @@ export const DashboardPage: React.FC = () => {
                               setSelectedGlobalLab(lab);
                               setIsWorkspaceModalOpen(true);
                             }}
-                            className={`rounded-full bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] text-white text-[11px] font-medium px-3 py-1 transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} flex items-center gap-1 cursor-pointer`}
+                            className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-[11px] font-medium px-3 py-1 transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} flex items-center gap-1 cursor-pointer border border-[#8DA9C4]/30`}
                           >
                             <span>Open Lab</span>
                             <span className="hidden sm:inline text-[9px] opacity-80">• Launch Workspace</span>
@@ -770,7 +770,7 @@ export const DashboardPage: React.FC = () => {
                     </span>
                     <button
                       type="button"
-                      className={`rounded-full bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] text-white text-[11px] font-medium px-3 py-1 transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} flex items-center gap-1 cursor-pointer`}
+                      className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-[11px] font-medium px-3 py-1 transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} flex items-center gap-1 cursor-pointer border border-[#8DA9C4]/30`}
                     >
                       <span>Launch Workspace</span>
                       <ArrowRight className="w-3 h-3" />
