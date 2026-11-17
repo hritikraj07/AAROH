@@ -153,12 +153,12 @@ export const LoginPage: React.FC = () => {
         />
       </div>
 
-      {/* 2. Institutional Header Banner: High quality enhanced SVG, no container background, aligned to white outline */}
-      <div className="absolute top-5 left-4 sm:top-6 sm:left-6 md:top-7 md:left-8 z-30 flex items-center">
+      {/* 2. Institutional Header Banner: High quality enhanced SVG, no hover pop-up, completely static */}
+      <div className="absolute top-5 left-4 sm:top-6 sm:left-6 md:top-7 md:left-8 z-30 flex items-center pointer-events-none select-none">
         <img
           src="/krmu_banner.svg"
           alt="K.R. Mangalam University - The Complete World of Education - NAAC Grade A"
-          className="w-[280px] sm:w-[340px] md:w-[390px] lg:w-[430px] max-w-full h-auto object-contain block drop-shadow-md select-none transition-transform duration-200 hover:scale-[1.01]"
+          className="w-[280px] sm:w-[340px] md:w-[390px] lg:w-[430px] max-w-full h-auto object-contain block drop-shadow-md select-none pointer-events-none"
         />
       </div>
 
