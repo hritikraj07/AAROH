@@ -17,6 +17,9 @@ import {
   AssessmentType,
   SkillTree,
   SkillTreeNode,
+  CampusTicket,
+  TicketStatus,
+  CampusBuilding,
 } from '../types';
 import { StorageService } from '../services/storage';
 
@@ -43,6 +46,7 @@ interface AppContextType {
   notifications: NotificationItem[];
   grades: GradeRecord[];
   skillTrees: SkillTree[];
+  campusTickets: CampusTicket[];
   isAuthenticated: boolean;
 
   // Counts
@@ -124,6 +128,11 @@ interface AppContextType {
   ) => void;
   saveSkillTree: (tree: Omit<SkillTree, 'updatedAt'>) => SkillTree;
   getSkillTreeForCourse: (courseId: string) => SkillTree | null;
+
+  // Campus Heatmap & AI Ticketing Actions
+  createCampusTicket: (ticket: Omit<CampusTicket, 'id' | 'createdAt' | 'status'>) => CampusTicket;
+  updateCampusTicketStatus: (id: string, status: TicketStatus) => CampusTicket | null;
+  deleteCampusTicket: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -142,6 +151,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [notifications, setNotifications] = useState<NotificationItem[]>(() => StorageService.getNotifications());
   const [grades, setGrades] = useState<GradeRecord[]>(() => StorageService.getGrades());
   const [skillTrees, setSkillTrees] = useState<SkillTree[]>(() => StorageService.getSkillTrees());
+  const [campusTickets, setCampusTickets] = useState<CampusTicket[]>(() => StorageService.getCampusTickets());
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => StorageService.isAuthenticated());
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -162,6 +172,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setNotifications(StorageService.getNotifications());
     setGrades(StorageService.getGrades());
     setSkillTrees(StorageService.getSkillTrees());
+    setCampusTickets(StorageService.getCampusTickets());
     setIsAuthenticated(StorageService.isAuthenticated());
   }, []);
 
@@ -583,6 +594,35 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return StorageService.getSkillTreeByCourse(courseId);
   };
 
+  const createCampusTicket = useCallback((ticketData: Omit<CampusTicket, 'id' | 'createdAt' | 'status'>) => {
+    const created = StorageService.createCampusTicket(ticketData);
+    setCampusTickets(StorageService.getCampusTickets());
+    showToast({
+      type: 'success',
+      title: 'Facility Ticket Logged',
+      message: `[${created.category} • ${created.priority}] ${created.summary}`,
+    });
+    return created;
+  }, [showToast]);
+
+  const updateCampusTicketStatus = useCallback((id: string, status: TicketStatus) => {
+    const updated = StorageService.updateCampusTicketStatus(id, status);
+    setCampusTickets(StorageService.getCampusTickets());
+    if (updated) {
+      showToast({
+        type: 'info',
+        title: 'Ticket Status Updated',
+        message: `Status transitioned to "${status}" for ${updated.location}.`,
+      });
+    }
+    return updated;
+  }, [showToast]);
+
+  const deleteCampusTicket = useCallback((id: string) => {
+    StorageService.deleteCampusTicket(id);
+    setCampusTickets(StorageService.getCampusTickets());
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
@@ -604,6 +644,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         skillTrees,
         saveSkillTree,
         getSkillTreeForCourse,
+        campusTickets,
+        createCampusTicket,
+        updateCampusTicketStatus,
+        deleteCampusTicket,
         isAuthenticated,
         unreadNoticeCount,
         pendingAssignmentsCount,

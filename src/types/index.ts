@@ -266,3 +266,25 @@ export interface SkillTree {
   updatedAt: string;
 }
 
+// Aaroh Smart Campus Heatmap & AI Ticketing System
+export type TicketCategory = 'Plumbing' | 'IT' | 'Electrical' | 'General';
+export type TicketPriority = 'Low' | 'Medium' | 'Critical';
+export type TicketStatus = 'Reported' | 'In Progress' | 'Resolved';
+export type CampusBuilding = 'Academic Blocks' | 'Hostels' | 'Library' | 'Canteen';
+
+export interface CampusTicket {
+  id: string;
+  location: CampusBuilding | string;
+  description: string;
+  category: TicketCategory;
+  priority: TicketPriority;
+  summary: string; // 3-word summary
+  status: TicketStatus;
+  submitterRole: UserRole; // 'student' | 'faculty' | 'admin'
+  submitterId?: string;
+  submitterName?: string;
+  createdAt: string; // ISO date string
+  updatedAt?: string;
+}
+
+

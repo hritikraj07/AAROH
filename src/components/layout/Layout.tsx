@@ -48,6 +48,9 @@ export const Layout: React.FC = () => {
       case '/student/opportunities':
       case '/opportunities':
         return 'Opportunity Board';
+      case '/student/campus-map':
+      case '/campus-map':
+        return 'Smart Campus Heatmap & Facilities';
 
       // Faculty Routes
       case '/faculty':
@@ -63,6 +66,8 @@ export const Layout: React.FC = () => {
         return 'Coursework & Grading';
       case '/faculty/notices':
         return 'Department Circulars & Notices';
+      case '/faculty/campus-map':
+        return 'Smart Campus Facilities & Map';
 
       // Admin Routes
       case '/admin':
@@ -83,6 +88,8 @@ export const Layout: React.FC = () => {
         return 'Institutional Timetable Scheduler';
       case '/admin/opportunities':
         return 'Opportunity Board Publisher';
+      case '/admin/campus-map':
+        return 'Campus Infrastructure Nexus & Live Heatmap';
       case '/admin/settings':
         return 'System Configuration';
 

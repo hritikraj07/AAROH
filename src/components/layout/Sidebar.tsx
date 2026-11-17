@@ -16,7 +16,8 @@ import {
   ShieldCheck,
   Users,
   Award,
-  Network
+  Network,
+  MapPin
 } from 'lucide-react';
 import { APP_CONFIG } from '../../config';
 import { useApp } from '../../context/AppContext';
@@ -117,6 +118,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
           label: 'Lost & Found',
           icon: <HelpCircle className="w-4 h-4" />,
         },
+        {
+          to: '/student/campus-map',
+          label: 'Campus Map & Facilities',
+          icon: <MapPin className="w-4 h-4" />,
+        },
       ],
     },
   ];
@@ -171,6 +177,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
           label: 'Department Notices',
           icon: <Bell className="w-4 h-4" />,
         },
+        {
+          to: '/faculty/campus-map',
+          label: 'Campus Map & Facilities',
+          icon: <MapPin className="w-4 h-4" />,
+        },
       ],
     },
   ];
@@ -224,6 +235,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
           to: '/admin/opportunities',
           label: 'Opportunity Board',
           icon: <Briefcase className="w-4 h-4" />,
+        },
+        {
+          to: '/admin/campus-map',
+          label: 'Infrastructure Heatmap',
+          icon: <MapPin className="w-4 h-4" />,
         },
         {
           to: '/admin/settings',

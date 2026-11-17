@@ -31,6 +31,9 @@ import { LostAndFoundMatcherWidget } from '../components/modules/dashboard/LostA
 import { ReportLostFoundModal } from '../components/modules/lostfound/ReportLostFoundModal';
 import { getFacultyFullName } from '../utils/facultyUtils';
 import { SkillTreeModal } from '../components/modules/academics/SkillTreeModal';
+import { CampusMap } from '../components/modules/campus/CampusMap';
+import { SmartResolveModal } from '../components/modules/campus/SmartResolveModal';
+import { CampusBuilding } from '../types';
 
 // Exact custom 4-layer tactile button shadow system
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
@@ -42,6 +45,8 @@ export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isSkillTreeModalOpen, setIsSkillTreeModalOpen] = useState(false);
+  const [selectedMapBuilding, setSelectedMapBuilding] = useState<CampusBuilding>('Academic Blocks');
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
   const {
     user,
@@ -728,6 +733,14 @@ export const DashboardPage: React.FC = () => {
       {/* AI Lost & Found Matcher Widget */}
       {!isFocusMode && <LostAndFoundMatcherWidget />}
 
+      {/* Interactive Campus Map & Smart Resolve AI Facility Portal */}
+      <CampusMap
+        onSelectBuilding={b => {
+          setSelectedMapBuilding(b);
+          setIsMapModalOpen(true);
+        }}
+      />
+
       {/* 7. Primary Data Modules (Tables: Today's Schedule & Coursework) */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
         <TodayClassesCard />
@@ -758,6 +771,13 @@ export const DashboardPage: React.FC = () => {
         courseName={currentSubjectName || 'Operating Systems'}
         isOpen={isSkillTreeModalOpen}
         onClose={() => setIsSkillTreeModalOpen(false)}
+      />
+
+      {/* Smart Resolve AI Ticketing Modal */}
+      <SmartResolveModal
+        isOpen={isMapModalOpen}
+        onClose={() => setIsMapModalOpen(false)}
+        selectedBuilding={selectedMapBuilding}
       />
     </div>
   );

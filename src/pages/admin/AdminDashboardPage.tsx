@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { APP_CONFIG } from '../../config';
 import { Button } from '../../components/ui/Button';
+import { CampusMap } from '../../components/modules/campus/CampusMap';
+import { SmartResolveModal } from '../../components/modules/campus/SmartResolveModal';
+import { CampusKanbanBoard } from '../../components/modules/campus/CampusKanbanBoard';
+import { CampusBuilding } from '../../types';
 import {
   ShieldAlert,
   Bell,
@@ -16,15 +20,24 @@ import {
   Activity,
   Layers,
   FileText,
-  Users
+  Users,
+  MapPin,
 } from 'lucide-react';
 
 export const AdminDashboardPage: React.FC = () => {
-  const { notices, events, timetable, courses, user, users } = useApp();
+  const { notices, events, timetable, courses, user, users, campusTickets } = useApp();
   const navigate = useNavigate();
+
+  const [selectedBuilding, setSelectedBuilding] = useState<CampusBuilding>('Academic Blocks');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const pinnedNoticesCount = notices.filter(n => n.isPinned).length;
   const pendingEventsCount = events.filter(e => e.status === 'pending').length;
+
+  const handleSelectBuilding = (b: CampusBuilding) => {
+    setSelectedBuilding(b);
+    setIsModalOpen(true);
+  };
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -126,6 +139,14 @@ export const AdminDashboardPage: React.FC = () => {
             Local Storage Layer active
           </p>
         </div>
+      </div>
+
+      {/* The Admin "Nexus" Dashboard: Interactive Infrastructure Heatmap */}
+      <div className="space-y-6">
+        <CampusMap onSelectBuilding={handleSelectBuilding} isAdminView={true} />
+
+        {/* The Kanban Board: Directly below the Admin's map */}
+        <CampusKanbanBoard />
       </div>
 
       {/* Main Two-Column Administrative Split */}
@@ -297,6 +318,13 @@ export const AdminDashboardPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Smart Resolve Modal */}
+      <SmartResolveModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedBuilding={selectedBuilding}
+      />
     </div>
   );
 };

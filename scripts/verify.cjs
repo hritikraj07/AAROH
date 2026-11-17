@@ -1531,4 +1531,84 @@ assert(facultyDashboardContent.includes("user?.name || 'Dr. K. Ramanujam'"), 'Fa
 
 console.log('--- ALL ANIMATED LANDSCAPE THEME TOGGLE VERIFICATIONS PASSED ---');
 
+// =========================================================================================
+// 36. Aaroh Smart Campus Heatmap & AI Ticketing System
+// =========================================================================================
+console.log('--- VERIFYING AAROH SMART CAMPUS HEATMAP & AI TICKETING SYSTEM ---');
+
+// 1. Types & Data Structures
+const campusTypesPath = path.join(__dirname, '../src/types/index.ts');
+const campusTypesContent = fs.readFileSync(campusTypesPath, 'utf8');
+assert(campusTypesContent.includes('export type TicketCategory ='), 'types/index.ts exports TicketCategory');
+assert(campusTypesContent.includes("'Plumbing'") && campusTypesContent.includes("'IT'") && campusTypesContent.includes("'Electrical'") && campusTypesContent.includes("'General'"), 'TicketCategory defines Plumbing, IT, Electrical, and General');
+assert(campusTypesContent.includes('export type TicketPriority =') && campusTypesContent.includes("'Low'") && campusTypesContent.includes("'Medium'") && campusTypesContent.includes("'Critical'"), 'TicketPriority defines Low, Medium, and Critical');
+assert(campusTypesContent.includes('export type TicketStatus =') && campusTypesContent.includes("'Reported'") && campusTypesContent.includes("'In Progress'") && campusTypesContent.includes("'Resolved'"), 'TicketStatus defines Reported, In Progress, and Resolved');
+assert(campusTypesContent.includes('export type CampusBuilding =') && campusTypesContent.includes("'Academic Blocks'") && campusTypesContent.includes("'Hostels'") && campusTypesContent.includes("'Library'") && campusTypesContent.includes("'Canteen'"), 'CampusBuilding defines Academic Blocks, Hostels, Library, and Canteen');
+assert(campusTypesContent.includes('export interface CampusTicket'), 'types/index.ts exports CampusTicket interface');
+
+// 2. Storage Service & AppContext Integration
+const campusStoragePath = path.join(__dirname, '../src/services/storage.ts');
+const campusStorageContent = fs.readFileSync(campusStoragePath, 'utf8');
+assert(campusStorageContent.includes("CAMPUS_TICKETS: 'campusTickets'"), 'StorageService defines CAMPUS_TICKETS storage key as campusTickets');
+assert(campusStorageContent.includes('getCampusTickets()') && campusStorageContent.includes('createCampusTicket(') && campusStorageContent.includes('updateCampusTicketStatus('), 'StorageService implements getCampusTickets, createCampusTicket, and updateCampusTicketStatus');
+
+const campusAppContextPath = path.join(__dirname, '../src/context/AppContext.tsx');
+const campusAppContextContent = fs.readFileSync(campusAppContextPath, 'utf8');
+assert(campusAppContextContent.includes('campusTickets: CampusTicket[]'), 'AppContextType exposes campusTickets array');
+assert(campusAppContextContent.includes('createCampusTicket') && campusAppContextContent.includes('updateCampusTicketStatus'), 'AppContextType exposes ticket management actions');
+
+// 3. Timetable Synergy Engine & Campus Map Utils
+const campusMapUtilsPath = path.join(__dirname, '../src/utils/campusMapUtils.ts');
+assert(fs.existsSync(campusMapUtilsPath), 'campusMapUtils.ts exists in src/utils');
+const campusMapUtilsContent = fs.readFileSync(campusMapUtilsPath, 'utf8');
+assert(campusMapUtilsContent.includes('CAMPUS_BUILDINGS') && campusMapUtilsContent.includes('Academic Blocks') && campusMapUtilsContent.includes('Hostels') && campusMapUtilsContent.includes('Library') && campusMapUtilsContent.includes('Canteen'), 'campusMapUtils defines 4 primary campus buildings');
+assert(campusMapUtilsContent.includes('checkNextClassInBuilding'), 'campusMapUtils exports checkNextClassInBuilding timetable synergy engine');
+assert(campusMapUtilsContent.includes('getBuildingHealth'), 'campusMapUtils exports getBuildingHealth live health monitor');
+
+// 4. "Smart Resolve" AI Facility Engine & Hidden System Prompt
+const smartResolveAIPath = path.join(__dirname, '../src/utils/smartResolveAI.ts');
+assert(fs.existsSync(smartResolveAIPath), 'smartResolveAI.ts exists in src/utils');
+const smartResolveAIContent = fs.readFileSync(smartResolveAIPath, 'utf8');
+const exactFacilityPrompt = "Analyze this facility complaint. Return a JSON object with: 'category' (Plumbing, IT, Electrical, General), 'priority' (Low, Medium, Critical), and a 3-word 'summary'.";
+assert(smartResolveAIContent.includes(exactFacilityPrompt), 'smartResolveAI defines exact hidden facility complaint system prompt');
+assert(smartResolveAIContent.includes('analyzeFacilityComplaint'), 'smartResolveAI exports analyzeFacilityComplaint');
+
+// 5. Interactive Campus Map Component & Timetable Synergy Glow
+const campusMapCompPath = path.join(__dirname, '../src/components/modules/campus/CampusMap.tsx');
+assert(fs.existsSync(campusMapCompPath), 'CampusMap.tsx exists');
+const campusMapCompContent = fs.readFileSync(campusMapCompPath, 'utf8');
+assert(campusMapCompContent.includes('Academic Blocks') && campusMapCompContent.includes('Hostels') && campusMapCompContent.includes('Library') && campusMapCompContent.includes('Canteen'), 'CampusMap renders clickable Academic Blocks, Hostels, Library, and Canteen zones');
+assert(campusMapCompContent.includes('shadow-[0_0_15px_#0F766E]'), 'CampusMap implements Deep Teal physical shadow glow for upcoming classes within 30 minutes');
+assert(campusMapCompContent.includes('Next Class Here'), 'CampusMap renders "Next Class Here" synergy badge / tooltip');
+assert(campusMapCompContent.includes('animate-pulse border-red-500 bg-red-500/10'), 'CampusMap implements red pulsing indicator for unresolved critical facility issues');
+
+// 6. "Smart Resolve" Modal with Locked Location & 4-Layer Tactile Shadow
+const smartResolveModalPath = path.join(__dirname, '../src/components/modules/campus/SmartResolveModal.tsx');
+assert(fs.existsSync(smartResolveModalPath), 'SmartResolveModal.tsx exists');
+const smartResolveModalContent = fs.readFileSync(smartResolveModalPath, 'utf8');
+assert(smartResolveModalContent.includes('readOnly') || smartResolveModalContent.includes('disabled'), 'SmartResolveModal locks and auto-pre-fills location field from map click');
+assert(smartResolveModalContent.includes('<textarea'), 'SmartResolveModal provides textarea complaint input');
+assert(smartResolveModalContent.includes('Submit Ticket'), 'SmartResolveModal renders "Submit Ticket" action button');
+assert(smartResolveModalContent.includes(exactLightShadow) && smartResolveModalContent.includes(exactDarkShadow), 'Submit Ticket button applies custom 4-layer tactile button shadows');
+
+// 7. The Admin "Nexus" Dashboard: Live Heatmap & Kanban Board
+const campusKanbanPath = path.join(__dirname, '../src/components/modules/campus/CampusKanbanBoard.tsx');
+assert(fs.existsSync(campusKanbanPath), 'CampusKanbanBoard.tsx exists');
+const campusKanbanContent = fs.readFileSync(campusKanbanPath, 'utf8');
+assert(campusKanbanContent.includes('Reported') && campusKanbanContent.includes('In Progress') && campusKanbanContent.includes('Resolved'), 'CampusKanbanBoard renders Reported, In Progress, and Resolved columns');
+assert(campusKanbanContent.includes('dark:bg-[#18181B]') && campusKanbanContent.includes('dark:border-white/5'), 'CampusKanbanBoard implements signature dark mode empty state styles');
+
+const adminDashboardLatest = fs.readFileSync(path.join(__dirname, '../src/pages/admin/AdminDashboardPage.tsx'), 'utf8');
+assert(adminDashboardLatest.includes('CampusMap') && adminDashboardLatest.includes('isAdminView={true}'), 'AdminDashboardPage embeds CampusMap in live health monitor mode');
+assert(adminDashboardLatest.includes('CampusKanbanBoard'), 'AdminDashboardPage embeds CampusKanbanBoard directly below map');
+
+// 8. Student & Faculty Dashboard Integration
+const studentDashboardLatest = fs.readFileSync(path.join(__dirname, '../src/pages/DashboardPage.tsx'), 'utf8');
+assert(studentDashboardLatest.includes('CampusMap') && studentDashboardLatest.includes('SmartResolveModal'), 'Student DashboardPage embeds CampusMap and SmartResolveModal');
+
+const facultyDashboardLatest = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyDashboardPage.tsx'), 'utf8');
+assert(facultyDashboardLatest.includes('CampusMap') && facultyDashboardLatest.includes('SmartResolveModal'), 'FacultyDashboardPage embeds CampusMap and SmartResolveModal');
+
+console.log('--- ALL AAROH SMART CAMPUS HEATMAP & AI TICKETING SYSTEM VERIFICATIONS PASSED ---');
+
 module.exports = { assert };

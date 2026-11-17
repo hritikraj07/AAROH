@@ -17,6 +17,9 @@ import {
   AssessmentType,
   SkillTree,
   SkillTreeNode,
+  CampusTicket,
+  TicketStatus,
+  CampusBuilding,
 } from '../types';
 import {
   INITIAL_COURSES,
@@ -50,6 +53,7 @@ const STORAGE_KEYS = {
   NOTIFICATIONS: 'aaroh_notifications',
   GRADES: 'aaroh_grades',
   SKILL_TREES: 'skillTrees',
+  CAMPUS_TICKETS: 'campusTickets',
 };
 
 function getStored<T>(key: string, fallback: T): T {
@@ -100,6 +104,7 @@ export const StorageService = {
       setStored('lostAndFound', []);
       setStored('semesterGrades', []);
       setStored(STORAGE_KEYS.SKILL_TREES, []);
+      setStored(STORAGE_KEYS.CAMPUS_TICKETS, []);
 
       if (forceReset) {
         localStorage.removeItem(STORAGE_KEYS.SESSION_TOKEN);
@@ -1034,6 +1039,52 @@ export const StorageService = {
     const filtered = trees.filter(t => t.id !== id);
     if (filtered.length !== trees.length) {
       this.saveSkillTrees(filtered);
+      return true;
+    }
+    return false;
+  },
+
+  // Campus Infrastructure Tickets
+  getCampusTickets(): CampusTicket[] {
+    return getStored<CampusTicket[]>(STORAGE_KEYS.CAMPUS_TICKETS, []);
+  },
+
+  saveCampusTickets(tickets: CampusTicket[]): void {
+    setStored(STORAGE_KEYS.CAMPUS_TICKETS, tickets);
+  },
+
+  createCampusTicket(ticketData: Omit<CampusTicket, 'id' | 'createdAt' | 'status'>): CampusTicket {
+    const tickets = this.getCampusTickets();
+    const newTicket: CampusTicket = {
+      ...ticketData,
+      id: `ticket_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+      status: 'Reported',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    tickets.unshift(newTicket);
+    this.saveCampusTickets(tickets);
+    return newTicket;
+  },
+
+  updateCampusTicketStatus(id: string, status: TicketStatus): CampusTicket | null {
+    const tickets = this.getCampusTickets();
+    const idx = tickets.findIndex(t => t.id === id);
+    if (idx === -1) return null;
+    tickets[idx] = {
+      ...tickets[idx],
+      status,
+      updatedAt: new Date().toISOString(),
+    };
+    this.saveCampusTickets(tickets);
+    return tickets[idx];
+  },
+
+  deleteCampusTicket(id: string): boolean {
+    const tickets = this.getCampusTickets();
+    const filtered = tickets.filter(t => t.id !== id);
+    if (filtered.length !== tickets.length) {
+      this.saveCampusTickets(filtered);
       return true;
     }
     return false;

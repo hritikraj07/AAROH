@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { APP_CONFIG } from '../../config';
@@ -20,10 +20,15 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { EarlyWarningSystemCard } from '../../components/modules/faculty/EarlyWarningSystemCard';
+import { CampusMap } from '../../components/modules/campus/CampusMap';
+import { SmartResolveModal } from '../../components/modules/campus/SmartResolveModal';
+import { CampusBuilding } from '../../types';
 
 export const FacultyDashboardPage: React.FC = () => {
   const { user, users, courses, timetable, assignments, notices, attendance, showToast } = useApp();
   const navigate = useNavigate();
+  const [selectedBuilding, setSelectedBuilding] = useState<CampusBuilding>('Academic Blocks');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleTriggerIntervention = (studentName: string) => {
     showToast({
@@ -445,6 +450,21 @@ export const FacultyDashboardPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Interactive Campus Map (Faculty View) */}
+      <CampusMap
+        onSelectBuilding={b => {
+          setSelectedBuilding(b);
+          setIsModalOpen(true);
+        }}
+      />
+
+      {/* Smart Resolve Modal */}
+      <SmartResolveModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedBuilding={selectedBuilding}
+      />
     </div>
   );
 };

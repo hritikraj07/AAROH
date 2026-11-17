@@ -14,6 +14,7 @@ import { EventsPage } from './pages/EventsPage';
 import { LostFoundPage } from './pages/LostFoundPage';
 import { OpportunitiesPage } from './pages/OpportunitiesPage';
 import { StudentCodeWorkspacePage } from './pages/StudentCodeWorkspacePage';
+import { CampusMapPage } from './pages/CampusMapPage';
 
 // Faculty Portal Pages
 import { FacultyDashboardPage } from './pages/faculty/FacultyDashboardPage';
@@ -81,6 +82,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="events" element={<EventsPage />} />
         <Route path="lost-found" element={<LostFoundPage />} />
         <Route path="opportunities" element={<OpportunitiesPage />} />
+        <Route path="campus-map" element={<CampusMapPage />} />
       </Route>
 
       {/* 2. Faculty Portal (/faculty/*) */}
@@ -99,6 +101,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="gradebook" element={<FacultyGradebookPage />} />
         <Route path="assignments" element={<FacultyAssignmentsPage />} />
         <Route path="notices" element={<FacultyNoticesPage />} />
+        <Route path="campus-map" element={<CampusMapPage />} />
       </Route>
 
       {/* 3. Admin Portal (/admin/*) */}
@@ -121,6 +124,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="curriculum" element={<AdminCurriculumPage />} />
         <Route path="curriculum-builder" element={<Navigate to="/admin/curriculum" replace />} />
         <Route path="opportunities" element={<AdminOpportunitiesPage />} />
+        <Route path="campus-map" element={<CampusMapPage />} />
         <Route path="settings" element={<AdminSettingsPage />} />
       </Route>
 
@@ -136,6 +140,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="/events" element={<Navigate to="/student/events" replace />} />
       <Route path="/lost-found" element={<Navigate to="/student/lost-found" replace />} />
       <Route path="/opportunities" element={<Navigate to="/student/opportunities" replace />} />
+      <Route path="/campus-map" element={<Navigate to="/student/campus-map" replace />} />
 
       {/* Fallback Catch-all */}
       <Route path="*" element={<Navigate to="/" replace />} />
