@@ -1403,8 +1403,8 @@ const codeWorkspaceContent = fs.readFileSync(codeWorkspacePath, 'utf8');
 
 assert(codeWorkspaceContent.includes('visibilitychange') && codeWorkspaceContent.includes('document.addEventListener'), 'StudentCodeWorkspacePage attaches native Page Visibility API listener');
 assert(codeWorkspaceContent.includes('window.addEventListener') && (codeWorkspaceContent.includes("'blur'") || codeWorkspaceContent.includes('window.onblur')), 'StudentCodeWorkspacePage attaches window.onblur listener');
-assert(codeWorkspaceContent.includes('🚨 Focus Lost. Tab switching is recorded during live coding labs.'), 'StudentCodeWorkspacePage overlays exact Deep Teal and Red warning message');
-assert(codeWorkspaceContent.includes('cheatingStrikes') && codeWorkspaceContent.includes('localStorage.setItem'), 'StudentCodeWorkspacePage logs Cheating Strike counter to localStorage profile');
+assert(codeWorkspaceContent.includes('Focus Lost. Tab switching is recorded during live coding labs.'), 'StudentCodeWorkspacePage overlays exact Deep Teal and Red warning message');
+assert((codeWorkspaceContent.includes('proctorStrikes') || codeWorkspaceContent.includes('cheatingStrikes')) && codeWorkspaceContent.includes('localStorage.setItem'), 'StudentCodeWorkspacePage logs Cheating Strike counter to localStorage profile');
 assert(codeWorkspaceContent.includes(exactLightShadow) && codeWorkspaceContent.includes(exactDarkShadow), 'Proctoring acknowledge button implements 4-layer tactile button shadows');
 
 // 4. The Socratic AI Debugger (Anti-Spoonfeeding Engine)
@@ -1610,5 +1610,52 @@ const facultyDashboardLatest = fs.readFileSync(path.join(__dirname, '../src/page
 assert(facultyDashboardLatest.includes('CampusMap') && facultyDashboardLatest.includes('SmartResolveModal'), 'FacultyDashboardPage embeds CampusMap and SmartResolveModal');
 
 console.log('--- ALL AAROH SMART CAMPUS HEATMAP & AI TICKETING SYSTEM VERIFICATIONS PASSED ---');
+
+// ==============================================================
+// 37. Check "2-Strike Cybersecurity Proctoring Engine" & Keystroke DNA
+// ==============================================================
+console.log('--- VERIFYING 2-STRIKE PROCTORING ENGINE & KEYSTROKE DNA ---');
+const proctorStudentWorkspacePath = path.join(__dirname, '../src/pages/StudentCodeWorkspacePage.tsx');
+assert(fs.existsSync(proctorStudentWorkspacePath), 'StudentCodeWorkspacePage.tsx exists');
+const proctorStudentWorkspaceContent = fs.readFileSync(proctorStudentWorkspacePath, 'utf8');
+
+// 1. 2-Strike State Machine
+assert(proctorStudentWorkspaceContent.includes('proctorStrikes') && proctorStudentWorkspaceContent.includes('setProctorStrikes'), 'StudentCodeWorkspacePage initializes proctorStrikes counter');
+assert(proctorStudentWorkspaceContent.includes('isTimerPaused') && proctorStudentWorkspaceContent.includes('setIsTimerPaused'), 'StudentCodeWorkspacePage implements timer pause mechanism on warning');
+assert(proctorStudentWorkspaceContent.includes('bg-black/80') || proctorStudentWorkspaceContent.includes('backdrop-blur-md'), 'Warning modal implements glassmorphism bg-black/80 styling');
+assert(proctorStudentWorkspaceContent.includes('Acknowledge Warning & Resume Exam'), 'Strike 1 warning modal provides dismiss button that resumes exam timer');
+assert(proctorStudentWorkspaceContent.includes('SECURITY_BREACH'), 'Strike 2 lockdown auto-submits with status: SECURITY_BREACH');
+
+// 2. Zero-Trust Monitor (Violation Trigger A)
+assert(proctorStudentWorkspaceContent.includes("addEventListener('visibilitychange'") || proctorStudentWorkspaceContent.includes('addEventListener("visibilitychange"'), 'Workspace implements Page Visibility API event listener');
+const triggerAMessage = '🚨 Warning: Focus Lost. Tab switching is recorded during live coding labs. Further violations will lock the exam.';
+assert(proctorStudentWorkspaceContent.includes(triggerAMessage), 'Workspace defines exact Strike 1 Focus Lost message');
+
+// 3. Keystroke DNA Engine (Violation Trigger B)
+assert(proctorStudentWorkspaceContent.includes('onPaste={handlePaste}') || proctorStudentWorkspaceContent.includes('onPaste={'), 'Workspace intercepts onPaste event on textarea');
+assert(proctorStudentWorkspaceContent.includes('e.preventDefault()'), 'handlePaste calls e.preventDefault() to block clipboard pasting');
+assert(proctorStudentWorkspaceContent.includes('lengthDelta > 15') && proctorStudentWorkspaceContent.includes('timeDelta < 50'), 'Workspace implements typing speed anomaly (>15 chars in <50ms)');
+const triggerBMessage = '🚨 Warning: Biometric Anomaly Detected. Unnatural typing speed or clipboard pasting is strictly prohibited.';
+assert(proctorStudentWorkspaceContent.includes(triggerBMessage), 'Workspace defines exact Strike 1 Biometric Anomaly message');
+
+// 4. Faculty Dashboard Integration
+const facultyAsgPagePath = path.join(__dirname, '../src/pages/faculty/FacultyAssignmentsPage.tsx');
+assert(fs.existsSync(facultyAsgPagePath), 'FacultyAssignmentsPage.tsx exists');
+const facultyAsgPageContent = fs.readFileSync(facultyAsgPagePath, 'utf8');
+
+const securityFlagBadgeText = 'Security Flag: Biometric / Focus Anomaly';
+assert(facultyAsgPageContent.includes(securityFlagBadgeText), 'FacultyAssignmentsPage renders glowing "Security Flag: Biometric / Focus Anomaly" badge');
+assert(facultyAsgPageContent.includes('Review Incident'), 'FacultyAssignmentsPage renders "Review Incident" action button');
+assert(facultyAsgPageContent.includes('Cybersecurity Incident Review'), 'FacultyAssignmentsPage provides Incident Review modal with audit trail');
+
+// 5. Types and Storage Verification
+const proctorTypesContent = fs.readFileSync(path.join(__dirname, '../src/types/index.ts'), 'utf8');
+assert(proctorTypesContent.includes("'SECURITY_BREACH'"), 'AssignmentStatus includes SECURITY_BREACH');
+assert(proctorTypesContent.includes('SecurityIncident'), 'types/index.ts defines SecurityIncident interface');
+
+const proctorStorageContent = fs.readFileSync(path.join(__dirname, '../src/services/storage.ts'), 'utf8');
+assert(proctorStorageContent.includes('statusOverride?: AssignmentStatus'), 'StorageService.submitCodingAssignment accepts statusOverride');
+
+console.log('--- ALL 2-STRIKE PROCTORING ENGINE & KEYSTROKE DNA VERIFICATIONS PASSED ---');
 
 module.exports = { assert };

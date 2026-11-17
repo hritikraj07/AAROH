@@ -16,15 +16,24 @@ import {
   Square,
   ExternalLink,
   Trash2,
-  Sparkles
+  Sparkles,
+  ShieldAlert,
+  ShieldCheck,
+  AlertOctagon
 } from 'lucide-react';
 import { Assignment, TestCase } from '../../types';
+
+const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
+const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
+const exactLightHover = 'hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)]';
+const exactDarkHover = 'dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)]';
 
 export const FacultyAssignmentsPage: React.FC = () => {
   const { courses, assignments, createAssignment, updateAssignmentLabStatus } = useApp();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isCodingModalOpen, setIsCodingModalOpen] = useState(false);
   const [selectedCourseFilter, setSelectedCourseFilter] = useState<string>('all');
+  const [incidentReviewAsg, setIncidentReviewAsg] = useState<Assignment | null>(null);
 
   // Standard Assignment Form State
   const [courseId, setCourseId] = useState<string>(courses[0]?.id || '');
@@ -320,6 +329,117 @@ export const FacultyAssignmentsPage: React.FC = () => {
         )}
       </div>
 
+      {/* Submitted Coding Labs & Proctoring Audit Registry */}
+      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl overflow-hidden shadow-xs">
+        <div className="px-5 py-4 border-b border-slate-200 dark:border-[#27272A] flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-[#0F766E]" />
+            <h3 className="text-xs font-semibold text-slate-900 dark:text-slate-100 uppercase tracking-wider font-mono">
+              Submitted Coding Labs & Cybersecurity Proctoring Audit
+            </h3>
+          </div>
+          <span className="text-[11px] text-slate-400 font-mono">
+            Zero-Trust Continuous Keystroke DNA & Focus Monitoring
+          </span>
+        </div>
+
+        {codingAssignments.length === 0 ? (
+          <div className="p-8 text-center text-xs text-slate-500 font-sans">
+            No Automated Coding Lab submissions recorded yet.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead>
+                <tr className="bg-slate-50 dark:bg-[#27272A]/70 border-b border-slate-200 dark:border-[#27272A] text-slate-500 dark:text-slate-400 font-mono uppercase text-[10px]">
+                  <th className="py-3 px-4">Student & Security Status</th>
+                  <th className="py-3 px-4">Lab Title & Subject</th>
+                  <th className="py-3 px-4">Submission / Incident Time</th>
+                  <th className="py-3 px-4">Proctoring Status</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-[#27272A]">
+                {codingAssignments.map(asg => {
+                  const course = courses.find(c => c.id === asg.courseId);
+                  const isBreach = asg.status === 'SECURITY_BREACH';
+                  const studentDisplayName = asg.studentName || 'Aarav Sharma';
+
+                  return (
+                    <tr key={asg.id} className="hover:bg-slate-50/50 dark:hover:bg-[#27272A]/40 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-semibold text-slate-900 dark:text-slate-100">
+                            {studentDisplayName}
+                          </span>
+                          {isBreach && (
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-mono text-[11px] font-bold text-rose-500 dark:text-rose-400 bg-rose-500/10 border border-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.4)] animate-pulse">
+                              <ShieldAlert className="w-3 h-3 text-[#0F766E]" />
+                              <span>Security Flag: Biometric / Focus Anomaly</span>
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] text-slate-400 font-mono mt-0.5">
+                          {asg.studentEmail || 'aarav.sharma@aaroh.edu.in'}
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <div className="font-medium text-slate-800 dark:text-slate-200">
+                          {asg.title}
+                        </div>
+                        <div className="font-mono text-[10px] text-teal-800 dark:text-teal-400">
+                          {course?.code || 'CS301'} • {course?.name || 'Computer Science'}
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-4 font-mono text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                        {asg.submittedAt ? new Date(asg.submittedAt).toLocaleTimeString() : 'In Progress'}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        {isBreach ? (
+                          <span className="inline-flex items-center gap-1 font-mono text-[10px] font-bold text-rose-300 bg-rose-950 border border-rose-600 px-2 py-0.5 rounded">
+                            <AlertOctagon className="w-3 h-3 text-rose-400" />
+                            <span>SECURITY_BREACH (Strikes 2/2)</span>
+                          </span>
+                        ) : asg.status === 'submitted' ? (
+                          <span className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                            <span>Verified Clean</span>
+                          </span>
+                        ) : (
+                          <span className="font-mono text-[10px] text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
+                            Active / Unsubmitted
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 text-right whitespace-nowrap">
+                        {isBreach ? (
+                          <button
+                            type="button"
+                            onClick={() => setIncidentReviewAsg(asg)}
+                            className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
+                          >
+                            <ShieldAlert className="w-3.5 h-3.5 text-rose-300" />
+                            <span>Review Incident</span>
+                          </button>
+                        ) : (
+                          <Link
+                            to={`/student/assignments/code/${asg.id}`}
+                            className="inline-flex items-center gap-1 text-xs text-teal-700 dark:text-teal-400 hover:text-teal-900 font-semibold px-2 py-1 rounded hover:bg-teal-50 dark:hover:bg-teal-950/40"
+                          >
+                            <span>Inspect Lab</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </Link>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
       {/* Main Coursework Registry Table */}
       <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg overflow-hidden">
         <div className="px-5 py-4 border-b border-slate-200 dark:border-[#27272A] flex items-center justify-between">
@@ -378,7 +498,12 @@ export const FacultyAssignmentsPage: React.FC = () => {
                       {asg.maxMarks} pts
                     </td>
                     <td className="py-3.5 px-4">
-                      {asg.type === 'coding' ? (
+                      {asg.status === 'SECURITY_BREACH' ? (
+                        <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-400 border border-rose-300 dark:border-rose-800 inline-flex items-center gap-1">
+                          <AlertOctagon className="w-3 h-3 text-rose-500" />
+                          <span>SECURITY_BREACH</span>
+                        </span>
+                      ) : asg.type === 'coding' ? (
                         <span
                           className={`text-[10px] px-2 py-0.5 rounded font-mono font-semibold ${
                             asg.labStatus === 'active'
@@ -405,7 +530,18 @@ export const FacultyAssignmentsPage: React.FC = () => {
                       )}
                     </td>
                     <td className="py-3.5 px-4 text-right whitespace-nowrap">
-                      {asg.type === 'coding' ? (
+                      {asg.status === 'SECURITY_BREACH' ? (
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setIncidentReviewAsg(asg)}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
+                          >
+                            <ShieldAlert className="w-3.5 h-3.5 text-rose-300" />
+                            <span>Review Incident</span>
+                          </button>
+                        </div>
+                      ) : asg.type === 'coding' ? (
                         <Link
                           to={`/student/assignments/code/${asg.id}`}
                           className="text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 font-semibold px-2 py-1 rounded hover:bg-teal-50 dark:hover:bg-teal-950/40 transition-colors inline-flex items-center gap-1"
@@ -749,6 +885,89 @@ export const FacultyAssignmentsPage: React.FC = () => {
                 </Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Incident Review Modal */}
+      {incidentReviewAsg && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="max-w-2xl w-full bg-[#18181B] border-2 border-rose-600 rounded-2xl p-6 sm:p-7 space-y-5 shadow-2xl relative overflow-hidden font-sans">
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#0F766E] via-rose-500 to-[#0F766E]" />
+
+            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-rose-950 border border-rose-500/50 flex items-center justify-center text-rose-400">
+                  <ShieldAlert className="w-5 h-5 text-rose-500" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
+                    Cybersecurity Incident Review
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-mono">
+                    Zero-Trust 2-Strike Proctoring Engine Audit Trail
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIncidentReviewAsg(null)}
+                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Student & Violation Breakdown */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
+              <div className="p-3 bg-black/40 border border-white/10 rounded-xl space-y-1">
+                <div className="text-[10px] text-slate-400 uppercase">Student Candidate</div>
+                <div className="font-bold text-slate-100">{incidentReviewAsg.studentName || 'Aarav Sharma'}</div>
+                <div className="text-[11px] text-teal-400">{incidentReviewAsg.studentEmail || 'aarav.sharma@aaroh.edu.in'}</div>
+              </div>
+
+              <div className="p-3 bg-black/40 border border-white/10 rounded-xl space-y-1">
+                <div className="text-[10px] text-slate-400 uppercase">Breach Classification</div>
+                <div className="font-bold text-rose-400">Security Flag: Biometric / Focus Anomaly</div>
+                <div className="text-[11px] text-amber-300">Strikes: 2 / 2 (Exam Terminated)</div>
+              </div>
+            </div>
+
+            {/* Breach Reason & Trigger Log */}
+            <div className="p-3.5 bg-rose-950/40 border border-rose-900/60 rounded-xl space-y-1.5 font-mono text-xs text-slate-200">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="text-rose-400 font-bold uppercase">Incident Log & Violation Trigger</span>
+                <span className="text-slate-400">{incidentReviewAsg.submittedAt ? new Date(incidentReviewAsg.submittedAt).toLocaleTimeString() : 'Recent'}</span>
+              </div>
+              <p className="text-xs text-rose-200 leading-relaxed">
+                {incidentReviewAsg.securityIncident?.reason ||
+                  '🚨 Warning: Biometric Anomaly Detected. Unnatural typing speed or clipboard pasting is strictly prohibited.'}
+              </p>
+            </div>
+
+            {/* Captured Code Snapshot */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                <span>CAPTURED CODE SNAPSHOT AT LOCKDOWN:</span>
+                <span>Language: {incidentReviewAsg.language || 'python'}</span>
+              </div>
+              <div className="max-h-48 overflow-y-auto bg-black/70 border border-white/10 rounded-xl p-3 font-mono text-xs text-slate-300 leading-relaxed">
+                <pre className="whitespace-pre-wrap select-text">
+                  {incidentReviewAsg.studentCode || incidentReviewAsg.starterCode || '// No code captured prior to lockout'}
+                </pre>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="pt-2 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setIncidentReviewAsg(null)}
+                className={`px-4 py-2 text-xs font-bold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
+              >
+                <span>Acknowledge & Close Incident</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

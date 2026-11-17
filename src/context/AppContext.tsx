@@ -7,6 +7,8 @@ import {
   ClassSession,
   AttendanceRecord,
   Assignment,
+  AssignmentStatus,
+  SecurityIncident,
   Notice,
   CampusEvent,
   LostFoundItem,
@@ -111,7 +113,13 @@ interface AppContextType {
   recordBatchAttendance: (courseId: string, studentMarks: { studentId: string; isPresent: boolean }[]) => void;
   createAssignment: (asg: Omit<Assignment, 'id' | 'status'>) => Assignment;
   updateAssignmentLabStatus: (id: string, labStatus: 'locked' | 'active' | 'closed') => Assignment | null;
-  submitCodingAssignment: (id: string, studentCode: string, testResultsSummary?: string) => Assignment | null;
+  submitCodingAssignment: (
+    id: string,
+    studentCode: string,
+    testResultsSummary?: string,
+    statusOverride?: AssignmentStatus,
+    securityIncident?: SecurityIncident
+  ) => Assignment | null;
   createOpportunity: (opp: Omit<Opportunity, 'id' | 'isSaved'>) => Opportunity;
   deleteOpportunity: (id: string) => void;
   saveBatchGrades: (
@@ -486,14 +494,34 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return updated;
   };
 
-  const submitCodingAssignment = (id: string, studentCode: string, testResultsSummary?: string) => {
-    const updated = StorageService.submitCodingAssignment(id, studentCode, testResultsSummary);
+  const submitCodingAssignment = (
+    id: string,
+    studentCode: string,
+    testResultsSummary?: string,
+    statusOverride?: AssignmentStatus,
+    securityIncident?: SecurityIncident
+  ) => {
+    const updated = StorageService.submitCodingAssignment(
+      id,
+      studentCode,
+      testResultsSummary,
+      statusOverride,
+      securityIncident
+    );
     setAssignments(StorageService.getAssignments());
-    showToast({
-      type: 'success',
-      title: 'Code Submitted Successfully',
-      message: 'Your automated lab solution has been verified and recorded.',
-    });
+    if (statusOverride === 'SECURITY_BREACH') {
+      showToast({
+        type: 'error',
+        title: 'Security Lockdown: Exam Flagged',
+        message: 'Maximum proctoring strikes exceeded. Incident reported to faculty.',
+      });
+    } else {
+      showToast({
+        type: 'success',
+        title: 'Code Submitted Successfully',
+        message: 'Your automated lab solution has been verified and recorded.',
+      });
+    }
     return updated;
   };
 

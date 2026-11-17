@@ -6,6 +6,8 @@ import {
   ClassSession,
   AttendanceRecord,
   Assignment,
+  AssignmentStatus,
+  SecurityIncident,
   Notice,
   CampusEvent,
   LostFoundItem,
@@ -475,7 +477,7 @@ export const StorageService = {
     return list[idx];
   },
 
-  submitCodingAssignment(id: string, studentCode: string, testResultsSummary?: string): Assignment | null {
+  submitCodingAssignment(id: string, studentCode: string, testResultsSummary?: string, statusOverride?: AssignmentStatus, securityIncident?: SecurityIncident): Assignment | null {
     const list = this.getAssignments();
     const idx = list.findIndex(a => a.id === id);
     if (idx === -1) return null;
@@ -483,8 +485,9 @@ export const StorageService = {
       ...list[idx],
       studentCode,
       testResultsSummary,
-      status: 'submitted',
+      status: statusOverride || 'submitted',
       submittedAt: new Date().toISOString(),
+      securityIncident: securityIncident || list[idx].securityIncident,
     };
     setStored(STORAGE_KEYS.ASSIGNMENTS, list);
     if (typeof window !== 'undefined') window.dispatchEvent(new Event('storage'));

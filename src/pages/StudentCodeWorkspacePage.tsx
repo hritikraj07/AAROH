@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { StorageService } from '../services/storage';
@@ -18,9 +18,17 @@ import {
   FileCode2,
   Layers,
   ShieldAlert,
-  ShieldCheck
+  ShieldCheck,
+  Clock,
+  Pause,
+  AlertOctagon
 } from 'lucide-react';
-import { Assignment } from '../types';
+import { Assignment, SecurityIncident } from '../types';
+
+const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
+const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
+const exactLightHover = 'hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)]';
+const exactDarkHover = 'dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)]';
 
 export const StudentCodeWorkspacePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -38,123 +46,226 @@ export const StudentCodeWorkspacePage: React.FC = () => {
   const [isCompiling, setIsCompiling] = useState(false);
   const [executionResult, setExecutionResult] = useState<CodeExecutionResult | null>(null);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(() => {
-    return assignment?.status === 'submitted';
+    return assignment?.status === 'submitted' || assignment?.status === 'SECURITY_BREACH';
   });
 
-  // ==========================================
-  // Zero-Trust Exam Proctoring State & Storage
-  // ==========================================
-  const [cheatingStrikes, setCheatingStrikes] = useState<number>(() => {
+  // ==============================================================
+  // 1. 2-Strike State Machine & Proctoring Storage
+  // ==============================================================
+  const [proctorStrikes, setProctorStrikes] = useState<number>(() => {
     try {
-      const stored = localStorage.getItem('cheatingStrikes');
+      const stored = localStorage.getItem(`proctorStrikes_${id}`) || localStorage.getItem('proctorStrikes');
       if (stored) return parseInt(stored, 10) || 0;
-      const userRaw = localStorage.getItem('aaroh_auth_user');
-      if (userRaw) {
-        const u = JSON.parse(userRaw);
-        return u.cheatingStrikes || 0;
-      }
-    } catch {
-      // fallback
-    }
+      if (assignment?.securityIncident?.strikes) return assignment.securityIncident.strikes;
+      if (assignment?.status === 'SECURITY_BREACH') return 2;
+    } catch {}
     return 0;
   });
 
-  const [isFocusLost, setIsFocusLost] = useState<boolean>(false);
+  // Exam Countdown Timer (45 minutes = 2700s default)
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(() => {
+    try {
+      const stored = localStorage.getItem(`proctor_timer_${id}`);
+      if (stored) return parseInt(stored, 10) || 2700;
+    } catch {}
+    return 2700;
+  });
+  const [isTimerPaused, setIsTimerPaused] = useState<boolean>(false);
+
+  // Warning Modal (Strike 1) & Lockdown Modal (Strike 2)
+  const [warningModalOpen, setWarningModalOpen] = useState<boolean>(false);
+  const [warningMessage, setWarningMessage] = useState<string>('');
+  const [warningTrigger, setWarningTrigger] = useState<'FOCUS_LOST' | 'BIOMETRIC_ANOMALY'>('FOCUS_LOST');
   const [lastViolationTime, setLastViolationTime] = useState<string>('');
+  const [isLockdownModalOpen, setIsLockdownModalOpen] = useState<boolean>(() => {
+    return assignment?.status === 'SECURITY_BREACH' || proctorStrikes >= 2;
+  });
+
+  // Keystroke DNA tracking refs
+  const lastKeyTimeRef = useRef<number>(Date.now());
+  const lastLengthRef = useRef<number>(studentCode.length);
 
   const course = courses.find(c => c.id === assignment?.courseId);
   const labStatus = assignment?.labStatus || 'locked';
 
-  // Strict Browser API Hack: Page Visibility API + window.onblur
+  // Timer Tick Down Loop
   useEffect(() => {
-    // Only proctor during active, unsubmitted live coding labs
-    if (labStatus !== 'active' || isSubmitted) return;
+    if (labStatus !== 'active' || isSubmitted || proctorStrikes >= 2 || isTimerPaused) return;
 
-    const recordFocusLoss = () => {
-      const now = new Date().toLocaleTimeString();
-      setLastViolationTime(now);
-      setIsFocusLost(true);
-
-      // Increment Cheating Strike in student's localStorage profile
-      setCheatingStrikes(prev => {
-        const next = prev + 1;
-        try {
-          localStorage.setItem('cheatingStrikes', String(next));
-
-          // Persist to aaroh_auth_user
-          const authRaw = localStorage.getItem('aaroh_auth_user');
-          if (authRaw) {
-            const authObj = JSON.parse(authRaw);
-            authObj.cheatingStrikes = next;
-            localStorage.setItem('aaroh_auth_user', JSON.stringify(authObj));
-          }
-
-          // Persist to aaroh_student
-          const stdRaw = localStorage.getItem('aaroh_student');
-          if (stdRaw) {
-            const stdObj = JSON.parse(stdRaw);
-            stdObj.cheatingStrikes = next;
-            localStorage.setItem('aaroh_student', JSON.stringify(stdObj));
-          }
-
-          // Persist to aaroh_users
-          const usersRaw = localStorage.getItem('aaroh_users');
-          if (usersRaw) {
-            const usersList = JSON.parse(usersRaw);
-            if (Array.isArray(usersList)) {
-              const updatedUsers = usersList.map((u: any) =>
-                u.id === user?.id || u.email === user?.email
-                  ? { ...u, cheatingStrikes: next }
-                  : u
-              );
-              localStorage.setItem('aaroh_users', JSON.stringify(updatedUsers));
-            }
-          }
-          window.dispatchEvent(new Event('storage'));
-        } catch (e) {
-          console.error('Failed to log cheating strike:', e);
+    const timer = setInterval(() => {
+      setRemainingSeconds(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleSubmitAssignment();
+          return 0;
         }
+        const next = prev - 1;
+        try {
+          localStorage.setItem(`proctor_timer_${id}`, String(next));
+        } catch {}
         return next;
       });
-    };
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [labStatus, isSubmitted, proctorStrikes, isTimerPaused, id]);
+
+  const formatTimer = (totalSec: number) => {
+    const mins = Math.floor(totalSec / 60);
+    const secs = totalSec % 60;
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  };
+
+  // ==============================================================
+  // Violation Handler (Strike 1 Warning vs Strike 2 Lockdown)
+  // ==============================================================
+  const handleViolation = (trigger: 'FOCUS_LOST' | 'BIOMETRIC_ANOMALY', customMsg?: string) => {
+    if (labStatus !== 'active' || isSubmitted || proctorStrikes >= 2) return;
+
+    const nextStrikes = proctorStrikes + 1;
+    setProctorStrikes(nextStrikes);
+    const nowTime = new Date().toLocaleTimeString();
+    setLastViolationTime(nowTime);
+
+    try {
+      localStorage.setItem(`proctorStrikes_${id}`, String(nextStrikes));
+      localStorage.setItem('proctorStrikes', String(nextStrikes));
+      // Sync backward-compatible fields
+      localStorage.setItem('cheatingStrikes', String(nextStrikes));
+    } catch (e) {
+      console.error('Failed to persist proctor strike:', e);
+    }
+
+    // Focus loss notice: 🚨 Focus Lost. Tab switching is recorded during live coding labs.
+    const defaultMsg = trigger === 'FOCUS_LOST'
+      ? "🚨 Warning: Focus Lost. Tab switching is recorded during live coding labs. Further violations will lock the exam."
+      : "🚨 Warning: Biometric Anomaly Detected. Unnatural typing speed or clipboard pasting is strictly prohibited.";
+
+    const msg = customMsg || defaultMsg;
+
+    if (nextStrikes === 1) {
+      // Strike 1 Logic (Warning): Pause timer and display prominent, dismissible warning modal
+      setIsTimerPaused(true);
+      setWarningMessage(msg);
+      setWarningTrigger(trigger);
+      setWarningModalOpen(true);
+    } else if (nextStrikes >= 2) {
+      // Strike 2 Logic (Lockdown): Immediately disable textarea, auto-submit, status: SECURITY_BREACH
+      setIsTimerPaused(true);
+      setWarningModalOpen(false);
+      setIsLockdownModalOpen(true);
+
+      const breachIncident: SecurityIncident = {
+        strikes: 2,
+        reason: msg,
+        trigger,
+        timestamp: new Date().toISOString(),
+        capturedCode: studentCode,
+        details: `Exam locked due to repeated proctoring anomaly (${trigger}). Automatically submitted to faculty directory.`,
+      };
+
+      if (assignment) {
+        submitCodingAssignment(
+          assignment.id,
+          studentCode,
+          'SECURITY_BREACH: 2-Strike Proctoring Violation',
+          'SECURITY_BREACH',
+          breachIncident
+        );
+      }
+
+      setIsSubmitted(true);
+      setAssignment(prev => prev ? {
+        ...prev,
+        status: 'SECURITY_BREACH',
+        studentCode,
+        securityIncident: breachIncident,
+      } : null);
+    }
+  };
+
+  // ==============================================================
+  // 2. Zero-Trust Tab Monitor (Violation Trigger A)
+  // ==============================================================
+  useEffect(() => {
+    if (labStatus !== 'active' || isSubmitted || proctorStrikes >= 2) return;
 
     const handleVisibilityChange = () => {
       if (document.hidden) {
-        recordFocusLoss();
+        handleViolation(
+          'FOCUS_LOST',
+          '🚨 Warning: Focus Lost. Tab switching is recorded during live coding labs. Further violations will lock the exam.'
+        );
       }
     };
 
     const handleBlur = () => {
-      recordFocusLoss();
+      handleViolation(
+        'FOCUS_LOST',
+        '🚨 Warning: Focus Lost. Tab switching is recorded during live coding labs. Further violations will lock the exam.'
+      );
     };
 
-    // 1. Page Visibility API listener
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    // 2. Window blur listener and window.onblur assignment
     window.addEventListener('blur', handleBlur);
-    window.onblur = handleBlur;
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('blur', handleBlur);
-      window.onblur = null;
     };
-  }, [labStatus, isSubmitted, user?.id, user?.email]);
+  }, [labStatus, isSubmitted, proctorStrikes, studentCode, assignment?.id]);
 
-  // Feature 4: Real-Time Offline Sync via window 'storage' listener
-  // Detects if the instructor changes labStatus in another tab/window without page refresh
+  // ==============================================================
+  // 3. Keystroke DNA Engine (Violation Trigger B)
+  // ==============================================================
+  // Prevent Copy-Pasting on textarea
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    e.preventDefault();
+    handleViolation(
+      'BIOMETRIC_ANOMALY',
+      '🚨 Warning: Biometric Anomaly Detected. Unnatural typing speed or clipboard pasting is strictly prohibited.'
+    );
+  };
+
+  // Speed Anomaly Detection (>15 characters in <50 milliseconds)
+  const handleCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (proctorStrikes >= 2 || labStatus === 'closed') return;
+
+    const newText = e.target.value;
+    const now = Date.now();
+    const timeDelta = now - lastKeyTimeRef.current;
+    const lengthDelta = newText.length - lastLengthRef.current;
+
+    lastKeyTimeRef.current = now;
+    lastLengthRef.current = newText.length;
+
+    if (lengthDelta > 15 && timeDelta < 50) {
+      handleViolation(
+        'BIOMETRIC_ANOMALY',
+        '🚨 Warning: Biometric Anomaly Detected. Unnatural typing speed or clipboard pasting is strictly prohibited.'
+      );
+      return;
+    }
+
+    setStudentCode(newText);
+  };
+
+  // Offline Sync via storage listener
   useEffect(() => {
     const handleStorageChange = () => {
       const allAssignments = StorageService.getAssignments();
       const updated = allAssignments.find(a => a.id === id);
       if (updated) {
         setAssignment(prev => {
-          // If newly loaded or starter code changed
           if (!prev?.studentCode && updated.starterCode && !studentCode) {
             setStudentCode(updated.starterCode);
           }
-          if (updated.status === 'submitted') {
+          if (updated.status === 'submitted' || updated.status === 'SECURITY_BREACH') {
             setIsSubmitted(true);
+          }
+          if (updated.status === 'SECURITY_BREACH') {
+            setIsLockdownModalOpen(true);
+            setProctorStrikes(2);
           }
           return updated;
         });
@@ -165,23 +276,26 @@ export const StudentCodeWorkspacePage: React.FC = () => {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [id, studentCode]);
 
-  // Sync initial student code when assignment is first loaded
   useEffect(() => {
     if (assignment) {
       if (!studentCode) {
         setStudentCode(assignment.studentCode || assignment.starterCode || '');
       }
-      if (assignment.status === 'submitted') {
+      if (assignment.status === 'submitted' || assignment.status === 'SECURITY_BREACH') {
         setIsSubmitted(true);
+      }
+      if (assignment.status === 'SECURITY_BREACH') {
+        setIsLockdownModalOpen(true);
+        setProctorStrikes(2);
       }
     }
   }, [assignment?.id]);
 
   if (!assignment) {
     return (
-      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-12 text-center max-w-lg mx-auto my-8 space-y-3">
+      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-12 text-center max-w-lg mx-auto my-8 space-y-3 font-sans">
         <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto" />
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Lab Assignment Not Found</h3>
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Automated Coding Lab Not Found</h3>
         <p className="text-xs text-slate-500 dark:text-slate-400">
           The requested coding problem could not be located in the local storage registry.
         </p>
@@ -190,15 +304,14 @@ export const StudentCodeWorkspacePage: React.FC = () => {
           className="inline-flex items-center gap-1.5 text-xs text-teal-700 dark:text-teal-400 font-semibold hover:underline pt-2"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Assignments</span>
+          <span>Back to Assignments Hub</span>
         </Link>
       </div>
     );
   }
 
-  // Feature 5: Run Code Action (1.5s simulated compilation + mock evaluation)
   const handleRunCode = () => {
-    if (isCompiling) return;
+    if (isCompiling || proctorStrikes >= 2) return;
     setIsCompiling(true);
 
     setTimeout(() => {
@@ -212,9 +325,8 @@ export const StudentCodeWorkspacePage: React.FC = () => {
     }, 1500);
   };
 
-  // Submit Assignment Action
   const handleSubmitAssignment = () => {
-    if (labStatus === 'closed') return;
+    if (labStatus === 'closed' || proctorStrikes >= 2) return;
 
     submitCodingAssignment(
       assignment.id,
@@ -225,6 +337,7 @@ export const StudentCodeWorkspacePage: React.FC = () => {
   };
 
   const handleResetStarterCode = () => {
+    if (proctorStrikes >= 2) return;
     if (assignment.starterCode) {
       setStudentCode(assignment.starterCode);
       setExecutionResult(null);
@@ -237,58 +350,110 @@ export const StudentCodeWorkspacePage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 relative">
-      {/* Zero-Trust Exam Proctoring Overlay Banner / Flash */}
-      {isFocusLost && (
-        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="max-w-lg w-full bg-[#18181B] border-2 border-rose-500 rounded-2xl p-6 sm:p-8 text-center space-y-5 shadow-2xl relative overflow-hidden animate-pulse">
-            {/* Top red & deep teal accent band */}
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-teal-600 via-rose-500 to-teal-700" />
+    <div className="space-y-6 relative font-sans">
+      {/* ============================================================== */}
+      {/* Strike 1 Warning Modal (Deep Teal & Red text, bg-black/80)    */}
+      {/* ============================================================== */}
+      {warningModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="max-w-lg w-full bg-[#18181B] border border-rose-500/80 rounded-2xl p-6 sm:p-8 text-center space-y-5 shadow-2xl relative overflow-hidden">
+            {/* Top Red & Deep Teal Accent Band */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#0F766E] via-rose-500 to-[#0F766E]" />
 
-            <div className="w-16 h-16 rounded-full bg-rose-950/80 border border-rose-500/50 flex items-center justify-center mx-auto text-rose-500">
-              <ShieldAlert className="w-8 h-8 text-rose-500" />
+            <div className="w-14 h-14 rounded-full bg-rose-500/10 border border-rose-500/40 flex items-center justify-center mx-auto text-rose-400">
+              <ShieldAlert className="w-7 h-7 text-rose-500" />
             </div>
 
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-950/80 border border-teal-700 text-teal-300 text-xs font-mono font-bold">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Zero-Trust Proctoring Lockdown</span>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-950/80 border border-[#0F766E] text-teal-300 text-xs font-mono font-bold">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#0F766E]" />
+                <span>Cybersecurity Proctoring: Strike 1 of 2</span>
               </div>
-              <h2 className="text-xl font-black text-rose-400 font-mono tracking-tight">
-                🚨 Focus Lost. Tab switching is recorded during live coding labs.
+              <h2 className="text-base sm:text-lg font-bold text-rose-400 font-mono tracking-tight leading-snug">
+                {warningMessage}
               </h2>
               <p className="text-xs text-slate-300 leading-relaxed max-w-md mx-auto">
-                The exam proctoring engine detected a window defocus or tab switch via the Page Visibility API. This violation has been logged to your profile.
+                The exam timer has been <span className="text-amber-400 font-semibold">paused</span>. Any further window blur, tab switch, clipboard paste, or biometric typing anomaly will trigger immediate lockdown and report as a <span className="text-rose-400 font-bold font-mono">SECURITY_BREACH</span>.
               </p>
             </div>
 
-            <div className="p-3.5 bg-rose-950/50 border border-rose-900/60 rounded-xl flex items-center justify-around font-mono text-xs">
+            <div className="p-3 bg-black/50 border border-white/10 rounded-xl flex items-center justify-around font-mono text-xs">
               <div>
-                <span className="text-slate-400 block text-[10px] uppercase">Cheating Strikes</span>
-                <span className="text-lg font-bold text-rose-400">#{cheatingStrikes}</span>
+                <span className="text-slate-400 block text-[10px] uppercase">Strikes</span>
+                <span className="text-base font-bold text-amber-400">1 / 2</span>
               </div>
-              <div className="border-l border-rose-900/60 pl-4">
-                <span className="text-slate-400 block text-[10px] uppercase">Logged At</span>
+              <div className="border-l border-white/10 pl-4">
+                <span className="text-slate-400 block text-[10px] uppercase">Violation Time</span>
                 <span className="text-xs font-semibold text-slate-200">{lastViolationTime || 'Live'}</span>
               </div>
-              <div className="border-l border-rose-900/60 pl-4">
-                <span className="text-slate-400 block text-[10px] uppercase">Status</span>
-                <span className="text-xs font-bold text-amber-400">Flagged</span>
+              <div className="border-l border-white/10 pl-4">
+                <span className="text-slate-400 block text-[10px] uppercase">Timer Status</span>
+                <span className="text-xs font-bold text-amber-400">Paused</span>
               </div>
             </div>
 
             <button
               type="button"
-              onClick={() => setIsFocusLost(false)}
-              className="w-full px-5 py-2.5 text-xs font-bold text-white bg-teal-700 hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)] flex items-center justify-center gap-2 cursor-pointer"
+              onClick={() => {
+                setWarningModalOpen(false);
+                setIsTimerPaused(false);
+              }}
+              className={`w-full py-2.5 px-4 text-xs font-bold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
             >
-              <span>Acknowledge & Return to Lab</span>
+              <span>Acknowledge Warning & Resume Exam</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* Top Breadcrumb & Status Bar */}
+      {/* ============================================================== */}
+      {/* Strike 2 Lockdown Modal (Lockdown & Auto-Submit as SECURITY_BREACH) */}
+      {/* ============================================================== */}
+      {isLockdownModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="max-w-lg w-full bg-[#18181B] border-2 border-rose-600 rounded-2xl p-6 sm:p-8 text-center space-y-5 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-rose-600 via-[#0F766E] to-rose-600" />
+
+            <div className="w-16 h-16 rounded-full bg-rose-950/80 border border-rose-500 flex items-center justify-center mx-auto text-rose-500 animate-pulse">
+              <AlertOctagon className="w-8 h-8 text-rose-500" />
+            </div>
+
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-950/80 border border-rose-600 text-rose-300 text-xs font-mono font-bold">
+                <span>🚨 Zero-Trust Lockdown: Strike 2 of 2</span>
+              </div>
+              <h2 className="text-lg sm:text-xl font-black text-rose-400 font-mono tracking-tight">
+                Automated Coding Lab Locked
+              </h2>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Maximum proctoring strikes exceeded. Your coding session has been terminated and auto-submitted to the faculty registry flagged with status:
+              </p>
+              <div className="inline-block font-mono text-xs font-bold text-rose-300 bg-rose-950 border border-rose-600 px-3 py-1 rounded-md">
+                status: "SECURITY_BREACH"
+              </div>
+            </div>
+
+            <div className="p-3 bg-black/60 border border-rose-900/60 rounded-xl text-xs font-mono text-slate-300 text-left space-y-1">
+              <div><span className="text-slate-500">Security Incident:</span> Biometric / Focus Anomaly</div>
+              <div><span className="text-slate-500">Strikes Recorded:</span> 2 / 2 (Lockout Limit Reached)</div>
+              <div><span className="text-slate-500">Captured Code Size:</span> {studentCode.length} characters</div>
+              <div><span className="text-slate-500">Breach Timestamp:</span> {lastViolationTime || new Date().toLocaleTimeString()}</div>
+            </div>
+
+            <div className="pt-2">
+              <Link
+                to="/student/academics?tab=assignments"
+                className={`inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 text-xs font-bold text-white bg-[#0F766E] hover:bg-[#0D6861] rounded-xl transition-all duration-200 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Return to Assignments Hub</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Top Header & Navigation Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-[#27272A]">
         <div className="flex items-center gap-3">
           <Link
@@ -307,20 +472,43 @@ export const StudentCodeWorkspacePage: React.FC = () => {
           </h1>
         </div>
 
+        {/* Status Indicators: Timer & Proctoring Strikes */}
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Zero-Trust Proctoring Indicator */}
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 font-mono text-[11px] font-semibold">
-            <ShieldCheck className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
-            <span>Zero-Trust Proctoring: Active</span>
-            {cheatingStrikes > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[10px] font-bold">
-                {cheatingStrikes} Strike{cheatingStrikes === 1 ? '' : 's'}
-              </span>
-            )}
+          {/* Exam Countdown Timer */}
+          <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded border font-mono text-xs font-semibold ${
+            isTimerPaused
+              ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-300 animate-pulse'
+              : remainingSeconds < 300
+              ? 'bg-rose-50 dark:bg-rose-950/60 border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-300'
+              : 'bg-teal-50 dark:bg-teal-950/60 border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300'
+          }`}>
+            <Clock className="w-3.5 h-3.5 text-[#0F766E]" />
+            <span>{isTimerPaused ? 'TIMER PAUSED' : `REMAINING: ${formatTimer(remainingSeconds)}`}</span>
+          </div>
+
+          {/* 2-Strike Proctoring Engine Badge */}
+          <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded border font-mono text-[11px] font-semibold ${
+            proctorStrikes >= 2
+              ? 'bg-rose-50 dark:bg-rose-950/60 border-rose-400 dark:border-rose-700 text-rose-700 dark:text-rose-300'
+              : proctorStrikes === 1
+              ? 'bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-300'
+              : 'bg-teal-50 dark:bg-teal-950/60 border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300'
+          }`}>
+            <ShieldCheck className="w-3.5 h-3.5 text-[#0F766E]" />
+            <span>2-Strike Proctoring:</span>
+            <span className={`px-1.5 py-0.2 rounded font-bold ${
+              proctorStrikes >= 2
+                ? 'bg-rose-600 text-white'
+                : proctorStrikes === 1
+                ? 'bg-amber-500 text-white'
+                : 'bg-[#0F766E] text-white'
+            }`}>
+              {proctorStrikes} / 2 Strikes
+            </span>
           </div>
 
           <span className="text-xs font-mono uppercase text-slate-500 dark:text-slate-400 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] px-2 py-0.5 rounded">
-            Language: {assignment.language || 'python'}
+            {assignment.language || 'python'}
           </span>
           <span className="text-xs font-mono text-slate-500 dark:text-slate-400 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] px-2 py-0.5 rounded">
             Max: {assignment.maxMarks} Pts
@@ -330,13 +518,13 @@ export const StudentCodeWorkspacePage: React.FC = () => {
 
       {/* State 1: LOCKED VIEW */}
       {labStatus === 'locked' && (
-        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-12 text-center max-w-xl mx-auto space-y-4 my-8 animate-in fade-in duration-200">
+        <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-12 text-center max-w-xl mx-auto space-y-4 my-8 animate-in fade-in duration-200">
           <div className="w-14 h-14 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-500 dark:text-slate-400 mx-auto">
             <Lock className="w-7 h-7 text-slate-700 dark:text-slate-300" />
           </div>
           <div className="space-y-1.5">
             <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 tracking-tight">
-              Live Lab Session Locked
+              Automated Coding Lab Locked
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-md mx-auto">
               Lab Session is not active. Waiting for the instructor to open the lab...
@@ -347,7 +535,7 @@ export const StudentCodeWorkspacePage: React.FC = () => {
           </div>
           <div className="flex items-center justify-center gap-2 text-[11px] text-teal-700 dark:text-teal-400 font-mono pt-2">
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            <span>Real-time listener active — will unlock automatically when started</span>
+            <span>Zero-trust listener active — will unlock automatically when started</span>
           </div>
         </div>
       )}
@@ -356,7 +544,7 @@ export const StudentCodeWorkspacePage: React.FC = () => {
       {labStatus !== 'locked' && (
         <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
           {/* Lab Status Notice Strip */}
-          <div className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#18181B] text-xs">
+          <div className="flex items-center justify-between p-3 rounded-xl border border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#18181B] text-xs">
             <div className="flex items-center gap-2">
               {labStatus === 'active' ? (
                 <>
@@ -366,7 +554,7 @@ export const StudentCodeWorkspacePage: React.FC = () => {
                   </span>
                   <span className="text-slate-400 dark:text-slate-500">•</span>
                   <span className="text-slate-500 dark:text-slate-400">
-                    Real-time automated evaluation enabled
+                    Real-time Zero-Trust Proctoring & Keystroke DNA continuous authentication active
                   </span>
                 </>
               ) : (
@@ -376,18 +564,23 @@ export const StudentCodeWorkspacePage: React.FC = () => {
               )}
             </div>
 
-            {isSubmitted && (
-              <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded">
+            {assignment.status === 'SECURITY_BREACH' ? (
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 px-2.5 py-0.5 rounded font-mono">
+                <AlertOctagon className="w-3.5 h-3.5 text-rose-600" />
+                <span>SECURITY_BREACH (Locked)</span>
+              </span>
+            ) : isSubmitted ? (
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded font-mono">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>Assignment Submitted</span>
               </span>
-            )}
+            ) : null}
           </div>
 
           {/* Split-Screen Workspace */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             {/* Left Pane: Problem Description & Read-Only Test Cases */}
-            <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-6 space-y-6">
+            <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-6 space-y-6">
               <div>
                 <span className="text-[10px] font-semibold tracking-wider text-slate-400 dark:text-slate-500 uppercase font-mono">
                   PROBLEM SPECIFICATION
@@ -414,7 +607,7 @@ export const StudentCodeWorkspacePage: React.FC = () => {
                   {(assignment.testCases || []).map((tc, idx) => (
                     <div
                       key={tc.id}
-                      className="p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md font-mono text-xs space-y-1.5"
+                      className="p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl font-mono text-xs space-y-1.5"
                     >
                       <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-semibold">
                         <span>Test Case #{idx + 1}</span>
@@ -434,7 +627,7 @@ export const StudentCodeWorkspacePage: React.FC = () => {
             </div>
 
             {/* Right Pane: Code Editor & Terminal Output */}
-            <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-6 space-y-4">
+            <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-6 space-y-4">
               {/* Editor Header Bar */}
               <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A]">
                 <div className="flex items-center gap-2">
@@ -444,10 +637,10 @@ export const StudentCodeWorkspacePage: React.FC = () => {
                   </span>
                 </div>
 
-                {labStatus === 'active' && (
+                {labStatus === 'active' && proctorStrikes < 2 && (
                   <button
                     onClick={handleResetStarterCode}
-                    className="inline-flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-800 active:scale-95 transition-transform"
+                    className="inline-flex items-center gap-1 text-[11px] text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 active:scale-95 transition-transform"
                     title="Reset to starter code"
                   >
                     <RotateCcw className="w-3 h-3" />
@@ -456,15 +649,31 @@ export const StudentCodeWorkspacePage: React.FC = () => {
                 )}
               </div>
 
-              {/* Code Editor <textarea> */}
-              <div>
+              {/* Code Editor <textarea> with Keystroke DNA Anomaly and onPaste Interception */}
+              <div className="relative">
+                {proctorStrikes >= 2 && (
+                  <div className="absolute inset-0 z-20 bg-rose-950/40 backdrop-blur-[2px] rounded-xl flex items-center justify-center p-4 border border-rose-500/50">
+                    <div className="text-center space-y-1">
+                      <Lock className="w-6 h-6 text-rose-400 mx-auto" />
+                      <p className="font-mono text-xs font-bold text-rose-300 uppercase tracking-wider">
+                        Editor Disabled (Strike 2/2 Lockdown)
+                      </p>
+                      <p className="text-[11px] text-slate-300 font-mono">
+                        Submission locked as SECURITY_BREACH.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 <textarea
-                  readOnly={labStatus === 'closed'}
+                  readOnly={labStatus === 'closed' || proctorStrikes >= 2}
+                  disabled={labStatus === 'closed' || proctorStrikes >= 2}
                   value={studentCode}
-                  onChange={e => setStudentCode(e.target.value)}
+                  onChange={handleCodeChange}
+                  onPaste={handlePaste}
                   placeholder="Type your code solution here..."
-                  className={`w-full h-80 font-mono bg-slate-900 text-slate-100 p-4 rounded-md text-xs leading-relaxed focus:outline-none focus:ring-1 focus:ring-teal-500 border border-slate-800 resize-y select-text ${
-                    labStatus === 'closed' ? 'opacity-80 cursor-not-allowed' : ''
+                  className={`w-full h-80 font-mono bg-slate-900 text-slate-100 p-4 rounded-md text-xs leading-relaxed focus:outline-none focus:ring-1 focus:ring-[#0F766E] border border-slate-800 resize-y select-text ${
+                    labStatus === 'closed' || proctorStrikes >= 2 ? 'opacity-60 cursor-not-allowed' : ''
                   }`}
                   spellCheck={false}
                 />
@@ -475,28 +684,28 @@ export const StudentCodeWorkspacePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleRunCode}
-                  disabled={isCompiling}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-md active:scale-95 transition-all duration-200 select-none disabled:opacity-50 shadow-xs cursor-pointer"
+                  disabled={isCompiling || proctorStrikes >= 2}
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 rounded-xl active:scale-95 transition-all duration-200 select-none disabled:opacity-50 cursor-pointer ${exactLightShadow} ${exactDarkShadow}`}
                 >
                   {isCompiling ? (
                     <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-700" />
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0F766E]" />
                       <span>Compiling...</span>
                     </>
                   ) : (
                     <>
-                      <Play className="w-3.5 h-3.5 text-teal-700 fill-teal-700" />
+                      <Play className="w-3.5 h-3.5 text-[#0F766E] fill-[#0F766E]" />
                       <span>Run Code</span>
                     </>
                   )}
                 </button>
 
-                {labStatus === 'active' && (
+                {labStatus === 'active' && proctorStrikes < 2 && (
                   <button
                     type="button"
                     onClick={handleSubmitAssignment}
-                    disabled={isCompiling}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-teal-700 hover:bg-[#0D6861] active:bg-[#115E59] border border-transparent rounded-md active:scale-95 transition-all duration-200 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)] hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)] dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)] dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)] select-none disabled:opacity-50 cursor-pointer"
+                    disabled={isCompiling || proctorStrikes >= 2}
+                    className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] border border-transparent rounded-xl active:scale-95 transition-all duration-200 select-none disabled:opacity-50 cursor-pointer ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
                   >
                     <Send className="w-3.5 h-3.5" />
                     <span>{isSubmitted ? 'Resubmit Assignment' : 'Submit Assignment'}</span>
@@ -506,17 +715,17 @@ export const StudentCodeWorkspacePage: React.FC = () => {
 
               {/* Terminal Execution Output Box */}
               {isCompiling && (
-                <div className="p-4 rounded-md bg-slate-950 border border-slate-800 font-mono text-xs text-slate-300 flex items-center gap-2">
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-slate-300 flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin text-teal-400" />
                   <span>Compiling runtime container & executing test assertions...</span>
                 </div>
               )}
 
               {executionResult && !isCompiling && (
-                <div className="rounded-md bg-slate-950 border border-slate-800 p-4 font-mono text-xs text-slate-200 space-y-3 animate-in fade-in duration-200">
+                <div className="rounded-xl bg-slate-950 border border-slate-800 p-4 font-mono text-xs text-slate-200 space-y-3 animate-in fade-in duration-200">
                   <div className="flex items-center justify-between border-b border-slate-800 pb-2 text-[11px] text-slate-400">
                     <div className="flex items-center gap-1.5">
-                      <Terminal className="w-3.5 h-3.5 text-teal-400" />
+                      <Terminal className="w-3.5 h-3.5 text-[#0F766E]" />
                       <span>EXECUTION CONSOLE</span>
                     </div>
                     <span className={executionResult.allPassed ? 'text-emerald-400' : 'text-rose-400'}>
@@ -524,12 +733,10 @@ export const StudentCodeWorkspacePage: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Summary Bar: "✅ Test 1 Passed | ❌ Test 2 Failed" */}
                   <div className="p-2.5 rounded bg-slate-900 border border-slate-800 text-xs font-semibold">
                     <span>{executionResult.summary}</span>
                   </div>
 
-                  {/* Detailed Log Output */}
                   <div className="space-y-1 text-[11px] text-slate-400">
                     {executionResult.logs.map((log, idx) => (
                       <div key={idx} className="leading-relaxed">

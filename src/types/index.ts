@@ -96,9 +96,18 @@ export interface GradeRecord {
   updatedAt?: string;
 }
 
-export type AssignmentStatus = 'pending' | 'submitted' | 'overdue' | 'graded' | 'failed';
+export type AssignmentStatus = 'pending' | 'submitted' | 'overdue' | 'graded' | 'failed' | 'SECURITY_BREACH';
 export type AssignmentType = 'standard' | 'coding';
 export type LabStatus = 'locked' | 'active' | 'closed';
+
+export interface SecurityIncident {
+  strikes: number;
+  reason: string;
+  trigger: 'FOCUS_LOST' | 'BIOMETRIC_ANOMALY';
+  timestamp: string;
+  capturedCode?: string;
+  details?: string;
+}
 
 export interface TestCase {
   id: string;
@@ -118,6 +127,8 @@ export interface Assignment {
   submissionNote?: string;
   studentId?: string;
   studentEmail?: string;
+  studentName?: string;
+  securityIncident?: SecurityIncident;
 
   // Live Lab / Coding Assignment additions
   type?: 'standard' | 'coding';
