@@ -9,7 +9,10 @@
 
 @layer base {
   :root {
-    --color-primary: 15 118 110;
+    --color-primary: 53 91 130; /* #355B82 */
+    --color-accent: 141 169 196; /* #8DA9C4 */
+    --color-bg-nordic: 238 244 237; /* #EEF4ED */
+    --color-text-dark: 11 37 69; /* #0B2545 */
     --font-base: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
   }
 
@@ -21,18 +24,18 @@
   }
 
   body {
-    background-color: #FAFAFA;
-    color: #0F172A;
+    background-color: #EEF4ED;
+    color: #0B2545;
     transition: background-color 500ms ease-in-out, color 500ms ease-in-out, border-color 500ms ease-in-out;
   }
 
   html.dark body {
-    background-color: #0E0E11;
-    color: #F8FAFC;
+    background-color: #0E0E11; /* Nordic midnight base overlay */
+    color: #EEF4ED;
     transition: background-color 500ms ease-in-out, color 500ms ease-in-out, border-color 500ms ease-in-out;
   }
 
-  /* Strict global form input standards */
+  /* Strict global form input standards - Nordic palette */
   input[type="text"],
   input[type="email"],
   input[type="password"],
@@ -42,10 +45,23 @@
   select,
   textarea {
     background-color: #FFFFFF;
-    border-color: #E2E8F0;
+    border-color: #D8E2DC;
     border-width: 1px;
     border-style: solid;
     transition: all 150ms ease-in-out;
+  }
+
+  html.dark input[type="text"],
+  html.dark input[type="email"],
+  html.dark input[type="password"],
+  html.dark input[type="number"],
+  html.dark input[type="date"],
+  html.dark input[type="url"],
+  html.dark select,
+  html.dark textarea {
+    background-color: #141D2B;
+    border-color: #223145;
+    color: #EEF4ED;
   }
 
   input[type="text"]:focus,
@@ -57,8 +73,8 @@
   select:focus,
   textarea:focus {
     outline: none;
-    border-color: #0F766E;
-    box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.2);
+    border-color: #8DA9C4;
+    box-shadow: 0 0 0 2px rgba(141, 169, 196, 0.35);
   }
 }
 
@@ -110,10 +126,10 @@
 
 /* Dark mode scrollbars */
 html.dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #223145;
 }
 html.dark ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #355B82;
 }
 
 /* Subtle scrollbars for dense views */
@@ -125,11 +141,11 @@ html.dark ::-webkit-scrollbar-thumb:hover {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #C7D9C9;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #8DA9C4;
 }
 
 /* Custom 4-layer tactile button depth */

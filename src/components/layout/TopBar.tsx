@@ -95,7 +95,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-[#FBFBFA] dark:bg-[#18181B] border-b border-slate-200 dark:border-[#27272A] h-16 px-4 sm:px-6 flex items-center justify-between gap-4 transition-colors duration-200">
+    <header className="sticky top-0 z-30 bg-[#EEF4ED] dark:bg-[#18181B] border-b border-[#D8E2DC] dark:border-[#27272A] h-16 px-4 sm:px-6 flex items-center justify-between gap-4 transition-colors duration-200">
       {/* Left: Mobile Menu & Breadcrumb */}
       <div className="flex items-center gap-3 shrink-0">
         <button

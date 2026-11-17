@@ -131,7 +131,7 @@ export const LoginPage: React.FC = () => {
   return (
     <div
       onMouseMove={handleMouseMove}
-      className="min-h-screen w-full h-screen overflow-hidden flex items-center justify-center sm:justify-end px-4 sm:px-10 lg:px-24 relative bg-[#FBFBFA] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
+      className="min-h-screen w-full h-screen overflow-hidden flex items-center justify-center sm:justify-end px-4 sm:px-10 lg:px-24 relative bg-[#EEF4ED] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
     >
       {/* 1. Global Campus Background: Converted from JPG to SVG format */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

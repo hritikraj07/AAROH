@@ -94,7 +94,7 @@ export const FacultyDashboardPage: React.FC = () => {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Hero Banner with Decorative Elements */}
-      <div className="relative overflow-hidden bg-[#0F766E] text-white rounded-3xl p-6 sm:p-10 shadow-sm transition-all duration-300 select-none">
+      <div className="relative overflow-hidden bg-[#0F766E] bg-gradient-to-r from-[#134074] via-[#244970] to-[#355B82] border border-[#8DA9C4]/30 shadow-lg text-white rounded-3xl p-6 sm:p-10 transition-all duration-300 select-none">
         <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full border-[20px] border-white/10 pointer-events-none" />
         <div className="absolute right-28 -top-16 w-52 h-52 rounded-full border-[14px] border-white/10 pointer-events-none" />
         <div className="absolute top-6 right-16 text-white/20 pointer-events-none select-none">
