@@ -1457,7 +1457,7 @@ assert(!glassLoginContent.includes('256-bit TLS'), '256-bit TLS shield footer te
 
 // 5. Institutional Banner & Show/Hide Password Controls
 assert(glassLoginContent.includes('krmu_banner.svg'), 'LoginPage renders enhanced K.R. Mangalam University SVG banner in yellow-box top-left position');
-assert(glassLoginContent.includes('right-6'), 'LoginPage positions ThemeToggle in top-right viewport per red-line guide');
+assert(!glassLoginContent.includes('<ThemeToggle'), 'LoginPage does not render ThemeToggle per user instruction');
 assert(glassLoginContent.includes('Eye') && glassLoginContent.includes('EyeOff'), 'LoginPage includes interactive show/hide password toggle');
 assert(fs.existsSync(path.join(__dirname, '../public/krmu_banner.svg')), 'krmu_banner.svg exists in public directory');
 
@@ -1517,7 +1517,7 @@ const latestTopBar = fs.readFileSync(path.join(__dirname, '../src/components/lay
 assert(latestTopBar.includes('<ThemeToggle'), 'TopBar renders ThemeToggle component');
 
 const latestLoginPage = fs.readFileSync(path.join(__dirname, '../src/pages/LoginPage.tsx'), 'utf8');
-assert(latestLoginPage.includes('<ThemeToggle'), 'LoginPage renders ThemeToggle component');
+assert(!latestLoginPage.includes('<ThemeToggle'), 'LoginPage does not render ThemeToggle per user instruction');
 
 const latestSidebar = fs.readFileSync(path.join(__dirname, '../src/components/layout/Sidebar.tsx'), 'utf8');
 assert(!latestSidebar.includes('<ThemeToggle'), 'Sidebar does not render ThemeToggle to prevent clutter');
