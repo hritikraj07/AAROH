@@ -153,19 +153,19 @@ export const LoginPage: React.FC = () => {
         />
       </div>
 
-      {/* 2. Institutional Header Banner: No background, increased width */}
-      <div className="absolute top-6 left-6 sm:top-8 sm:left-8 z-30 flex items-center">
+      {/* 2. Institutional Header Banner: High quality enhanced SVG, no container background, aligned to white outline */}
+      <div className="absolute top-5 left-4 sm:top-6 sm:left-6 md:top-7 md:left-8 z-30 flex items-center">
         <img
           src="/krmu_banner.svg"
           alt="K.R. Mangalam University - The Complete World of Education - NAAC Grade A"
-          className="w-64 sm:w-80 md:w-96 lg:w-[420px] max-w-full h-auto object-contain block drop-shadow-md select-none transition-transform duration-200 hover:scale-[1.01]"
+          className="w-[280px] sm:w-[340px] md:w-[390px] lg:w-[430px] max-w-full h-auto object-contain block drop-shadow-md select-none transition-transform duration-200 hover:scale-[1.01]"
         />
       </div>
 
-      {/* 3. The Glassmorphism Login Card: Decreased width & aligned to white outline */}
-      <div className="relative z-10 w-full max-w-sm sm:w-[400px] p-6 sm:p-7 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-3xl border border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out space-y-4">
+      {/* 3. The Glassmorphism Login Card: Precisely aligned to white outline (Y: ~11.6% to ~88.4%, X: ~69.5% to ~95.1%) */}
+      <div className="relative z-10 w-full max-w-sm sm:w-[400px] lg:w-[420px] h-[77vh] min-h-[520px] max-h-[670px] p-6 sm:p-7 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-3xl border border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-between">
         {/* Header: Logo, Aaroh, Subtitle, and Sign In heading */}
-        <div className="flex flex-col items-center justify-center text-center space-y-1">
+        <div className="flex flex-col items-center justify-center text-center space-y-1 pt-1">
           <div className="flex items-center justify-center">
             <Logo size="md" />
           </div>
@@ -186,7 +186,7 @@ export const LoginPage: React.FC = () => {
         )}
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-3.5">
+        <form onSubmit={handleSubmit} className="space-y-3.5 my-auto">
           {/* 1. ROLE Dropdown */}
           <div>
             <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
@@ -264,7 +264,7 @@ export const LoginPage: React.FC = () => {
         </form>
 
         {/* Demo Quick Access Section */}
-        <div className="space-y-2.5 pt-1">
+        <div className="space-y-2.5 pt-1 pb-1">
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-slate-200 dark:border-slate-800" />
