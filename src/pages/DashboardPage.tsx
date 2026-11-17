@@ -900,7 +900,7 @@ export const DashboardPage: React.FC = () => {
         onClose={() => setIsReportModalOpen(false)}
       />
 
-      {/* Gamified RPG Skill Tree Modal */}
+      {/* Curriculum Tracker & Mastery Modal */}
       <SkillTreeModal
         courseId={activeFocusSession?.courseId || 'all_cs'}
         courseCode={activeCourse?.code || activeFocusSession?.courseCode || 'CS301'}

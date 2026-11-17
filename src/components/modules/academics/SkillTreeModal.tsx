@@ -143,7 +143,7 @@ export const SkillTreeModal: React.FC<SkillTreeModalProps> = ({
                   B.Tech Skill Tree & Mastery Map
                 </h2>
                 <Badge variant="teal" size="sm">
-                  RPG Tier Progression
+                  Curriculum Prerequisite Progression
                 </Badge>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -196,7 +196,7 @@ export const SkillTreeModal: React.FC<SkillTreeModalProps> = ({
           </span>
         </div>
 
-        {/* 2D Visual RPG Node Map Body */}
+        {/* 2D Visual Curriculum Node Map Body */}
         <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-slate-50/40 dark:bg-[#0E0E11]/40">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             {tiers.map(({ level, nodes: tierNodes }) => (

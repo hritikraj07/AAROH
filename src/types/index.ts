@@ -282,7 +282,27 @@ export interface GlobalSearchResult {
   url: string;
 }
 
-// B.Tech Skill Tree & Gamified RPG Curriculum
+// B.Tech Curriculum Tracker & Hierarchical Prerequisite System
+export type SpecializationOption = 'B.Tech CSE (Core)' | 'B.Tech CSE (AI/ML)' | 'B.Tech CSE (AI/DS)';
+
+export interface SyllabusNode {
+  id: string;
+  title: string;
+  unitNumber: number;
+  description: string;
+  prerequisites: string[]; // e.g. [] or ["aiml_py_1"]
+  topics?: string[];
+  learningOutcomes?: string[];
+}
+
+export interface UnlockedModuleRecord {
+  studentId: string;
+  specializationId: string;
+  subjectId: string;
+  nodeIds: string[];
+  updatedAt: string;
+}
+
 export interface SkillTreeNode {
   id: string;
   courseId: string;

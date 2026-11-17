@@ -24,6 +24,7 @@ import {
   CampusBuilding,
   CodingLab,
   LabSubmission,
+  UnlockedModuleRecord,
 } from '../types';
 import { StorageService } from '../services/storage';
 
@@ -53,6 +54,7 @@ interface AppContextType {
   campusTickets: CampusTicket[];
   globalLabs: CodingLab[];
   labSubmissions: LabSubmission[];
+  unlockedModules: UnlockedModuleRecord[];
   isAuthenticated: boolean;
 
   // Counts
@@ -152,6 +154,10 @@ interface AppContextType {
   createLabSubmission: (submissionData: Omit<LabSubmission, 'id'> & { timestamp?: string }) => LabSubmission;
   refreshGlobalLabs: () => void;
   refreshLabSubmissions: () => void;
+
+  // Curriculum Tracker Actions
+  markNodeCompleted: (studentId: string, specializationId: string, subjectId: string, nodeId: string) => void;
+  resetSubjectProgress: (studentId: string, specializationId: string, subjectId: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -173,6 +179,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [campusTickets, setCampusTickets] = useState<CampusTicket[]>(() => StorageService.getCampusTickets());
   const [globalLabs, setGlobalLabs] = useState<CodingLab[]>(() => StorageService.getGlobalLabs());
   const [labSubmissions, setLabSubmissions] = useState<LabSubmission[]>(() => StorageService.getLabSubmissions());
+  const [unlockedModules, setUnlockedModules] = useState<UnlockedModuleRecord[]>(() => StorageService.getUnlockedModules());
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => StorageService.isAuthenticated());
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -196,6 +203,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCampusTickets(StorageService.getCampusTickets());
     setGlobalLabs(StorageService.getGlobalLabs());
     setLabSubmissions(StorageService.getLabSubmissions());
+    setUnlockedModules(StorageService.getUnlockedModules());
     setIsAuthenticated(StorageService.isAuthenticated());
   }, []);
 
@@ -714,6 +722,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setLabSubmissions(StorageService.getLabSubmissions());
   }, []);
 
+  const markNodeCompleted = useCallback((studentId: string, specializationId: string, subjectId: string, nodeId: string) => {
+    StorageService.markNodeCompleted(studentId, specializationId, subjectId, nodeId);
+    setUnlockedModules(StorageService.getUnlockedModules());
+  }, []);
+
+  const resetSubjectProgress = useCallback((studentId: string, specializationId: string, subjectId: string) => {
+    StorageService.resetSubjectProgress(studentId, specializationId, subjectId);
+    setUnlockedModules(StorageService.getUnlockedModules());
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
@@ -746,6 +764,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         createLabSubmission,
         refreshGlobalLabs,
         refreshLabSubmissions,
+        unlockedModules,
+        markNodeCompleted,
+        resetSubjectProgress,
         isAuthenticated,
         unreadNoticeCount,
         pendingAssignmentsCount,

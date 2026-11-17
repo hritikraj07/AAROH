@@ -24,6 +24,7 @@ import {
   CampusBuilding,
   CodingLab,
   LabSubmission,
+  UnlockedModuleRecord,
 } from '../types';
 import {
   INITIAL_COURSES,
@@ -60,6 +61,7 @@ const STORAGE_KEYS = {
   CAMPUS_TICKETS: 'campusTickets',
   GLOBAL_LABS: 'globalLabs',
   LAB_SUBMISSIONS: 'labSubmissions',
+  UNLOCKED_MODULES: 'unlockedModules',
 };
 
 function getStored<T>(key: string, fallback: T): T {
@@ -1162,6 +1164,65 @@ export const StorageService = {
   getLabSubmissionsByLab(labId: string): LabSubmission[] {
     const submissions = this.getLabSubmissions();
     return submissions.filter(s => s.labId === labId);
+  },
+
+  // --- Curriculum Tracker Unlocked Modules (Isolated by student, specialization & subject) ---
+  getUnlockedModules(): UnlockedModuleRecord[] {
+    return getStored<UnlockedModuleRecord[]>(STORAGE_KEYS.UNLOCKED_MODULES, []);
+  },
+
+  saveUnlockedModules(records: UnlockedModuleRecord[]): void {
+    setStored(STORAGE_KEYS.UNLOCKED_MODULES, records);
+  },
+
+  getUnlockedNodeIds(studentId: string, specializationId: string, subjectId: string): string[] {
+    const all = this.getUnlockedModules();
+    const found = all.find(
+      r => r.studentId === studentId && r.specializationId === specializationId && r.subjectId === subjectId
+    );
+    return found ? found.nodeIds : [];
+  },
+
+  markNodeCompleted(studentId: string, specializationId: string, subjectId: string, nodeId: string): string[] {
+    const all = this.getUnlockedModules();
+    const existingIndex = all.findIndex(
+      r => r.studentId === studentId && r.specializationId === specializationId && r.subjectId === subjectId
+    );
+
+    let updatedNodeIds: string[] = [];
+
+    if (existingIndex >= 0) {
+      const existing = all[existingIndex];
+      if (!existing.nodeIds.includes(nodeId)) {
+        updatedNodeIds = [...existing.nodeIds, nodeId];
+      } else {
+        updatedNodeIds = existing.nodeIds;
+      }
+      all[existingIndex] = {
+        ...existing,
+        nodeIds: updatedNodeIds,
+        updatedAt: new Date().toISOString()
+      };
+    } else {
+      updatedNodeIds = [nodeId];
+      all.push({
+        studentId,
+        specializationId,
+        subjectId,
+        nodeIds: updatedNodeIds,
+        updatedAt: new Date().toISOString()
+      });
+    }
+
+    this.saveUnlockedModules(all);
+    return updatedNodeIds;
+  },
+
+  resetSubjectProgress(studentId: string, specializationId: string, subjectId: string): void {
+    const all = this.getUnlockedModules().filter(
+      r => !(r.studentId === studentId && r.specializationId === specializationId && r.subjectId === subjectId)
+    );
+    this.saveUnlockedModules(all);
   },
 
   // Full reset

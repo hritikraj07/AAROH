@@ -1731,4 +1731,79 @@ assert(studentModalLabContent.includes('Final Code Submitted') && studentModalLa
 
 console.log('--- ALL AUTOMATED CODING LABS LIFECYCLE ENGINE VERIFICATIONS PASSED ---');
 
+// ==========================================
+console.log('--- VERIFYING DYNAMIC INTERACTIVE CURRICULUM TRACKER ---');
+
+// 1. Check zero usage of prohibited words ("gamified", "game", "RPG") in src
+function scanDirForProhibitedWords(dir) {
+  const files = fs.readdirSync(dir);
+  for (const file of files) {
+    const fullPath = path.join(dir, file);
+    const stat = fs.statSync(fullPath);
+    if (stat.isDirectory()) {
+      scanDirForProhibitedWords(fullPath);
+    } else if (/\.(ts|tsx)$/.test(file)) {
+      const content = fs.readFileSync(fullPath, 'utf8');
+      const matches = content.match(/\b(gamified|game|rpg)\b/i);
+      if (matches) {
+        assert(false, `Prohibited word "${matches[0]}" found in ${fullPath}`);
+      }
+    }
+  }
+}
+scanDirForProhibitedWords(path.join(__dirname, '../src'));
+assert(true, 'Strictly zero occurrences of "gamified", "game", or "RPG" in src/');
+
+// 2. Syllabus Mapping Engine Data Verification
+const curriculumDataFile = path.join(__dirname, '../src/utils/curriculumData.ts');
+assert(fs.existsSync(curriculumDataFile), 'curriculumData.ts exists');
+const curriculumDataText = fs.readFileSync(curriculumDataFile, 'utf8');
+
+assert(curriculumDataText.includes("'B.Tech CSE (Core)'"), 'Specialization includes B.Tech CSE (Core)');
+assert(curriculumDataText.includes("'B.Tech CSE (AI/ML)'"), 'Specialization includes B.Tech CSE (AI/ML)');
+assert(curriculumDataText.includes("'B.Tech CSE (AI/DS)'"), 'Specialization includes B.Tech CSE (AI/DS)');
+
+assert(curriculumDataText.includes('Programming for Problem Solving Using Python'), 'AI/ML includes Programming for Problem Solving Using Python');
+assert(curriculumDataText.includes('Computer Science Fundamentals & Career Pathways'), 'AI/ML includes Computer Science Fundamentals & Career Pathways');
+assert(curriculumDataText.includes('Web Development - I'), 'AI/ML includes Web Development - I');
+
+assert(curriculumDataText.includes('Unit 1: Python Fundamentals & Problem-Solving Basics'), 'Python includes Unit 1: Python Fundamentals & Problem-Solving Basics');
+assert(curriculumDataText.includes('Unit 2: Functions, Data Structures & Coding Patterns'), 'Python includes Unit 2: Functions, Data Structures & Coding Patterns');
+assert(curriculumDataText.includes('Unit 3: Object-Oriented Programming & Real-World Programming'), 'Python includes Unit 3: Object-Oriented Programming & Real-World Programming');
+assert(curriculumDataText.includes('Unit 4: Data Processing & Practical Applications'), 'Python includes Unit 4: Data Processing & Practical Applications');
+assert(curriculumDataText.includes("prerequisites: ['node1']"), 'Python Unit 2 has prerequisite node1');
+assert(curriculumDataText.includes("prerequisites: ['node2']"), 'Python Unit 3 has prerequisite node2');
+assert(curriculumDataText.includes("prerequisites: ['node3']"), 'Python Unit 4 has prerequisite node3');
+
+assert(curriculumDataText.includes('C Programming Basics'), 'Core includes C Programming Basics');
+assert(curriculumDataText.includes('Engineering Physics'), 'Core includes Engineering Physics');
+assert(curriculumDataText.includes('Data Science Fundamentals'), 'AI/DS includes Data Science Fundamentals');
+assert(curriculumDataText.includes('Intro to R'), 'AI/DS includes Intro to R');
+
+// 3. CurriculumTracker Component Visuals & Selectors
+const curriculumTrackerFile = path.join(__dirname, '../src/components/modules/academics/CurriculumTracker.tsx');
+assert(fs.existsSync(curriculumTrackerFile), 'CurriculumTracker.tsx exists');
+const curriculumTrackerText = fs.readFileSync(curriculumTrackerFile, 'utf8');
+
+assert(curriculumTrackerText.includes('selectedSpecialization'), 'CurriculumTracker manages selectedSpecialization');
+assert(curriculumTrackerText.includes('selectedSubjectName'), 'CurriculumTracker manages selectedSubjectName');
+assert(curriculumTrackerText.includes('handleSpecializationChange'), 'CurriculumTracker has dynamic handler for specialization change');
+assert(curriculumTrackerText.includes('opacity-50') && curriculumTrackerText.includes('border-slate-200'), 'CurriculumTracker implements dimmed locked state styles');
+assert(curriculumTrackerText.includes('animate-pulse') && curriculumTrackerText.includes('border-teal-500'), 'CurriculumTracker implements pulsing active state styles');
+assert(curriculumTrackerText.includes('bg-[#0F766E]') && curriculumTrackerText.includes('border-[#0F766E]'), 'CurriculumTracker implements glowing Deep Teal completed state styles');
+assert(curriculumTrackerText.includes('Mark as Completed'), 'CurriculumTracker provides "Mark as Completed" button');
+assert(curriculumTrackerText.includes(exactLightShadow) && curriculumTrackerText.includes(exactDarkShadow), 'Mark as Completed button implements 4-layer tactile button shadows');
+
+// 4. Progress Persistence in localStorage
+assert(storageContent.includes("UNLOCKED_MODULES: 'unlockedModules'"), 'StorageService defines UNLOCKED_MODULES key as unlockedModules');
+assert(storageContent.includes('getUnlockedModules(): UnlockedModuleRecord[]'), 'StorageService implements getUnlockedModules');
+assert(storageContent.includes('markNodeCompleted('), 'StorageService implements markNodeCompleted');
+assert(storageContent.includes('specializationId') && storageContent.includes('subjectId'), 'StorageService isolates progress by studentId, specializationId, and subjectId');
+
+// 5. Mount Verification
+const skillTreeTabUpdatedText = fs.readFileSync(path.join(__dirname, '../src/components/modules/academics/SkillTreeTab.tsx'), 'utf8');
+assert(skillTreeTabUpdatedText.includes('CurriculumTracker'), 'SkillTreeTab mounts CurriculumTracker');
+
+console.log('--- ALL DYNAMIC CURRICULUM TRACKER VERIFICATIONS PASSED ---');
+
 module.exports = { assert };

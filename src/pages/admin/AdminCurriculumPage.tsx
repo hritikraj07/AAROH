@@ -163,7 +163,7 @@ export const AdminCurriculumPage: React.FC = () => {
               <span>Curriculum & B.Tech Skill Tree Builder</span>
             </h1>
             <Badge variant="teal" size="sm">
-              Gamified RPG Engine
+              Curriculum Prerequisite Engine
             </Badge>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
