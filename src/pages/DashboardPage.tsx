@@ -310,17 +310,17 @@ export const DashboardPage: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate('/student/assignments')}
-              className={`rounded-full bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] text-white text-xs px-3.5 py-1.5 font-medium transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} flex items-center gap-1.5 cursor-pointer`}
+              className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-3.5 py-1.5 font-medium transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} flex items-center gap-1.5 cursor-pointer border border-[#8DA9C4]/30`}
             >
-              <BookOpen className="w-3.5 h-3.5" />
+              <BookOpen className="w-3.5 h-3.5 text-[#8DA9C4]" />
               <span>Automated Coding Labs</span>
             </button>
           </div>
         </div>
       )}
 
-      {/* 2. Hero Banner: Deep Teal bg-[#0F766E], rounded-3xl */}
-      <div className="relative overflow-hidden bg-[#0F766E] bg-gradient-to-r from-[#134074] via-[#244970] to-[#355B82] border border-[#8DA9C4]/30 shadow-lg text-white rounded-3xl p-6 sm:p-10 transition-all duration-300 select-none">
+      {/* 2. Hero Banner: Refined Theme matching #134074 & #8DA9C4 */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#134074] via-[#244970] to-[#355B82] border border-[#8DA9C4]/30 shadow-lg text-white rounded-3xl p-6 sm:p-10 transition-all duration-300 select-none">
         <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full border-[20px] border-white/10 pointer-events-none" />
         <div className="absolute right-28 -top-16 w-52 h-52 rounded-full border-[14px] border-white/10 pointer-events-none" />
         <div className="absolute top-6 right-16 text-white/20 pointer-events-none select-none">

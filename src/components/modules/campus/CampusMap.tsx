@@ -125,11 +125,11 @@ export const CampusMap: React.FC<CampusMapProps> = ({
           xmlns="http://www.w3.org/2000/svg"
         >
           {/* Central Rotunda */}
-          <circle cx="50%" cy="50%" r="48" fill="none" stroke="#0F766E" strokeWidth="1.5" strokeDasharray="4 4" />
-          <circle cx="50%" cy="50%" r="20" fill="#0F766E" fillOpacity="0.08" />
+          <circle cx="50%" cy="50%" r="48" fill="none" stroke="#8DA9C4" strokeWidth="1.5" strokeDasharray="4 4" />
+          <circle cx="50%" cy="50%" r="20" fill="#8DA9C4" fillOpacity="0.08" />
           {/* Axis Pathways */}
-          <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#0F766E" strokeWidth="1" strokeDasharray="2 4" />
-          <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#0F766E" strokeWidth="1" strokeDasharray="2 4" />
+          <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#8DA9C4" strokeWidth="1" strokeDasharray="2 4" />
+          <line x1="0" y1="50%" x2="100%" y2="50%" stroke="#8DA9C4" strokeWidth="1" strokeDasharray="2 4" />
         </svg>
 
         {/* 4 Interactive Campus Zones / Buildings */}
@@ -155,14 +155,14 @@ export const CampusMap: React.FC<CampusMapProps> = ({
                 onClick={() => handleBuildingClick(building.id)}
                 onMouseEnter={() => setHoveredBuilding(building.id)}
                 onMouseLeave={() => setHoveredBuilding(null)}
-                className={`relative group p-5 rounded-2xl cursor-pointer transition-all duration-300 border bg-white dark:bg-[#18181B] hover:scale-[1.015] hover:border-teal-500 dark:hover:border-teal-500 flex flex-col justify-between min-h-[155px] ${
+                className={`relative group p-5 rounded-2xl cursor-pointer transition-all duration-300 border bg-white dark:bg-[#18181B] hover:scale-[1.015] hover:border-[#8DA9C4] dark:hover:border-[#8DA9C4] flex flex-col justify-between min-h-[140px] ${
                   pulseClass || glowClass || 'border-slate-200 dark:border-[#27272A]'
                 }`}
               >
                 {/* Timetable Synergy Tooltip Banner */}
                 {hasNextClass && (
-                  <div className="absolute -top-3 left-4 z-20 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#0F766E] text-white text-[11px] font-mono font-bold shadow-md animate-bounce">
-                    <Clock className="w-3 h-3" />
+                  <div className="absolute -top-3 left-4 z-20 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#134074] text-white text-[11px] font-mono font-bold shadow-md animate-bounce border border-[#8DA9C4]/40">
+                    <Clock className="w-3 h-3 text-[#8DA9C4]" />
                     <span>Next Class Here</span>
                     {synergy.minutesUntilStart >= 0 && (
                       <span className="opacity-90 font-normal">({synergy.minutesUntilStart}m)</span>
@@ -178,58 +178,26 @@ export const CampusMap: React.FC<CampusMapProps> = ({
                   </div>
                 )}
 
-                {/* Top Row: Building Name, Code & Icon */}
+                {/* Top Row: Building Name & Icon (Code tag and status pill removed per user specification) */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-[#202026] flex items-center justify-center shrink-0 border border-slate-200/60 dark:border-white/5 group-hover:bg-teal-50 dark:group-hover:bg-teal-950/40 transition-colors">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-[#202026] flex items-center justify-center shrink-0 border border-slate-200/60 dark:border-white/5 group-hover:bg-[#EEF4ED] dark:group-hover:bg-[#27272A] transition-colors">
                       {getBuildingIcon(building.id)}
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-100 group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors">
-                          {building.name}
-                        </h3>
-                        <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 uppercase px-1.5 py-0.5 bg-slate-100 dark:bg-black/30 rounded border border-slate-200/60 dark:border-white/5">
-                          {building.code}
-                        </span>
-                      </div>
+                      <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-slate-100 group-hover:text-[#134074] dark:group-hover:text-[#8DA9C4] transition-colors">
+                        {building.name}
+                      </h3>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
                         {building.tagline}
                       </p>
                     </div>
                   </div>
-
-                  {/* Operational Status Pill */}
-                  <div className="shrink-0 text-right">
-                    {health.hasCritical ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-900/50">
-                        <AlertTriangle className="w-3 h-3" />
-                        Critical
-                      </span>
-                    ) : health.unresolvedCount > 0 ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-900/50">
-                        <Clock className="w-3 h-3" />
-                        {health.unresolvedCount} Active
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
-                        <CheckCircle2 className="w-3 h-3" />
-                        Healthy
-                      </span>
-                    )}
-                  </div>
                 </div>
 
-                {/* Bottom Row: Zone Details & Click CTA */}
-                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-[#27272A] flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 font-mono">
-                    <MapPin className="w-3 h-3 text-[#0F766E]" />
-                    <span>Zone {building.floorCount} Levels</span>
-                    <span className="mx-1">•</span>
-                    <span>{health.totalCount} Tickets Logged</span>
-                  </div>
-
-                  <span className="text-[11px] font-semibold text-[#0F766E] group-hover:underline inline-flex items-center gap-1">
+                {/* Bottom Row: Click CTA (Metadata removed per user specification) */}
+                <div className="mt-4 pt-3 border-t border-slate-100 dark:border-[#27272A] flex items-center justify-end text-xs">
+                  <span className="text-[11px] font-semibold text-[#134074] dark:text-[#8DA9C4] group-hover:underline inline-flex items-center gap-1">
                     <span>{isAdminView ? 'Inspect Zone →' : 'Report Issue →'}</span>
                   </span>
                 </div>

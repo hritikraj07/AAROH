@@ -802,14 +802,12 @@ console.log('--- ALL CONTEXT-AWARE FOCUS MODE & SKILL-GAP ANALYZER VERIFICATIONS
 // ==========================================
 console.log('--- VERIFYING TOPNAV SIGN OUT, FACULTY RBAC, AND LOGIN PAGE REDESIGN ---');
 
-// 1. Top Navigation Bar: Profile Button & Popover replace Standalone Sign Out
+// 1. Top Navigation Bar: Profile Button & Popover (Settings and Sign Out removed per user specification)
 const updatedTopBar = fs.readFileSync(path.join(__dirname, '../src/components/layout/TopBar.tsx'), 'utf8');
 assert(!updatedTopBar.includes('Reset Demo'), 'TopBar removes Reset Demo button');
 assert(updatedTopBar.includes('isProfileOpen') && updatedTopBar.includes('aria-label="User Profile"'), 'TopBar renders dedicated Profile button');
 assert(updatedTopBar.includes('user?.avatarInitials') && updatedTopBar.includes('Profile Card Popover'), 'TopBar Profile button displays user avatar initials and opens profile popover');
-assert(updatedTopBar.includes('Sign Out'), 'TopBar profile popover includes Sign Out option');
-assert(updatedTopBar.includes('LogOut') && (updatedTopBar.includes('<LogOut') || updatedTopBar.includes('lucide-react')), 'TopBar uses LogOut icon');
-assert(updatedTopBar.includes('logout()') && updatedTopBar.includes('/login'), 'TopBar Sign Out action triggers logout and routes to /login');
+assert(!updatedTopBar.includes('Full Settings') && !updatedTopBar.includes('Sign Out'), 'TopBar removes settings and signout from profile popover per user specification');
 
 // 2. Faculty RBAC in FacultyClassesPage.tsx
 const facultyClassesPath = path.join(__dirname, '../src/pages/faculty/FacultyClassesPage.tsx');

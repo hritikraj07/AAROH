@@ -21,7 +21,9 @@ export const LostAndFoundMatcherWidget: React.FC = () => {
     });
   };
 
-  if (matches.length === 0) return null;
+  // Automatically suggest in background; do not show disruptive AI match collision banner on dashboard per user request ("dont tell me for ai match like u tell dont show")
+  const isHiddenPerUserRequest = true;
+  if (isHiddenPerUserRequest || matches.length === 0) return null;
 
   return (
     <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-6 sm:p-8 space-y-6">
