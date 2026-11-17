@@ -144,11 +144,11 @@ export const LoginPage: React.FC = () => {
 
         {/* Ambient Interactive Blurred Geometric Blobs for Depth */}
         <div
-          className="absolute -top-24 -left-24 w-[480px] h-[480px] rounded-full bg-teal-600/10 dark:bg-teal-500/15 blur-[100px] pointer-events-none transition-transform duration-300 ease-out"
+          className="absolute -top-24 -left-24 w-[480px] h-[480px] rounded-full bg-[#134074]/15 dark:bg-[#134074]/25 blur-[100px] pointer-events-none transition-transform duration-300 ease-out"
           style={{ transform: `translate(${mouseOffset.x}px, ${mouseOffset.y}px)` }}
         />
         <div
-          className="absolute -bottom-24 -right-24 w-[480px] h-[480px] rounded-full bg-teal-700/15 dark:bg-teal-500/20 blur-[100px] pointer-events-none transition-transform duration-300 ease-out"
+          className="absolute -bottom-24 -right-24 w-[480px] h-[480px] rounded-full bg-[#8DA9C4]/20 dark:bg-[#8DA9C4]/15 blur-[100px] pointer-events-none transition-transform duration-300 ease-out"
           style={{ transform: `translate(${-mouseOffset.x * 1.3}px, ${-mouseOffset.y * 1.3}px)` }}
         />
       </div>
@@ -196,7 +196,7 @@ export const LoginPage: React.FC = () => {
               <select
                 value={selectedRole}
                 onChange={e => handleRoleChange(e.target.value as UserRole)}
-                className="w-full text-xs font-medium px-3 py-2 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors cursor-pointer"
+                className="w-full text-xs font-medium px-3 py-2 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors cursor-pointer"
               >
                 <option value="student" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Student</option>
                 <option value="faculty" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Faculty</option>
@@ -218,7 +218,7 @@ export const LoginPage: React.FC = () => {
                 value={email}
                 onChange={e => handleEmailChange(e.target.value)}
                 placeholder="aarav.sharma@aaroh.edu.in"
-                className="w-full text-xs font-mono pl-9 pr-3 py-2 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors"
+                className="w-full text-xs font-mono pl-9 pr-3 py-2 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors"
               />
             </div>
           </div>
@@ -239,7 +239,7 @@ export const LoginPage: React.FC = () => {
                   if (errorMessage) setErrorMessage(null);
                 }}
                 placeholder="••••••••••••"
-                className="w-full text-xs font-mono pl-9 pr-10 py-2 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 transition-colors"
+                className="w-full text-xs font-mono pl-9 pr-10 py-2 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors"
               />
               <button
                 type="button"
@@ -257,7 +257,7 @@ export const LoginPage: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full inline-flex items-center justify-center gap-1.5 py-2.5 px-4 text-xs font-semibold text-white bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} disabled:opacity-50 select-none cursor-pointer`}
+            className={`w-full inline-flex items-center justify-center gap-1.5 py-2.5 px-4 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} disabled:opacity-50 select-none cursor-pointer`}
           >
             <span>{loading ? 'Authenticating...' : 'Sign In ->'}</span>
           </button>
@@ -282,7 +282,7 @@ export const LoginPage: React.FC = () => {
               type="button"
               onClick={() => handleQuickDemoLogin('admin')}
               disabled={loading}
-              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-teal-600 dark:hover:border-teal-500 hover:text-teal-700 dark:hover:text-teal-400 text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate"
+              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate"
             >
               Admin Demo
             </button>
@@ -290,7 +290,7 @@ export const LoginPage: React.FC = () => {
               type="button"
               onClick={() => handleQuickDemoLogin('faculty')}
               disabled={loading}
-              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-teal-600 dark:hover:border-teal-500 hover:text-teal-700 dark:hover:text-teal-400 text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate"
+              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate"
             >
               Faculty Demo
             </button>
@@ -298,7 +298,7 @@ export const LoginPage: React.FC = () => {
               type="button"
               onClick={() => handleQuickDemoLogin('student')}
               disabled={loading}
-              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-teal-600 dark:hover:border-teal-500 hover:text-teal-700 dark:hover:text-teal-400 text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate"
+              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate"
             >
               Student Demo
             </button>

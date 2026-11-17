@@ -52,11 +52,8 @@ export const AcademicsPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header and Tab Bar */}
       <div>
-        <div className="mb-2">
+        <div className="mb-3">
           <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Academic Operations</h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            View section timetables, track attendance regulations, submit assignments, predict graduation GPA, and explore the Curriculum Prerequisite Tracker.
-          </p>
         </div>
 
         <Tabs

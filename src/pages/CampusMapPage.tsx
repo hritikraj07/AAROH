@@ -34,8 +34,8 @@ export const CampusMapPage: React.FC = () => {
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 font-sans pb-12 select-none">
-      {/* Hero Banner */}
-      <div className="relative overflow-hidden bg-[#0F766E] text-white rounded-3xl p-6 sm:p-10 shadow-sm transition-all duration-300">
+      {/* Hero Banner: Refined Theme matching #134074 & #8DA9C4 */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#134074] via-[#244970] to-[#355B82] border border-[#8DA9C4]/30 shadow-lg text-white rounded-3xl p-6 sm:p-10 transition-all duration-300">
         <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full border-[20px] border-white/10 pointer-events-none" />
         <div className="absolute right-28 -top-16 w-52 h-52 rounded-full border-[14px] border-white/10 pointer-events-none" />
         <div className="absolute top-6 right-16 text-white/20 pointer-events-none select-none">
@@ -52,19 +52,14 @@ export const CampusMapPage: React.FC = () => {
           <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-white">
             {isAdmin ? 'Campus Infrastructure Nexus' : 'Aaroh Smart Campus Heatmap'}
           </h1>
-          <p className="text-xs sm:text-sm text-teal-100 font-normal leading-relaxed max-w-xl">
-            {isAdmin
-              ? 'Real-time infrastructure health monitoring, automated complaint triage, and unified Kanban resolution pipeline.'
-              : 'Interactive campus grounds navigation with live timetable room synergy and AI-orchestrated Smart Resolve ticketing.'}
-          </p>
 
           <div className="pt-2 flex items-center gap-2.5 flex-wrap">
             <button
               type="button"
               onClick={() => handleSelectBuilding('Academic Blocks')}
-              className="rounded-full bg-white text-teal-900 hover:bg-teal-50 text-xs px-4 py-2 font-bold transition-all duration-200 active:scale-95 inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
+              className="rounded-full bg-[#EEF4ED] text-[#134074] hover:bg-white text-xs px-4 py-2 font-bold transition-all duration-200 active:scale-95 inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5 text-[#0F766E]" />
+              <Plus className="w-3.5 h-3.5 text-[#134074]" />
               <span>Report Facility Issue</span>
             </button>
           </div>
@@ -82,7 +77,7 @@ export const CampusMapPage: React.FC = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-[#27272A]">
             <div className="flex items-center gap-2">
-              <ClipboardList className="w-4 h-4 text-[#0F766E]" />
+              <ClipboardList className="w-4 h-4 text-[#134074] dark:text-[#8DA9C4]" />
               <h2 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-slate-100 font-mono">
                 Recent Facility Reports
               </h2>

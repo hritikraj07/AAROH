@@ -349,18 +349,9 @@ export const DashboardPage: React.FC = () => {
             <span className="text-xs font-mono font-medium text-white bg-white/20 border border-white/30 px-2.5 py-1 rounded-full">
               Roll No: {user?.rollNumber || '22CS042'}
             </span>
-            <span className="text-xs font-medium text-teal-900 bg-teal-100 px-2.5 py-1 rounded-full">
+            <span className="text-xs font-medium text-[#134074] bg-[#EEF4ED] px-2.5 py-1 rounded-full">
               {user?.program || 'B.Tech'} Sem {user?.semester || 5}
             </span>
-            <button
-              type="button"
-              onClick={() => setIsSimulatedFocus(prev => !prev)}
-              className="text-xs font-medium text-white bg-white/20 hover:bg-white/30 border border-white/30 px-3 py-1 rounded-full transition-colors active:scale-95 flex items-center gap-1.5 cursor-pointer"
-              title="Toggle Adaptive In-Class vs Free-Period context"
-            >
-              <Focus className="w-3.5 h-3.5" />
-              <span>{isFocusMode ? 'Switch to Free Period' : 'Simulate In-Class Mode'}</span>
-            </button>
           </div>
         </div>
       </div>

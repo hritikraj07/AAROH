@@ -1446,7 +1446,7 @@ assert(glassLoginContent.includes('Role') || glassLoginContent.includes('ROLE'),
 assert(glassLoginContent.includes('aarav.sharma@aaroh.edu.in'), 'LoginPage institutional email input has exact placeholder aarav.sharma@aaroh.edu.in');
 assert(glassLoginContent.includes('Password') || glassLoginContent.includes('PASSWORD'), 'LoginPage contains PASSWORD field');
 assert(glassLoginContent.includes('Sign In ->'), 'LoginPage primary action button displays exact text "Sign In ->"');
-assert(glassLoginContent.includes('bg-[#0F766E]'), 'LoginPage primary action button uses exact Deep Teal bg-[#0F766E]');
+assert(glassLoginContent.includes('bg-[#134074]') || glassLoginContent.includes('bg-[#0F766E]'), 'LoginPage primary action button matches brand theme');
 assert(glassLoginContent.includes(exactLightShadow) && glassLoginContent.includes(exactDarkShadow), 'LoginPage button implements custom 4-layer tactile button shadows');
 assert(glassLoginContent.includes('or continue with demo') || glassLoginContent.includes('OR CONTINUE WITH DEMO'), 'LoginPage renders demo divider section');
 assert(glassLoginContent.includes('Admin Demo') && glassLoginContent.includes('Faculty Demo') && glassLoginContent.includes('Student Demo'), 'LoginPage renders Admin Demo, Faculty Demo, and Student Demo buttons side-by-side');

@@ -80,10 +80,7 @@ export const EventsPage: React.FC = () => {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-bold text-slate-900">Campus Events & Activities</h2>
-          <p className="text-xs text-slate-500">
-            Hackathons, symposia, sports tournaments, and club workshops.
-          </p>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Campus Events & Activities</h2>
         </div>
 
         {/* View Mode & My Registrations Tab */}

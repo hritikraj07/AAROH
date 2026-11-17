@@ -79,7 +79,7 @@ export const CampusMap: React.FC<CampusMapProps> = ({
 
         {/* Legend / Status Badges */}
         <div className="flex items-center gap-2 flex-wrap">
-          {isAdminView ? (
+          {isAdminView && (
             <>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
@@ -90,26 +90,6 @@ export const CampusMap: React.FC<CampusMapProps> = ({
                 Critical Issue
               </span>
             </>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800">
-                <Sparkles className="w-3 h-3 text-[#0F766E]" />
-                Next Class Glow
-              </span>
-              {/* Demo switch to test timetable synergy easily */}
-              <button
-                type="button"
-                onClick={() =>
-                  setSimulatedClassBuilding(prev =>
-                    prev === 'Academic Blocks' ? 'Library' : prev === 'Library' ? null : 'Academic Blocks'
-                  )
-                }
-                className="text-[10px] font-mono text-slate-400 hover:text-teal-700 dark:hover:text-teal-400 underline underline-offset-2 cursor-pointer transition-colors"
-                title="Toggle simulated class to preview 30-minute glow"
-              >
-                {simulatedClassBuilding ? `[Sim: ${simulatedClassBuilding}]` : '[Simulate Class]'}
-              </button>
-            </div>
           )}
         </div>
       </div>
@@ -206,14 +186,6 @@ export const CampusMap: React.FC<CampusMapProps> = ({
           })}
         </div>
 
-        {/* Central Fountain Campus Label */}
-        <div className="mt-5 pt-3 border-t border-slate-200/60 dark:border-[#27272A] flex items-center justify-between text-[11px] text-slate-400 font-mono">
-          <div className="flex items-center gap-1.5">
-            <Info className="w-3.5 h-3.5 text-[#0F766E]" />
-            <span>K.R. Mangalam University • Gurugram Campus Infrastructure System</span>
-          </div>
-          <span>Top-Down Coordinate Grid</span>
-        </div>
       </div>
     </div>
   );

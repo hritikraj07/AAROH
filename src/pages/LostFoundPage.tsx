@@ -116,14 +116,11 @@ export const LostFoundPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-[#27272A]">
         <div>
-          <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
+          <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
             Campus Lost & Found Registry
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            A peer-to-peer lost property clearinghouse with privacy-protected contact exchange.
-          </p>
         </div>
 
         <Button

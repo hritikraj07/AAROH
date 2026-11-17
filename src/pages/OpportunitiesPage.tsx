@@ -173,9 +173,6 @@ export const OpportunitiesPage: React.FC = () => {
           <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
             Opportunity Board
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Curated engineering internships, competitive hackathons, and national design challenges.
-          </p>
         </div>
 
         {/* View Switcher: "Browse" vs "Saved" */}
