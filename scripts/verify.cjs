@@ -1811,12 +1811,13 @@ console.log('--- ALL DYNAMIC CURRICULUM TRACKER VERIFICATIONS PASSED ---');
 // =========================================================================================
 console.log('--- VERIFYING AAROH OMNI-SEARCH COMMAND PALETTE & SEARCH ENGINE ---');
 
-// 1. Omni-Search Trigger & Shortcut
+// 1. Direct Inline Autocomplete Search Bar (no Cmd text, no modal popup box)
 const topBarOmniContent = fs.readFileSync(path.join(__dirname, '../src/components/layout/TopBar.tsx'), 'utf8');
-assert(topBarOmniContent.includes('Search Aaroh... (Cmd+K)'), 'TopBar renders sleek "Search Aaroh... (Cmd+K)" input button');
-assert(topBarOmniContent.includes('(e.metaKey || e.ctrlKey)') && topBarOmniContent.includes("e.key.toLowerCase() === 'k'"), 'TopBar attaches global Cmd+K / Ctrl+K keyboard shortcut listener');
-assert(topBarOmniContent.includes('e.preventDefault()'), 'TopBar intercepts shortcut and prevents default browser search behavior');
-assert(topBarOmniContent.includes('openSearch()'), 'TopBar opens Omni-Search modal when triggered');
+assert(!topBarOmniContent.includes('(Cmd+K)'), 'TopBar removes (Cmd+K) text per user design specification');
+assert(!topBarOmniContent.includes('⌘K'), 'TopBar removes ⌘K badge/icon per user design specification');
+assert(topBarOmniContent.includes('<input') && topBarOmniContent.includes('searchQuery'), 'TopBar directly hosts inline autocomplete search bar');
+assert(topBarOmniContent.includes('autocompleteResults') || topBarOmniContent.includes('searchResults'), 'TopBar computes real-time autocomplete suggestions');
+assert(topBarOmniContent.includes('isSearchOpen && searchQuery.trim().length > 1'), 'TopBar renders inline dropdown directly beneath search bar without opening modal box');
 
 // 2. Glassmorphism Modal UI
 const globalSearchModalPath = path.join(__dirname, '../src/components/layout/GlobalSearchModal.tsx');

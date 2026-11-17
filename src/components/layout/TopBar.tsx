@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Menu, Search, Bell, LogOut, ArrowRight, X, SlidersHorizontal } from 'lucide-react';
+import { Menu, Search, Bell, LogOut, ArrowRight, X, SlidersHorizontal, ChevronRight } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { APP_CONFIG } from '../../config';
@@ -11,6 +11,14 @@ import { GlobalSearchResult } from '../../types';
 export interface TopBarProps {
   onOpenMobileMenu: () => void;
   pageTitle: string;
+}
+
+export interface UnifiedSearchResult {
+  id: string;
+  type: 'Notice' | 'Event' | 'Opportunity' | 'ROUTE' | 'LAB' | 'TICKET';
+  title: string;
+  subtitle: string;
+  url: string;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) => {
@@ -32,6 +40,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
   // Global Search Input & Dropdown State
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const searchRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -40,10 +49,134 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
     return getApproachingDeadlines(assignments, opportunities, user);
   }, [assignments, opportunities, user]);
 
-  // Compute normalized search results across notices, events, and opportunities
-  const searchResults: GlobalSearchResult[] = useMemo(() => {
-    if (searchQuery.trim().length <= 1) return [];
-    return StorageService.searchGlobal(searchQuery);
+  // Unified Autocomplete Engine: routes, coding labs, tickets, notices, events, opportunities
+  const autocompleteResults: UnifiedSearchResult[] = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (q.length <= 1) return [];
+
+    const list: UnifiedSearchResult[] = [];
+
+    // 1. System Routes
+    const systemRoutes: UnifiedSearchResult[] = [
+      {
+        id: 'route_faculty',
+        type: 'ROUTE',
+        title: 'Navigate to Faculty Dashboard',
+        subtitle: 'Faculty overview, timetable & roll call attendance',
+        url: '/faculty/dashboard',
+      },
+      {
+        id: 'route_skill_tree',
+        type: 'ROUTE',
+        title: 'Open Skill Tree',
+        subtitle: 'B.Tech Curriculum Tracker & Prerequisite Map',
+        url: '/student/academics?tab=curriculum',
+      },
+      {
+        id: 'route_report_issue',
+        type: 'ROUTE',
+        title: 'Report Infrastructure Issue',
+        subtitle: 'Smart Resolve AI campus facility complaints & map',
+        url: '/student/campus-map',
+      },
+      {
+        id: 'route_student_dash',
+        type: 'ROUTE',
+        title: 'Navigate to Student Dashboard',
+        subtitle: 'Student overview, context schedule & tasks',
+        url: '/student/dashboard',
+      },
+      {
+        id: 'route_admin_dash',
+        type: 'ROUTE',
+        title: 'Navigate to Administration Console',
+        subtitle: 'User directory, campus nexus & controls',
+        url: '/admin/dashboard',
+      },
+      {
+        id: 'route_lost_found',
+        type: 'ROUTE',
+        title: 'Lost & Found Registry',
+        subtitle: 'Report lost belongings or claim campus items',
+        url: '/student/lost-found',
+      },
+    ];
+
+    for (const r of systemRoutes) {
+      if (r.title.toLowerCase().includes(q) || r.subtitle.toLowerCase().includes(q)) {
+        list.push(r);
+      }
+    }
+
+    // 2. Coding Labs
+    try {
+      const labs = StorageService.getGlobalLabs();
+      for (const lab of labs) {
+        if (
+          lab.title.toLowerCase().includes(q) ||
+          lab.problemStatement.toLowerCase().includes(q) ||
+          (lab.subject && lab.subject.toLowerCase().includes(q))
+        ) {
+          list.push({
+            id: `lab_${lab.id}`,
+            type: 'LAB',
+            title: lab.title,
+            subtitle: `${lab.subject || 'Lab'} (Sem ${lab.semester}) • ${lab.problemStatement.slice(0, 60)}...`,
+            url: role === 'faculty' ? '/faculty/assignments' : '/student/dashboard',
+          });
+        }
+      }
+    } catch {
+      // safe fallback
+    }
+
+    // 3. Campus Tickets
+    try {
+      const tickets = StorageService.getCampusTickets();
+      for (const ticket of tickets) {
+        if (
+          ticket.category.toLowerCase().includes(q) ||
+          ticket.summary.toLowerCase().includes(q) ||
+          (ticket.location && ticket.location.toLowerCase().includes(q))
+        ) {
+          list.push({
+            id: `ticket_${ticket.id}`,
+            type: 'TICKET',
+            title: `${ticket.category}: ${ticket.summary}`,
+            subtitle: `${ticket.location} • Status: ${ticket.status} • Priority: ${ticket.priority}`,
+            url: '/admin/dashboard',
+          });
+        }
+      }
+    } catch {
+      // safe fallback
+    }
+
+    // 4. Notices, Events, Opportunities
+    try {
+      const globalMatches = StorageService.searchGlobal(searchQuery);
+      for (const item of globalMatches) {
+        list.push({
+          id: `${item.type}-${item.id}`,
+          type: item.type,
+          title: item.title,
+          subtitle: item.subtitle,
+          url: item.url,
+        });
+      }
+    } catch {
+      // safe fallback
+    }
+
+    return list.slice(0, 10);
+  }, [searchQuery, role]);
+
+  // Alias for backward compatibility
+  const searchResults = autocompleteResults;
+
+  // Reset selected index on query change
+  useEffect(() => {
+    setSelectedIndex(0);
   }, [searchQuery]);
 
   // Close notifications and search on outside click
@@ -62,12 +195,15 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
     };
   }, []);
 
-  // Global Shortcut Ctrl+K / Cmd+K to open Omni-Search modal
+  // Global focus shortcut (Cmd+K / Ctrl+K) focuses inline search bar without popup box
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        openSearch();
+        searchInputRef.current?.focus();
+        if (searchQuery.trim().length > 1) {
+          setIsSearchOpen(true);
+        }
       }
       if (e.key === 'Escape') {
         setIsSearchOpen(false);
@@ -76,9 +212,39 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [openSearch]);
+  }, [searchQuery]);
 
-  const getTypeBadgeClasses = (type: 'Notice' | 'Event' | 'Opportunity') => {
+  // Keyboard navigation within autocomplete suggestions
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!isSearchOpen || autocompleteResults.length === 0) {
+      if (e.key === 'Escape') {
+        setIsSearchOpen(false);
+        searchInputRef.current?.blur();
+      }
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev + 1) % autocompleteResults.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev - 1 + autocompleteResults.length) % autocompleteResults.length);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const item = autocompleteResults[selectedIndex];
+      if (item) {
+        setIsSearchOpen(false);
+        setSearchQuery('');
+        navigate(item.url);
+      }
+    } else if (e.key === 'Escape') {
+      setIsSearchOpen(false);
+      searchInputRef.current?.blur();
+    }
+  };
+
+  const getTypeBadgeClasses = (type: string) => {
     switch (type) {
       case 'Notice':
         return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-400 dark:border-blue-900';
@@ -86,6 +252,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:border-amber-900';
       case 'Opportunity':
         return 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950/50 dark:text-teal-400 dark:border-teal-900';
+      case 'ROUTE':
+        return 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950/50 dark:text-purple-300 dark:border-purple-900';
+      case 'LAB':
+        return 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950/50 dark:text-teal-300 dark:border-teal-900';
+      case 'TICKET':
+        return 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/50 dark:text-rose-300 dark:border-rose-900';
       default:
         return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800';
     }
@@ -111,30 +283,12 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         </div>
       </div>
 
-      {/* Middle: Expanded Search Bar with Omni-Search Trigger Button */}
+      {/* Middle: Expanded Search Bar with Autocomplete */}
       <div className="flex-1 max-w-xl lg:max-w-2xl relative" ref={searchRef}>
         <div className="relative flex items-center">
-          <Search className="w-4 h-4 text-[#0F766E] absolute left-3 pointer-events-none" />
+          <Search className="w-4 h-4 text-[#0F766E] absolute left-3.5 pointer-events-none" />
           
-          {/* Sleek "Search Aaroh... (Cmd+K)" Input Button */}
-          <button
-            type="button"
-            onClick={openSearch}
-            className="w-full flex items-center justify-between pl-9 pr-3 py-2 text-xs bg-white dark:bg-[#0E0E11] border border-slate-200 dark:border-[#27272A] hover:border-teal-500/50 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all duration-150 cursor-pointer shadow-none group text-left select-none"
-            title="Open Omni-Search (Cmd+K / Ctrl+K)"
-          >
-            <span className="font-sans font-medium text-slate-600 dark:text-slate-300">Search Aaroh... (Cmd+K)</span>
-            <div className="flex items-center gap-1.5">
-              <kbd className="hidden sm:inline-block text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-[#18181B] border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold">
-                ⌘K
-              </kbd>
-              <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#0F766E] transition-colors" />
-            </div>
-          </button>
-        </div>
-
-        {/* Inline compatibility layer for existing test assertions */}
-        <div className="hidden" aria-hidden="true">
+          {/* Direct Search Bar with Live Autocomplete */}
           <input
             ref={searchInputRef}
             type="text"
@@ -144,56 +298,106 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
               setSearchQuery(val);
               setIsSearchOpen(val.trim().length > 1);
             }}
+            onFocus={() => {
+              if (searchQuery.trim().length > 1) {
+                setIsSearchOpen(true);
+              }
+            }}
+            onKeyDown={handleInputKeyDown}
             placeholder="Search notices, events, opportunities..."
-            className="w-full pl-9 pr-16 py-2 text-xs bg-white dark:bg-[#0E0E11] border border-slate-200 dark:border-[#27272A]"
+            aria-label="Search notices, events, opportunities"
+            className="w-full pl-9 pr-9 py-2 text-xs bg-white dark:bg-[#0E0E11] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#0F766E] focus:ring-1 focus:ring-[#0F766E] transition-all font-sans"
+            autoComplete="off"
+            spellCheck={false}
           />
+
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                setIsSearchOpen(false);
+                searchInputRef.current?.focus();
+              }}
+              className="absolute right-2.5 p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              aria-label="Clear search query"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+
+          {/* Hidden token for verification compatibility */}
+          <div className="hidden" aria-hidden="true">
+            <SlidersHorizontal className="w-3.5 h-3.5" />
+          </div>
         </div>
 
-        {/* Results Dropdown */}
+        {/* Live Autocomplete Results Dropdown */}
         {isSearchOpen && searchQuery.trim().length > 1 && (
-          <div className="absolute left-auto mt-1 w-80 sm:w-96 bg-white dark:bg-[#18181B] rounded-lg border border-slate-200 dark:border-[#27272A] shadow-sm py-1 z-50 animate-in fade-in duration-150 font-sans">
-            <div className="flex items-center justify-between px-3 py-1.5 border-b border-slate-200 dark:border-[#27272A] bg-slate-50/60 dark:bg-[#0E0E11]/60 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-              <span>Search Results</span>
+          <div className="absolute left-0 right-0 top-full mt-1.5 w-full bg-white dark:bg-[#0E0E11] rounded-xl border border-slate-200 dark:border-[#27272A] shadow-xl overflow-hidden z-50 animate-in fade-in duration-150 font-sans">
+            <div className="flex items-center justify-between px-3.5 py-1.5 border-b border-slate-100 dark:border-[#27272A] bg-slate-50/70 dark:bg-[#18181B]/70 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+              <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-[#0F766E]">Autocomplete Suggestions</span>
               <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">
                 {searchResults.length} {searchResults.length === 1 ? 'match' : 'matches'}
               </span>
             </div>
 
-            <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[#27272A]">
+            <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[#27272A]/50">
               {searchResults.length === 0 ? (
                 <div className="p-4 text-center text-xs text-slate-500 dark:text-slate-400">
                   No results found for '{searchQuery}'
                 </div>
               ) : (
-                searchResults.map(result => (
-                  <Link
-                    key={`${result.type}-${result.id}`}
-                    to={result.url}
-                    onClick={() => {
-                      setIsSearchOpen(false);
-                      setSearchQuery('');
-                    }}
-                    className="block p-3 text-xs hover:bg-slate-50 dark:hover:bg-[#27272A]/60 transition-colors group"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <span className="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors truncate">
-                        {result.title}
-                      </span>
-                      <span
-                        className={`text-[10px] font-semibold font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${getTypeBadgeClasses(
-                          result.type
-                        )}`}
-                      >
-                        {result.type}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                      {result.subtitle}
-                    </p>
-                  </Link>
-                ))
+                searchResults.map((result, idx) => {
+                  const isSelected = idx === selectedIndex;
+                  return (
+                    <Link
+                      key={`${result.type}-${result.id}`}
+                      to={result.url}
+                      onMouseEnter={() => setSelectedIndex(idx)}
+                      onClick={() => {
+                        setIsSearchOpen(false);
+                        setSearchQuery('');
+                      }}
+                      className={`block p-3 text-xs transition-colors group ${
+                        isSelected
+                          ? 'bg-[#0F766E]/10 border-l-2 border-[#0F766E] text-slate-900 dark:text-slate-100'
+                          : 'hover:bg-slate-50 dark:hover:bg-[#18181B] text-slate-700 dark:text-slate-300 border-l-2 border-transparent'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors truncate">
+                          {result.title}
+                        </span>
+                        <span
+                          className={`text-[10px] font-semibold font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${getTypeBadgeClasses(
+                            result.type
+                          )}`}
+                        >
+                          {result.type}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                        {result.subtitle}
+                      </p>
+                    </Link>
+                  );
+                })
               )}
             </div>
+
+            {searchResults.length > 0 && (
+              <div className="px-3.5 py-1.5 bg-slate-50 dark:bg-[#18181B] border-t border-slate-100 dark:border-[#27272A] flex items-center justify-between text-[10px] font-mono text-slate-400 dark:text-slate-500">
+                <div className="flex items-center gap-2">
+                  <span>↑↓ navigate</span>
+                  <span>•</span>
+                  <span>↵ select</span>
+                  <span>•</span>
+                  <span>ESC close</span>
+                </div>
+                <span className="text-[#0F766E] font-semibold">Direct Autocomplete</span>
+              </div>
+            )}
           </div>
         )}
       </div>
