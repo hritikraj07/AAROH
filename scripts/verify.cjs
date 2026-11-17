@@ -1658,4 +1658,77 @@ assert(proctorStorageContent.includes('statusOverride?: AssignmentStatus'), 'Sto
 
 console.log('--- ALL 2-STRIKE PROCTORING ENGINE & KEYSTROKE DNA VERIFICATIONS PASSED ---');
 
+// ==========================================
+console.log('--- VERIFYING AUTOMATED CODING LABS LIFECYCLE ENGINE ---');
+
+// 1. Types & Data Models
+const codingLabTypes = fs.readFileSync(path.join(__dirname, '../src/types/index.ts'), 'utf8');
+assert(codingLabTypes.includes('export interface CodingLab'), 'types/index.ts exports CodingLab interface');
+assert(codingLabTypes.includes('windowStartTime: string'), 'CodingLab defines windowStartTime');
+assert(codingLabTypes.includes('windowEndTime: string'), 'CodingLab defines windowEndTime');
+assert(codingLabTypes.includes('starterCode: string'), 'CodingLab defines starterCode');
+assert(codingLabTypes.includes('problemStatement: string'), 'CodingLab defines problemStatement');
+assert(codingLabTypes.includes('export interface LabSubmission'), 'types/index.ts exports LabSubmission interface');
+assert(codingLabTypes.includes("'PENDING_REVIEW'"), "LabSubmission status includes 'PENDING_REVIEW'");
+assert(codingLabTypes.includes("'SECURITY_BREACH'"), "LabSubmission status includes 'SECURITY_BREACH'");
+
+// 2. Storage Service & Offline localStorage keys
+const codingLabStorage = fs.readFileSync(path.join(__dirname, '../src/services/storage.ts'), 'utf8');
+assert(codingLabStorage.includes("GLOBAL_LABS: 'globalLabs'"), "StorageService defines GLOBAL_LABS as 'globalLabs'");
+assert(codingLabStorage.includes("LAB_SUBMISSIONS: 'labSubmissions'"), "StorageService defines LAB_SUBMISSIONS as 'labSubmissions'");
+assert(codingLabStorage.includes('getGlobalLabs(): CodingLab[]'), 'StorageService implements getGlobalLabs()');
+assert(codingLabStorage.includes('saveGlobalLabs(labs: CodingLab[])'), 'StorageService implements saveGlobalLabs()');
+assert(codingLabStorage.includes('createGlobalLab('), 'StorageService implements createGlobalLab()');
+assert(codingLabStorage.includes('getLabSubmissions(): LabSubmission[]'), 'StorageService implements getLabSubmissions()');
+assert(codingLabStorage.includes('createLabSubmission('), 'StorageService implements createLabSubmission()');
+
+// 3. Faculty View: "Create Lab" Pipeline & Time Windows
+const facultyLabSectionPath = path.join(__dirname, '../src/components/modules/faculty/PublishCodingLabSection.tsx');
+assert(fs.existsSync(facultyLabSectionPath), 'PublishCodingLabSection.tsx exists');
+const facultyLabSectionContent = fs.readFileSync(facultyLabSectionPath, 'utf8');
+assert(facultyLabSectionContent.includes('Publish New Coding Lab'), 'PublishCodingLabSection renders Publish New Coding Lab header');
+assert(facultyLabSectionContent.includes('Lab Title'), 'PublishCodingLabSection has Lab Title field');
+assert(facultyLabSectionContent.includes('Problem Statement (Markdown Supported)'), 'PublishCodingLabSection has Markdown problem statement textarea');
+assert(facultyLabSectionContent.includes('Starter Code (Python Template)'), 'PublishCodingLabSection has Starter Code code-formatted textarea');
+assert(facultyLabSectionContent.includes('Assigned Semester / Subject'), 'PublishCodingLabSection has Assigned Semester/Subject dropdown');
+assert(facultyLabSectionContent.includes('Window Start Time'), 'PublishCodingLabSection has Window Start Time input');
+assert(facultyLabSectionContent.includes('Window End Time (Deadline)'), 'PublishCodingLabSection has Window End Time input');
+assert(facultyLabSectionContent.includes('datetime-local'), 'PublishCodingLabSection uses datetime-local inputs');
+assert(facultyLabSectionContent.includes('Publish Lab'), 'PublishCodingLabSection has Publish Lab action button');
+assert(facultyLabSectionContent.includes('createGlobalLab'), 'PublishCodingLabSection calls createGlobalLab on submit');
+assert(facultyLabSectionContent.includes('No Labs Published'), 'PublishCodingLabSection renders clean "No Labs Published" empty state');
+assert(facultyLabSectionContent.includes('shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]'), 'PublishCodingLabSection implements 4-layer tactile button shadows');
+
+const facultyDashLabContent = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyDashboardPage.tsx'), 'utf8');
+assert(facultyDashLabContent.includes('PublishCodingLabSection'), 'FacultyDashboardPage mounts PublishCodingLabSection');
+
+// 4. Student View: "Pending Labs" & Strict Time Validation
+const studentDashLabContent = fs.readFileSync(path.join(__dirname, '../src/pages/DashboardPage.tsx'), 'utf8');
+assert(studentDashLabContent.includes('activePendingGlobalLabs') || studentDashLabContent.includes('globalLabs'), 'DashboardPage reads globalLabs for student view');
+assert(studentDashLabContent.includes('isTooEarly') && studentDashLabContent.includes('isExpired') && studentDashLabContent.includes('isActive'), 'DashboardPage implements strict 3-state time window validation');
+assert(studentDashLabContent.includes('Lab unlocks at') && studentDashLabContent.includes('#0F766E'), 'State 1 (Too Early): displays Deep Teal "Lab unlocks at [Start Time]"');
+assert(studentDashLabContent.includes('Open Lab') && studentDashLabContent.includes('Launch Workspace'), 'State 2 (Active): enables Open Lab / Launch Workspace button');
+assert(studentDashLabContent.includes('Deadline Passed / Locked'), 'State 3 (Expired): displays red "Deadline Passed / Locked" badge');
+assert(studentDashLabContent.includes('StudentLabWorkspaceModal'), 'DashboardPage embeds StudentLabWorkspaceModal');
+
+// 5. Student View: Code Workspace (Proctored) & One-Shot Submission Pipeline
+const studentModalLabPath = path.join(__dirname, '../src/components/modules/labs/StudentLabWorkspaceModal.tsx');
+assert(fs.existsSync(studentModalLabPath), 'StudentLabWorkspaceModal.tsx exists');
+const studentModalLabContent = fs.readFileSync(studentModalLabPath, 'utf8');
+assert(studentModalLabContent.includes('Problem Statement'), 'StudentLabWorkspaceModal renders Faculty Problem Statement in left panel');
+assert(studentModalLabContent.includes('starterCode'), 'StudentLabWorkspaceModal pre-loads Faculty starterCode into code editor');
+assert(studentModalLabContent.includes('visibilitychange'), 'StudentLabWorkspaceModal implements Page Visibility tab-switch monitor');
+assert(studentModalLabContent.includes('handlePaste') && studentModalLabContent.includes('e.preventDefault()'), 'StudentLabWorkspaceModal intercepts and blocks onPaste events');
+assert(studentModalLabContent.includes('lengthDelta > 15') && studentModalLabContent.includes('timeDelta < 50'), 'StudentLabWorkspaceModal implements keystroke DNA speed anomaly detection');
+assert(studentModalLabContent.includes('bg-black/80'), 'Strike 1 warning modal styled with glassmorphism bg-black/80');
+assert(studentModalLabContent.includes('Acknowledge Warning & Resume Exam'), 'Strike 1 warning modal provides dismiss button');
+assert(studentModalLabContent.includes("status: 'SECURITY_BREACH'"), 'Strike 2 lockdown auto-submits with SECURITY_BREACH');
+assert(studentModalLabContent.includes('Submit Lab Request'), 'StudentLabWorkspaceModal provides prominent "Submit Lab Request" button');
+assert(studentModalLabContent.includes('createLabSubmission'), 'StudentLabWorkspaceModal saves submission to labSubmissions array in localStorage');
+assert(studentModalLabContent.includes("status: 'PENDING_REVIEW'"), "StudentLabWorkspaceModal marks normal submissions as PENDING_REVIEW");
+assert(studentModalLabContent.includes('readOnly={isSubmitted || proctorStrikes >= 2}'), 'Code editor becomes strictly readOnly upon submission or lockdown');
+assert(studentModalLabContent.includes('Final Code Submitted') && studentModalLabContent.includes('text-[#0F766E]'), 'Submit button turns into disabled state saying "Final Code Submitted" with Deep Teal checkmark');
+
+console.log('--- ALL AUTOMATED CODING LABS LIFECYCLE ENGINE VERIFICATIONS PASSED ---');
+
 module.exports = { assert };

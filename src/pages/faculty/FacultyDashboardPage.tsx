@@ -20,6 +20,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { EarlyWarningSystemCard } from '../../components/modules/faculty/EarlyWarningSystemCard';
+import { PublishCodingLabSection } from '../../components/modules/faculty/PublishCodingLabSection';
 import { CampusMap } from '../../components/modules/campus/CampusMap';
 import { SmartResolveModal } from '../../components/modules/campus/SmartResolveModal';
 import { CampusBuilding } from '../../types';
@@ -450,6 +451,9 @@ export const FacultyDashboardPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Publish New Coding Lab Section & Lifecycle */}
+      <PublishCodingLabSection />
 
       {/* Interactive Campus Map (Faculty View) */}
       <CampusMap

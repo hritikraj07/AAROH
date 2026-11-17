@@ -22,6 +22,8 @@ import {
   CampusTicket,
   TicketStatus,
   CampusBuilding,
+  CodingLab,
+  LabSubmission,
 } from '../types';
 import {
   INITIAL_COURSES,
@@ -56,6 +58,8 @@ const STORAGE_KEYS = {
   GRADES: 'aaroh_grades',
   SKILL_TREES: 'skillTrees',
   CAMPUS_TICKETS: 'campusTickets',
+  GLOBAL_LABS: 'globalLabs',
+  LAB_SUBMISSIONS: 'labSubmissions',
 };
 
 function getStored<T>(key: string, fallback: T): T {
@@ -1091,6 +1095,73 @@ export const StorageService = {
       return true;
     }
     return false;
+  },
+
+  // --- Automated Coding Labs Lifecycle (globalLabs & labSubmissions) ---
+  getGlobalLabs(): CodingLab[] {
+    return getStored<CodingLab[]>(STORAGE_KEYS.GLOBAL_LABS, []);
+  },
+
+  saveGlobalLabs(labs: CodingLab[]): void {
+    setStored(STORAGE_KEYS.GLOBAL_LABS, labs);
+  },
+
+  createGlobalLab(labData: Omit<CodingLab, 'id' | 'createdAt'>): CodingLab {
+    const labs = this.getGlobalLabs();
+    const newLab: CodingLab = {
+      ...labData,
+      id: `lab_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+      createdAt: new Date().toISOString(),
+    };
+    labs.unshift(newLab);
+    this.saveGlobalLabs(labs);
+    return newLab;
+  },
+
+  deleteGlobalLab(id: string): boolean {
+    const labs = this.getGlobalLabs();
+    const filtered = labs.filter(l => l.id !== id);
+    if (filtered.length !== labs.length) {
+      this.saveGlobalLabs(filtered);
+      return true;
+    }
+    return false;
+  },
+
+  getLabSubmissions(): LabSubmission[] {
+    return getStored<LabSubmission[]>(STORAGE_KEYS.LAB_SUBMISSIONS, []);
+  },
+
+  saveLabSubmissions(submissions: LabSubmission[]): void {
+    setStored(STORAGE_KEYS.LAB_SUBMISSIONS, submissions);
+  },
+
+  createLabSubmission(submissionData: Omit<LabSubmission, 'id'> & { timestamp?: string }): LabSubmission {
+    const submissions = this.getLabSubmissions();
+    const newSubmission: LabSubmission = {
+      ...submissionData,
+      id: `sub_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+      timestamp: submissionData.timestamp || new Date().toISOString(),
+      status: submissionData.status || 'PENDING_REVIEW',
+    };
+    submissions.unshift(newSubmission);
+    this.saveLabSubmissions(submissions);
+    return newSubmission;
+  },
+
+  getStudentLabSubmission(studentId: string, labId: string): LabSubmission | null {
+    const submissions = this.getLabSubmissions();
+    return submissions.find(s => s.studentId === studentId && s.labId === labId) || null;
+  },
+
+  getLabSubmissionsByStudent(studentId: string): LabSubmission[] {
+    const submissions = this.getLabSubmissions();
+    return submissions.filter(s => s.studentId === studentId);
+  },
+
+  getLabSubmissionsByLab(labId: string): LabSubmission[] {
+    const submissions = this.getLabSubmissions();
+    return submissions.filter(s => s.labId === labId);
   },
 
   // Full reset

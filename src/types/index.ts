@@ -140,6 +140,33 @@ export interface Assignment {
   testResultsSummary?: string;
 }
 
+export interface CodingLab {
+  id: string;
+  title: string;
+  problemStatement: string;
+  starterCode: string;
+  semester: number | string;
+  subject: string;
+  courseId?: string;
+  windowStartTime: string;
+  windowEndTime: string;
+  createdAt: string;
+  createdByFacultyId?: string;
+  createdByFacultyName?: string;
+}
+
+export interface LabSubmission {
+  id: string;
+  studentId: string;
+  studentName?: string;
+  studentEmail?: string;
+  labId: string;
+  submittedCode: string;
+  timestamp: string;
+  status: 'PENDING_REVIEW' | 'REVIEWED' | 'SECURITY_BREACH';
+  securityIncident?: SecurityIncident;
+}
+
 export type NoticeCategory = 'Academic' | 'Exams' | 'Administration' | 'Placements' | 'General';
 
 export interface NoticeAttachment {

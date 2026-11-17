@@ -22,6 +22,8 @@ import {
   CampusTicket,
   TicketStatus,
   CampusBuilding,
+  CodingLab,
+  LabSubmission,
 } from '../types';
 import { StorageService } from '../services/storage';
 
@@ -49,6 +51,8 @@ interface AppContextType {
   grades: GradeRecord[];
   skillTrees: SkillTree[];
   campusTickets: CampusTicket[];
+  globalLabs: CodingLab[];
+  labSubmissions: LabSubmission[];
   isAuthenticated: boolean;
 
   // Counts
@@ -141,6 +145,13 @@ interface AppContextType {
   createCampusTicket: (ticket: Omit<CampusTicket, 'id' | 'createdAt' | 'status'>) => CampusTicket;
   updateCampusTicketStatus: (id: string, status: TicketStatus) => CampusTicket | null;
   deleteCampusTicket: (id: string) => void;
+
+  // Automated Coding Labs Lifecycle Actions
+  createGlobalLab: (labData: Omit<CodingLab, 'id' | 'createdAt'>) => CodingLab;
+  deleteGlobalLab: (id: string) => void;
+  createLabSubmission: (submissionData: Omit<LabSubmission, 'id'> & { timestamp?: string }) => LabSubmission;
+  refreshGlobalLabs: () => void;
+  refreshLabSubmissions: () => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -160,6 +171,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [grades, setGrades] = useState<GradeRecord[]>(() => StorageService.getGrades());
   const [skillTrees, setSkillTrees] = useState<SkillTree[]>(() => StorageService.getSkillTrees());
   const [campusTickets, setCampusTickets] = useState<CampusTicket[]>(() => StorageService.getCampusTickets());
+  const [globalLabs, setGlobalLabs] = useState<CodingLab[]>(() => StorageService.getGlobalLabs());
+  const [labSubmissions, setLabSubmissions] = useState<LabSubmission[]>(() => StorageService.getLabSubmissions());
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => StorageService.isAuthenticated());
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -181,6 +194,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setGrades(StorageService.getGrades());
     setSkillTrees(StorageService.getSkillTrees());
     setCampusTickets(StorageService.getCampusTickets());
+    setGlobalLabs(StorageService.getGlobalLabs());
+    setLabSubmissions(StorageService.getLabSubmissions());
     setIsAuthenticated(StorageService.isAuthenticated());
   }, []);
 
@@ -651,6 +666,54 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCampusTickets(StorageService.getCampusTickets());
   }, []);
 
+  const createGlobalLab = useCallback((labData: Omit<CodingLab, 'id' | 'createdAt'>) => {
+    const created = StorageService.createGlobalLab(labData);
+    setGlobalLabs(StorageService.getGlobalLabs());
+    showToast({
+      type: 'success',
+      title: 'Coding Lab Published',
+      message: `"${created.title}" published with active window ${created.windowStartTime} – ${created.windowEndTime}.`,
+    });
+    return created;
+  }, [showToast]);
+
+  const deleteGlobalLab = useCallback((id: string) => {
+    StorageService.deleteGlobalLab(id);
+    setGlobalLabs(StorageService.getGlobalLabs());
+    showToast({
+      type: 'info',
+      title: 'Lab Removed',
+      message: 'Coding lab has been archived from campus repository.',
+    });
+  }, [showToast]);
+
+  const createLabSubmission = useCallback((subData: Omit<LabSubmission, 'id'> & { timestamp?: string }) => {
+    const created = StorageService.createLabSubmission(subData);
+    setLabSubmissions(StorageService.getLabSubmissions());
+    if (created.status === 'SECURITY_BREACH') {
+      showToast({
+        type: 'error',
+        title: 'Exam Security Breach Flagged',
+        message: 'Violation recorded. Code submitted under lockdown.',
+      });
+    } else {
+      showToast({
+        type: 'success',
+        title: 'Final Code Submitted',
+        message: 'Your lab submission has been successfully uploaded and locked.',
+      });
+    }
+    return created;
+  }, [showToast]);
+
+  const refreshGlobalLabs = useCallback(() => {
+    setGlobalLabs(StorageService.getGlobalLabs());
+  }, []);
+
+  const refreshLabSubmissions = useCallback(() => {
+    setLabSubmissions(StorageService.getLabSubmissions());
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
@@ -676,6 +739,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         createCampusTicket,
         updateCampusTicketStatus,
         deleteCampusTicket,
+        globalLabs,
+        labSubmissions,
+        createGlobalLab,
+        deleteGlobalLab,
+        createLabSubmission,
+        refreshGlobalLabs,
+        refreshLabSubmissions,
         isAuthenticated,
         unreadNoticeCount,
         pendingAssignmentsCount,

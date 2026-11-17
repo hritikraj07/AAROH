@@ -16,12 +16,13 @@ import {
   CheckCircle2,
   Users,
   Network,
-  Coffee
+  Coffee,
+  Lock
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { APP_CONFIG } from '../config';
 import { AcademicService } from '../services/academicService';
-import { ClassSession } from '../types';
+import { ClassSession, CodingLab } from '../types';
 import { TodayClassesCard } from '../components/modules/dashboard/TodayClassesCard';
 import { AttendanceAlertsWidget } from '../components/modules/dashboard/AttendanceAlertsWidget';
 import { WeekAssignmentsWidget } from '../components/modules/dashboard/WeekAssignmentsWidget';
@@ -34,6 +35,7 @@ import { SkillTreeModal } from '../components/modules/academics/SkillTreeModal';
 import { CampusMap } from '../components/modules/campus/CampusMap';
 import { SmartResolveModal } from '../components/modules/campus/SmartResolveModal';
 import { CampusBuilding } from '../types';
+import { StudentLabWorkspaceModal } from '../components/modules/labs/StudentLabWorkspaceModal';
 
 // Exact custom 4-layer tactile button shadow system
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
@@ -47,6 +49,9 @@ export const DashboardPage: React.FC = () => {
   const [isSkillTreeModalOpen, setIsSkillTreeModalOpen] = useState(false);
   const [selectedMapBuilding, setSelectedMapBuilding] = useState<CampusBuilding>('Academic Blocks');
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [selectedGlobalLab, setSelectedGlobalLab] = useState<CodingLab | null>(null);
+  const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
   const {
     user,
@@ -57,8 +62,18 @@ export const DashboardPage: React.FC = () => {
     timetable,
     assignments,
     opportunities,
+    globalLabs,
+    labSubmissions,
+    refreshGlobalLabs,
+    refreshLabSubmissions,
     showToast,
   } = useApp();
+
+  // Tick timer every second for strict time window validation
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // 1. Attendance KPI
   const minThreshold = student?.attendanceMinimum || APP_CONFIG.defaultAttendanceThreshold;
@@ -222,7 +237,12 @@ export const DashboardPage: React.FC = () => {
     }
   };
 
-  // 4. Coursework KPI & Automated Coding Labs
+  // 4. Coursework KPI & Automated Coding Labs (globalLabs & labSubmissions)
+  const currentStudentId = user?.id || 'demo_student';
+  const studentSubmissions = (labSubmissions || []).filter(s => s.studentId === currentStudentId);
+  const submittedLabIds = new Set(studentSubmissions.map(s => s.labId));
+  const activePendingGlobalLabs = (globalLabs || []).filter(l => !submittedLabIds.has(l.id));
+
   const pendingAssignments = assignments.filter(a => a.status !== 'submitted');
   const overdueAssignments = assignments.filter(a => a.status === 'overdue');
   const pendingCodingLabs = assignments.filter(a => a.type === 'coding' && a.status !== 'submitted');
@@ -608,9 +628,125 @@ export const DashboardPage: React.FC = () => {
             </button>
           </div>
 
-          {pendingCodingLabs.length === 0 ? (
+          {activePendingGlobalLabs.length === 0 && pendingCodingLabs.length === 0 ? (
             <div className="py-6 text-center text-xs text-slate-500 dark:text-slate-400 font-mono">
               All Automated Coding Labs completed on schedule! Great work!
+            </div>
+          ) : activePendingGlobalLabs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {activePendingGlobalLabs.map(lab => {
+                const startTime = new Date(lab.windowStartTime);
+                const endTime = new Date(lab.windowEndTime);
+                const nowMs = currentTime.getTime();
+                const startMs = startTime.getTime();
+                const endMs = endTime.getTime();
+
+                // State 1: Too Early
+                const isTooEarly = nowMs < startMs;
+                // State 3: Expired
+                const isExpired = nowMs > endMs;
+                // State 2: Active
+                const isActive = !isTooEarly && !isExpired;
+
+                const formatUnlock = (d: string) => {
+                  try {
+                    return new Date(d).toLocaleString([], {
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    });
+                  } catch {
+                    return d;
+                  }
+                };
+
+                return (
+                  <div
+                    key={lab.id}
+                    className="p-4 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/50 dark:bg-[#111115] hover:border-teal-500/50 transition-all flex flex-col justify-between space-y-3"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
+                          Sem {lab.semester} • {lab.subject}
+                        </span>
+                        {isExpired && (
+                          <span className="text-[10px] font-mono font-bold text-red-600 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 px-1.5 py-0.5 rounded">
+                            Deadline Passed / Locked
+                          </span>
+                        )}
+                        {isActive && (
+                          <span className="text-[10px] font-mono text-teal-800 dark:text-teal-300 font-semibold flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
+                            Active Window
+                          </span>
+                        )}
+                        {isTooEarly && (
+                          <span className="text-[10px] font-mono text-amber-700 dark:text-amber-400 font-semibold">
+                            Upcoming
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 line-clamp-1">
+                        {lab.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1">
+                        {lab.problemStatement}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-200/60 dark:border-[#27272A] space-y-2">
+                      {isTooEarly && (
+                        <div className="text-[11px] font-mono text-[#0F766E] dark:text-teal-400 font-medium">
+                          Lab unlocks at {formatUnlock(lab.windowStartTime)}
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-mono text-slate-600 dark:text-slate-400">
+                          {isExpired ? 'Window Closed' : `Closes ${formatUnlock(lab.windowEndTime)}`}
+                        </span>
+
+                        {isTooEarly && (
+                          <button
+                            type="button"
+                            disabled
+                            className="rounded-full bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-[11px] font-medium px-3 py-1 cursor-not-allowed opacity-70"
+                          >
+                            <span>Open Lab</span>
+                          </button>
+                        )}
+
+                        {isActive && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedGlobalLab(lab);
+                              setIsWorkspaceModalOpen(true);
+                            }}
+                            className={`rounded-full bg-[#0F766E] hover:bg-[#0D6861] active:bg-[#115E59] text-white text-[11px] font-medium px-3 py-1 transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} flex items-center gap-1 cursor-pointer`}
+                          >
+                            <span>Open Lab</span>
+                            <span className="hidden sm:inline text-[9px] opacity-80">• Launch Workspace</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </button>
+                        )}
+
+                        {isExpired && (
+                          <button
+                            type="button"
+                            disabled
+                            className="rounded-full bg-red-100 dark:bg-red-950/40 text-red-400 text-[11px] font-medium px-3 py-1 cursor-not-allowed opacity-60"
+                          >
+                            <span>Open Lab</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -779,6 +915,22 @@ export const DashboardPage: React.FC = () => {
         onClose={() => setIsMapModalOpen(false)}
         selectedBuilding={selectedMapBuilding}
       />
+
+      {/* Student Proctored Lab Workspace Modal */}
+      {selectedGlobalLab && (
+        <StudentLabWorkspaceModal
+          lab={selectedGlobalLab}
+          isOpen={isWorkspaceModalOpen}
+          onClose={() => {
+            setIsWorkspaceModalOpen(false);
+            setSelectedGlobalLab(null);
+          }}
+          onSubmittedSuccess={() => {
+            refreshLabSubmissions();
+            refreshGlobalLabs();
+          }}
+        />
+      )}
     </div>
   );
 };
