@@ -1806,4 +1806,49 @@ assert(skillTreeTabUpdatedText.includes('CurriculumTracker'), 'SkillTreeTab moun
 
 console.log('--- ALL DYNAMIC CURRICULUM TRACKER VERIFICATIONS PASSED ---');
 
+// =========================================================================================
+// 35. Aaroh Omni-Search: Command Palette, Glassmorphism & Unified Internal Search Engine
+// =========================================================================================
+console.log('--- VERIFYING AAROH OMNI-SEARCH COMMAND PALETTE & SEARCH ENGINE ---');
+
+// 1. Omni-Search Trigger & Shortcut
+const topBarOmniContent = fs.readFileSync(path.join(__dirname, '../src/components/layout/TopBar.tsx'), 'utf8');
+assert(topBarOmniContent.includes('Search Aaroh... (Cmd+K)'), 'TopBar renders sleek "Search Aaroh... (Cmd+K)" input button');
+assert(topBarOmniContent.includes('(e.metaKey || e.ctrlKey)') && topBarOmniContent.includes("e.key.toLowerCase() === 'k'"), 'TopBar attaches global Cmd+K / Ctrl+K keyboard shortcut listener');
+assert(topBarOmniContent.includes('e.preventDefault()'), 'TopBar intercepts shortcut and prevents default browser search behavior');
+assert(topBarOmniContent.includes('openSearch()'), 'TopBar opens Omni-Search modal when triggered');
+
+// 2. Glassmorphism Modal UI
+const globalSearchModalPath = path.join(__dirname, '../src/components/layout/GlobalSearchModal.tsx');
+assert(fs.existsSync(globalSearchModalPath), 'GlobalSearchModal.tsx exists');
+const globalSearchModalContent = fs.readFileSync(globalSearchModalPath, 'utf8');
+
+assert(globalSearchModalContent.includes('fixed inset-0 z-50 backdrop-blur-md bg-black/40'), 'GlobalSearchModal renders centered glassmorphism overlay fixed inset-0 z-50 backdrop-blur-md bg-black/40');
+assert(globalSearchModalContent.includes('max-w-2xl w-full'), 'GlobalSearchModal container enforces max-w-2xl w-full sizing');
+assert(globalSearchModalContent.includes('dark:bg-[#0E0E11]'), 'GlobalSearchModal implements True Dark Mode #0E0E11 background');
+assert(globalSearchModalContent.includes('dark:border-white/10') && globalSearchModalContent.includes('border-slate-200'), 'GlobalSearchModal implements 1px border-white/10 and border-slate-200');
+assert(globalSearchModalContent.includes('caret-[#0F766E]'), 'GlobalSearchModal text input features Deep Teal caret-[#0F766E] blinking cursor');
+assert(globalSearchModalContent.includes('overflow-y-auto'), 'GlobalSearchModal features scrollable results list');
+
+// 3. Unified Search Engine Logic (localStorage)
+assert(globalSearchModalContent.includes('Navigate to Faculty Dashboard'), 'System Routes includes Navigate to Faculty Dashboard');
+assert(globalSearchModalContent.includes('Open Skill Tree'), 'System Routes includes Open Skill Tree');
+assert(globalSearchModalContent.includes('Report Infrastructure Issue'), 'System Routes includes Report Infrastructure Issue');
+
+assert(globalSearchModalContent.includes('StorageService.getGlobalLabs()') || globalSearchModalContent.includes('getGlobalLabs'), 'Omni-Search reads globalLabs from localStorage');
+assert(globalSearchModalContent.includes('lab.title.toLowerCase().includes(q)') && globalSearchModalContent.includes('lab.problemStatement.toLowerCase().includes(q)'), 'Omni-Search filters labs by lab title or problemStatement');
+
+assert(globalSearchModalContent.includes('StorageService.getCampusTickets()') || globalSearchModalContent.includes('getCampusTickets'), 'Omni-Search reads campusTickets from localStorage');
+assert(globalSearchModalContent.includes('ticket.category.toLowerCase().includes(q)') && globalSearchModalContent.includes('ticket.summary.toLowerCase().includes(q)'), 'Omni-Search filters tickets by category or summary');
+
+assert(globalSearchModalContent.includes('ROUTES') && globalSearchModalContent.includes('LABS') && globalSearchModalContent.includes('TICKETS'), 'Omni-Search visually groups results under uppercase headers ROUTES, LABS, TICKETS');
+assert(globalSearchModalContent.includes('No results found in the campus database.'), 'Omni-Search renders exact empty state "No results found in the campus database."');
+
+// 4. Keyboard Navigation (UX Polish)
+assert(globalSearchModalContent.includes("e.key === 'ArrowDown'") && globalSearchModalContent.includes("e.key === 'ArrowUp'"), 'Omni-Search implements ArrowUp and ArrowDown keyboard navigation');
+assert(globalSearchModalContent.includes('bg-[#0F766E]/10'), 'Omni-Search highlights active row with faint Deep Teal bg-[#0F766E]/10');
+assert(globalSearchModalContent.includes("e.key === 'Enter'") && (globalSearchModalContent.includes('navigate(item.url)') || globalSearchModalContent.includes('handleSelectItem')), 'Omni-Search redirects on Enter key and closes palette');
+
+console.log('--- ALL AAROH OMNI-SEARCH VERIFICATIONS PASSED ---');
+
 module.exports = { assert };
