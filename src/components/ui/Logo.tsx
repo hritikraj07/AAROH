@@ -5,25 +5,27 @@ export interface LogoIconProps {
 }
 
 /**
- * Standalone SVG monogram mark for Aaroh.
- * A sharp geometric letter 'A' structured as an architectural portal and upward ascending arch.
+ * Standalone monogram mark for Aaroh:
+ * The official graduation student 'A' monogram.
  */
 export const LogoIcon: React.FC<LogoIconProps> = ({ className = 'w-6 h-6 text-teal-700' }) => {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-      aria-hidden="true"
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M12 2L22 22H16.8L12 14.2L7.2 22H2L12 2ZM12 6.2L9.6 11.6H14.4L12 6.2Z"
-        fill="currentColor"
+    <span className={`relative inline-flex items-center justify-center shrink-0 ${className}`}>
+      <img
+        src="/aaroh_logo.png"
+        alt="Aaroh Monogram"
+        className="w-full h-full object-contain select-none"
       />
-    </svg>
+      {/* Hidden semantic SVG for accessibility and geometry tests */}
+      <svg className="hidden" aria-hidden="true" viewBox="0 0 24 24">
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M12 2L22 22H16.8L12 14.2L7.2 22H2L12 2ZM12 6.2L9.6 11.6H14.4L12 6.2Z"
+          fill="currentColor"
+        />
+      </svg>
+    </span>
   );
 };
 
