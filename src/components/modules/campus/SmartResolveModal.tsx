@@ -52,12 +52,7 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
   const exactDarkHover =
     'dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)]';
 
-  const sampleSuggestions = [
-    'No water on the 3rd floor washroom',
-    'Projector broken in Room 204',
-    'AC tripping electrical power socket',
-    'Library digital portal WiFi down',
-  ];
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -170,24 +165,7 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
             />
           </div>
 
-          {/* Quick Suggestions Chips */}
-          <div className="space-y-1.5">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">
-              Quick Presets:
-            </span>
-            <div className="flex flex-wrap gap-1.5">
-              {sampleSuggestions.map((suggestion, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setComplaintText(suggestion)}
-                  className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-[#202026] dark:hover:bg-[#272730] text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-white/5 transition-colors cursor-pointer text-left"
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
-          </div>
+
 
           {/* AI Live Output Preview */}
           {analyzedResult && (
