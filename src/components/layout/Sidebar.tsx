@@ -120,7 +120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
         },
         {
           to: '/student/campus-map',
-          label: 'Campus Map & Facilities',
+          label: 'Report Facility Issues',
           icon: <MapPin className="w-4 h-4" />,
         },
       ],
@@ -174,7 +174,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
         },
         {
           to: '/faculty/campus-map',
-          label: 'Campus Map & Facilities',
+          label: 'Report Facility Issues',
           icon: <MapPin className="w-4 h-4" />,
         },
       ],

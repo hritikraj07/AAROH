@@ -4,9 +4,7 @@ import { KrmuCampusExplorer } from '../components/modules/campus/KrmuCampusExplo
 import { SmartResolveModal } from '../components/modules/campus/SmartResolveModal';
 import { CampusKanbanBoard } from '../components/modules/campus/CampusKanbanBoard';
 import {
-  MapPin,
   ClipboardList,
-  Plus,
 } from 'lucide-react';
 
 export const CampusMapPage: React.FC = () => {
@@ -27,40 +25,8 @@ export const CampusMapPage: React.FC = () => {
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 font-sans pb-12 select-none">
-      {/* Hero Banner: Refined Theme matching #134074 & #8DA9C4 */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#134074] via-[#244970] to-[#355B82] border border-[#8DA9C4]/30 shadow-lg text-white rounded-3xl p-6 sm:p-10 transition-all duration-300">
-        <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full border-[20px] border-white/10 pointer-events-none" />
-        <div className="absolute right-28 -top-16 w-52 h-52 rounded-full border-[14px] border-white/10 pointer-events-none" />
-        <div className="absolute top-6 right-16 text-white/20 pointer-events-none select-none">
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-          </svg>
-        </div>
-
-        <div className="relative z-10 max-w-2xl space-y-2.5">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white backdrop-blur-sm border border-white/20 font-mono uppercase tracking-wider">
-            <MapPin className="w-3.5 h-3.5" />
-            <span>K.R. Mangalam University • Campus Facilities</span>
-          </div>
-          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-white">
-            {isAdmin ? 'Campus Infrastructure Nexus' : 'Aaroh Smart Campus Heatmap'}
-          </h1>
-
-          <div className="pt-2 flex items-center gap-2.5 flex-wrap">
-            <button
-              type="button"
-              onClick={() => handleSelectBuilding('Aryabhata Block')}
-              className="rounded-full bg-[#EEF4ED] text-[#134074] hover:bg-white text-xs px-4 py-2 font-bold transition-all duration-200 active:scale-95 inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5 text-[#134074]" />
-              <span>Report Facility Issue</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Interactive 3D WebGL Digital Twin of K.R. Mangalam University */}
-      <div className="w-full h-[640px] sm:h-[740px] rounded-2xl overflow-hidden shadow-sm">
+      <div className="w-full h-[680px] sm:h-[780px] rounded-2xl overflow-hidden shadow-sm">
         <KrmuCampusExplorer onReportIssue={handleSelectBuilding} />
       </div>
 

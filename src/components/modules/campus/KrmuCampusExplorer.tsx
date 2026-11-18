@@ -1029,6 +1029,13 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     dFrontGround.receiveShadow = true;
     dBlockGroup.add(dFrontGround);
 
+    registerBuilding('dblock', dBlockGroup);
+    scene.add(dBlockGroup);
+
+    // Agricultural Garden plots & shade greenhouses moved to open field beside sports area
+    const agriGroup = new THREE.Group();
+    agriGroup.position.set(-22.0, 0.14, -14.0);
+
     const agriTex = createCanvasTexture(
       (ctx, w, h) => {
         ctx.fillStyle = '#855E42';
@@ -1048,26 +1055,24 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       new THREE.BoxGeometry(11.5, 0.16, 10.5),
       new THREE.MeshStandardMaterial({ map: agriTex, roughness: 0.9 })
     );
-    agriPlot.position.set(-23.5, 0.02, 16.5);
+    agriPlot.position.set(0, 0.02, 0);
     agriPlot.receiveShadow = true;
-    dBlockGroup.add(agriPlot);
+    agriGroup.add(agriPlot);
 
-    [-25.8, -21.2].forEach((gx) => {
+    [-2.3, 2.3].forEach((gx) => {
       const gh = new THREE.Mesh(
         new THREE.CylinderGeometry(1.35, 1.35, 4.4, 14, 1, false, 0, Math.PI),
         mats.whiteColumn
       );
       gh.rotation.z = Math.PI / 2;
       gh.rotation.y = Math.PI / 2;
-      gh.position.set(gx, 0.1, 9.2);
+      gh.position.set(gx, 0.1, -6.8);
       gh.castShadow = true;
-      dBlockGroup.add(gh);
+      agriGroup.add(gh);
     });
 
-    dBlockGroup.add(makeBox(15.5, 0.16, 6.2, mats.paver, -22.5, 0.02, 25.2, false, true));
-
-    registerBuilding('dblock', dBlockGroup);
-    scene.add(dBlockGroup);
+    agriGroup.add(makeBox(12.5, 0.16, 4.2, mats.paver, 0, 0.02, 7.8, false, true));
+    scene.add(agriGroup);
 
     addSolarArray(dBlockGroup, -5.5, dRoofY + 0.35, 0, 2, 4);
     addSolarArray(dBlockGroup, 5.5, dRoofY + 0.35, 0, 2, 4);
@@ -1129,8 +1134,9 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       hostelGroup.add(makeBox(0.55, 5.6, 0.55, mats.sandstoneTrim, bx, 2.8, 0, true, true));
     });
 
-    hostelGroup.add(makeBox(7.2, 3.2, 8.5, mats.whiteColumn, 10.8, 1.6, -24.5, true, true));
-    hostelGroup.add(makeBox(7.6, 0.25, 8.9, mats.shedBlue, 10.8, 3.3, -24.5, true, true));
+    // Blue utility shed moved southwards along the road adjacent to sports courts per user annotation
+    hostelGroup.add(makeBox(7.2, 3.2, 8.5, mats.whiteColumn, 10.8, 1.6, -8.5, true, true));
+    hostelGroup.add(makeBox(7.6, 0.25, 8.9, mats.shedBlue, 10.8, 3.3, -8.5, true, true));
     hostelGroup.add(makeBox(3.4, 2.8, 4.8, mats.whiteColumn, 8.2, 1.4, 0, true, true));
     hostelGroup.add(makeBox(3.7, 0.22, 5.1, mats.shedBlue, 8.2, 2.9, 0, true, true));
 
@@ -1603,6 +1609,26 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       return bike;
     };
 
+    const krmuBusSideTex = createCanvasTexture((ctx, w, h) => {
+      ctx.fillStyle = '#F59E0B';
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.fillStyle = '#1E3A8A';
+      ctx.fillRect(0, Math.floor(h * 0.35), w, Math.floor(h * 0.45));
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = 'bold 30px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('K.R. MANGALAM UNIVERSITY', w / 2, h * 0.58);
+    }, 512, 128);
+
+    const busSideMat = new THREE.MeshStandardMaterial({
+      map: krmuBusSideTex,
+      roughness: 0.38,
+      metalness: 0.2,
+    });
+
     const createKrmuBus = () => {
       const bus = new THREE.Group();
       const bw = 1.55;
@@ -1615,6 +1641,17 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       bus.add(makeBox(bw + 0.04, 0.65, bl - 0.45, mats.glassTintMat, 0, 0.36 + bh * 0.64, -0.1, false, false));
       bus.add(makeBox(bw + 0.05, 0.2, bl - 0.2, mats.busStripe, 0, 0.36 + bh * 0.36, 0, false, false));
       bus.add(makeBox(bw - 0.16, 0.82, 0.08, mats.glassTintMat, 0, 0.36 + bh * 0.62, bl / 2 + 0.01, false, false));
+
+      // K.R. Mangalam University branding on both sides of bus
+      const busSignLeft = new THREE.Mesh(new THREE.PlaneGeometry(bl - 0.8, 0.42), busSideMat);
+      busSignLeft.position.set(-bw / 2 - 0.03, 1.05, 0);
+      busSignLeft.rotation.y = -Math.PI / 2;
+      bus.add(busSignLeft);
+
+      const busSignRight = new THREE.Mesh(new THREE.PlaneGeometry(bl - 0.8, 0.42), busSideMat);
+      busSignRight.position.set(bw / 2 + 0.03, 1.05, 0);
+      busSignRight.rotation.y = Math.PI / 2;
+      bus.add(busSignRight);
 
       [
         [-0.78, 0.35, 1.65],

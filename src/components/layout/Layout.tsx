@@ -50,7 +50,7 @@ export const Layout: React.FC = () => {
         return 'Opportunity Board';
       case '/student/campus-map':
       case '/campus-map':
-        return 'Smart Campus Heatmap & Facilities';
+        return 'Report Facility Issues';
 
       // Faculty Routes
       case '/faculty':
@@ -67,7 +67,7 @@ export const Layout: React.FC = () => {
       case '/faculty/notices':
         return 'Department Circulars & Notices';
       case '/faculty/campus-map':
-        return 'Smart Campus Facilities & Map';
+        return 'Report Facility Issues';
 
       // Admin Routes
       case '/admin':
@@ -130,7 +130,7 @@ export const Layout: React.FC = () => {
 
       {/* Floating Scan Attendance QR Button for Students */}
       {role === 'student' && (
-        <div className="fixed bottom-6 right-20 sm:right-22 z-40">
+        <div className="fixed bottom-20 sm:bottom-22 right-6 z-40">
           <button
             onClick={() => setIsQRScannerOpen(true)}
             className="flex items-center justify-center gap-2 px-3.5 py-2.5 min-h-[44px] rounded-full bg-[#18181B] dark:bg-[#18181B] hover:bg-slate-800 text-white shadow-lg border border-[#27272A] text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer"
