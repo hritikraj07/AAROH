@@ -5,6 +5,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  password?: string;
   avatarInitials: string;
   department: string;
   designation?: string; // e.g. "Assistant Professor", "Academic Registrar", "Student"

@@ -678,7 +678,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast({
       type: 'success',
       title: 'Coding Lab Published',
-      message: `"${created.title}" published with active window ${created.windowStartTime} – ${created.windowEndTime}.`,
+      message: `"${created.title}" published with active window ${created.windowStartTime} - ${created.windowEndTime}.`,
     });
     return created;
   }, [showToast]);

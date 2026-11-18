@@ -265,7 +265,7 @@ export const EventsPage: React.FC = () => {
                       <div className="flex items-center gap-2">
                         <Clock className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
                         <span className="font-mono text-[11px]">
-                          {event.startTime} – {event.endTime}
+                          {event.startTime} - {event.endTime}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -279,7 +279,7 @@ export const EventsPage: React.FC = () => {
                       <div className="p-2 rounded bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-[11px] text-amber-900 dark:text-amber-200 flex items-start gap-1.5 mt-2">
                         <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
                         <span>
-                          <strong>Class Overlap:</strong> Clashes with {clash.clashingCourse?.code} ({clash.clashingSession?.startTime}–{clash.clashingSession?.endTime})
+                          <strong>Class Overlap:</strong> Clashes with {clash.clashingCourse?.code} ({clash.clashingSession?.startTime}-{clash.clashingSession?.endTime})
                         </span>
                       </div>
                     )}

@@ -161,7 +161,7 @@ export function buildCampusAISystemPrompt(studentData: StudentStorageContext): s
   };
 
   const stringifiedData = JSON.stringify(compactData);
-  return `You are a strict Socratic professor. The student has a bug in their code. YOU ARE STRICTLY FORBIDDEN from giving them the correct code or the direct answer. You must ask exactly ONE guiding question that forces them to figure out the bug themselves. You are also Aaroh, the smart campus assistant for K.R. Mangalam University. Be concise, helpful, and professional. Here is the current student's real-time data: ${stringifiedData}. Answer the user's query strictly based on this data. If they ask about classes, check the timetable. If they ask about deadlines, check assignments. For general queries, math calculations, or arithmetic (such as '2+2'), answer accurately and directly (returning exactly '4' for '2+2') and never concatenate numbers or hallucinate student roll numbers.`;
+  return `You are Aaroh, the helpful and concise AI campus assistant for K.R. Mangalam University. Always give simple, direct, and friendly replies without unnecessary questions or lecturing. If the student asks about classes: if there is a next class, state directly "Your next class is [Subject] at [Time] in Room [Room]." If there is no class or timetable is empty, state simply "Currently no classes scheduled for you today." For coding bugs: You are a strict Socratic professor. The student has a bug in their code. YOU ARE STRICTLY FORBIDDEN from giving them the correct code or the direct answer. You must ask exactly ONE guiding question that forces them to figure out the bug themselves. Here is the current student's real-time data: ${stringifiedData}. Answer the user's query strictly based on this data. If they ask about classes, check the timetable. If they ask about deadlines, check assignments. For general queries, math calculations, or arithmetic (such as '2+2'), answer accurately and directly (returning exactly '4' for '2+2') and never concatenate numbers or hallucinate student roll numbers.`;
 }
 
 export interface ChatMessagePayload {
@@ -360,7 +360,7 @@ export function processCampusAIQuery(query: string, context: AIAssistantContext,
     });
 
     if (relevantSessions.length === 0) {
-      return "No classes have been added to your timetable yet. Check back once your department administrator posts the schedule.";
+      return "Currently no classes scheduled for you today.";
     }
 
     // Today's day of week (0 = Sunday, 1 = Monday ... 6 = Saturday)
@@ -373,21 +373,7 @@ export function processCampusAIQuery(query: string, context: AIAssistantContext,
       .sort((a, b) => a.startTime.localeCompare(b.startTime));
 
     if (todaySessions.length === 0) {
-      // Find the next day with classes
-      for (let offset = 1; offset <= 7; offset++) {
-        const nextDay = ((currentDay + offset) % 7);
-        const nextDaySessions = relevantSessions
-          .filter(s => s.dayOfWeek === nextDay)
-          .sort((a, b) => a.startTime.localeCompare(b.startTime));
-        if (nextDaySessions.length > 0) {
-          const firstNext = nextDaySessions[0];
-          const subject = firstNext.courseName || firstNext.courseCode || 'Class';
-          const room = firstNext.room || 'Classroom';
-          const time = firstNext.startTime;
-          return `You have no lectures scheduled for today. Your next upcoming class is ${subject} in ${room} at ${time}.`;
-        }
-      }
-      return "You have no classes scheduled on your timetable.";
+      return "Currently no classes scheduled for you today.";
     }
 
     // Find next chronological class today (startTime >= currentTimeStr or ongoing)
@@ -395,13 +381,13 @@ export function processCampusAIQuery(query: string, context: AIAssistantContext,
 
     if (nextClass) {
       const subject = nextClass.courseName || nextClass.courseCode || 'Lecture';
-      const room = nextClass.room || 'Classroom';
+      const room = nextClass.room || 'LT-101';
       const time = nextClass.startTime;
-      return `Your next class is ${subject} in ${room} at ${time}.`;
+      return `Your next class is ${subject} at ${time} in Room ${room}.`;
     }
 
     // If all classes for today are finished
-    return `All your scheduled classes for today have concluded. Great job!`;
+    return "Currently no more classes scheduled for you today.";
   }
 
   // 2. Check for Attendance or Shortfall Queries

@@ -103,7 +103,7 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
               {session.courseName || session.courseCode || 'Class Lecture'}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
-              Room {session.room || 'General Hall'} • {session.startTime} – {session.endTime}
+              Room {session.room || 'General Hall'} • {session.startTime} - {session.endTime}
             </p>
           </div>
           <button

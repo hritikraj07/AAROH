@@ -108,9 +108,9 @@ export const TodayClassesCard: React.FC = () => {
                       </p>
 
                       <div className="flex items-center gap-4 mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3 text-slate-400 dark:text-slate-500" />
-                          {session.room}
+                        <span className="flex items-center gap-1 font-mono font-semibold text-slate-800 dark:text-slate-200">
+                          <MapPin className="w-3 h-3 text-teal-600 dark:text-teal-400" />
+                          Room {session.room}
                         </span>
                         <span className="flex items-center gap-1 font-medium text-slate-700 dark:text-slate-300">
                           <UserCheck className="w-3 h-3 text-slate-400 dark:text-slate-500" />

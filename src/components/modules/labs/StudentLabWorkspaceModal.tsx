@@ -289,7 +289,7 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5 truncate hidden sm:block">
-                Window: {new Date(lab.windowStartTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })} – {new Date(lab.windowEndTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
+                Window: {new Date(lab.windowStartTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })} - {new Date(lab.windowEndTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
               </p>
             </div>
           </div>

@@ -13,10 +13,18 @@ import {
   Briefcase,
   ShieldAlert,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Lock,
+  Eye,
+  EyeOff,
+  Check,
+  Loader2,
+  Shield,
 } from 'lucide-react';
 import { User, UserRole } from '../../types';
 import { APP_CONFIG } from '../../config';
+
+const GOOGLE_SHEETS_WEBHOOK = "PASTE_WEBHOOK_URL_HERE";
 
 export const AdminPeoplePage: React.FC = () => {
   const { users, createUser, deleteUser, user: currentUser } = useApp();
@@ -52,6 +60,10 @@ export const AdminPeoplePage: React.FC = () => {
   // Form State
   const [name, setName] = useState('');
   const [emailPrefix, setEmailPrefix] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncSuccess, setSyncSuccess] = useState(false);
   const [role, setRole] = useState<UserRole>('student');
 
   // Student specific form fields
@@ -105,7 +117,7 @@ export const AdminPeoplePage: React.FC = () => {
     }
   };
 
-  const handleAddUser = (e: React.FormEvent) => {
+  const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
 
@@ -124,10 +136,26 @@ export const AdminPeoplePage: React.FC = () => {
 
     const fullEmail = `${cleanPrefix}${getEmailSuffix(role)}`;
 
-    // Role-specific validation
-    if (role === 'student' && !rollNumber.trim()) {
-      setFormError('Student ID / Roll Number is required for students.');
+    // Password validation for all roles
+    if (!password.trim()) {
+      setFormError('Account Password is required.');
       return;
+    }
+    if (password.trim().length < 6) {
+      setFormError('Password must be at least 6 characters.');
+      return;
+    }
+
+    // Role-specific validation
+    if (role === 'student') {
+      if (!rollNumber.trim()) {
+        setFormError('Student ID / Roll Number is required for students.');
+        return;
+      }
+      if (!/^\d+$/.test(rollNumber.trim())) {
+        setFormError('Roll Number must contain digits only.');
+        return;
+      }
     }
 
     if ((role === 'faculty' || role === 'admin') && !department.trim()) {
@@ -145,13 +173,14 @@ export const AdminPeoplePage: React.FC = () => {
     const newUserData: Omit<User, 'id'> = {
       name: trimmedName,
       email: fullEmail,
+      password: password.trim(),
       role,
       avatarInitials: '',
       department: department.trim() || (role === 'student' ? 'Computer Science & Engineering' : 'Central Administration'),
       designation: role === 'student' ? 'Undergraduate Scholar' : designation.trim(),
       ...(role === 'student'
         ? {
-          rollNumber: rollNumber.trim().toUpperCase(),
+          rollNumber: rollNumber.trim(),
           program: program.trim(),
           semester: Number(semester) || 1,
           section: section.trim(),
@@ -162,14 +191,62 @@ export const AdminPeoplePage: React.FC = () => {
         : {}),
     };
 
+    // 1. Save to primary database store (aaroh_users)
     createUser(newUserData);
 
-    // Reset Form
-    setName('');
-    setEmailPrefix('');
-    setRollNumber('');
-    setClassCoordinator('');
-    setIsAddModalOpen(false);
+    // 2. Dual-Sync: Save to aarohUsers array in localStorage
+    try {
+      const existingAarohUsers = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
+      const idx = existingAarohUsers.findIndex((u: any) => u.username?.toLowerCase() === fullEmail.toLowerCase());
+      if (idx >= 0) {
+        existingAarohUsers[idx] = { username: fullEmail, password: password.trim(), role };
+      } else {
+        existingAarohUsers.push({ username: fullEmail, password: password.trim(), role });
+      }
+      localStorage.setItem('aarohUsers', JSON.stringify(existingAarohUsers));
+    } catch (err) {
+      console.warn('Failed saving to aarohUsers localStorage:', err);
+    }
+
+    // 3. UI Loading feedback state
+    setIsSyncing(true);
+
+    // 4. Asynchronous fetch call to Google Sheets Webhook
+    try {
+      await fetch(GOOGLE_SHEETS_WEBHOOK, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: fullEmail,
+          password: password.trim(),
+          role,
+          name: trimmedName,
+          email: fullEmail,
+          rollNumber: role === 'student' ? rollNumber.trim() : undefined,
+          department: role !== 'student' ? department.trim() : undefined,
+          timestamp: new Date().toISOString(),
+        }),
+      });
+    } catch (fetchErr) {
+      // Fail silently offline
+      console.warn('Google Sheets Webhook sync error (offline-first mode):', fetchErr);
+    }
+
+    setIsSyncing(false);
+    setSyncSuccess(true);
+
+    setTimeout(() => {
+      setName('');
+      setEmailPrefix('');
+      setPassword('');
+      setRollNumber('');
+      setClassCoordinator('');
+      setSyncSuccess(false);
+      setIsAddModalOpen(false);
+    }, 1000);
   };
 
   return (
@@ -467,34 +544,49 @@ export const AdminPeoplePage: React.FC = () => {
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   Account Role & Clearance <span className="text-rose-600">*</span>
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <button
                     type="button"
                     onClick={() => handleRoleChange('student')}
-                    className={`p-3 rounded-md border text-left transition-colors flex items-center gap-2.5 ${role === 'student'
+                    className={`p-2.5 rounded-md border text-left transition-colors flex items-center gap-2 ${role === 'student'
                         ? 'border-teal-700 dark:border-teal-500 bg-teal-50/60 dark:bg-teal-950/50 text-teal-900 dark:text-teal-200 font-semibold ring-1 ring-teal-700'
                         : 'border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#111115] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#202025]'
                       }`}
                   >
-                    <GraduationCap className={`w-4 h-4 ${role === 'student' ? 'text-teal-700 dark:text-teal-400' : 'text-slate-400 dark:text-slate-500'}`} />
-                    <div>
-                      <div className="text-xs">Student</div>
-                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">@aaroh.edu.in</div>
+                    <GraduationCap className={`w-4 h-4 shrink-0 ${role === 'student' ? 'text-teal-700 dark:text-teal-400' : 'text-slate-400 dark:text-slate-500'}`} />
+                    <div className="min-w-0">
+                      <div className="text-xs truncate font-medium">Student</div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-normal truncate">@aaroh.edu.in</div>
                     </div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => handleRoleChange('faculty')}
-                    className={`p-3 rounded-md border text-left transition-colors flex items-center gap-2.5 ${role === 'faculty'
+                    className={`p-2.5 rounded-md border text-left transition-colors flex items-center gap-2 ${role === 'faculty'
                         ? 'border-blue-700 dark:border-blue-500 bg-blue-50/60 dark:bg-blue-950/50 text-blue-900 dark:text-blue-200 font-semibold ring-1 ring-blue-700'
                         : 'border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#111115] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#202025]'
                       }`}
                   >
-                    <Briefcase className={`w-4 h-4 ${role === 'faculty' ? 'text-blue-700 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`} />
-                    <div>
-                      <div className="text-xs">Faculty</div>
-                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">@faculty.aaroh.edu.in</div>
+                    <Briefcase className={`w-4 h-4 shrink-0 ${role === 'faculty' ? 'text-blue-700 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`} />
+                    <div className="min-w-0">
+                      <div className="text-xs truncate font-medium">Faculty</div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-normal truncate">@faculty.aaroh.edu.in</div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleRoleChange('admin')}
+                    className={`p-2.5 rounded-md border text-left transition-colors flex items-center gap-2 ${role === 'admin'
+                        ? 'border-purple-700 dark:border-purple-500 bg-purple-50/60 dark:bg-purple-950/50 text-purple-900 dark:text-purple-200 font-semibold ring-1 ring-purple-700'
+                        : 'border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#111115] text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-[#202025]'
+                      }`}
+                  >
+                    <Shield className={`w-4 h-4 shrink-0 ${role === 'admin' ? 'text-purple-700 dark:text-purple-400' : 'text-slate-400 dark:text-slate-500'}`} />
+                    <div className="min-w-0">
+                      <div className="text-xs truncate font-medium">Admin</div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 font-normal truncate">@admin.aaroh.edu.in</div>
                     </div>
                   </button>
                 </div>
@@ -543,6 +635,39 @@ export const AdminPeoplePage: React.FC = () => {
                 </p>
               </div>
 
+              {/* Account Password Field */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Account Password <span className="text-rose-600">*</span>
+                </label>
+                <div className="relative flex items-center">
+                  <div className="absolute left-3 text-slate-400 dark:text-slate-500">
+                    <Lock className="w-4 h-4" />
+                  </div>
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    minLength={6}
+                    placeholder="Set account password (min 6 characters)"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    className="w-full text-xs font-mono pl-9 pr-9 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none"
+                    tabIndex={-1}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <p className="text-[11px] text-slate-400 mt-1">
+                  This password will be required when logging in with this institutional email.
+                </p>
+              </div>
+
               {/* Dynamic Fields: Student */}
               {role === 'student' && (
                 <div className="p-3 bg-slate-50 border border-slate-200 rounded-md space-y-3">
@@ -553,16 +678,19 @@ export const AdminPeoplePage: React.FC = () => {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 mb-1">
-                        Student ID / Roll No. <span className="text-rose-600">*</span>
+                        Student ID / Roll No. (Digits Only) <span className="text-rose-600">*</span>
                       </label>
                       <input
                         type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
                         required
-                        placeholder="e.g. 23CS014"
+                        placeholder="e.g. 20240101"
                         value={rollNumber}
-                        onChange={e => setRollNumber(e.target.value)}
+                        onChange={e => setRollNumber(e.target.value.replace(/\D/g, ''))}
                         className="w-full text-xs font-mono uppercase px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                       />
+                      <p className="text-[10px] text-slate-400 mt-0.5">Numeric characters only</p>
                     </div>
 
                     <div>
@@ -684,23 +812,86 @@ export const AdminPeoplePage: React.FC = () => {
                 </div>
               )}
 
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md text-[11px] text-slate-500 leading-relaxed">
+              {/* Dynamic Fields: Admin */}
+              {role === 'admin' && (
+                <div className="p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md space-y-3">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-purple-900 dark:text-purple-400">
+                    Administrative Division & Title
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Division <span className="text-rose-600">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={department}
+                      onChange={e => setDepartment(e.target.value)}
+                      placeholder="e.g. Central Administration / Registrar Office"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Designation
+                    </label>
+                    <input
+                      type="text"
+                      value={designation}
+                      onChange={e => setDesignation(e.target.value)}
+                      placeholder="e.g. Administrative Officer"
+                      className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
                 <CheckCircle className="w-3.5 h-3.5 text-teal-700 inline mr-1" />
-                Once onboarded, this user can immediately sign in at <code className="font-mono">/login</code> using this email address.
+                Once onboarded, this user can immediately sign in at <code className="font-mono">/login</code> using this email address and set password.
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-[#27272A]">
                 <Button
                   type="button"
                   variant="secondary"
                   size="sm"
-                  onClick={() => setIsAddModalOpen(false)}
+                  disabled={isSyncing}
+                  onClick={() => {
+                    setIsAddModalOpen(false);
+                    setFormError(null);
+                    setSyncSuccess(false);
+                  }}
                 >
                   Cancel
                 </Button>
-                <Button type="submit" variant="primary" size="sm">
-                  Save & Onboard User
-                </Button>
+                <button
+                  type="submit"
+                  disabled={isSyncing}
+                  className={`inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-white rounded-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-teal-700/40 disabled:opacity-75 disabled:cursor-not-allowed ${
+                    syncSuccess
+                      ? 'bg-emerald-600 shadow-[0_1px_2px_rgba(5,150,105,0.2),0_2px_4px_rgba(5,150,105,0.2),0_4px_8px_rgba(5,150,105,0.2),0_8px_16px_rgba(5,150,105,0.25)]'
+                      : 'bg-[#0F766E] hover:bg-teal-800 shadow-[0_1px_2px_rgba(15,118,110,0.2),0_2px_4px_rgba(15,118,110,0.2),0_4px_8px_rgba(15,118,110,0.15),0_8px_16px_rgba(15,118,110,0.25)]'
+                  }`}
+                >
+                  {isSyncing ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Syncing Credentials...</span>
+                    </>
+                  ) : syncSuccess ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Credentials Synced ✓</span>
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="w-3.5 h-3.5" />
+                      <span>Create Account & Onboard User</span>
+                    </>
+                  )}
+                </button>
               </div>
             </form>
           </div>

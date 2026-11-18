@@ -43,10 +43,10 @@ export const TimetableTab: React.FC = () => {
 
   // Time slots for weekly grid
   const timeSlots = [
-    { label: '09:00 – 10:00', start: '09:00', end: '10:00' },
-    { label: '10:15 – 11:15', start: '10:15', end: '11:15' },
-    { label: '11:30 – 12:30', start: '11:30', end: '12:30' },
-    { label: '14:00 – 16:00', start: '14:00', end: '16:00' },
+    { label: '09:00 - 10:00', start: '09:00', end: '10:00' },
+    { label: '10:15 - 11:15', start: '10:15', end: '11:15' },
+    { label: '11:30 - 12:30', start: '11:30', end: '12:30' },
+    { label: '14:00 - 16:00', start: '14:00', end: '16:00' },
   ];
 
   const getSessionAtSlot = (dayNum: number, startTime: string): ClassSession | undefined => {
@@ -196,7 +196,7 @@ export const TimetableTab: React.FC = () => {
                           </div>
 
                           <div className="mt-2 pt-1 border-t border-slate-200/60 dark:border-[#27272A] flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400">
-                            <span className="truncate">{session.room}</span>
+                            <span className="truncate font-mono font-bold text-slate-800 dark:text-slate-200">Room {session.room}</span>
                             <span className="truncate text-slate-600 dark:text-slate-400 font-medium">
                               {getFacultyFullName(session, course, users)}
                             </span>
@@ -250,7 +250,7 @@ export const TimetableTab: React.FC = () => {
                   >
                     <div className="flex items-start gap-4">
                       <div className="w-24 shrink-0 font-mono text-xs font-semibold text-slate-900 dark:text-slate-100 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] px-2.5 py-1.5 rounded text-center">
-                        {session.startTime} – {session.endTime}
+                        {session.startTime} - {session.endTime}
                       </div>
 
                       <div>
@@ -268,9 +268,9 @@ export const TimetableTab: React.FC = () => {
                         </div>
 
                         <div className="flex items-center gap-4 mt-2 text-xs text-slate-500 dark:text-slate-400">
-                          <span className="flex items-center gap-1">
-                            <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                            {session.room}
+                          <span className="flex items-center gap-1 font-mono font-semibold text-slate-800 dark:text-slate-200">
+                            <MapPin className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+                            Room {session.room}
                           </span>
                           <span className="flex items-center gap-1 font-medium text-slate-700 dark:text-slate-300">
                             <User className="w-3.5 h-3.5 text-slate-400" />

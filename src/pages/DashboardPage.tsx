@@ -275,7 +275,7 @@ export const DashboardPage: React.FC = () => {
 
             <div className="flex items-center gap-2.5 shrink-0">
               <span className="text-xs font-mono text-teal-900 dark:text-teal-200 bg-teal-100/60 dark:bg-teal-900/50 px-3 py-1 rounded-full border border-teal-300 dark:border-teal-700">
-                {activeFocusSession?.startTime} – {activeFocusSession?.endTime} {activeFocusSession?.room ? `• Room ${activeFocusSession.room}` : ''}
+                {activeFocusSession?.startTime} - {activeFocusSession?.endTime} {activeFocusSession?.room ? `• Room ${activeFocusSession.room}` : ''}
               </span>
               {isSimulatedFocus && !isSystemInClass && (
                 <button
@@ -451,7 +451,7 @@ export const DashboardPage: React.FC = () => {
                 <div className="p-3 bg-slate-50 dark:bg-[#111115] rounded-xl border border-slate-100 dark:border-[#27272A]">
                   <span className="text-[10px] font-mono text-slate-400 uppercase">Class Slot</span>
                   <p className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 font-mono">
-                    {activeFocusSession.startTime} – {activeFocusSession.endTime}
+                    {activeFocusSession.startTime} - {activeFocusSession.endTime}
                   </p>
                 </div>
               </div>

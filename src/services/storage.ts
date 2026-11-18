@@ -162,6 +162,12 @@ export const StorageService = {
     const existingUser = users.find(u => u.email.trim().toLowerCase() === trimmedEmail);
 
     if (existingUser) {
+      if (existingUser.password && existingUser.password !== password.trim()) {
+        return {
+          success: false,
+          error: 'Incorrect password. Please enter the password specified when this account was created.',
+        };
+      }
       const token = `aaroh_session_${existingUser.role}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
       localStorage.setItem(STORAGE_KEYS.SESSION_TOKEN, token);
       setStored(STORAGE_KEYS.AUTH_USER, existingUser);

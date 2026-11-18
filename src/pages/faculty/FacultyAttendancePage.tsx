@@ -268,7 +268,7 @@ export const FacultyAttendancePage: React.FC = () => {
                     <span>•</span>
                     <span className="flex items-center gap-1">
                       <Clock className="w-3.5 h-3.5 text-slate-400" />
-                      {selectedSession.startTime} – {selectedSession.endTime}
+                      {selectedSession.startTime} - {selectedSession.endTime}
                     </span>
                     <span>•</span>
                     <span className="flex items-center gap-1">

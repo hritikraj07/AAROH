@@ -167,7 +167,7 @@ export const AdminAttendancePage: React.FC = () => {
             >
               {courses.map(c => (
                 <option key={c.id} value={c.id}>
-                  {c.code} – {c.name}
+                  {c.code} - {c.name}
                 </option>
               ))}
             </select>
@@ -207,7 +207,7 @@ export const AdminAttendancePage: React.FC = () => {
                   const dayName = dayNames[session.dayOfWeek] || 'Day';
                   return (
                     <option key={session.id} value={session.id}>
-                      {dayName} • {session.startTime} – {session.endTime} (Room {session.room})
+                      {dayName} • {session.startTime} - {session.endTime} (Room {session.room})
                     </option>
                   );
                 })}
@@ -226,7 +226,7 @@ export const AdminAttendancePage: React.FC = () => {
             <span>•</span>
             <span className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5 text-slate-400" />
-              {selectedSession.startTime} – {selectedSession.endTime}
+              {selectedSession.startTime} - {selectedSession.endTime}
             </span>
             <span>•</span>
             <span className="flex items-center gap-1">

@@ -89,7 +89,7 @@ export const UpcomingEventsWidget: React.FC = () => {
                       <div className="mt-2 p-1.5 rounded bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 text-[11px] text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
                         <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0" />
                         <span className="truncate">
-                          Clashes with {clash.clashingCourse?.code} ({clash.clashingSession?.startTime}–{clash.clashingSession?.endTime})
+                          Clashes with {clash.clashingCourse?.code} ({clash.clashingSession?.startTime}-{clash.clashingSession?.endTime})
                         </span>
                       </div>
                     )}

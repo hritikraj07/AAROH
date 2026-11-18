@@ -334,7 +334,7 @@ export const FacultyDashboardPage: React.FC = () => {
                       <div className="flex items-center gap-3 text-[11px] text-slate-500 dark:text-slate-400 font-mono flex-wrap">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3 text-slate-400" />
-                          {cls.startTime} – {cls.endTime}
+                          {cls.startTime} - {cls.endTime}
                         </span>
                         <span>•</span>
                         <span className="flex items-center gap-1">

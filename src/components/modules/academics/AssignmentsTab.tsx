@@ -118,7 +118,7 @@ export const AssignmentsTab: React.FC = () => {
               <option value="all">All Subjects ({courses.length})</option>
               {courses.map(c => (
                 <option key={c.id} value={c.id}>
-                  {c.code} – {c.name}
+                  {c.code} - {c.name}
                 </option>
               ))}
             </select>

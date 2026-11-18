@@ -119,7 +119,7 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpe
             <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
               <Clock className="w-4 h-4 text-teal-700 dark:text-teal-400 shrink-0" />
               <span>
-                Time: <strong className="font-mono text-slate-900 dark:text-slate-100">{event.startTime} – {event.endTime}</strong>
+                Time: <strong className="font-mono text-slate-900 dark:text-slate-100">{event.startTime} - {event.endTime}</strong>
               </span>
             </div>
           </div>
