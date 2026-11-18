@@ -39,22 +39,10 @@ export const TeammateRadar: React.FC = () => {
         l => l.language?.toLowerCase() === 'c++' || l.title?.toLowerCase().includes('memory')
       );
 
-      let focusArea = 'Backend Architecture';
-      let collaborationNote = 'Focuses on Python services and database logic for team coursework.';
-      let verifiedSkills = ['Python', 'FastAPI', 'PostgreSQL'];
-      let recentLab = peerLabs[0]?.title || 'Automated Coding Lab: Python Foundations & Data Processing';
-
-      if (peer.name?.toLowerCase().includes('rohan') || passedCpp) {
-        focusArea = 'Systems Programming';
-        collaborationNote = 'Focuses on algorithm optimization and C++ memory management.';
-        verifiedSkills = ['C++', 'Algorithms', 'Linux'];
-        recentLab = peerLabs.find(l => l.language === 'cpp')?.title || 'Automated Coding Lab: Memory Allocation & Algorithms';
-      } else if (idx % 2 === 1) {
-        focusArea = 'Cloud & Data Systems';
-        collaborationNote = 'Focuses on containerization and backend API services.';
-        verifiedSkills = ['Golang', 'Docker', 'SQL'];
-        recentLab = peerLabs[1]?.title || 'Automated Coding Lab: Cloud Infrastructure & APIs';
-      }
+      let focusArea = peer.program ? `${peer.program} Specialization` : 'Computer Science';
+      let collaborationNote = 'Peer classmate in your cohort for hackathons and academic coursework.';
+      const verifiedSkills = (peer.skills && peer.skills.length > 0) ? peer.skills : [];
+      let recentLab = peerLabs[0]?.title || 'Automated Coding Lab Coursework';
 
       return {
         peer,
@@ -213,14 +201,20 @@ export const TeammateRadar: React.FC = () => {
 
                   {/* Skill Pills */}
                   <div className="flex flex-wrap gap-1.5">
-                    {verifiedSkills.map(skill => (
-                      <span
-                        key={skill}
-                        className="text-[10px] font-mono font-medium px-2 py-0.5 rounded bg-white dark:bg-[#18181B] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#27272A]"
-                      >
-                        {skill}
+                    {verifiedSkills.length > 0 ? (
+                      verifiedSkills.map(skill => (
+                        <span
+                          key={skill}
+                          className="text-[10px] font-mono font-medium px-2 py-0.5 rounded bg-white dark:bg-[#18181B] text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-[#27272A]"
+                        >
+                          {skill}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 italic">
+                        No skills listed yet
                       </span>
-                    ))}
+                    )}
                   </div>
                 </div>
 

@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SmartResolveModal } from './SmartResolveModal';
 import { AlertTriangle } from 'lucide-react';
+import { useApp } from '../../../context/AppContext';
 
 export interface CampusBuildingItem {
   id: string;
@@ -96,7 +97,7 @@ const CAMPUS_DATA: CampusBuildingItem[] = [
   {
     id: 'dblock',
     code: 'BLOCK D',
-    name: 'D Block & Front Ground',
+    name: 'D Block',
     subtitle: 'Contemporary Curtain-Wall Tower, Bus Park Ground & Agricultural Garden',
     floors: '6 Stories (G + 5) + Front Ground',
     area: '1,68,000 sq. ft.',
@@ -206,6 +207,7 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
   const sceneRef = useRef<THREE.Scene | null>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const { theme } = useApp();
   const controlsRef = useRef<OrbitControls | null>(null);
   const labelRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const clickableMeshesRef = useRef<THREE.Mesh[]>([]);
@@ -216,6 +218,11 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     sunLight: THREE.DirectionalLight | null;
     hemiLight: THREE.HemisphereLight | null;
     fillLight: THREE.DirectionalLight | null;
+    sunMesh: THREE.Group | null;
+    moonMesh: THREE.Group | null;
+    starsMesh: THREE.Points | null;
+    hoverHighlightBox: THREE.Mesh | null;
+    hoverBoxHelper: THREE.BoxHelper | null;
     vehiclesGroup: THREE.Group | null;
     roofDetailsGroup: THREE.Group | null;
     camAnim: {
@@ -229,6 +236,11 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     sunLight: null,
     hemiLight: null,
     fillLight: null,
+    sunMesh: null,
+    moonMesh: null,
+    starsMesh: null,
+    hoverHighlightBox: null,
+    hoverBoxHelper: null,
     vehiclesGroup: null,
     roofDetailsGroup: null,
     camAnim: null
@@ -272,6 +284,35 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     setIsTicketingOpen(true);
   };
 
+  // Dynamically sync 3D Day/Night Landscape with Website Theme
+  useEffect(() => {
+    const isDark = theme === 'dark';
+    const scene = sceneRef.current;
+    if (!scene) return;
+
+    scene.background = new THREE.Color(isDark ? '#0A0F1D' : '#BAE6FD');
+
+    const { sunLight, hemiLight, fillLight, sunMesh, moonMesh, starsMesh } = animatedRefs.current;
+    if (sunMesh) sunMesh.visible = !isDark;
+    if (moonMesh) moonMesh.visible = isDark;
+    if (starsMesh) starsMesh.visible = isDark;
+
+    if (sunLight) {
+      sunLight.color.set(isDark ? '#C7D2FE' : '#FFFBEB');
+      sunLight.intensity = isDark ? 0.85 : 2.05;
+      sunLight.position.set(isDark ? -44 : 44, 75, isDark ? -48 : 48);
+    }
+    if (hemiLight) {
+      hemiLight.color.set(isDark ? '#1E293B' : '#FFFFFF');
+      hemiLight.groundColor.set(isDark ? '#0A0F1D' : '#CBD5E1');
+      hemiLight.intensity = isDark ? 0.45 : 1.05;
+    }
+    if (fillLight) {
+      fillLight.color.set(isDark ? '#1E1B4B' : '#E2E8F0');
+      fillLight.intensity = isDark ? 0.35 : 0.55;
+    }
+  }, [theme]);
+
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
@@ -279,8 +320,10 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     const width = container.clientWidth || window.innerWidth;
     const height = container.clientHeight || window.innerHeight;
 
+    const isDarkInit = document.documentElement.classList.contains('dark') || theme === 'dark';
+
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#F1F5F9');
+    scene.background = new THREE.Color(isDarkInit ? '#0A0F1D' : '#BAE6FD');
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(38, width / height, 0.5, 450);
@@ -315,12 +358,19 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     };
     controls.addEventListener('start', onControlStart);
 
-    const hemiLight = new THREE.HemisphereLight('#FFFFFF', '#CBD5E1', 1.05);
+    const hemiLight = new THREE.HemisphereLight(
+      isDarkInit ? '#1E293B' : '#FFFFFF',
+      isDarkInit ? '#0A0F1D' : '#CBD5E1',
+      isDarkInit ? 0.45 : 1.05
+    );
     hemiLight.position.set(0, 80, 0);
     scene.add(hemiLight);
 
-    const sunLight = new THREE.DirectionalLight('#FFFBEB', 2.05);
-    sunLight.position.set(44, 68, 48);
+    const sunLight = new THREE.DirectionalLight(
+      isDarkInit ? '#C7D2FE' : '#FFFBEB',
+      isDarkInit ? 0.85 : 2.05
+    );
+    sunLight.position.set(isDarkInit ? -44 : 44, 75, isDarkInit ? -48 : 48);
     sunLight.castShadow = true;
     sunLight.shadow.mapSize.width = 2048;
     sunLight.shadow.mapSize.height = 2048;
@@ -334,13 +384,112 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     sunLight.shadow.bias = -0.0005;
     scene.add(sunLight);
 
-    const fillLight = new THREE.DirectionalLight('#E2E8F0', 0.55);
+    const fillLight = new THREE.DirectionalLight(
+      isDarkInit ? '#1E1B4B' : '#E2E8F0',
+      isDarkInit ? 0.35 : 0.55
+    );
     fillLight.position.set(-48, 36, -42);
     scene.add(fillLight);
+
+    // 3D Sun (Day Mode)
+    const sunGroup = new THREE.Group();
+    sunGroup.position.set(44, 75, 48);
+    const sunSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(4.2, 24, 24),
+      new THREE.MeshBasicMaterial({ color: 0xFDE047 })
+    );
+    sunGroup.add(sunSphere);
+    const sunHalo = new THREE.Mesh(
+      new THREE.RingGeometry(4.5, 7.8, 32),
+      new THREE.MeshBasicMaterial({
+        color: 0xFEF08A,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.6
+      })
+    );
+    sunHalo.lookAt(0, 0, 0);
+    sunGroup.add(sunHalo);
+    sunGroup.visible = !isDarkInit;
+    scene.add(sunGroup);
+
+    // 3D Moon (Dark / Night Mode)
+    const moonGroup = new THREE.Group();
+    moonGroup.position.set(-44, 75, -48);
+    const moonSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(3.6, 24, 24),
+      new THREE.MeshBasicMaterial({ color: 0xE2E8F0 })
+    );
+    moonGroup.add(moonSphere);
+    const moonHalo = new THREE.Mesh(
+      new THREE.RingGeometry(3.9, 6.4, 32),
+      new THREE.MeshBasicMaterial({
+        color: 0x93C5FD,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.45
+      })
+    );
+    moonHalo.lookAt(0, 0, 0);
+    moonGroup.add(moonHalo);
+    moonGroup.visible = isDarkInit;
+    scene.add(moonGroup);
+
+    // 3D Stars Field (Night Mode)
+    const starCount = 900;
+    const starGeometry = new THREE.BufferGeometry();
+    const starPositions = new Float32Array(starCount * 3);
+    for (let i = 0; i < starCount; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.random() * (Math.PI / 2.3);
+      const radius = 135 + Math.random() * 25;
+      starPositions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+      starPositions[i * 3 + 1] = radius * Math.cos(phi) + 10;
+      starPositions[i * 3 + 2] = radius * Math.sin(phi) * Math.sin(theta);
+    }
+    starGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+    const starMaterial = new THREE.PointsMaterial({
+      color: 0xFFFFFF,
+      size: 1.4,
+      transparent: true,
+      opacity: 0.9,
+      sizeAttenuation: false
+    });
+    const starsPoints = new THREE.Points(starGeometry, starMaterial);
+    starsPoints.visible = isDarkInit;
+    scene.add(starsPoints);
+
+    // Dynamic Hover Outline Helpers around hovered buildings
+    const hoverHighlightBox = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshBasicMaterial({
+        color: 0x14B8A6,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.85,
+        depthTest: false
+      })
+    );
+    hoverHighlightBox.renderOrder = 999;
+    hoverHighlightBox.visible = false;
+    scene.add(hoverHighlightBox);
+
+    const hoverBoxHelper = new THREE.BoxHelper(new THREE.Mesh(), 0x0F766E);
+    (hoverBoxHelper.material as THREE.LineBasicMaterial).transparent = true;
+    (hoverBoxHelper.material as THREE.LineBasicMaterial).opacity = 0.9;
+    (hoverBoxHelper.material as THREE.LineBasicMaterial).depthTest = false;
+    hoverBoxHelper.renderOrder = 1000;
+    hoverBoxHelper.visible = false;
+    scene.add(hoverBoxHelper);
 
     animatedRefs.current.sunLight = sunLight;
     animatedRefs.current.hemiLight = hemiLight;
     animatedRefs.current.fillLight = fillLight;
+    animatedRefs.current.sunMesh = sunGroup;
+    animatedRefs.current.moonMesh = moonGroup;
+    animatedRefs.current.starsMesh = starsPoints;
+    animatedRefs.current.hoverHighlightBox = hoverHighlightBox;
+    animatedRefs.current.hoverBoxHelper = hoverBoxHelper;
 
     const mats = {
       plinthBase: new THREE.MeshStandardMaterial({ color: '#E2E8F0', roughness: 0.7 }),
@@ -1032,9 +1181,9 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     registerBuilding('dblock', dBlockGroup);
     scene.add(dBlockGroup);
 
-    // Agricultural Garden plots & shade greenhouses moved to open field beside sports area
+    // Agricultural Garden plots & shade greenhouses placed in open ground beside D Block
     const agriGroup = new THREE.Group();
-    agriGroup.position.set(-22.0, 0.14, -14.0);
+    agriGroup.position.set(-18.0, 0.14, -23.0);
 
     const agriTex = createCanvasTexture(
       (ctx, w, h) => {
@@ -1071,7 +1220,7 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       agriGroup.add(gh);
     });
 
-    agriGroup.add(makeBox(12.5, 0.16, 4.2, mats.paver, 0, 0.02, 7.8, false, true));
+    agriGroup.add(makeBox(12.5, 0.16, 2.4, mats.paver, 0, 0.02, 6.2, false, true));
     scene.add(agriGroup);
 
     addSolarArray(dBlockGroup, -5.5, dRoofY + 0.35, 0, 2, 4);
@@ -1685,11 +1834,6 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       lotBus.position.set(bx, 0.16, -9.2);
       vehiclesGroup.add(lotBus);
     });
-    [-3.2, -1.2, 0.8].forEach((cx, idx) => {
-      const lotCar = createDetailedCar(carBodyColors[idx], idx === 1);
-      lotCar.position.set(cx, 0.16, -9.8);
-      vehiclesGroup.add(lotCar);
-    });
 
     [
       [-10.4, 31.2, 0, 0, false],
@@ -1807,6 +1951,26 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       const hitId = getHitBuildingId(e.clientX, e.clientY);
       setHoveredId(hitId);
       renderer.domElement.style.cursor = hitId ? 'pointer' : 'grab';
+
+      const { hoverHighlightBox, hoverBoxHelper } = animatedRefs.current;
+      if (hitId && buildingGroupsRef.current[hitId] && hoverHighlightBox && hoverBoxHelper) {
+        const grp = buildingGroupsRef.current[hitId];
+        const bbox = new THREE.Box3().setFromObject(grp);
+        const size = new THREE.Vector3();
+        bbox.getSize(size);
+        const center = new THREE.Vector3();
+        bbox.getCenter(center);
+        size.addScalar(0.4);
+        hoverHighlightBox.scale.copy(size);
+        hoverHighlightBox.position.copy(center);
+        hoverHighlightBox.visible = true;
+
+        hoverBoxHelper.setFromObject(grp);
+        hoverBoxHelper.visible = true;
+      } else {
+        if (hoverHighlightBox) hoverHighlightBox.visible = false;
+        if (hoverBoxHelper) hoverBoxHelper.visible = false;
+      }
     };
 
     const onPointerDown = (e: MouseEvent) => {
@@ -1849,7 +2013,13 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       animFrameId = requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
 
-      const { flagMesh, flagBasePositions, camAnim } = animatedRefs.current;
+      const { flagMesh, flagBasePositions, camAnim, hoverHighlightBox, starsMesh } = animatedRefs.current;
+      if (hoverHighlightBox && hoverHighlightBox.visible) {
+        (hoverHighlightBox.material as THREE.MeshBasicMaterial).opacity = 0.65 + Math.sin(elapsed * 5) * 0.25;
+      }
+      if (starsMesh && starsMesh.visible) {
+        starsMesh.rotation.y = elapsed * 0.005;
+      }
       if (flagMesh && flagBasePositions) {
         const posAttr = flagMesh.geometry.attributes.position;
         const arr = posAttr.array as Float32Array;
@@ -2065,28 +2235,6 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
             </div>
 
             <div className="p-3 border-t border-[#E2E8F0] bg-[#F8FAFC] rounded-b-lg flex flex-col gap-2">
-              <div className="flex items-center justify-between gap-2">
-                <button
-                  type="button"
-                  onClick={() =>
-                    flyTo(selectedBuilding.cameraPos, selectedBuilding.cameraTarget)
-                  }
-                  className="flex-1 py-1.5 px-3 rounded-md bg-[#0F766E] text-white text-xs font-semibold hover:bg-[#115E59] transition-colors cursor-pointer text-center"
-                >
-                  Re-Center Camera
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedId(null);
-                    flyTo([0, 68, 86], [0, 2, 0], 'overview');
-                  }}
-                  className="py-1.5 px-3 rounded-md bg-white border border-[#CBD5E1] text-[#334155] text-xs font-medium hover:bg-[#F1F5F9] transition-colors cursor-pointer text-center"
-                >
-                  Full Plinth
-                </button>
-              </div>
-
               {/* Signature Deep Teal Button with 4-Layer Tactile Button Shadows */}
               <button
                 type="button"

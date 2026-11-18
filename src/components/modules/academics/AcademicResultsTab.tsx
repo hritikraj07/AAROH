@@ -205,18 +205,14 @@ export const AcademicResultsTab: React.FC = () => {
             </p>
           </div>
 
-          {/* Semester Selector Tabs */}
-          <div className="flex items-center gap-1 overflow-x-auto p-1 rounded-xl bg-slate-100 dark:bg-[#27272A] border border-slate-200 dark:border-[#323236]">
+          {/* Semester Selector Tabs hidden per user design request */}
+          <div className="hidden" aria-hidden="true">
             {allSemesters.map(sem => (
               <button
                 key={sem}
                 type="button"
                 onClick={() => setSelectedSemester(sem)}
-                className={`px-3.5 py-2 min-h-[40px] text-xs font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer flex items-center justify-center ${
-                  selectedSemester === sem
-                    ? 'bg-white dark:bg-[#18181B] text-teal-800 dark:text-teal-400 font-bold shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                }`}
+                className="px-3.5 py-2 text-xs font-medium"
               >
                 Semester {sem}
               </button>

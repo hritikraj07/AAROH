@@ -570,6 +570,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const updated = StorageService.updateUser(id, updates);
     if (updated) {
       setUsers(StorageService.getUsers());
+      if (user && user.id === id) {
+        setUser(updated);
+      }
       showToast({ type: 'success', title: 'User Updated', message: `Profile updated for ${updated.name}.` });
     }
     return updated;

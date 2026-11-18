@@ -30,6 +30,8 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
     role,
     theme,
     toggleTheme,
+    updateUser,
+    showToast,
   } = useApp();
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -37,6 +39,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
 
   // Profile Dropdown State
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [newSkillInput, setNewSkillInput] = useState('');
   const profileRef = useRef<HTMLDivElement>(null);
 
   // Global Search Input & Dropdown State
@@ -562,6 +565,84 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                         {user?.attendanceMinimum || 75}% Minimum
                       </span>
                     </div>
+                  </div>
+                )}
+
+                {/* Student Technical Skills Management */}
+                {role === 'student' && (
+                  <div className="pt-2 border-t border-slate-100 dark:border-[#27272A] space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+                        Technical Skills
+                      </span>
+                      <span className="text-[10px] font-mono text-teal-700 dark:text-teal-400">
+                        {(user?.skills || []).length} added
+                      </span>
+                    </div>
+
+                    {/* Skill Tags */}
+                    <div className="flex flex-wrap gap-1.5 min-h-[26px]">
+                      {(user?.skills && user.skills.length > 0) ? (
+                        user.skills.map(skill => (
+                          <span
+                            key={skill}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-mono font-medium bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60"
+                          >
+                            <span>{skill}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (!user) return;
+                                const updated = (user.skills || []).filter(s => s !== skill);
+                                updateUser(user.id, { skills: updated });
+                              }}
+                              className="text-teal-600 hover:text-red-500 dark:text-teal-400 dark:hover:text-red-400 cursor-pointer ml-0.5"
+                              title={`Remove ${skill}`}
+                              aria-label={`Remove skill ${skill}`}
+                            >
+                              <X className="w-2.5 h-2.5" />
+                            </button>
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-[11px] text-slate-400 dark:text-slate-500 italic">
+                          No skills added yet. Add your skills below.
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Add Skill Input Form */}
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const trimmed = newSkillInput.trim();
+                        if (!trimmed || !user) return;
+                        const current = user.skills || [];
+                        if (current.some(s => s.toLowerCase() === trimmed.toLowerCase())) {
+                          showToast({ type: 'info', title: 'Skill Exists', message: `${trimmed} is already in your profile.` });
+                          setNewSkillInput('');
+                          return;
+                        }
+                        updateUser(user.id, { skills: [...current, trimmed] });
+                        setNewSkillInput('');
+                      }}
+                      className="flex items-center gap-1.5 pt-1"
+                    >
+                      <input
+                        type="text"
+                        value={newSkillInput}
+                        onChange={(e) => setNewSkillInput(e.target.value)}
+                        placeholder="Add skill (e.g. Python, React)..."
+                        className="flex-1 px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-[#27272A] bg-slate-50 dark:bg-[#18181B] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-teal-600 font-sans"
+                      />
+                      <button
+                        type="submit"
+                        disabled={!newSkillInput.trim()}
+                        className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#0F766E] text-white hover:bg-[#115E59] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                      >
+                        Add
+                      </button>
+                    </form>
                   </div>
                 )}
 

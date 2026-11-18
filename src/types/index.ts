@@ -18,6 +18,7 @@ export interface User {
   attendanceMinimum?: number; // default 75%
   classCoordinator?: string; // Assigned faculty mentor / coordinator
   savedOpportunityIds?: string[]; // Saved opportunities per user
+  skills?: string[]; // Self-reported student technical skills
 }
 
 // Student is an alias of User for full backward compatibility
