@@ -17,9 +17,9 @@ export const LoginPage: React.FC = () => {
   const { login, users, isAuthenticated, role } = useApp();
   const navigate = useNavigate();
 
-  const [selectedRole, setSelectedRole] = useState<UserRole>('admin');
-  const [email, setEmail] = useState('registrar@admin.aaroh.edu.in');
-  const [password, setPassword] = useState('campusSecure2026');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('student');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -42,16 +42,8 @@ export const LoginPage: React.FC = () => {
 
   const handleRoleChange = (newRole: UserRole) => {
     setSelectedRole(newRole);
-    if (newRole === 'student') {
-      setEmail('aarav.sharma@aaroh.edu.in');
-      setPassword('campusSecure2026');
-    } else if (newRole === 'faculty') {
-      setEmail('prof.raman@faculty.aaroh.edu.in');
-      setPassword('campusSecure2026');
-    } else if (newRole === 'admin') {
-      setEmail('registrar@admin.aaroh.edu.in');
-      setPassword('campusSecure2026');
-    }
+    setEmail('');
+    setPassword('');
     setErrorMessage(null);
   };
 
@@ -138,33 +130,16 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  // Demo Quick Access Handler - immediately injects credentials and executes login
+  // Demo Quick Access Handler - selects chosen role and clears prefilled credentials per user instruction
   const handleQuickDemoLogin = (targetRole: UserRole) => {
-    let demoEmail = '';
-    const demoPassword = 'campusSecure2026';
-
-    if (targetRole === 'admin') {
-      demoEmail = 'registrar@admin.aaroh.edu.in';
-    } else if (targetRole === 'faculty') {
-      demoEmail = 'prof.raman@faculty.aaroh.edu.in';
-    } else {
-      demoEmail = 'aarav.sharma@aaroh.edu.in';
-    }
-
+    // Reference directory identifiers for demo roles:
+    // registrar@admin.aaroh.edu.in
+    // prof.raman@faculty.aaroh.edu.in
+    // aarav.sharma@aaroh.edu.in
     setSelectedRole(targetRole);
-    setEmail(demoEmail);
-    setPassword(demoPassword);
+    setEmail('');
+    setPassword('');
     setErrorMessage(null);
-
-    setLoading(true);
-    const result = login(demoEmail, demoPassword);
-    setLoading(false);
-
-    if (result.success && result.role) {
-      navigate(`/${result.role}`);
-    } else {
-      setErrorMessage(result.error || 'Authentication failed. Please verify credentials.');
-    }
   };
 
   return (
@@ -228,7 +203,7 @@ export const LoginPage: React.FC = () => {
           )}
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-3.5">
+          <form onSubmit={handleSubmit} autoComplete="off" className="space-y-3.5">
             {/* 1. ROLE Dropdown */}
             <div>
               <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
@@ -275,6 +250,10 @@ export const LoginPage: React.FC = () => {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
+                  autoComplete="new-password"
+                  data-lpignore="true"
+                  data-form-type="other"
+                  spellCheck={false}
                   value={password}
                   onChange={e => {
                     setPassword(e.target.value);

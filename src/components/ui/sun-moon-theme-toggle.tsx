@@ -37,7 +37,7 @@ const KEYFRAME_STEPS = 30;
 const BODY_CLASS = "pointer-events-none absolute inset-0 flex items-center justify-center";
 const SKY_CLASS = "pointer-events-none absolute inset-0 -z-10";
 const NIGHT_SKY = "linear-gradient(180deg, #090f2a 0%, #16204b 60%, #2a2f66 100%)";
-const DAY_SKY = "linear-gradient(180deg, #4ea8ff 0%, #9fd3ff 60%, #e3f3ff 100%)";
+const DAY_SKY = "linear-gradient(180deg, #38BDF8 0%, #7DD3FC 55%, #E0F2FE 100%)";
 const STARS = [
   { x: 24, y: 22, r: 1.6, t: 2100 },
   { x: 66, y: 16, r: 1.2, t: 2600 },
@@ -314,10 +314,10 @@ export function SunMoonThemeToggle({
         ref={sunRef}
         aria-hidden
         data-body="sun"
-        className={cx(BODY_CLASS, classNames?.sun ?? "text-orange-400 drop-shadow-[0_0_10px_rgba(251,146,60,0.7)]")}
+        className={cx(BODY_CLASS, classNames?.sun ?? "text-amber-500 drop-shadow-[0_0_10px_rgba(245,158,11,0.7)]")}
         style={restingStyle(SUN, theme === "light")}
       >
-        <Sun className="w-5 h-5 text-amber-500 fill-amber-500" />
+        <Sun className="w-5 h-5 text-amber-500 fill-amber-400" />
       </span>
     </button>
   );

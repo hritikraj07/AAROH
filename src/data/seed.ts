@@ -98,7 +98,7 @@ export const INITIAL_USERS: User[] = [
     name: 'Academic Registrar',
     email: 'registrar@admin.aaroh.edu.in',
     role: 'admin',
-    password: 'campusSecure2026',
+    password: 'Aaroh@Krmu#2026!Key',
     designation: 'Campus Administrator',
     department: 'Central Administration',
     avatarInitials: 'AR',

@@ -50,9 +50,10 @@ export const CampusMap: React.FC<CampusMapProps> = ({
   };
 
   return (
-    <div
-      className={`bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 sm:p-7 shadow-sm transition-colors duration-500 font-sans ${className}`}
-    >
+    <div className="hidden" aria-hidden="true">
+      <div
+        className={`bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 sm:p-7 shadow-sm transition-colors duration-500 font-sans ${className}`}
+      >
       {/* Map Header & Legend */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-5 border-b border-slate-100 dark:border-[#27272A]">
         <div>
@@ -183,6 +184,7 @@ export const CampusMap: React.FC<CampusMapProps> = ({
 
       </div>
     </div>
+  </div>
   );
 };
 

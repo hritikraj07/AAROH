@@ -25,7 +25,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         theme={theme}
         onThemeChange={() => toggleTheme()}
         size={pixelSize}
-        duration={0}
+        duration={500}
         sky={true}
       />
 
