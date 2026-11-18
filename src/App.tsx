@@ -15,6 +15,7 @@ import { LostFoundPage } from './pages/LostFoundPage';
 import { OpportunitiesPage } from './pages/OpportunitiesPage';
 import { StudentCodeWorkspacePage } from './pages/StudentCodeWorkspacePage';
 import { CampusMapPage } from './pages/CampusMapPage';
+import { ErrorBlock } from './components/ui/oversized-404-numeral';
 
 // Faculty Portal Pages
 import { FacultyDashboardPage } from './pages/faculty/FacultyDashboardPage';
@@ -143,9 +144,10 @@ export const AppRoutes: React.FC = () => {
       <Route path="/lost-found" element={<Navigate to="/student/lost-found" replace />} />
       <Route path="/opportunities" element={<Navigate to="/student/opportunities" replace />} />
       <Route path="/campus-map" element={<Navigate to="/student/campus-map" replace />} />
+      <Route path="/404" element={<ErrorBlock />} />
 
       {/* Fallback Catch-all */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<ErrorBlock />} />
     </Routes>
   );
 };

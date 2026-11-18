@@ -327,27 +327,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
         </nav>
       </div>
 
-      {/* User Identity & Logout at bottom */}
-      <div className="p-4 border-t border-[#D8E2DC] dark:border-[#27272A] bg-white dark:bg-[#18181B] space-y-3">
-        <div className="flex items-center gap-3 p-2.5 rounded-lg border border-[#D8E2DC] dark:border-[#27272A] bg-teal-50/40 dark:bg-[#27272A]">
-          <div className="w-8 h-8 rounded-md bg-teal-700 text-white font-semibold text-xs flex items-center justify-center shrink-0 font-mono">
-            {user?.avatarInitials || (role === 'admin' ? 'AD' : role === 'faculty' ? 'FA' : 'ST')}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
-              {user?.name || (role === 'admin' ? 'Campus Admin' : role === 'faculty' ? 'Faculty Member' : 'Student')}
-            </p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate font-mono">
-              {role === 'student'
-                ? `${user?.rollNumber || '22CS042'} • Sem ${user?.semester || 5}`
-                : role === 'faculty'
-                ? user?.designation || 'Assistant Professor'
-                : 'System Administrator'}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between pt-1">
+      {/* Settings & Logout at bottom */}
+      <div className="p-4 border-t border-[#D8E2DC] dark:border-[#27272A] bg-white dark:bg-[#18181B]">
+        <div className="flex items-center justify-between">
           <button
             onClick={() => {
               if (onCloseMobile) onCloseMobile();

@@ -26,13 +26,11 @@
   body {
     background-color: #EEF4ED;
     color: #0B2545;
-    transition: background-color 500ms ease-in-out, color 500ms ease-in-out, border-color 500ms ease-in-out;
   }
 
   html.dark body {
     background-color: #0E0E11; /* Nordic midnight base overlay */
     color: #EEF4ED;
-    transition: background-color 500ms ease-in-out, color 500ms ease-in-out, border-color 500ms ease-in-out;
   }
 
   /* Strict global form input standards - Nordic palette */
