@@ -130,16 +130,31 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  // Demo Quick Access Handler - selects chosen role and clears prefilled credentials per user instruction
+  // Demo Quick Access Handler - automatically enters credentials and logs in per user specification
   const handleQuickDemoLogin = (targetRole: UserRole) => {
-    // Reference directory identifiers for demo roles:
-    // registrar@admin.aaroh.edu.in
-    // prof.raman@faculty.aaroh.edu.in
-    // aarav.sharma@aaroh.edu.in
+    let demoEmail = 'aarav.sharma@aaroh.edu.in';
+    const demoPassword = 'Aaroh@Krmu#2026!Key';
+
+    if (targetRole === 'admin') {
+      demoEmail = 'registrar@admin.aaroh.edu.in';
+    } else if (targetRole === 'faculty') {
+      demoEmail = 'prof.raman@faculty.aaroh.edu.in';
+    }
+
     setSelectedRole(targetRole);
-    setEmail('');
-    setPassword('');
+    setEmail(demoEmail);
+    setPassword(demoPassword);
     setErrorMessage(null);
+
+    setLoading(true);
+    const result = login(demoEmail, demoPassword);
+    setLoading(false);
+
+    if (result.success && result.role) {
+      navigate(`/${result.role}`);
+    } else {
+      setErrorMessage(result.error || 'Authentication failed. Please verify credentials.');
+    }
   };
 
   return (
@@ -179,8 +194,8 @@ export const LoginPage: React.FC = () => {
 
       {/* 3. The Glassmorphism Login Card: Full height / length matching design screenshot */}
       <div className="relative z-10 w-full max-w-sm sm:w-[420px] md:w-[460px] lg:w-[480px] h-full min-h-screen py-6 px-6 sm:px-8 md:px-10 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-none sm:rounded-l-3xl border-l border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-between overflow-y-auto">
-        {/* Top & Form Section */}
-        <div className="flex flex-col space-y-4 pt-1">
+        {/* Form Section: Vertically balanced with even top and bottom spacing */}
+        <div className="my-auto flex flex-col space-y-4 sm:space-y-5 py-2">
           {/* Header: Logo, Aaroh, Subtitle, and Sign In heading */}
           <div className="flex flex-col items-center justify-center text-center space-y-1">
             <div className="flex items-center justify-center gap-2">
@@ -328,8 +343,8 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {/* Bottom Feature Showcase: "WHY CHOOSE AAROH?" & 3 feature icons */}
-        <div className="mt-6 pt-5 pb-2 border-t border-slate-200/60 dark:border-white/10 select-none">
-          <div className="relative mb-4">
+        <div className="pt-2 pb-2 select-none">
+          <div className="relative mb-3">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-slate-200/80 dark:border-white/10" />
             </div>

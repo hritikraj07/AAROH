@@ -29,14 +29,14 @@ export function generateUserFromEmail(email: string): User {
   const role = getUserRoleFromEmail(trimmed) || 'student';
   const localPart = trimmed.split('@')[0];
   const nameParts = localPart.split(/[._-]/).filter(Boolean);
-  
+
   const formattedName = nameParts.length > 0
     ? nameParts.map(p => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join(' ')
     : role === 'admin'
-    ? 'Campus Administrator'
-    : role === 'faculty'
-    ? 'Faculty Member'
-    : 'Aaroh Student';
+      ? 'Campus Administrator'
+      : role === 'faculty'
+        ? 'Faculty Member'
+        : 'Aaroh Student';
 
   const initials = nameParts.length >= 2
     ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
