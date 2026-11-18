@@ -130,7 +130,7 @@ export const LoginPage: React.FC = () => {
   return (
     <div
       onMouseMove={handleMouseMove}
-      className="min-h-screen w-full h-screen overflow-hidden flex items-center justify-center sm:justify-end px-4 sm:px-10 lg:px-20 relative bg-[#EEF4ED] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
+      className="min-h-screen w-full h-screen overflow-hidden flex items-stretch justify-center sm:justify-end px-0 sm:pr-6 md:pr-10 lg:pr-14 relative bg-[#EEF4ED] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
     >
       {/* 1. Global Campus Background: Converted from JPG to SVG format */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -162,146 +162,210 @@ export const LoginPage: React.FC = () => {
         />
       </div>
 
-      {/* 3. The Glassmorphism Login Card: Precisely aligned to white outline (Y: ~11.6% to ~88.4%, X: ~69.5% to ~95.1%) */}
-      <div className="relative z-10 w-full max-w-sm sm:w-[400px] lg:w-[420px] max-h-[92vh] sm:max-h-[670px] overflow-y-auto sm:overflow-visible p-5 sm:p-7 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-2xl sm:rounded-3xl border border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-between my-auto">
-        {/* Header: Logo, Aaroh, Subtitle, and Sign In heading */}
-        <div className="flex flex-col items-center justify-center text-center space-y-1 pt-1">
-          <div className="flex items-center justify-center">
-            <Logo size="md" />
-          </div>
-          <div className="text-[10px] font-semibold tracking-widest text-slate-500 dark:text-slate-400 uppercase font-mono pt-0.5" title="K.R. Mangalam University">
-            K.R. MANGALAM UNIVERSITY
-          </div>
-          <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
-            Sign In to Aaroh
-          </h1>
-        </div>
-
-        {/* Error Alert */}
-        {errorMessage && (
-          <div className="p-2.5 my-1.5 bg-rose-50/80 dark:bg-rose-950/50 border border-rose-200/80 dark:border-rose-900/60 rounded-xl text-xs text-rose-800 dark:text-rose-300 flex items-start gap-2 animate-in fade-in duration-150">
-            <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-            <span className="leading-relaxed">{errorMessage}</span>
-          </div>
-        )}
-
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-3 my-auto py-1">
-          {/* 1. ROLE Dropdown */}
-          <div>
-            <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
-              Role
-            </label>
-            <div className="relative">
-              <select
-                value={selectedRole}
-                onChange={e => handleRoleChange(e.target.value as UserRole)}
-                className="w-full min-h-[44px] text-xs font-medium px-3 py-2.5 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors cursor-pointer"
-              >
-                <option value="student" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Student</option>
-                <option value="faculty" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Faculty</option>
-                <option value="admin" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Admin</option>
-              </select>
+      {/* 3. The Glassmorphism Login Card: Full height / length matching design screenshot */}
+      <div className="relative z-10 w-full max-w-sm sm:w-[400px] lg:w-[460px] h-full min-h-screen py-5 px-6 sm:px-8 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-none sm:rounded-3xl sm:my-3 sm:h-[calc(100vh-24px)] sm:min-h-0 border border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-between overflow-y-auto">
+        {/* Top & Form Section */}
+        <div className="flex flex-col space-y-4 pt-1">
+          {/* Header: Logo, Aaroh, Subtitle, and Sign In heading */}
+          <div className="flex flex-col items-center justify-center text-center space-y-1">
+            <div className="flex items-center justify-center gap-2">
+              <Logo size="md" />
             </div>
-          </div>
-
-          {/* 2. INSTITUTIONAL EMAIL Input */}
-          <div>
-            <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
-              Institutional Email
-            </label>
-            <div className="relative">
-              <Mail className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={e => handleEmailChange(e.target.value)}
-                placeholder="aarav.sharma@aaroh.edu.in"
-                className="w-full min-h-[44px] text-xs font-mono pl-9 pr-3 py-2.5 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors"
-              />
+            <div className="text-[10px] font-semibold tracking-widest text-slate-500 dark:text-slate-400 uppercase font-mono pt-0.5" title="K.R. Mangalam University">
+              K.R. MANGALAM UNIVERSITY
             </div>
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
+              Sign In to Aaroh
+            </h1>
           </div>
 
-          {/* 3. PASSWORD Input */}
-          <div>
-            <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
-              Password
-            </label>
+          {/* Error Alert */}
+          {errorMessage && (
+            <div className="p-2.5 bg-rose-50/80 dark:bg-rose-950/50 border border-rose-200/80 dark:border-rose-900/60 rounded-xl text-xs text-rose-800 dark:text-rose-300 flex items-start gap-2 animate-in fade-in duration-150">
+              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+              <span className="leading-relaxed">{errorMessage}</span>
+            </div>
+          )}
+
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-3.5">
+            {/* 1. ROLE Dropdown */}
+            <div>
+              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
+                ROLE
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedRole}
+                  onChange={e => handleRoleChange(e.target.value as UserRole)}
+                  className="w-full min-h-[44px] text-xs font-medium px-3.5 py-2.5 bg-white/70 dark:bg-black/60 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors cursor-pointer shadow-xs"
+                >
+                  <option value="student" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Student</option>
+                  <option value="faculty" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Faculty</option>
+                  <option value="admin" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Admin</option>
+                </select>
+              </div>
+            </div>
+
+            {/* 2. INSTITUTIONAL EMAIL Input */}
+            <div>
+              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
+                INSTITUTIONAL EMAIL
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={e => handleEmailChange(e.target.value)}
+                  placeholder="aarav.sharma@aaroh.edu.in"
+                  className="w-full min-h-[44px] text-xs font-mono pl-10 pr-3.5 py-2.5 bg-white/80 dark:bg-black/70 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors shadow-xs"
+                />
+              </div>
+            </div>
+
+            {/* 3. PASSWORD Input */}
+            <div>
+              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
+                PASSWORD
+              </label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  value={password}
+                  onChange={e => {
+                    setPassword(e.target.value);
+                    if (errorMessage) setErrorMessage(null);
+                  }}
+                  placeholder="••••••••••••"
+                  className="w-full min-h-[44px] text-xs font-mono pl-10 pr-11 py-2.5 bg-white/80 dark:bg-black/70 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors shadow-xs"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(prev => !prev)}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200 z-10 focus:outline-none cursor-pointer transition-colors"
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Primary Action Button: "Sign In ->" */}
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full min-h-[46px] inline-flex items-center justify-center gap-1.5 py-2.5 px-4 text-xs font-bold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} disabled:opacity-50 select-none cursor-pointer mt-1`}
+            >
+              <span>{loading ? 'Authenticating...' : 'Sign In ->'}</span>
+            </button>
+          </form>
+
+          {/* Demo Quick Access Section */}
+          <div className="space-y-2.5 pt-1">
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
-              <input
-                type={showPassword ? 'text' : 'password'}
-                required
-                value={password}
-                onChange={e => {
-                  setPassword(e.target.value);
-                  if (errorMessage) setErrorMessage(null);
-                }}
-                placeholder="••••••••••••"
-                className="w-full min-h-[44px] text-xs font-mono pl-9 pr-11 py-2.5 bg-white/40 dark:bg-black/40 border border-slate-200/60 dark:border-white/10 backdrop-blur-md rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors"
-              />
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+              </div>
+              <div className="relative flex justify-center text-[10px] uppercase tracking-wider font-mono">
+                <span className="bg-white/80 dark:bg-[#18181B]/80 px-2 text-slate-400 dark:text-slate-500 rounded">
+                  or continue with demo
+                </span>
+              </div>
+            </div>
+
+            {/* Role Buttons Row */}
+            <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
-                onClick={() => setShowPassword(prev => !prev)}
-                className="absolute right-1 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200 z-10 focus:outline-none cursor-pointer transition-colors"
-                title={showPassword ? 'Hide password' : 'Show password'}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                onClick={() => handleQuickDemoLogin('admin')}
+                disabled={loading}
+                className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[44px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate shadow-2xs"
               >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                Admin Demo
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickDemoLogin('faculty')}
+                disabled={loading}
+                className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[44px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate shadow-2xs"
+              >
+                Faculty Demo
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickDemoLogin('student')}
+                disabled={loading}
+                className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[44px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate shadow-2xs"
+              >
+                Student Demo
               </button>
             </div>
           </div>
+        </div>
 
-          {/* Primary Action Button: "Sign In ->" */}
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full min-h-[44px] inline-flex items-center justify-center gap-1.5 py-2.5 px-4 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} disabled:opacity-50 select-none cursor-pointer`}
-          >
-            <span>{loading ? 'Authenticating...' : 'Sign In ->'}</span>
-          </button>
-        </form>
-
-        {/* Demo Quick Access Section */}
-        <div className="space-y-2 pt-1 pb-1">
-          <div className="relative">
+        {/* Bottom Feature Showcase: "WHY CHOOSE AAROH?" & 3 feature icons */}
+        <div className="mt-6 pt-5 pb-2 border-t border-slate-200/60 dark:border-white/10 select-none">
+          <div className="relative mb-4">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+              <div className="w-full border-t border-slate-200/80 dark:border-white/10" />
             </div>
-            <div className="relative flex justify-center text-[10px] uppercase tracking-wider font-mono">
-              <span className="bg-white/80 dark:bg-[#18181B]/80 px-2 text-slate-400 dark:text-slate-500 rounded">
-                or continue with demo
+            <div className="relative flex justify-center text-[9px] uppercase tracking-widest font-mono">
+              <span className="bg-white/80 dark:bg-[#18181B]/80 px-2 py-0.5 text-slate-500 dark:text-slate-400 rounded-full font-bold">
+                WHY CHOOSE AAROH?
               </span>
             </div>
           </div>
 
-          {/* Role Buttons Row */}
-          <div className="grid grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickDemoLogin('admin')}
-              disabled={loading}
-              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[44px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate"
-            >
-              Admin Demo
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemoLogin('faculty')}
-              disabled={loading}
-              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[44px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate"
-            >
-              Faculty Demo
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemoLogin('student')}
-              disabled={loading}
-              className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[44px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate"
-            >
-              Student Demo
-            </button>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            {/* Feature 1: AI-Powered Insights */}
+            <div className="flex flex-col items-center">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[#134074] dark:text-[#8DA9C4] bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-2xs">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2a4 4 0 0 1 4 4v1a4 4 0 0 1-4 4 4 4 0 0 1-4-4V6a4 4 0 0 1 4-4Z" />
+                  <path d="M18 8a2 2 0 1 1 0 4" />
+                  <path d="M6 8a2 2 0 1 0 0 4" />
+                  <circle cx="12" cy="18" r="4" />
+                  <path d="M12 11v3" />
+                </svg>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-800 dark:text-slate-200 mt-1.5 leading-tight">
+                AI-Powered Insights
+              </span>
+            </div>
+
+            {/* Feature 2: Performance Analytics */}
+            <div className="flex flex-col items-center">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[#134074] dark:text-[#8DA9C4] bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-2xs">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 3v18h18" />
+                  <path d="m19 9-5 5-4-4-3 3" />
+                  <path d="M19 5v4h-4" />
+                </svg>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-800 dark:text-slate-200 mt-1.5 leading-tight">
+                Performance Analytics
+              </span>
+            </div>
+
+            {/* Feature 3: Real-Time Sync */}
+            <div className="flex flex-col items-center">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[#134074] dark:text-[#8DA9C4] bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-2xs">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                  <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                  <path d="M16 16h5v5" />
+                </svg>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-800 dark:text-slate-200 mt-1.5 leading-tight">
+                Real-Time Sync
+              </span>
+            </div>
           </div>
         </div>
       </div>
