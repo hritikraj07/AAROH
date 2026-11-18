@@ -23,3 +23,8 @@ scratch/
 *.njsproj
 *.sln
 *.sw?
+
+# Antislop local skills and temporary audit reports
+anti-slop/
+.agents/
+
