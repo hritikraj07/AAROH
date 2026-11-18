@@ -130,7 +130,7 @@ export const LoginPage: React.FC = () => {
   return (
     <div
       onMouseMove={handleMouseMove}
-      className="min-h-screen w-full h-screen overflow-hidden flex items-stretch justify-center sm:justify-end px-0 sm:pr-6 md:pr-10 lg:pr-14 relative bg-[#EEF4ED] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
+      className="min-h-screen w-full h-screen overflow-hidden flex items-stretch justify-end p-0 relative bg-[#EEF4ED] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
     >
       {/* 1. Global Campus Background: Converted from JPG to SVG format */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -163,7 +163,7 @@ export const LoginPage: React.FC = () => {
       </div>
 
       {/* 3. The Glassmorphism Login Card: Full height / length matching design screenshot */}
-      <div className="relative z-10 w-full max-w-sm sm:w-[400px] lg:w-[460px] h-full min-h-screen py-5 px-6 sm:px-8 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-none sm:rounded-3xl sm:my-3 sm:h-[calc(100vh-24px)] sm:min-h-0 border border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-between overflow-y-auto">
+      <div className="relative z-10 w-full max-w-sm sm:w-[420px] md:w-[460px] lg:w-[480px] h-full min-h-screen py-6 px-6 sm:px-8 md:px-10 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-none sm:rounded-l-3xl border-l border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-between overflow-y-auto">
         {/* Top & Form Section */}
         <div className="flex flex-col space-y-4 pt-1">
           {/* Header: Logo, Aaroh, Subtitle, and Sign In heading */}
