@@ -153,17 +153,13 @@ export const LoginPage: React.FC = () => {
         />
       </div>
 
-      {/* 2. Institutional Header Banner: High quality direct vector/raster banner, sharp rendering, completely static */}
-      <div className="absolute top-3 left-3 sm:top-6 sm:left-6 md:top-7 md:left-8 z-30 flex items-center pointer-events-none select-none">
-        <picture>
-          <source srcSet="/krmlogo.jpg" type="image/jpeg" />
-          <img
-            src="/krmu_banner.svg"
-            alt="K.R. Mangalam University - The Complete World of Education - NAAC Grade A"
-            className="w-[200px] xs:w-[240px] sm:w-[320px] md:w-[360px] lg:w-[400px] max-w-full h-auto object-contain block drop-shadow-md select-none pointer-events-none image-render-crisp"
-            style={{ imageRendering: '-webkit-optimize-contrast' }}
-          />
-        </picture>
+      {/* 2. Institutional Header Banner: High quality official vector banner, full uncropped view */}
+      <div className="absolute top-4 left-4 sm:top-6 sm:left-6 md:top-8 md:left-8 z-30 flex items-center pointer-events-none select-none">
+        <img
+          src="/krmu_banner.svg"
+          alt="K.R. Mangalam University - The Complete World of Education - NAAC Grade A"
+          className="w-[260px] xs:w-[320px] sm:w-[420px] md:w-[480px] lg:w-[540px] max-w-[85vw] h-auto object-contain block drop-shadow-md select-none pointer-events-none"
+        />
       </div>
 
       {/* 3. The Glassmorphism Login Card: Precisely aligned to white outline (Y: ~11.6% to ~88.4%, X: ~69.5% to ~95.1%) */}
