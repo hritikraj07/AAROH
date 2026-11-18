@@ -218,11 +218,8 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     sunLight: THREE.DirectionalLight | null;
     hemiLight: THREE.HemisphereLight | null;
     fillLight: THREE.DirectionalLight | null;
-    sunMesh: THREE.Group | null;
-    moonMesh: THREE.Group | null;
+    nightLightsGroup: THREE.Group | null;
     starsMesh: THREE.Points | null;
-    hoverHighlightBox: THREE.Mesh | null;
-    hoverBoxHelper: THREE.BoxHelper | null;
     vehiclesGroup: THREE.Group | null;
     roofDetailsGroup: THREE.Group | null;
     camAnim: {
@@ -236,11 +233,8 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     sunLight: null,
     hemiLight: null,
     fillLight: null,
-    sunMesh: null,
-    moonMesh: null,
+    nightLightsGroup: null,
     starsMesh: null,
-    hoverHighlightBox: null,
-    hoverBoxHelper: null,
     vehiclesGroup: null,
     roofDetailsGroup: null,
     camAnim: null
@@ -284,32 +278,32 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     setIsTicketingOpen(true);
   };
 
-  // Dynamically sync 3D Day/Night Landscape with Website Theme
+  // Dynamically sync 3D Day/Night Landscape & Campus Night Illumination with Website Theme
   useEffect(() => {
     const isDark = theme === 'dark';
     const scene = sceneRef.current;
     if (!scene) return;
 
-    scene.background = new THREE.Color(isDark ? '#0A0F1D' : '#BAE6FD');
+    scene.background = new THREE.Color(isDark ? '#0F172A' : '#BAE6FD');
 
-    const { sunLight, hemiLight, fillLight, sunMesh, moonMesh, starsMesh } = animatedRefs.current;
-    if (sunMesh) sunMesh.visible = !isDark;
-    if (moonMesh) moonMesh.visible = isDark;
+    const { sunLight, hemiLight, fillLight, nightLightsGroup, starsMesh } = animatedRefs.current;
+    if (nightLightsGroup) nightLightsGroup.visible = isDark;
     if (starsMesh) starsMesh.visible = isDark;
 
     if (sunLight) {
-      sunLight.color.set(isDark ? '#C7D2FE' : '#FFFBEB');
-      sunLight.intensity = isDark ? 0.85 : 2.05;
-      sunLight.position.set(isDark ? -44 : 44, 75, isDark ? -48 : 48);
+      sunLight.color.set(isDark ? '#E2E8F0' : '#FFFBEB');
+      sunLight.intensity = isDark ? 1.75 : 2.05;
+      sunLight.position.set(isDark ? -35 : 44, 75, isDark ? -35 : 48);
     }
     if (hemiLight) {
-      hemiLight.color.set(isDark ? '#1E293B' : '#FFFFFF');
-      hemiLight.groundColor.set(isDark ? '#0A0F1D' : '#CBD5E1');
-      hemiLight.intensity = isDark ? 0.45 : 1.05;
+      hemiLight.color.set(isDark ? '#475569' : '#FFFFFF');
+      hemiLight.groundColor.set(isDark ? '#1E293B' : '#CBD5E1');
+      hemiLight.intensity = isDark ? 1.25 : 1.05;
     }
     if (fillLight) {
-      fillLight.color.set(isDark ? '#1E1B4B' : '#E2E8F0');
-      fillLight.intensity = isDark ? 0.35 : 0.55;
+      fillLight.color.set(isDark ? '#64748B' : '#E2E8F0');
+      fillLight.intensity = isDark ? 1.05 : 0.55;
+      fillLight.position.set(isDark ? 45 : -48, isDark ? 50 : 36, isDark ? 45 : -42);
     }
   }, [theme]);
 
@@ -323,7 +317,7 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     const isDarkInit = document.documentElement.classList.contains('dark') || theme === 'dark';
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(isDarkInit ? '#0A0F1D' : '#BAE6FD');
+    scene.background = new THREE.Color(isDarkInit ? '#0F172A' : '#BAE6FD');
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(38, width / height, 0.5, 450);
@@ -385,55 +379,55 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     scene.add(sunLight);
 
     const fillLight = new THREE.DirectionalLight(
-      isDarkInit ? '#1E1B4B' : '#E2E8F0',
-      isDarkInit ? 0.35 : 0.55
+      isDarkInit ? '#64748B' : '#E2E8F0',
+      isDarkInit ? 1.05 : 0.55
     );
-    fillLight.position.set(-48, 36, -42);
+    fillLight.position.set(isDarkInit ? 45 : -48, isDarkInit ? 50 : 36, isDarkInit ? 45 : -42);
     scene.add(fillLight);
 
-    // 3D Sun (Day Mode)
-    const sunGroup = new THREE.Group();
-    sunGroup.position.set(44, 75, 48);
-    const sunSphere = new THREE.Mesh(
-      new THREE.SphereGeometry(4.2, 24, 24),
-      new THREE.MeshBasicMaterial({ color: 0xFDE047 })
-    );
-    sunGroup.add(sunSphere);
-    const sunHalo = new THREE.Mesh(
-      new THREE.RingGeometry(4.5, 7.8, 32),
-      new THREE.MeshBasicMaterial({
-        color: 0xFEF08A,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.6
-      })
-    );
-    sunHalo.lookAt(0, 0, 0);
-    sunGroup.add(sunHalo);
-    sunGroup.visible = !isDarkInit;
-    scene.add(sunGroup);
+    // Campus Night Lighting Group (automatically turns ON in Night Mode to illuminate campus)
+    const nightLightsGroup = new THREE.Group();
+    
+    const addCampusLamp = (x: number, y: number, z: number, color = '#FEF08A', intensity = 3.4, distance = 44) => {
+      const pl = new THREE.PointLight(color, intensity, distance, 1.2);
+      pl.position.set(x, y, z);
+      nightLightsGroup.add(pl);
+      
+      const bulb = new THREE.Mesh(
+        new THREE.SphereGeometry(0.35, 12, 12),
+        new THREE.MeshBasicMaterial({ color: color })
+      );
+      bulb.position.set(x, y, z);
+      nightLightsGroup.add(bulb);
+    };
 
-    // 3D Moon (Dark / Night Mode)
-    const moonGroup = new THREE.Group();
-    moonGroup.position.set(-44, 75, -48);
-    const moonSphere = new THREE.Mesh(
-      new THREE.SphereGeometry(3.6, 24, 24),
-      new THREE.MeshBasicMaterial({ color: 0xE2E8F0 })
-    );
-    moonGroup.add(moonSphere);
-    const moonHalo = new THREE.Mesh(
-      new THREE.RingGeometry(3.9, 6.4, 32),
-      new THREE.MeshBasicMaterial({
-        color: 0x93C5FD,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.45
-      })
-    );
-    moonHalo.lookAt(0, 0, 0);
-    moonGroup.add(moonHalo);
-    moonGroup.visible = isDarkInit;
-    scene.add(moonGroup);
+    // 1. Aryabhata Entrance Colonnade & Central Dome
+    addCampusLamp(15, 6.5, 26, '#FDE68A', 4.0, 48);
+    addCampusLamp(15, 21.0, 19, '#FEF3C7', 3.5, 40);
+
+    // 2. Sunken Garden Quad & Central Promenade
+    addCampusLamp(15, 3.8, 4, '#FEF08A', 3.8, 45);
+
+    // 3. Bhaskaracharya Block (West Quad)
+    addCampusLamp(2, 5.5, 4, '#FDE68A', 3.4, 40);
+
+    // 4. Chanakya Block (East Quad)
+    addCampusLamp(28, 5.5, 4, '#FDE68A', 3.4, 40);
+
+    // 5. D Block Modern Curtain-Wall Facade & Plaza
+    addCampusLamp(15, 6.0, -28, '#BAE6FD', 4.2, 50);
+
+    // 6. Sports Complex Floodlights
+    addCampusLamp(-18, 14.0, 6, '#FFFFFF', 4.5, 60);
+
+    // 7. Hostels Residential Court
+    addCampusLamp(-36, 6.5, -14, '#FDE68A', 3.6, 45);
+
+    // 8. Main Entrance Sohna Road Gatehouse
+    addCampusLamp(15, 5.5, 36, '#FEF3C7', 3.4, 42);
+
+    nightLightsGroup.visible = isDarkInit;
+    scene.add(nightLightsGroup);
 
     // 3D Stars Field (Night Mode)
     const starCount = 900;
@@ -459,37 +453,11 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     starsPoints.visible = isDarkInit;
     scene.add(starsPoints);
 
-    // Dynamic Hover Outline Helpers around hovered buildings
-    const hoverHighlightBox = new THREE.Mesh(
-      new THREE.BoxGeometry(1, 1, 1),
-      new THREE.MeshBasicMaterial({
-        color: 0x14B8A6,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.85,
-        depthTest: false
-      })
-    );
-    hoverHighlightBox.renderOrder = 999;
-    hoverHighlightBox.visible = false;
-    scene.add(hoverHighlightBox);
-
-    const hoverBoxHelper = new THREE.BoxHelper(new THREE.Mesh(), 0x0F766E);
-    (hoverBoxHelper.material as THREE.LineBasicMaterial).transparent = true;
-    (hoverBoxHelper.material as THREE.LineBasicMaterial).opacity = 0.9;
-    (hoverBoxHelper.material as THREE.LineBasicMaterial).depthTest = false;
-    hoverBoxHelper.renderOrder = 1000;
-    hoverBoxHelper.visible = false;
-    scene.add(hoverBoxHelper);
-
     animatedRefs.current.sunLight = sunLight;
     animatedRefs.current.hemiLight = hemiLight;
     animatedRefs.current.fillLight = fillLight;
-    animatedRefs.current.sunMesh = sunGroup;
-    animatedRefs.current.moonMesh = moonGroup;
+    animatedRefs.current.nightLightsGroup = nightLightsGroup;
     animatedRefs.current.starsMesh = starsPoints;
-    animatedRefs.current.hoverHighlightBox = hoverHighlightBox;
-    animatedRefs.current.hoverBoxHelper = hoverBoxHelper;
 
     const mats = {
       plinthBase: new THREE.MeshStandardMaterial({ color: '#E2E8F0', roughness: 0.7 }),
@@ -1829,12 +1797,6 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       eastRowBus.rotation.y = Math.PI / 2 - 0.25;
       vehiclesGroup.add(eastRowBus);
     }
-    [-12.8, -10.2, -7.6, -5.0].forEach((bx) => {
-      const lotBus = createKrmuBus();
-      lotBus.position.set(bx, 0.16, -9.2);
-      vehiclesGroup.add(lotBus);
-    });
-
     [
       [-10.4, 31.2, 0, 0, false],
       [-6.0, 31.2, 0, 1, true],
@@ -1951,26 +1913,6 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       const hitId = getHitBuildingId(e.clientX, e.clientY);
       setHoveredId(hitId);
       renderer.domElement.style.cursor = hitId ? 'pointer' : 'grab';
-
-      const { hoverHighlightBox, hoverBoxHelper } = animatedRefs.current;
-      if (hitId && buildingGroupsRef.current[hitId] && hoverHighlightBox && hoverBoxHelper) {
-        const grp = buildingGroupsRef.current[hitId];
-        const bbox = new THREE.Box3().setFromObject(grp);
-        const size = new THREE.Vector3();
-        bbox.getSize(size);
-        const center = new THREE.Vector3();
-        bbox.getCenter(center);
-        size.addScalar(0.4);
-        hoverHighlightBox.scale.copy(size);
-        hoverHighlightBox.position.copy(center);
-        hoverHighlightBox.visible = true;
-
-        hoverBoxHelper.setFromObject(grp);
-        hoverBoxHelper.visible = true;
-      } else {
-        if (hoverHighlightBox) hoverHighlightBox.visible = false;
-        if (hoverBoxHelper) hoverBoxHelper.visible = false;
-      }
     };
 
     const onPointerDown = (e: MouseEvent) => {
@@ -2013,10 +1955,7 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       animFrameId = requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
 
-      const { flagMesh, flagBasePositions, camAnim, hoverHighlightBox, starsMesh } = animatedRefs.current;
-      if (hoverHighlightBox && hoverHighlightBox.visible) {
-        (hoverHighlightBox.material as THREE.MeshBasicMaterial).opacity = 0.65 + Math.sin(elapsed * 5) * 0.25;
-      }
+      const { flagMesh, flagBasePositions, camAnim, starsMesh } = animatedRefs.current;
       if (starsMesh && starsMesh.visible) {
         starsMesh.rotation.y = elapsed * 0.005;
       }

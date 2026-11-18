@@ -1,11 +1,129 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Menu, Search, Bell, ArrowRight, X, SlidersHorizontal, ChevronRight } from 'lucide-react';
+import { Menu, Search, Bell, ArrowRight, X, SlidersHorizontal, ChevronRight, ChevronDown } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { APP_CONFIG } from '../../config';
 import { Link, useNavigate } from 'react-router-dom';
 import { getApproachingDeadlines } from '../../utils/deadlineUtils';
 import { StorageService } from '../../services/storage';
+
+export const AVAILABLE_SKILL_CATEGORIES: { category: string; skills: string[] }[] = [
+  {
+    category: 'Programming Languages',
+    skills: [
+      'Python',
+      'C',
+      'C++',
+      'Java',
+      'JavaScript',
+      'TypeScript',
+      'Go',
+      'Rust',
+      'C#',
+      'PHP',
+      'Swift',
+      'Kotlin',
+      'R',
+      'MATLAB',
+      'Ruby',
+      'Dart',
+      'Shell Scripting'
+    ]
+  },
+  {
+    category: 'Web & Full Stack Development',
+    skills: [
+      'React',
+      'Next.js',
+      'Node.js',
+      'Express.js',
+      'HTML5 & CSS3',
+      'Tailwind CSS',
+      'Vue.js',
+      'Angular',
+      'FastAPI',
+      'Django',
+      'Flask',
+      'REST APIs',
+      'GraphQL',
+      'WebSockets',
+      'Redux',
+      'Bootstrap'
+    ]
+  },
+  {
+    category: 'AI, Machine Learning & Data Science',
+    skills: [
+      'Machine Learning',
+      'Deep Learning',
+      'Artificial Intelligence',
+      'Natural Language Processing',
+      'Computer Vision',
+      'PyTorch',
+      'TensorFlow',
+      'Scikit-Learn',
+      'Pandas',
+      'NumPy',
+      'Data Analysis',
+      'Data Visualization',
+      'Generative AI',
+      'Prompt Engineering',
+      'OpenCV',
+      'Keras'
+    ]
+  },
+  {
+    category: 'Cloud, DevOps & Infrastructure',
+    skills: [
+      'Amazon Web Services (AWS)',
+      'Microsoft Azure',
+      'Google Cloud Platform (GCP)',
+      'Docker',
+      'Kubernetes',
+      'Linux / Unix',
+      'Git & GitHub',
+      'CI/CD Pipelines',
+      'Terraform',
+      'Nginx',
+      'Jenkins',
+      'Ansible'
+    ]
+  },
+  {
+    category: 'Databases & Backend Architecture',
+    skills: [
+      'PostgreSQL',
+      'MySQL',
+      'MongoDB',
+      'Redis',
+      'SQLite',
+      'SQL',
+      'Database Management Systems',
+      'System Design',
+      'Microservices',
+      'Distributed Systems',
+      'Apache Kafka',
+      'Prisma'
+    ]
+  },
+  {
+    category: 'Core Computer Science & Security',
+    skills: [
+      'Data Structures',
+      'Algorithms',
+      'Object-Oriented Programming (OOP)',
+      'Operating Systems',
+      'Computer Networks',
+      'Cyber Security',
+      'Cryptography',
+      'Blockchain & Web3',
+      'Agile / Scrum Methodology',
+      'Software Testing & QA',
+      'Embedded Systems',
+      'Internet of Things (IoT)'
+    ]
+  }
+];
 
 export interface TopBarProps {
   onOpenMobileMenu: () => void;
@@ -39,8 +157,18 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
 
   // Profile Dropdown State
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [newSkillInput, setNewSkillInput] = useState('');
   const profileRef = useRef<HTMLDivElement>(null);
+
+  const handleAddSkill = (skill: string) => {
+    if (!user || !skill) return;
+    const current = user.skills || [];
+    if (current.includes(skill)) {
+      showToast({ type: 'info', title: 'Skill Already Added', message: `${skill} is already in your profile.` });
+      return;
+    }
+    updateUser(user.id, { skills: [...current, skill] });
+    showToast({ type: 'success', title: 'Skill Added', message: `${skill} added to your profile.` });
+  };
 
   // Global Search Input & Dropdown State
   const [searchQuery, setSearchQuery] = useState('');
@@ -570,7 +698,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
 
                 {/* Student Technical Skills Management */}
                 {role === 'student' && (
-                  <div className="pt-2 border-t border-slate-100 dark:border-[#27272A] space-y-2">
+                  <div className="pt-2 border-t border-slate-100 dark:border-[#27272A] space-y-2.5">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
                         Technical Skills
@@ -606,43 +734,46 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                         ))
                       ) : (
                         <span className="text-[11px] text-slate-400 dark:text-slate-500 italic">
-                          No skills added yet. Add your skills below.
+                          No skills added yet. Choose your skills below.
                         </span>
                       )}
                     </div>
 
-                    {/* Add Skill Input Form */}
-                    <form
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        const trimmed = newSkillInput.trim();
-                        if (!trimmed || !user) return;
-                        const current = user.skills || [];
-                        if (current.some(s => s.toLowerCase() === trimmed.toLowerCase())) {
-                          showToast({ type: 'info', title: 'Skill Exists', message: `${trimmed} is already in your profile.` });
-                          setNewSkillInput('');
-                          return;
-                        }
-                        updateUser(user.id, { skills: [...current, trimmed] });
-                        setNewSkillInput('');
-                      }}
-                      className="flex items-center gap-1.5 pt-1"
-                    >
-                      <input
-                        type="text"
-                        value={newSkillInput}
-                        onChange={(e) => setNewSkillInput(e.target.value)}
-                        placeholder="Add skill (e.g. Python, React)..."
-                        className="flex-1 px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-[#27272A] bg-slate-50 dark:bg-[#18181B] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-teal-600 font-sans"
-                      />
-                      <button
-                        type="submit"
-                        disabled={!newSkillInput.trim()}
-                        className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-[#0F766E] text-white hover:bg-[#115E59] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                      >
-                        Add
-                      </button>
-                    </form>
+                    {/* Select Skill Dropdown */}
+                    <div className="space-y-1.5 pt-1">
+                      <label htmlFor="skill-selector-dropdown" className="block text-[10px] font-mono uppercase text-slate-400 dark:text-slate-500">
+                        Select Skill to Add:
+                      </label>
+                      <div className="relative">
+                        <select
+                          id="skill-selector-dropdown"
+                          value=""
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              handleAddSkill(e.target.value);
+                            }
+                          }}
+                          className="w-full appearance-none px-2.5 py-1.5 pr-8 text-xs rounded-lg border border-slate-200 dark:border-[#27272A] bg-slate-50 dark:bg-[#18181B] text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-600 font-sans cursor-pointer"
+                        >
+                          <option value="" disabled>
+                            Select skill from catalog...
+                          </option>
+                          {AVAILABLE_SKILL_CATEGORIES.map(group => (
+                            <optgroup key={group.category} label={group.category}>
+                              {group.skills.map(sk => {
+                                const isAdded = (user?.skills || []).includes(sk);
+                                return (
+                                  <option key={sk} value={sk} disabled={isAdded}>
+                                    {sk} {isAdded ? '(Added)' : ''}
+                                  </option>
+                                );
+                              })}
+                            </optgroup>
+                          ))}
+                        </select>
+                        <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                      </div>
+                    </div>
                   </div>
                 )}
 
