@@ -7,14 +7,11 @@ import {
   X,
   Users,
   BookOpen,
-  Calendar,
   Clock,
   MapPin,
   CheckCircle2,
-  AlertCircle,
   ShieldCheck,
 } from 'lucide-react';
-import { ClassSession } from '../../types';
 
 export const AdminAttendancePage: React.FC = () => {
   const { courses, timetable, users, attendance, recordBatchAttendance, showToast } = useApp();
@@ -313,7 +310,7 @@ export const AdminAttendancePage: React.FC = () => {
         ) : (
           <form onSubmit={handleSubmitAttendance}>
             <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
+              <table className="w-full min-w-[680px] text-xs text-left">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-[#27272A] bg-slate-50 dark:bg-[#0E0E11] text-slate-500 dark:text-slate-400 font-mono uppercase text-[10px]">
                     <th className="py-3 px-4 w-12 text-center">#</th>

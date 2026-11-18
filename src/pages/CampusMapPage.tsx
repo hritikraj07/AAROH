@@ -6,13 +6,7 @@ import { CampusKanbanBoard } from '../components/modules/campus/CampusKanbanBoar
 import { CampusBuilding } from '../types';
 import {
   MapPin,
-  Sparkles,
   ClipboardList,
-  ShieldCheck,
-  CheckCircle2,
-  Clock,
-  AlertTriangle,
-  Building2,
   Plus,
 } from 'lucide-react';
 

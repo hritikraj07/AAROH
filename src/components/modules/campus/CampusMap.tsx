@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useApp } from '../../../context/AppContext';
 import {
   CAMPUS_BUILDINGS,
-  BuildingMeta,
   checkNextClassInBuilding,
   getBuildingHealth,
 } from '../../../utils/campusMapUtils';
@@ -14,10 +13,6 @@ import {
   Coffee,
   Clock,
   AlertTriangle,
-  CheckCircle2,
-  MapPin,
-  Sparkles,
-  Info,
 } from 'lucide-react';
 
 export interface CampusMapProps {
@@ -115,15 +110,15 @@ export const CampusMap: React.FC<CampusMapProps> = ({
         {/* 4 Interactive Campus Zones / Buildings */}
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           {CAMPUS_BUILDINGS.map(building => {
-            const synergy = checkNextClassInBuilding(building.id, timetable, user);
+            const nextClassSchedule = checkNextClassInBuilding(building.id, timetable, user);
             const hasNextClass =
-              synergy.hasClassInNext30Min || simulatedClassBuilding === building.id;
+              nextClassSchedule.hasClassInNext30Min || simulatedClassBuilding === building.id;
             const health = getBuildingHealth(building.id, campusTickets);
             const isCriticalPulse = isAdminView && health.hasCritical;
 
             // Compute dynamic CSS styling
             const glowClass = hasNextClass
-              ? 'shadow-[0_0_15px_#0F766E] border-teal-500 dark:border-teal-400 ring-2 ring-teal-500/30'
+              ? 'shadow-[0_0_15px_#0F766E] border-teal-600 dark:border-teal-400 ring-1 ring-teal-500/30'
               : '';
             const pulseClass = isCriticalPulse
               ? 'animate-pulse border-red-500 bg-red-500/10 dark:bg-red-500/15'
@@ -135,26 +130,26 @@ export const CampusMap: React.FC<CampusMapProps> = ({
                 onClick={() => handleBuildingClick(building.id)}
                 onMouseEnter={() => setHoveredBuilding(building.id)}
                 onMouseLeave={() => setHoveredBuilding(null)}
-                className={`relative group p-5 rounded-2xl cursor-pointer transition-all duration-300 border bg-white dark:bg-[#18181B] hover:scale-[1.015] hover:border-[#8DA9C4] dark:hover:border-[#8DA9C4] flex flex-col justify-between min-h-[140px] ${
+                className={`relative group p-5 rounded-lg cursor-pointer transition-colors border bg-white dark:bg-[#18181B] hover:border-[#8DA9C4] dark:hover:border-[#8DA9C4] flex flex-col justify-between min-h-[140px] ${
                   pulseClass || glowClass || 'border-slate-200 dark:border-[#27272A]'
                 }`}
               >
-                {/* Timetable Synergy Tooltip Banner */}
+                {/* Next Class Schedule Tooltip Banner */}
                 {hasNextClass && (
-                  <div className="absolute -top-3 left-4 z-20 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#134074] text-white text-[11px] font-mono font-bold shadow-md animate-bounce border border-[#8DA9C4]/40">
+                  <div className="absolute -top-3 left-4 z-20 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#134074] text-white text-[11px] font-mono font-bold shadow-sm border border-[#8DA9C4]/40">
                     <Clock className="w-3 h-3 text-[#8DA9C4]" />
                     <span>Next Class Here</span>
-                    {synergy.minutesUntilStart >= 0 && (
-                      <span className="opacity-90 font-normal">({synergy.minutesUntilStart}m)</span>
+                    {nextClassSchedule.minutesUntilStart >= 0 && (
+                      <span className="opacity-90 font-normal">({nextClassSchedule.minutesUntilStart}m)</span>
                     )}
                   </div>
                 )}
 
                 {/* Critical Issue Alert Banner (Admin) */}
                 {isCriticalPulse && (
-                  <div className="absolute -top-3 right-4 z-20 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-mono font-bold shadow-md">
+                  <div className="absolute -top-3 right-4 z-20 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-red-600 text-white text-[10px] font-mono font-bold shadow-sm">
                     <AlertTriangle className="w-3 h-3" />
-                    <span>🚨 {health.criticalCount} Critical Issue</span>
+                    <span>{health.criticalCount} Critical Issue</span>
                   </div>
                 )}
 

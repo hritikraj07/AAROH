@@ -9,7 +9,6 @@ import {
   Trash2,
   X,
   Mail,
-  Building,
   GraduationCap,
   Briefcase,
   ShieldAlert,
@@ -257,7 +256,7 @@ export const AdminPeoplePage: React.FC = () => {
             placeholder="Search by name, email, roll number..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full text-xs pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
+            className="w-full text-xs pl-9 pr-3 py-2 min-h-[44px] bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
           />
         </div>
 
@@ -265,7 +264,7 @@ export const AdminPeoplePage: React.FC = () => {
         <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
           <button
             onClick={() => setRoleFilter('all')}
-            className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${roleFilter === 'all'
+            className={`px-3 py-1.5 min-h-[36px] sm:min-h-[32px] text-xs rounded font-medium transition-colors whitespace-nowrap ${roleFilter === 'all'
                 ? 'bg-slate-900 text-white font-semibold'
                 : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
@@ -274,7 +273,7 @@ export const AdminPeoplePage: React.FC = () => {
           </button>
           <button
             onClick={() => setRoleFilter('student')}
-            className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${roleFilter === 'student'
+            className={`px-3 py-1.5 min-h-[36px] sm:min-h-[32px] text-xs rounded font-medium transition-colors whitespace-nowrap ${roleFilter === 'student'
                 ? 'bg-teal-700 text-white font-semibold'
                 : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
@@ -283,7 +282,7 @@ export const AdminPeoplePage: React.FC = () => {
           </button>
           <button
             onClick={() => setRoleFilter('faculty')}
-            className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${roleFilter === 'faculty'
+            className={`px-3 py-1.5 min-h-[36px] sm:min-h-[32px] text-xs rounded font-medium transition-colors whitespace-nowrap ${roleFilter === 'faculty'
                 ? 'bg-blue-700 text-white font-semibold'
                 : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
@@ -292,7 +291,7 @@ export const AdminPeoplePage: React.FC = () => {
           </button>
           <button
             onClick={() => setRoleFilter('admin')}
-            className={`px-3 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap ${roleFilter === 'admin'
+            className={`px-3 py-1.5 min-h-[36px] sm:min-h-[32px] text-xs rounded font-medium transition-colors whitespace-nowrap ${roleFilter === 'admin'
                 ? 'bg-slate-700 text-white font-semibold'
                 : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
@@ -324,7 +323,7 @@ export const AdminPeoplePage: React.FC = () => {
       ) : (
         <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
+            <table className="w-full min-w-[680px] text-xs text-left">
               <thead>
                 <tr className="bg-slate-50 dark:bg-[#111115] border-b border-slate-200 dark:border-[#27272A] text-slate-500 dark:text-slate-400 font-mono uppercase text-[10px]">
                   <th className="py-3 px-4">User</th>
@@ -630,7 +629,7 @@ export const AdminPeoplePage: React.FC = () => {
                       <option value="">Unassigned (Select Coordinator)</option>
                       {facultyMembers.map(fac => (
                         <option key={fac.id} value={fac.name}>
-                          {fac.name} — {fac.department}
+                          {fac.name} ({fac.department})
                         </option>
                       ))}
                     </select>

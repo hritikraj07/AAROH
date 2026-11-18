@@ -3,7 +3,7 @@ import { useApp } from '../../../context/AppContext';
 import { AcademicService } from '../../../services/academicService';
 import { ClassSession } from '../../../types';
 import { Badge } from '../../ui/Badge';
-import { Clock, MapPin, User, Calendar, Network } from 'lucide-react';
+import { Clock, MapPin, User, Network } from 'lucide-react';
 import { getFacultyFullName } from '../../../utils/facultyUtils';
 import { SkillTreeModal } from './SkillTreeModal';
 
@@ -70,7 +70,7 @@ export const TimetableTab: React.FC = () => {
                   setSelectedDay(d.num);
                   if (viewMode === 'grid') setViewMode('day');
                 }}
-                className={`px-3 py-1.5 text-xs font-medium rounded transition-colors whitespace-nowrap ${
+                className={`px-3 py-2 min-h-[40px] text-xs font-medium rounded transition-colors whitespace-nowrap cursor-pointer flex items-center justify-center ${
                   isSelected && viewMode === 'day'
                     ? 'bg-teal-700 text-white font-semibold dark:bg-[#0F766E]'
                     : 'bg-slate-100/70 text-slate-700 hover:bg-slate-200/60 dark:bg-[#111115] dark:text-slate-300 dark:hover:bg-[#202025]'
@@ -97,7 +97,7 @@ export const TimetableTab: React.FC = () => {
         <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#111115] p-1 rounded-md border border-slate-200 dark:border-[#27272A] text-xs shrink-0 self-start sm:self-auto">
           <button
             onClick={() => setViewMode('grid')}
-            className={`px-3 py-1 rounded font-medium transition-colors ${
+            className={`px-3 py-1.5 min-h-[36px] rounded font-medium transition-colors cursor-pointer ${
               viewMode === 'grid'
                 ? 'bg-white text-slate-900 font-semibold dark:bg-[#18181B] dark:text-white'
                 : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
@@ -107,7 +107,7 @@ export const TimetableTab: React.FC = () => {
           </button>
           <button
             onClick={() => setViewMode('day')}
-            className={`px-3 py-1 rounded font-medium transition-colors ${
+            className={`px-3 py-1.5 min-h-[36px] rounded font-medium transition-colors cursor-pointer ${
               viewMode === 'day'
                 ? 'bg-white text-slate-900 font-semibold dark:bg-[#18181B] dark:text-white'
                 : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
@@ -204,7 +204,7 @@ export const TimetableTab: React.FC = () => {
                         </div>
                       ) : (
                         <div className="h-full flex items-center justify-center text-[11px] text-slate-300 dark:text-slate-700">
-                          —
+                          -
                         </div>
                       )}
                     </div>

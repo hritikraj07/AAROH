@@ -9,9 +9,6 @@ import {
   Plus,
   Search,
   X,
-  FileText,
-  Building,
-  Calendar,
   Paperclip,
   CheckCircle2
 } from 'lucide-react';
@@ -106,7 +103,7 @@ export const FacultyNoticesPage: React.FC = () => {
             placeholder="Search circulars, department memos, syllabus updates..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-1.5 text-xs bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+            className="w-full pl-9 pr-4 py-2 min-h-[44px] text-xs bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
           />
         </div>
 
@@ -118,7 +115,7 @@ export const FacultyNoticesPage: React.FC = () => {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-2.5 py-1 text-xs rounded transition-all duration-150 ease-in-out whitespace-nowrap capitalize ${
+              className={`px-3 py-1.5 min-h-[36px] sm:min-h-[32px] text-xs rounded transition-all duration-150 ease-in-out whitespace-nowrap capitalize ${
                 selectedCategory === cat
                   ? 'bg-teal-700 text-white font-semibold'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -151,7 +148,7 @@ export const FacultyNoticesPage: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              className="mt-3"
+              className="mt-3 min-h-[44px]"
               icon={<Plus className="w-3.5 h-3.5" />}
               onClick={() => setIsDraftModalOpen(true)}
             >
@@ -160,7 +157,7 @@ export const FacultyNoticesPage: React.FC = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
+            <table className="w-full min-w-[640px] text-xs text-left">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-[#27272A] bg-slate-50 dark:bg-[#27272A]/70 text-slate-500 dark:text-slate-400 font-mono uppercase text-[10px]">
                   <th className="py-3 px-4 w-12 text-center">Pin</th>

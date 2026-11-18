@@ -24,12 +24,14 @@ export const Tabs: React.FC<TabsProps> = ({
 }) => {
   if (variant === 'pills') {
     return (
-      <div className={`inline-flex items-center p-1 bg-slate-100/90 dark:bg-[#111115] rounded-md border border-slate-200/80 dark:border-[#27272A] ${className}`}>
+      <div role="tablist" className={`inline-flex items-center p-1 bg-slate-100/90 dark:bg-[#111115] rounded-md border border-slate-200/80 dark:border-[#27272A] ${className}`}>
         {tabs.map(tab => {
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={isActive}
               onClick={() => onChange(tab.id)}
               className={`inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded transition-all duration-150 ${
                 isActive
@@ -56,12 +58,14 @@ export const Tabs: React.FC<TabsProps> = ({
   }
 
   return (
-    <div className={`border-b border-slate-200 dark:border-[#27272A] flex items-center gap-6 ${className}`}>
+    <div role="tablist" className={`border-b border-slate-200 dark:border-[#27272A] flex items-center gap-6 ${className}`}>
       {tabs.map(tab => {
         const isActive = activeTab === tab.id;
         return (
           <button
             key={tab.id}
+            role="tab"
+            aria-selected={isActive}
             onClick={() => onChange(tab.id)}
             className={`inline-flex items-center gap-2 py-3 text-sm font-medium border-b-2 transition-all duration-150 ease-in-out -mb-[1px] ${
               isActive

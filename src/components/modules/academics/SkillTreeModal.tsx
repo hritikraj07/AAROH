@@ -5,14 +5,12 @@ import {
   Lock,
   Unlock,
   CheckCircle2,
-  Sparkles,
   ArrowRight,
   Code2,
   Trophy,
-  Zap,
 } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
-import { SkillTree, SkillTreeNode, Assignment } from '../../../types';
+import { SkillTree, SkillTreeNode } from '../../../types';
 import { Badge } from '../../ui/Badge';
 import { useNavigate } from 'react-router-dom';
 
@@ -324,7 +322,7 @@ export const SkillTreeModal: React.FC<SkillTreeModalProps> = ({
                               </div>
                             ) : (
                               <div className="flex items-center gap-1 text-[10px] font-mono">
-                                <Sparkles className="w-3 h-3 text-amber-300 shrink-0" />
+                                <Unlock className="w-3 h-3 text-amber-300 shrink-0" />
                                 <span>No prerequisite required</span>
                               </div>
                             )}

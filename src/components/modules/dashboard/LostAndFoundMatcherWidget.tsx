@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useApp } from '../../../context/AppContext';
 import { findLostAndFoundMatches } from '../../../utils/lostFoundMatcher';
-import { Sparkles, HelpCircle, CheckCircle2, ArrowRight, MapPin, Calendar, Check, Link2 } from 'lucide-react';
+import { HelpCircle, CheckCircle2, MapPin, Calendar, Check, Link2 } from 'lucide-react';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
 const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
@@ -37,7 +37,7 @@ export const LostAndFoundMatcherWidget: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <span className="p-1.5 rounded-lg bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800/60">
-              <Sparkles className="w-4 h-4" />
+              <HelpCircle className="w-4 h-4" />
             </span>
             <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
               AI Lost & Found Matcher: Potential Collision Detected
@@ -173,7 +173,7 @@ export const LostAndFoundMatcherWidget: React.FC = () => {
                   className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 select-none cursor-pointer border border-[#8DA9C4]/30 ${
                     isConfirmed
                       ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 shadow-none cursor-default'
-                      : `bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`
+                      : `bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white active:scale-95 ${exactLightShadow} ${exactDarkShadow}`
                   }`}
                 >
                   {isConfirmed ? (

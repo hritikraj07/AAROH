@@ -34,7 +34,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose }) =
       <div className="relative w-72 max-w-[80vw] bg-white dark:bg-[#18181B] h-full z-10 flex flex-col border-r border-slate-200 dark:border-[#27272A] shadow-sm animate-in fade-in duration-150">
         <button
           onClick={onClose}
-          className="absolute top-4 right-3 p-1.5 rounded text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#202025] z-20"
+          className="absolute top-3 right-3 w-10 h-10 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#202025] z-20 cursor-pointer"
           aria-label="Close menu"
         >
           <X className="w-5 h-5" />

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../../../context/AppContext';
 import { AcademicService } from '../../../services/academicService';
 import { Badge } from '../../ui/Badge';
-import { AlertCircle, CheckCircle2, Calendar, Network, Camera } from 'lucide-react';
+import { AlertCircle, Calendar, Network, Camera } from 'lucide-react';
 import { APP_CONFIG } from '../../../config';
 import { getFacultyFullName } from '../../../utils/facultyUtils';
 import { SkillTreeModal } from './SkillTreeModal';
@@ -38,14 +38,14 @@ export const AttendanceTab: React.FC = () => {
       {/* Top Banner & Configurator */}
       <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Metric Glance */}
-        <div className="flex items-center gap-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
           <div>
             <span className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-semibold block">
               Cumulative Attendance
             </span>
             <div className="flex items-baseline gap-2 mt-0.5">
               <span className="text-2xl font-bold font-mono text-slate-900 dark:text-white tabular-nums">
-                {totalHeld > 0 ? `${overallPercentage}%` : '—'}
+                {totalHeld > 0 ? `${overallPercentage}%` : 'N/A'}
               </span>
               <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                 ({totalAttended} / {totalHeld} Total Hours)
@@ -53,7 +53,7 @@ export const AttendanceTab: React.FC = () => {
             </div>
           </div>
 
-          <div className="border-l border-slate-200 dark:border-[#27272A] pl-6">
+          <div className="sm:border-l sm:border-slate-200 sm:dark:border-[#27272A] sm:pl-6 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-[#27272A]/50">
             <span className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-semibold block">
               Shortfall Status
             </span>
@@ -77,9 +77,9 @@ export const AttendanceTab: React.FC = () => {
         <button
           type="button"
           onClick={() => setIsScannerOpen(true)}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white border border-[#8DA9C4]/30 transition-all cursor-pointer shadow-sm active:scale-95 shrink-0 self-start md:self-auto"
+          className="inline-flex items-center justify-center gap-1.5 text-xs font-semibold px-4 py-2.5 min-h-[44px] rounded-xl bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white border border-[#8DA9C4]/30 transition-all cursor-pointer shadow-sm active:scale-95 shrink-0 self-start sm:self-auto"
         >
-          <Camera className="w-3.5 h-3.5 text-[#8DA9C4]" />
+          <Camera className="w-4 h-4 text-[#8DA9C4]" />
           <span>Scan Attendance</span>
         </button>
       </div>
@@ -107,7 +107,7 @@ export const AttendanceTab: React.FC = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
+            <table className="w-full min-w-[640px] text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-[#27272A] bg-slate-50/80 dark:bg-[#111115] text-slate-500 dark:text-slate-400 font-medium">
                   <th className="py-3 px-4 w-28">Code</th>

@@ -5,15 +5,12 @@ import {
   Calendar,
   Plus,
   Trash2,
-  CheckCircle,
   MapPin,
-  Clock,
-  Users,
   Search,
   X,
   Filter
 } from 'lucide-react';
-import { CampusEvent, EventCategory } from '../../types';
+import { EventCategory } from '../../types';
 
 export const AdminEventsPage: React.FC = () => {
   const { events, createEvent, deleteEvent } = useApp();
@@ -109,7 +106,7 @@ export const AdminEventsPage: React.FC = () => {
             placeholder="Search events, venues..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full text-xs pl-9 pr-3 py-1.5 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
+            className="w-full text-xs pl-9 pr-3 py-2 min-h-[44px] bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
           />
         </div>
 
@@ -118,7 +115,7 @@ export const AdminEventsPage: React.FC = () => {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-2.5 py-1 text-xs rounded font-medium transition-colors whitespace-nowrap capitalize ${selectedCategory === cat
+              className={`px-3 py-1.5 min-h-[36px] sm:min-h-[32px] text-xs rounded font-medium transition-colors whitespace-nowrap capitalize ${selectedCategory === cat
                   ? 'bg-teal-50 text-teal-900 border border-teal-200 font-semibold dark:bg-[#0F766E] dark:text-white dark:border-teal-700'
                   : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 dark:bg-[#111115] dark:border-[#27272A] dark:text-slate-300 dark:hover:bg-[#202025]'
                 }`}
@@ -142,6 +139,7 @@ export const AdminEventsPage: React.FC = () => {
           <Button
             variant="primary"
             size="sm"
+            className="min-h-[44px]"
             icon={<Plus className="w-3.5 h-3.5" />}
             onClick={() => setIsAddModalOpen(true)}
           >
@@ -151,7 +149,7 @@ export const AdminEventsPage: React.FC = () => {
       ) : (
         <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
+            <table className="w-full min-w-[720px] text-xs text-left">
               <thead>
                 <tr className="bg-slate-50 dark:bg-[#111115] border-b border-slate-200 dark:border-[#27272A] text-slate-500 dark:text-slate-400 font-mono uppercase text-[10px]">
                   <th className="py-3 px-4">Event Title</th>

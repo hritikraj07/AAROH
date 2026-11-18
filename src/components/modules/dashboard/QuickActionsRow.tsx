@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle, Calendar, Clock, ArrowRight } from 'lucide-react';
+import { PlusCircle, Calendar, Clock } from 'lucide-react';
 import { Button } from '../../ui/Button';
 
 export interface QuickActionsRowProps {

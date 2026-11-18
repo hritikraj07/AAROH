@@ -3,7 +3,6 @@ import { useApp } from '../../../context/AppContext';
 import { CampusTicket, TicketStatus, TicketPriority } from '../../../types';
 import {
   ClipboardList,
-  Clock,
   CheckCircle2,
   AlertTriangle,
   ArrowRight,

@@ -1,20 +1,8 @@
 import React, { useState } from 'react';
-import {
-  Network,
-  BookOpen,
-  ArrowRight,
-  Sparkles,
-  Trophy,
-  CheckCircle2,
-  Lock,
-  Unlock,
-  GraduationCap,
-} from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { Course } from '../../../types';
 import { SkillTreeModal } from './SkillTreeModal';
 import { CurriculumTracker } from './CurriculumTracker';
-import { getFacultyFullName } from '../../../utils/facultyUtils';
 
 // Custom 4-layer premium button shadows
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';

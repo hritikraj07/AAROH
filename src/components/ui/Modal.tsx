@@ -47,7 +47,7 @@ export const Modal: React.FC<ModalProps> = ({
   }[maxWidth];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-slate-900/40 transition-opacity"
@@ -57,16 +57,16 @@ export const Modal: React.FC<ModalProps> = ({
 
       {/* Modal Surface */}
       <div
-        className={`relative w-full ${maxWidthStyles} bg-white dark:bg-[#18181B] rounded-lg border border-slate-200 dark:border-[#27272A] shadow-sm z-10 overflow-hidden my-auto animate-in fade-in duration-150`}
+        className={`relative w-full ${maxWidthStyles} bg-white dark:bg-[#18181B] rounded-xl sm:rounded-lg border border-slate-200 dark:border-[#27272A] shadow-sm z-10 overflow-hidden my-auto animate-in fade-in duration-150 max-h-[92dvh] flex flex-col`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
       >
         {/* Header */}
-        <div className="flex items-start justify-between px-6 py-4 border-b border-slate-200 dark:border-[#27272A] bg-slate-50/50 dark:bg-[#27272A]/50">
-          <div className="flex-1 pr-4">
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <h3 id="modal-title" className="text-base font-semibold text-slate-900 dark:text-slate-100 leading-snug">
+        <div className="flex items-start justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 dark:border-[#27272A] bg-slate-50/50 dark:bg-[#27272A]/50 shrink-0">
+          <div className="flex-1 pr-3">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <h3 id="modal-title" className="text-sm sm:text-base font-semibold text-slate-900 dark:text-slate-100 leading-snug">
                 {title}
               </h3>
               {headerAction}
@@ -75,7 +75,7 @@ export const Modal: React.FC<ModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 p-1 rounded transition-colors -mr-1"
+            className="w-10 h-10 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors -mr-2 -mt-1 cursor-pointer"
             aria-label="Close modal"
           >
             <X className="w-4 h-4" />
@@ -83,13 +83,13 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="px-6 py-4 max-h-[calc(85vh-120px)] overflow-y-auto text-sm text-slate-700 dark:text-slate-200">
+        <div className="px-4 sm:px-6 py-4 overflow-y-auto text-sm text-slate-700 dark:text-slate-200 flex-1">
           {children}
         </div>
 
         {/* Optional Footer */}
         {footer && (
-          <div className="flex items-center justify-end gap-3 px-6 py-3.5 border-t border-slate-200 dark:border-[#27272A] bg-slate-50/80 dark:bg-[#27272A]/50">
+          <div className="flex items-center justify-end gap-2.5 px-4 sm:px-6 py-3 sm:py-3.5 border-t border-slate-200 dark:border-[#27272A] bg-slate-50/80 dark:bg-[#27272A]/50 shrink-0 flex-wrap">
             {footer}
           </div>
         )}

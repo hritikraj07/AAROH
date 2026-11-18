@@ -11,13 +11,11 @@ import {
   FileText,
   Plus,
   Building,
-  GraduationCap,
   ArrowRight,
   ClipboardList,
   Bell,
   MapPin,
-  CheckCircle2,
-  AlertCircle
+  CheckCircle2
 } from 'lucide-react';
 import { EarlyWarningSystemCard } from '../../components/modules/faculty/EarlyWarningSystemCard';
 import { PublishCodingLabSection } from '../../components/modules/faculty/PublishCodingLabSection';
@@ -123,16 +121,16 @@ export const FacultyDashboardPage: React.FC = () => {
           <div className="pt-3 flex items-center gap-2.5 flex-wrap">
             <button
               onClick={() => navigate('/faculty/attendance')}
-              className="rounded-full bg-white text-teal-800 hover:bg-teal-50 text-xs px-4 py-2 font-semibold transition-colors active:scale-95 inline-flex items-center gap-1.5 shadow-sm"
+              className="rounded-full bg-white text-teal-800 hover:bg-teal-50 text-xs px-4 py-2.5 min-h-[44px] font-semibold transition-colors active:scale-95 inline-flex items-center justify-center gap-1.5 shadow-sm"
             >
-              <ClipboardList className="w-3.5 h-3.5" />
+              <ClipboardList className="w-4 h-4" />
               <span>Mark Roll Call</span>
             </button>
             <button
               onClick={() => navigate('/faculty/notices')}
-              className="rounded-full bg-teal-800/80 hover:bg-teal-800 text-white border border-white/30 text-xs px-4 py-2 font-semibold transition-colors active:scale-95 inline-flex items-center gap-1.5 shadow-sm"
+              className="rounded-full bg-teal-800/80 hover:bg-teal-800 text-white border border-white/30 text-xs px-4 py-2.5 min-h-[44px] font-semibold transition-colors active:scale-95 inline-flex items-center justify-center gap-1.5 shadow-sm"
             >
-              <Bell className="w-3.5 h-3.5" />
+              <Bell className="w-4 h-4" />
               <span>Post Notice</span>
             </button>
           </div>
@@ -228,7 +226,7 @@ export const FacultyDashboardPage: React.FC = () => {
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 transition-colors">
           <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Assigned Classes</span>

@@ -12,7 +12,6 @@ import {
   Code2,
   FileText,
   AlertOctagon,
-  Sparkles,
   Info
 } from 'lucide-react';
 import { CodingLab, LabSubmission, SecurityIncident } from '../../../types';
@@ -272,30 +271,30 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-[#0E0E11] border border-slate-200 dark:border-[#27272A] w-full max-w-6xl h-[95vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden relative transition-colors">
+      <div className="bg-white dark:bg-[#0E0E11] border border-slate-200 dark:border-[#27272A] w-full max-w-6xl h-[95vh] rounded-xl shadow-lg flex flex-col overflow-hidden relative transition-colors">
         
         {/* Workspace Top Bar */}
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-[#27272A] bg-slate-50/80 dark:bg-[#18181B] flex items-center justify-between gap-4 shrink-0 select-none">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-teal-100 dark:bg-teal-950/80 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300">
-              <Code2 className="w-5 h-5" />
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 dark:border-[#27272A] bg-slate-50/80 dark:bg-[#18181B] flex items-center justify-between gap-3 shrink-0 select-none">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="p-2 rounded-xl bg-teal-100 dark:bg-teal-950/80 border border-teal-200 dark:border-teal-800 text-teal-800 dark:text-teal-300 shrink-0">
+              <Code2 className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 font-sans tracking-tight">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 font-sans tracking-tight truncate">
                   {lab.title}
                 </h2>
-                <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
+                <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800 shrink-0">
                   {lab.subject} • Sem {lab.semester}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono mt-0.5 truncate hidden sm:block">
                 Window: {new Date(lab.windowStartTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })} – {new Date(lab.windowEndTime).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Proctor Security Badge */}
             <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border transition-colors ${
               proctorStrikes === 0
@@ -323,7 +322,7 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
             </div>
 
             {/* Countdown Timer */}
-            <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border ${
+            <div className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-xs font-mono font-bold border ${
               isTimerPaused
                 ? 'bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800'
                 : remainingSeconds <= 300
@@ -337,8 +336,9 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors"
+              className="w-10 h-10 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors cursor-pointer"
               title="Close Workspace"
+              aria-label="Close Workspace"
             >
               <X className="w-5 h-5" />
             </button>
@@ -411,7 +411,7 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
             </div>
 
             {/* Submission Action Bar */}
-            <div className="p-4 bg-slate-900/90 border-t border-slate-800 flex items-center justify-between gap-4">
+            <div className="p-3.5 sm:p-4 bg-slate-900/90 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="text-[11px] font-mono text-slate-400">
                 {isSubmitted ? (
                   <span className="text-teal-400 flex items-center gap-1.5 font-medium">
@@ -431,7 +431,7 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
                 <button
                   type="button"
                   disabled
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-xs text-teal-300 bg-teal-950/90 border border-teal-800 opacity-90 cursor-not-allowed select-none"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 min-h-[44px] rounded-xl font-semibold text-xs text-teal-300 bg-teal-950/90 border border-teal-800 opacity-90 cursor-not-allowed select-none"
                 >
                   <CheckCircle2 className="w-4 h-4 text-[#0F766E]" />
                   <span>Final Code Submitted</span>
@@ -441,7 +441,7 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
                   type="button"
                   onClick={() => handleFinalSubmit('NORMAL')}
                   disabled={proctorStrikes >= 2}
-                  className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none`}
+                  className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 min-h-[44px] text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none`}
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>Submit Lab Request</span>
@@ -458,7 +458,7 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
       {/* ============================================================== */}
       {warningModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-2xl p-6 sm:p-7 shadow-2xl text-center space-y-4">
+          <div className="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-xl p-6 sm:p-7 shadow-lg text-center space-y-4">
             <div className="w-14 h-14 rounded-full bg-rose-950/80 border border-rose-800/80 flex items-center justify-center mx-auto text-rose-400">
               <AlertTriangle className="w-7 h-7 text-rose-500 animate-pulse" />
             </div>
@@ -497,7 +497,7 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
       {/* ============================================================== */}
       {isLockdownModalOpen && !warningModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-lg animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-rose-800/80 w-full max-w-lg rounded-2xl p-6 sm:p-7 shadow-2xl text-center space-y-4">
+          <div className="bg-slate-900 border border-rose-800/80 w-full max-w-lg rounded-xl p-6 sm:p-7 shadow-lg text-center space-y-4">
             <div className="w-14 h-14 rounded-full bg-rose-950 border border-rose-700 flex items-center justify-center mx-auto text-rose-400">
               <AlertOctagon className="w-7 h-7 text-rose-500" />
             </div>

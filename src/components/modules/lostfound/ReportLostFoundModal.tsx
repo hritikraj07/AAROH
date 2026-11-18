@@ -9,7 +9,6 @@ import {
   Image as ImageIcon,
   Trash2,
   AlertCircle,
-  CheckCircle2,
   Loader2
 } from 'lucide-react';
 
@@ -143,9 +142,9 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
             Listing Type <span className="text-rose-500">*</span>
           </label>
-          <div className="grid grid-cols-2 gap-3 p-2 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md">
+          <div className="grid grid-cols-2 gap-3 p-1.5 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md">
             <label
-              className={`flex items-center gap-2.5 p-2 rounded cursor-pointer transition-colors border ${
+              className={`flex items-center gap-2.5 p-2.5 min-h-[44px] rounded cursor-pointer transition-colors border ${
                 type === 'lost'
                   ? 'bg-rose-50/80 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-950 dark:text-rose-200 font-semibold'
                   : 'bg-white dark:bg-[#18181B] border-slate-200 dark:border-[#27272A] text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#202025]'
@@ -163,7 +162,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
             </label>
 
             <label
-              className={`flex items-center gap-2.5 p-2 rounded cursor-pointer transition-colors border ${
+              className={`flex items-center gap-2.5 p-2.5 min-h-[44px] rounded cursor-pointer transition-colors border ${
                 type === 'found'
                   ? 'bg-teal-50/80 dark:bg-teal-950/40 border-teal-200 dark:border-teal-800 text-teal-950 dark:text-teal-200 font-semibold'
                   : 'bg-white dark:bg-[#18181B] border-slate-200 dark:border-[#27272A] text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#202025]'

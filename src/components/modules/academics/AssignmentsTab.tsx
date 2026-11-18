@@ -4,7 +4,7 @@ import { useApp } from '../../../context/AppContext';
 import { AssignmentStatus } from '../../../types';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
-import { CheckCircle2, Clock, AlertCircle, Filter, Search, Calendar, FileText, Code, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Filter, Search, Calendar, Code, ArrowRight } from 'lucide-react';
 
 export const AssignmentsTab: React.FC = () => {
   const { assignments, courses, toggleAssignmentSubmission } = useApp();
@@ -67,7 +67,7 @@ export const AssignmentsTab: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setStatusFilter(tab.id as 'all' | AssignmentStatus)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+                className={`px-3 py-2 min-h-[40px] text-xs font-medium rounded-md transition-colors whitespace-nowrap flex items-center gap-1.5 cursor-pointer ${
                   statusFilter === tab.id
                     ? 'bg-teal-50 dark:bg-teal-950/40 text-teal-900 dark:text-teal-300 border border-teal-200/80 dark:border-teal-800 font-semibold'
                     : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'

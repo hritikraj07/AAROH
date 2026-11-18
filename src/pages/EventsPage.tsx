@@ -12,11 +12,9 @@ import {
   MapPin,
   Users,
   AlertTriangle,
-  CheckCircle2,
   Search,
   Filter,
   List,
-  Sparkles,
   Ticket,
 } from 'lucide-react';
 

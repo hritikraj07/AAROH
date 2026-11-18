@@ -146,7 +146,7 @@ export async function analyzeFacilityComplaint(
       }
     }
   } catch {
-    // Network offline / abort / quota - seamless fallback to deterministic offline analysis
+    // Network offline / abort / quota: fallback to deterministic offline analysis
   }
 
   return offlineResult;

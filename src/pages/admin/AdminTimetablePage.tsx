@@ -5,16 +5,13 @@ import {
   Clock,
   Plus,
   Trash2,
-  Calendar,
   Building,
   User,
   X,
-  BookOpen,
   Filter,
-  GraduationCap,
   AlertTriangle
 } from 'lucide-react';
-import { ClassSession, ClassType } from '../../types';
+import { ClassType } from '../../types';
 import { getFacultyFullName } from '../../utils/facultyUtils';
 
 export const AdminTimetablePage: React.FC = () => {
@@ -223,7 +220,7 @@ export const AdminTimetablePage: React.FC = () => {
           <select
             value={programFilter}
             onChange={e => setProgramFilter(e.target.value)}
-            className="text-xs font-mono px-3 py-1.5 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
+            className="text-xs font-mono px-3 py-2 min-h-[44px] bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
           >
             <option value="all">All Cohorts ({timetable.length} slots)</option>
             <option value="B.Tech CSE">B.Tech CSE</option>
@@ -246,6 +243,7 @@ export const AdminTimetablePage: React.FC = () => {
           <Button
             variant="primary"
             size="sm"
+            className="min-h-[44px]"
             icon={<Plus className="w-3.5 h-3.5" />}
             onClick={() => {
               setDayOfWeek(activeDay);
@@ -258,7 +256,7 @@ export const AdminTimetablePage: React.FC = () => {
       ) : (
         <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
+            <table className="w-full min-w-[750px] text-xs text-left">
               <thead>
                 <tr className="bg-slate-50 dark:bg-[#111115] border-b border-slate-200 dark:border-[#27272A] text-slate-500 dark:text-slate-400 font-mono uppercase text-[10px]">
                   <th className="py-3 px-4">Time Slot</th>

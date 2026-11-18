@@ -9,7 +9,7 @@ export const PinnedNoticesWidget: React.FC = () => {
   const pinnedNotices = notices.filter(n => n.isPinned);
 
   return (
-    <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-6 sm:p-8 transition-all duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/50 dark:hover:shadow-black/30 flex flex-col justify-between">
+    <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-5 sm:p-6 transition-colors duration-150 flex flex-col justify-between">
       <div>
         <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-[#27272A]">
           <div className="flex items-center gap-2">
@@ -19,7 +19,7 @@ export const PinnedNoticesWidget: React.FC = () => {
           </div>
           <Link
             to="/student/notices"
-            className="text-xs font-medium text-teal-700 hover:text-teal-900 flex items-center gap-1 active:scale-95 transition-transform duration-150"
+            className="text-xs font-medium text-teal-700 hover:text-teal-900 flex items-center gap-1 active:scale-95 transition-transform duration-150 min-h-[36px] py-1"
           >
             <span>Notice Board</span>
             <ArrowRight className="w-3.5 h-3.5" />

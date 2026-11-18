@@ -19,7 +19,7 @@ export const WeekAssignmentsWidget: React.FC = () => {
   const pendingCount = assignments.filter(a => a.status !== 'submitted').length;
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-colors duration-200">
+    <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-5 sm:p-6 flex flex-col justify-between transition-colors duration-200">
       <div>
         <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
@@ -34,7 +34,7 @@ export const WeekAssignmentsWidget: React.FC = () => {
           </div>
           <Link
             to="/student/academics?tab=assignments"
-            className="rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-3 py-1 font-medium transition-colors flex items-center gap-1 active:scale-95 border border-[#8DA9C4]/30 shadow-sm"
+            className="rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-3.5 py-1.5 min-h-[36px] font-medium transition-colors flex items-center gap-1 active:scale-95 border border-[#8DA9C4]/30 shadow-sm"
           >
             <span>All Tasks</span>
             <ArrowRight className="w-3 h-3" />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, QrCode, Clock, Sparkles, CheckCircle2, RefreshCw } from 'lucide-react';
+import { X, QrCode, RefreshCw } from 'lucide-react';
 import { ClassSession } from '../../../types';
 
 interface FacultyQRSessionModalProps {
@@ -90,8 +90,8 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
   const progressPercent = Math.max(0, Math.min(100, (secondsRemaining / 5) * 100));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="relative w-full max-w-md bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl shadow-2xl overflow-hidden p-6 space-y-5 animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150 overflow-y-auto font-sans">
+      <div className="relative w-full max-w-md bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl shadow-md overflow-hidden p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto animate-in zoom-in-95 duration-200 my-auto">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
@@ -99,7 +99,7 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               Live QR Attendance Session
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mt-1.5">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-1.5">
               {session.courseName || session.courseCode || 'Class Lecture'}
             </h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-0.5">
@@ -108,7 +108,8 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] rounded-lg transition-colors"
+            className="w-10 h-10 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] rounded-lg transition-colors cursor-pointer -mr-2 -mt-1"
+            aria-label="Close session"
           >
             <X className="w-5 h-5" />
           </button>

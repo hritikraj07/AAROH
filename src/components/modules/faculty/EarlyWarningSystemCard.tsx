@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertTriangle, CheckCircle2, Mail, Users, ArrowRight } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Mail } from 'lucide-react';
 import { User, AttendanceRecord, Assignment } from '../../../types';
 import {
   hasCoordinatorPrivileges,
@@ -152,7 +152,7 @@ export const EarlyWarningSystemCard: React.FC<EarlyWarningSystemCardProps> = ({
                   <button
                     type="button"
                     onClick={() => onTriggerIntervention(student.name)}
-                    className={`rounded-full px-3.5 py-1.5 text-xs font-semibold bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white transition-all duration-200 active:scale-95 border border-[#8DA9C4]/30 inline-flex items-center gap-1.5 cursor-pointer select-none ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+                    className={`rounded-full px-3.5 py-2 min-h-[44px] text-xs font-semibold bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white transition-all duration-200 active:scale-95 border border-[#8DA9C4]/30 inline-flex items-center justify-center gap-1.5 cursor-pointer select-none ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
                   >
                     <Mail className="w-3.5 h-3.5" />
                     <span>Trigger Intervention</span>

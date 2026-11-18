@@ -10,8 +10,7 @@ import {
   User,
   CheckCircle2,
   Send,
-  Lock,
-  Image as ImageIcon
+  Lock
 } from 'lucide-react';
 
 export interface LostFoundDetailModalProps {

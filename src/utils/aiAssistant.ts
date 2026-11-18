@@ -439,9 +439,9 @@ export function processCampusAIQuery(query: string, context: AIAssistantContext,
 
     if (lowAttendanceList.length > 0) {
       const details = lowAttendanceList
-        .map(c => `• ${c.name} — ${c.attended}/${c.total} attended (${c.pct}%). Need ${c.needed} more class(es) to reach 75%.`)
+        .map(c => `• ${c.name}: ${c.attended}/${c.total} attended (${c.pct}%). Need ${c.needed} more class(es) to reach 75%.`)
         .join('\n');
-      return `⚠️ Attendance Warning: You currently have ${lowAttendanceList.length} subject(s) below the mandatory 75% threshold:\n\n${details}`;
+      return `Attendance Warning: You currently have ${lowAttendanceList.length} subject(s) below the mandatory 75% threshold:\n\n${details}`;
     }
 
     return "Good news! Your attendance is in good standing across all enrolled subjects (all ≥ 75%). Keep it up!";
@@ -453,9 +453,9 @@ export function processCampusAIQuery(query: string, context: AIAssistantContext,
 
     if (urgentItems.length > 0) {
       const itemsList = urgentItems
-        .map(item => `• [${item.type === 'assignment' ? 'Coursework' : 'Opportunity'}] ${item.title} — ${item.formattedText}`)
+        .map(item => `• [${item.type === 'assignment' ? 'Coursework' : 'Opportunity'}] ${item.title}: ${item.formattedText}`)
         .join('\n');
-      return `⏰ You have ${urgentItems.length} deadline(s) approaching in the next 48 hours:\n\n${itemsList}`;
+      return `You have ${urgentItems.length} deadline(s) approaching in the next 48 hours:\n\n${itemsList}`;
     }
 
     return "You're all caught up! You have no assignments or saved opportunities due in the next 48 hours.";

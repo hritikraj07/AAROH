@@ -5,13 +5,7 @@ import { Notice } from '../types';
  * Scans content for key themes (dates, mandatory requirements, fees, deadlines)
  * and synthesizes 3 concise bullet points.
  */
-export function summarizeNoticeAI(notice: {
-  title: string;
-  content: string;
-  category?: string;
-  department?: string;
-  publishedDate?: string;
-}): string[] {
+export function summarizeNoticeAI(notice: Pick<Notice, 'title' | 'content'> & Partial<Notice>): string[] {
   const text = `${notice.title} ${notice.content}`;
   const lower = text.toLowerCase();
 
@@ -57,7 +51,7 @@ export function summarizeNoticeAI(notice: {
 
   // Bullet 1: Core Executive Announcement
   const openingSentence = sentences[0] || notice.title;
-  bullets.push(`Core Update: ${notice.title} — ${openingSentence.slice(0, 120)}${openingSentence.length > 120 ? '...' : ''}`);
+  bullets.push(`Core Update: ${notice.title}: ${openingSentence.slice(0, 120)}${openingSentence.length > 120 ? '...' : ''}`);
 
   // Bullet 2: Essential Requirements & Compliance Action
   if (hasMandatory) {

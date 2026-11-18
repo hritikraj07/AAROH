@@ -287,7 +287,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
               {getBadgeLabel()}
             </span>
           </div>
-          <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500 tracking-tight mt-1 truncate">
+          <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 tracking-tight mt-1 truncate">
             {APP_CONFIG.collegeName}
           </p>
         </div>
@@ -296,7 +296,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
         <nav className="p-3 space-y-6">
           {navGroups.map(group => (
             <div key={group.title} className="space-y-1">
-              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 font-mono">
+              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono">
                 {group.title}
               </div>
               {group.items.map(item => (
@@ -306,7 +306,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
                   end={item.to === '/student' || item.to === '/faculty' || item.to === '/admin'}
                   onClick={onCloseMobile}
                   className={({ isActive }) =>
-                    `flex items-center justify-between px-3 py-2 text-xs font-medium rounded-md transition-all duration-150 ease-in-out active:scale-95 ${
+                    `flex items-center justify-between px-3 py-2.5 min-h-[40px] text-xs font-medium rounded-md transition-all duration-150 ease-in-out active:scale-95 ${
                       isActive
                         ? 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 font-semibold border border-teal-200/80 dark:border-teal-800/50'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-[#27272A] border border-transparent'
@@ -314,7 +314,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
                   }
                 >
                   <div className="flex items-center gap-2.5">
-                    <span className="text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300">
+                    <span className="text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200">
                       {item.icon}
                     </span>
                     <span>{item.label}</span>
@@ -353,7 +353,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
               if (onCloseMobile) onCloseMobile();
               openSettings();
             }}
-            className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 px-2 py-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-[#27272A] active:scale-95 transition-all duration-150"
+            className="flex items-center gap-1.5 min-h-[44px] text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 px-3 py-2 rounded-md hover:bg-slate-100 dark:hover:bg-[#27272A] active:scale-95 transition-all duration-150 cursor-pointer"
           >
             <Settings className="w-3.5 h-3.5 text-slate-400" />
             <span>Settings</span>
@@ -361,7 +361,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
 
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 px-2 py-1.5 rounded-md hover:bg-rose-50 dark:hover:bg-rose-950/30 active:scale-95 transition-all duration-150"
+            className="flex items-center gap-1.5 min-h-[44px] text-xs text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 px-3 py-2 rounded-md hover:bg-rose-50 dark:hover:bg-rose-950/30 active:scale-95 transition-all duration-150 cursor-pointer"
             title="Log out"
           >
             <LogOut className="w-3.5 h-3.5" />

@@ -72,15 +72,16 @@ export function matchRoomToBuilding(roomStr: string = ''): CampusBuilding {
   return 'Academic Blocks';
 }
 
-export interface NextClassSynergyResult {
+export interface NextClassScheduleResult {
   hasClassInNext30Min: boolean;
   minutesUntilStart: number;
   session: ClassSession | null;
   building: CampusBuilding | null;
 }
+export type NextClassSynergyResult = NextClassScheduleResult;
 
 /**
- * Timetable Synergy Engine:
+ * Next Class Building Locator:
  * Checks if the student or faculty member has a class scheduled in the target building
  * within the next 30 minutes (0 <= minutesUntilStart <= 30).
  */
@@ -89,7 +90,7 @@ export function checkNextClassInBuilding(
   timetable: ClassSession[],
   user?: User | null,
   now: Date = new Date()
-): NextClassSynergyResult {
+): NextClassScheduleResult {
   if (!timetable || timetable.length === 0) {
     return {
       hasClassInNext30Min: false,

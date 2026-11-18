@@ -142,7 +142,7 @@ export const CURRICULUM_DATA: Record<SpecializationOption, CurriculumSubject[]> 
           description: 'Promises, async/await syntax, fetch API requests, JSON serialization, and reactive client-side rendering.',
           prerequisites: ['aiml_web_3'],
           topics: ['Fetch API & REST', 'Async/Await Cycles', 'JSON Data Parsing', 'Dynamic UI Updates'],
-          learningOutcomes: ['Consume external HTTP REST endpoints seamlessly', 'Handle network errors and pending asynchronous states gracefully']
+          learningOutcomes: ['Consume external HTTP REST endpoints via modern fetch APIs', 'Handle network errors and pending asynchronous states gracefully']
         }
       ]
     }

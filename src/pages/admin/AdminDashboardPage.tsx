@@ -2,26 +2,19 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { APP_CONFIG } from '../../config';
-import { Button } from '../../components/ui/Button';
 import { CampusMap } from '../../components/modules/campus/CampusMap';
 import { SmartResolveModal } from '../../components/modules/campus/SmartResolveModal';
 import { CampusKanbanBoard } from '../../components/modules/campus/CampusKanbanBoard';
 import { CampusBuilding } from '../../types';
 import {
-  ShieldAlert,
   Bell,
   Calendar,
   Clock,
   Settings,
-  BookOpen,
   ArrowRight,
-  Plus,
   CheckCircle,
   Activity,
-  Layers,
-  FileText,
   Users,
-  MapPin,
 } from 'lucide-react';
 
 export const AdminDashboardPage: React.FC = () => {
@@ -70,16 +63,16 @@ export const AdminDashboardPage: React.FC = () => {
           <div className="pt-3 flex items-center gap-2.5 flex-wrap">
             <button
               onClick={() => navigate('/admin/people')}
-              className="rounded-full bg-white text-teal-800 hover:bg-teal-50 text-xs px-4 py-2 font-semibold transition-colors active:scale-95 inline-flex items-center gap-1.5 shadow-sm"
+              className="rounded-full bg-white text-teal-800 hover:bg-teal-50 text-xs px-4 py-2.5 min-h-[44px] font-semibold transition-colors active:scale-95 inline-flex items-center justify-center gap-1.5 shadow-sm"
             >
-              <Users className="w-3.5 h-3.5" />
+              <Users className="w-4 h-4" />
               <span>User Directory</span>
             </button>
             <button
               onClick={() => navigate('/admin/timetable')}
-              className="rounded-full bg-teal-800/80 hover:bg-teal-800 text-white border border-white/30 text-xs px-4 py-2 font-semibold transition-colors active:scale-95 inline-flex items-center gap-1.5 shadow-sm"
+              className="rounded-full bg-teal-800/80 hover:bg-teal-800 text-white border border-white/30 text-xs px-4 py-2.5 min-h-[44px] font-semibold transition-colors active:scale-95 inline-flex items-center justify-center gap-1.5 shadow-sm"
             >
-              <Clock className="w-3.5 h-3.5" />
+              <Clock className="w-4 h-4" />
               <span>Master Timetable</span>
             </button>
           </div>
@@ -87,7 +80,7 @@ export const AdminDashboardPage: React.FC = () => {
       </div>
 
       {/* System Metrics Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4">
           <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-1">
             <span className="text-xs font-semibold uppercase tracking-wider">Circulars & Notices</span>

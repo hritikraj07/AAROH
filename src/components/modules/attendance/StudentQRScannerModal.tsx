@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, QrCode, CheckCircle2, AlertCircle, Sparkles, Camera, RefreshCw } from 'lucide-react';
+import { X, QrCode, CheckCircle2, AlertCircle, Camera, RefreshCw } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
@@ -100,8 +100,8 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150 font-sans">
-      <div className="relative w-full max-w-md bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl shadow-2xl overflow-hidden p-6 space-y-5 animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150 font-sans overflow-y-auto">
+      <div className="relative w-full max-w-md bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl shadow-md overflow-hidden p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto animate-in zoom-in-95 duration-200 my-auto">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
@@ -119,7 +119,8 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+            className="w-10 h-10 min-h-[44px] min-w-[44px] flex items-center justify-center -mr-2 -mt-1 p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+            aria-label="Close scanner"
           >
             <X className="w-4 h-4" />
           </button>
@@ -222,7 +223,7 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
             <button
               type="button"
               onClick={onClose}
-              className="w-full py-2.5 px-4 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95"
+              className="w-full py-2.5 px-4 min-h-[44px] text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center"
             >
               Done
             </button>
@@ -231,7 +232,7 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
               type="button"
               disabled={!activeSession || isScanning}
               onClick={handleConfirmScan}
-              className={`w-full py-2.5 px-4 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-95 flex items-center justify-center gap-1.5 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+              className={`w-full py-2.5 px-4 min-h-[44px] text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer active:scale-95 flex items-center justify-center gap-1.5 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
             >
               <QrCode className="w-3.5 h-3.5 text-[#8DA9C4]" />
               <span>{isScanning ? 'Registering Attendance...' : 'Simulate Scan'}</span>

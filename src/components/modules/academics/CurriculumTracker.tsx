@@ -7,18 +7,13 @@ import {
   Unlock,
   ChevronDown,
   ArrowRight,
-  Sparkles,
-  Info,
   GraduationCap,
-  Layers,
   RotateCcw,
-  Check,
-  FileText
+  Check
 } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { SpecializationOption, SyllabusNode } from '../../../types';
 import {
-  CURRICULUM_DATA,
   SPECIALIZATION_OPTIONS,
   CurriculumSubject,
   getSubjectsForSpecialization
@@ -291,7 +286,7 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
               </h3>
             </div>
             {/* Status Legend */}
-            <div className="flex items-center gap-3 text-[10px] font-mono">
+            <div className="flex items-center gap-2 xs:gap-3 text-[10px] font-mono flex-wrap">
               <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#0F766E]" />
                 <span>Completed</span>
@@ -539,7 +534,7 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
                   <button
                     type="button"
                     disabled
-                    className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 flex items-center justify-center gap-2 cursor-default"
+                    className="w-full py-2.5 px-4 min-h-[44px] rounded-xl text-xs font-semibold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 flex items-center justify-center gap-2 cursor-default"
                   >
                     <CheckCircle2 className="w-4 h-4 text-[#0F766E]" />
                     <span>Unit Verified & Completed</span>
@@ -548,7 +543,7 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
                   <button
                     type="button"
                     onClick={() => handleMarkComplete(activeInspectNode)}
-                    className={`w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] transition-all duration-200 active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+                    className={`w-full py-2.5 px-4 min-h-[44px] rounded-xl text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] transition-all duration-200 active:scale-95 cursor-pointer flex items-center justify-center gap-2 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Mark as Completed</span>
@@ -557,7 +552,7 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
                   <button
                     type="button"
                     disabled
-                    className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 opacity-60 cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full py-2.5 px-4 min-h-[44px] rounded-xl text-xs font-semibold text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 opacity-60 cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     <Lock className="w-4 h-4" />
                     <span>Prerequisites Required</span>

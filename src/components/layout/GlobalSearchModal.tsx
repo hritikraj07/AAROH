@@ -6,15 +6,12 @@ import {
   Compass,
   Code2,
   AlertTriangle,
-  ArrowRight,
   BookOpen,
   MapPin,
   Clock,
-  ExternalLink,
   ChevronRight,
   Shield,
-  Layers,
-  GraduationCap
+  Layers
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { StorageService } from '../../services/storage';
@@ -254,7 +251,7 @@ export const GlobalSearchModal: React.FC = () => {
       aria-modal="true"
     >
       <div
-        className="max-w-2xl w-full bg-white dark:bg-[#0E0E11] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden font-sans transition-colors relative"
+        className="max-w-2xl w-full bg-white dark:bg-[#0E0E11] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden font-sans transition-colors relative max-h-[92dvh] flex flex-col"
         onClick={e => e.stopPropagation()}
       >
         {/* Large, Borderless Text Input with Deep Teal Blinking Cursor */}

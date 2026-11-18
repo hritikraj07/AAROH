@@ -10,17 +10,12 @@ import {
   Search,
   PlusCircle,
   MapPin,
-  Calendar,
-  CheckCircle2,
-  Clock,
   HelpCircle,
   Laptop,
   CreditCard,
   Key,
   Watch,
-  Package,
-  Check,
-  Image as ImageIcon
+  Package
 } from 'lucide-react';
 
 export const LostFoundPage: React.FC = () => {
@@ -138,10 +133,10 @@ export const LostFoundPage: React.FC = () => {
       <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4 space-y-3.5">
         {/* Type Filter Buttons & Status Dropdown */}
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-1.5 overflow-x-auto">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
             <button
               onClick={() => setTypeFilter('all')}
-              className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
+              className={`px-3 py-2 min-h-[40px] text-xs font-medium rounded transition-colors cursor-pointer flex items-center justify-center ${
                 typeFilter === 'all'
                   ? 'bg-slate-800 text-white font-semibold dark:bg-slate-700'
                   : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 dark:bg-[#111115] dark:border-[#27272A] dark:text-slate-300 dark:hover:bg-[#202025]'
@@ -151,7 +146,7 @@ export const LostFoundPage: React.FC = () => {
             </button>
             <button
               onClick={() => setTypeFilter('lost')}
-              className={`px-3 py-1.5 text-xs font-medium rounded transition-colors flex items-center gap-1.5 ${
+              className={`px-3 py-2 min-h-[40px] text-xs font-medium rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
                 typeFilter === 'lost'
                   ? 'bg-rose-700 text-white font-semibold dark:bg-rose-600'
                   : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 dark:bg-[#111115] dark:border-[#27272A] dark:text-slate-300 dark:hover:bg-[#202025]'
@@ -162,7 +157,7 @@ export const LostFoundPage: React.FC = () => {
             </button>
             <button
               onClick={() => setTypeFilter('found')}
-              className={`px-3 py-1.5 text-xs font-medium rounded transition-colors flex items-center gap-1.5 ${
+              className={`px-3 py-2 min-h-[40px] text-xs font-medium rounded transition-colors flex items-center gap-1.5 cursor-pointer ${
                 typeFilter === 'found'
                   ? 'bg-teal-700 text-white font-semibold dark:bg-[#0F766E]'
                   : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 dark:bg-[#111115] dark:border-[#27272A] dark:text-slate-300 dark:hover:bg-[#202025]'

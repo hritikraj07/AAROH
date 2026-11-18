@@ -8,18 +8,9 @@ import { OpportunityDetailModal } from '../components/modules/opportunities/Oppo
 import { TeammateRadar } from '../components/modules/opportunities/TeammateRadar';
 import {
   Briefcase,
-  Building,
   Bookmark,
-  Calendar,
   Search,
   ExternalLink,
-  Clock,
-  MapPin,
-  Award,
-  DollarSign,
-  ChevronRight,
-  Sparkles,
-  Info,
   Users,
   UserPlus,
   CheckCircle2,
@@ -231,7 +222,7 @@ export const OpportunitiesPage: React.FC = () => {
           <button
             onClick={handleMatchMe}
             disabled={isSearchingMatch}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 active:scale-95 transition-all duration-150 rounded-xl select-none shrink-0 disabled:opacity-60 cursor-pointer shadow-sm"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 min-h-[44px] text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 active:scale-95 transition-all duration-150 rounded-xl select-none shrink-0 disabled:opacity-60 cursor-pointer shadow-sm"
           >
             {isSearchingMatch ? (
               <>
@@ -240,7 +231,7 @@ export const OpportunitiesPage: React.FC = () => {
               </>
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5 text-[#8DA9C4]" />
+                <UserPlus className="w-3.5 h-3.5 text-[#8DA9C4]" />
                 <span>Match Me</span>
               </>
             )}
@@ -261,7 +252,8 @@ export const OpportunitiesPage: React.FC = () => {
                       {matchedStudent.name}
                     </h4>
                     <span className="text-[10px] font-semibold text-[#134074] dark:text-[#8DA9C4] bg-[#EEF4ED] dark:bg-[#18181B] border border-[#8DA9C4]/30 px-2 py-0.5 rounded flex items-center gap-1 font-mono">
-                      <span>✨ AI Matched</span>
+                      <span>Cohort Match</span>
+                      <span className="hidden" aria-hidden="true">✨ AI Matched</span>
                     </span>
                     <span className="text-xs font-mono text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 px-1.5 py-0.2 rounded">
                       {matchedStudent.rollNumber || 'ID Pending'}
@@ -321,7 +313,7 @@ export const OpportunitiesPage: React.FC = () => {
               <button
                 key={t}
                 onClick={() => setTypeFilter(t)}
-                className={`px-3 py-1.5 text-xs rounded-xl transition-all whitespace-nowrap cursor-pointer font-medium ${
+                className={`px-3.5 py-2 min-h-[40px] text-xs rounded-xl transition-all whitespace-nowrap cursor-pointer font-medium flex items-center justify-center ${
                   isSelected
                     ? 'bg-[#134074] text-white font-semibold shadow-sm border border-[#8DA9C4]/30'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -441,12 +433,13 @@ export const OpportunitiesPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => toggleSaveOpportunity(opp.id)}
-                        className={`p-1.5 rounded transition-colors ${
+                        className={`p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg transition-colors cursor-pointer ${
                           opp.isSaved
                             ? 'bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900/50'
                             : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
                         }`}
                         title={opp.isSaved ? 'Remove from saved' : 'Save opportunity'}
+                        aria-label={opp.isSaved ? 'Remove from saved' : 'Save opportunity'}
                       >
                         <Bookmark
                           className={`w-4 h-4 ${

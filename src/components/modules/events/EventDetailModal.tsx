@@ -2,7 +2,6 @@ import React from 'react';
 import { Modal } from '../../ui/Modal';
 import { Button } from '../../ui/Button';
 import { CampusEvent } from '../../../types';
-import { Badge } from '../../ui/Badge';
 import { useApp } from '../../../context/AppContext';
 import { AcademicService } from '../../../services/academicService';
 import {

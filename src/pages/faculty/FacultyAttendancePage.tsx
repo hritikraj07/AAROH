@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { Button } from '../../components/ui/Button';
-import { Badge } from '../../components/ui/Badge';
 import {
   ClipboardCheck,
   Check,
@@ -13,9 +12,6 @@ import {
   Clock,
   MapPin,
   CheckCircle2,
-  AlertTriangle,
-  RotateCcw,
-  Sparkles,
   QrCode
 } from 'lucide-react';
 import { ClassSession } from '../../types';
@@ -245,7 +241,7 @@ export const FacultyAttendancePage: React.FC = () => {
                       setSelectedSessionId(e.target.value);
                       setSearchParams({ sessionId: e.target.value });
                     }}
-                    className="text-xs font-sans font-medium px-3 py-2 bg-slate-50 border border-slate-200 rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700 w-full sm:w-auto min-w-[280px]"
+                    className="text-xs font-sans font-medium px-3 py-2.5 min-h-[44px] bg-slate-50 border border-slate-200 rounded text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-700 w-full sm:w-auto min-w-[280px]"
                   >
                     {facultyClasses.map(session => {
                       const course = courseMap.get(session.courseId);
@@ -289,9 +285,9 @@ export const FacultyAttendancePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setIsQROpen(true)}
-                    className={`px-3.5 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-md transition-all duration-200 active:scale-95 flex items-center gap-1.5 cursor-pointer whitespace-nowrap border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+                    className={`px-3.5 py-2.5 min-h-[44px] text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-md transition-all duration-200 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
                   >
-                    <QrCode className="w-3.5 h-3.5" />
+                    <QrCode className="w-4 h-4" />
                     <span>Generate QR (Start QR Session)</span>
                   </button>
                 </div>
@@ -360,7 +356,7 @@ export const FacultyAttendancePage: React.FC = () => {
             ) : (
               <form onSubmit={handleSubmitAttendance}>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-xs text-left">
+                  <table className="w-full min-w-[680px] text-xs text-left">
                     <thead>
                       <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-mono uppercase text-[10px]">
                         <th className="py-3 px-4 w-12 text-center">#</th>

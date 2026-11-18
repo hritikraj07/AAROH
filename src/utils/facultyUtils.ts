@@ -1,4 +1,4 @@
-import { User, Course, ClassSession } from '../types';
+import { User } from '../types';
 
 /**
  * Dynamically resolves and formats the full name of a faculty member.

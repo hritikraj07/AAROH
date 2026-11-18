@@ -5,18 +5,14 @@ import { Button } from '../../components/ui/Button';
 import {
   FileText,
   Plus,
-  Calendar,
   CheckCircle2,
-  Clock,
   X,
-  BookOpen,
   Code,
   Lock,
   Play,
   Square,
   ExternalLink,
   Trash2,
-  Sparkles,
   ShieldAlert,
   ShieldCheck,
   AlertOctagon

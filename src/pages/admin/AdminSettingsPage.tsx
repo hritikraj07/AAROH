@@ -9,9 +9,7 @@ import {
   Building,
   Check,
   AlertTriangle,
-  Database,
-  Sliders,
-  Server
+  Sliders
 } from 'lucide-react';
 
 export const AdminSettingsPage: React.FC = () => {
@@ -89,7 +87,7 @@ export const AdminSettingsPage: React.FC = () => {
               </div>
 
               <p className="text-[11px] text-slate-400 dark:text-slate-500">
-                Institutional labels are configured centrally in <code className="font-mono">src/config.ts</code> for seamless deployment branding.
+                Institutional labels are configured centrally in <code className="font-mono">src/config.ts</code> for institutional branding.
               </p>
             </div>
           </div>
@@ -134,7 +132,7 @@ export const AdminSettingsPage: React.FC = () => {
               </p>
 
               <div className="flex items-center gap-2">
-                <Button type="submit" variant="primary" size="sm">
+                <Button type="submit" variant="primary" size="sm" className="min-h-[44px]">
                   Update Regulation Policy
                 </Button>
                 {savedSuccess && (
@@ -214,7 +212,7 @@ export const AdminSettingsPage: React.FC = () => {
                 size="sm"
                 icon={<RotateCcw className="w-3.5 h-3.5 text-rose-700 dark:text-rose-400" />}
                 onClick={() => setIsResetConfirmOpen(true)}
-                className="border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                className="border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/40 min-h-[44px]"
               >
                 Reset Demo Data
               </Button>
@@ -246,6 +244,7 @@ export const AdminSettingsPage: React.FC = () => {
                 type="button"
                 variant="secondary"
                 size="sm"
+                className="min-h-[44px]"
                 onClick={() => setIsResetConfirmOpen(false)}
               >
                 Cancel
@@ -254,6 +253,7 @@ export const AdminSettingsPage: React.FC = () => {
                 type="button"
                 variant="danger"
                 size="sm"
+                className="min-h-[44px]"
                 onClick={handlePerformReset}
               >
                 Confirm Full Reset

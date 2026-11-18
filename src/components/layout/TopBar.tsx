@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Menu, Search, Bell, LogOut, ArrowRight, X, SlidersHorizontal, ChevronRight, User, Settings } from 'lucide-react';
+import { Menu, Search, Bell, ArrowRight, X, SlidersHorizontal, ChevronRight } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { APP_CONFIG } from '../../config';
 import { Link, useNavigate } from 'react-router-dom';
 import { getApproachingDeadlines } from '../../utils/deadlineUtils';
 import { StorageService } from '../../services/storage';
-import { GlobalSearchResult } from '../../types';
 
 export interface TopBarProps {
   onOpenMobileMenu: () => void;
@@ -24,12 +23,9 @@ export interface UnifiedSearchResult {
 export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) => {
   const navigate = useNavigate();
   const {
-    openSearch,
-    openSettings,
     student,
     assignments,
     opportunities,
-    logout,
     user,
     role,
     theme,
@@ -277,29 +273,29 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-[#EEF4ED] dark:bg-[#18181B] border-b border-[#D8E2DC] dark:border-[#27272A] h-16 px-4 sm:px-6 flex items-center justify-between gap-4 transition-colors duration-200">
+    <header className="sticky top-0 z-30 bg-[#EEF4ED] dark:bg-[#18181B] border-b border-[#D8E2DC] dark:border-[#27272A] h-16 px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 transition-colors duration-200">
       {/* Left: Mobile Menu & Breadcrumb */}
-      <div className="flex items-center gap-3 shrink-0">
+      <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
         <button
           onClick={onOpenMobileMenu}
-          className="md:hidden p-1.5 rounded-md text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-all duration-150"
+          className="md:hidden min-h-[44px] min-w-[44px] flex items-center justify-center p-2 rounded-md text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-all duration-150 cursor-pointer"
           aria-label="Open sidebar menu"
         >
           <Menu className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-slate-400 dark:text-slate-500 hidden sm:inline font-mono">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <span className="text-xs font-medium text-slate-400 dark:text-slate-500 hidden md:inline font-mono">
             {APP_CONFIG.collegeShortName} /
           </span>
-          <h1 className="text-sm font-semibold text-slate-900 dark:text-slate-100 tracking-tight">{pageTitle}</h1>
+          <h1 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100 tracking-tight truncate max-w-[90px] xs:max-w-[130px] sm:max-w-[200px] md:max-w-none">{pageTitle}</h1>
         </div>
       </div>
 
       {/* Middle: Expanded Search Bar with Autocomplete */}
-      <div className="flex-1 max-w-xl lg:max-w-2xl relative" ref={searchRef}>
+      <div className="flex-1 min-w-0 max-w-xl lg:max-w-2xl relative" ref={searchRef}>
         <div className="relative flex items-center">
-          <Search className="w-4 h-4 text-[#134074] dark:text-[#8DA9C4] absolute left-3.5 pointer-events-none" />
+          <Search className="w-4 h-4 text-[#134074] dark:text-[#8DA9C4] absolute left-3 pointer-events-none" />
           
           {/* Direct Search Bar with Live Autocomplete */}
           <input
@@ -317,7 +313,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
             onKeyDown={handleInputKeyDown}
             placeholder="Search notices, events, opportunities..."
             aria-label="Search notices, events, opportunities"
-            className="w-full pl-9 pr-9 py-2 text-xs bg-white dark:bg-[#0E0E11] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#8DA9C4] focus:ring-1 focus:ring-[#8DA9C4] transition-all font-sans"
+            className="w-full pl-8 sm:pl-9 pr-8 sm:pr-9 py-2 min-h-[40px] text-xs bg-white dark:bg-[#0E0E11] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-[#8DA9C4] focus:ring-1 focus:ring-[#8DA9C4] transition-all font-sans"
             autoComplete="off"
             spellCheck={false}
           />
@@ -330,7 +326,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                 setIsSearchOpen(false);
                 searchInputRef.current?.focus();
               }}
-              className="absolute right-2.5 p-1 rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              className="absolute right-2 p-1.5 min-h-[36px] min-w-[36px] flex items-center justify-center rounded-md text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
               aria-label="Clear search query"
             >
               <X className="w-3.5 h-3.5" />
@@ -345,7 +341,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
 
         {/* Live Autocomplete Results Dropdown */}
         {((isSearchOpen && searchQuery.trim().length > 1) || isSearchOpen) && (
-          <div className="absolute left-0 right-0 top-full mt-1.5 w-full bg-white dark:bg-[#0E0E11] rounded-xl border border-slate-200 dark:border-[#27272A] shadow-xl overflow-hidden z-50 animate-in fade-in duration-150 font-sans">
+          <div className="absolute left-0 right-0 top-full mt-1.5 w-full max-w-[calc(100vw-24px)] bg-white dark:bg-[#0E0E11] rounded-xl border border-slate-200 dark:border-[#27272A] shadow-xl overflow-hidden z-50 animate-in fade-in duration-150 font-sans">
             <div className="flex items-center justify-between px-3.5 py-1.5 border-b border-slate-100 dark:border-[#27272A] bg-slate-50/70 dark:bg-[#18181B]/70 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
               <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-[#134074] dark:text-[#8DA9C4]">Suggestions</span>
               <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">
@@ -423,7 +419,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
           <button
             type="button"
             onClick={() => setIsNotifOpen(prev => !prev)}
-            className="relative p-2 rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors"
+            className="relative p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors cursor-pointer"
             title="Approaching deadlines & urgent alerts"
             aria-label="Notifications"
           >
@@ -435,7 +431,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
           </button>
 
           {isNotifOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white dark:bg-[#18181B] rounded-lg border border-slate-200 dark:border-[#27272A] shadow-sm z-50 overflow-hidden animate-in fade-in duration-150 font-sans">
+            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-24px)] sm:w-96 max-w-md bg-white dark:bg-[#18181B] rounded-lg border border-slate-200 dark:border-[#27272A] shadow-sm z-50 overflow-hidden animate-in fade-in duration-150 font-sans">
               <div className="px-4 py-2.5 bg-slate-50 dark:bg-[#0E0E11] border-b border-slate-200 dark:border-[#27272A] flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200">
                 <span>Urgent Approaching Deadlines</span>
               </div>
@@ -481,7 +477,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
           <button
             type="button"
             onClick={() => setIsProfileOpen(prev => !prev)}
-            className="inline-flex items-center gap-2 pl-1.5 pr-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-200 hover:text-[#134074] dark:hover:text-[#8DA9C4] bg-white dark:bg-[#18181B] hover:bg-slate-50 dark:hover:bg-[#27272A] rounded-xl border border-slate-200 dark:border-[#27272A] hover:border-[#8DA9C4]/60 transition-all duration-150 select-none active:scale-95 group shadow-sm cursor-pointer"
+            className="inline-flex items-center gap-2 pl-1.5 pr-2.5 py-1 min-h-[44px] text-xs font-medium text-slate-700 dark:text-slate-200 hover:text-[#134074] dark:hover:text-[#8DA9C4] bg-white dark:bg-[#18181B] hover:bg-slate-50 dark:hover:bg-[#27272A] rounded-xl border border-slate-200 dark:border-[#27272A] hover:border-[#8DA9C4]/60 transition-all duration-150 select-none active:scale-95 group shadow-sm cursor-pointer"
             title="View your profile"
             aria-label="User Profile"
           >
@@ -502,7 +498,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
 
           {/* Profile Card Popover to see your profile */}
           {isProfileOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 sm:w-88 bg-white dark:bg-[#0E0E11] rounded-2xl border border-slate-200 dark:border-[#27272A] shadow-2xl z-50 overflow-hidden animate-in fade-in duration-150 font-sans">
+            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-24px)] sm:w-88 max-w-sm bg-white dark:bg-[#0E0E11] rounded-2xl border border-slate-200 dark:border-[#27272A] shadow-2xl z-50 overflow-hidden animate-in fade-in duration-150 font-sans">
               {/* Profile Header */}
               <div className="p-4 bg-gradient-to-br from-[#8DA9C4]/15 via-transparent to-transparent border-b border-slate-100 dark:border-[#27272A]">
                 <div className="flex items-start justify-between">

@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../../context/AppContext';
 import { CampusBuilding } from '../../../types';
-import { analyzeFacilityComplaint, FACILITY_AI_SYSTEM_PROMPT } from '../../../utils/smartResolveAI';
+import { analyzeFacilityComplaint } from '../../../utils/smartResolveAI';
 import {
   X,
-  Sparkles,
   Lock,
   Building2,
-  AlertTriangle,
   CheckCircle2,
   Loader2,
   ShieldCheck,
@@ -96,12 +94,12 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-3xl shadow-2xl p-6 sm:p-8 overflow-hidden select-none font-sans">
+      <div className="relative w-full max-w-lg max-h-[92dvh] overflow-y-auto bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-md p-6 sm:p-7 select-none font-sans">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#27272A]">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-2xl bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 flex items-center justify-center border border-teal-200 dark:border-teal-800">
-              <Sparkles className="w-5 h-5 text-[#0F766E]" />
+            <div className="w-9 h-9 rounded-md bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 flex items-center justify-center border border-teal-200 dark:border-teal-800">
+              <ShieldCheck className="w-5 h-5 text-[#0F766E]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
@@ -121,8 +119,9 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             title="Close modal"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
@@ -215,7 +214,7 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="text-xs px-4 py-2 font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
+              className="text-xs px-4 py-2 min-h-[44px] font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors flex items-center justify-center"
             >
               Cancel
             </button>
@@ -224,7 +223,7 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting || !complaintText.trim()}
-              className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-5 py-2.5 font-bold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer inline-flex items-center gap-2 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+              className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-5 py-2.5 min-h-[44px] font-bold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer inline-flex items-center justify-center gap-2 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
             >
               {isSubmitting ? (
                 <>

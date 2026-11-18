@@ -100,7 +100,7 @@ export const Layout: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden font-sans bg-[#EEF4ED] dark:bg-[#0E0E11] transition-colors duration-500 ease-in-out">
-      {/* Main Shell Layout - Seamless dark:bg-[#0E0E11] matched with Login Page */}
+      {/* Main Shell Layout: Unified dark:bg-[#0E0E11] background */}
       <div className="flex flex-1 overflow-hidden bg-[#EEF4ED] dark:bg-[#0E0E11] text-[#0B2545] dark:text-[#EEF4ED] transition-colors duration-500 ease-in-out">
         {/* Desktop Sidebar: Always accessible and uncluttered */}
         <div className="hidden md:flex md:shrink-0">
@@ -121,7 +121,7 @@ export const Layout: React.FC = () => {
           />
 
           <main className="flex-1 overflow-y-auto transition-colors duration-200 bg-[#EEF4ED] dark:bg-[#0E0E11]">
-            <div className="max-w-7xl mx-auto p-6 sm:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
+            <div className="max-w-7xl mx-auto p-3.5 sm:p-6 lg:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
               <Outlet />
             </div>
           </main>
@@ -133,8 +133,9 @@ export const Layout: React.FC = () => {
         <div className="fixed bottom-6 right-20 sm:right-22 z-40">
           <button
             onClick={() => setIsQRScannerOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-[#18181B] dark:bg-[#18181B] hover:bg-slate-800 text-white shadow-lg border border-[#27272A] text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer"
+            className="flex items-center justify-center gap-2 px-3.5 py-2.5 min-h-[44px] rounded-full bg-[#18181B] dark:bg-[#18181B] hover:bg-slate-800 text-white shadow-lg border border-[#27272A] text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer"
             title="Scan Attendance QR"
+            aria-label="Scan Attendance QR"
           >
             <QrCode className="w-4 h-4 text-teal-400" />
             <span className="hidden sm:inline">Scan Attendance QR</span>

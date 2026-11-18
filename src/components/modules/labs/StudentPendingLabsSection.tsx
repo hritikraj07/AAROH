@@ -6,14 +6,10 @@ import {
   ArrowRight,
   CheckCircle2,
   AlertCircle,
-  FileCode,
-  Calendar,
-  Sparkles,
-  Layers,
   ShieldCheck
 } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
-import { CodingLab, LabSubmission } from '../../../types';
+import { CodingLab } from '../../../types';
 import { StudentLabWorkspaceModal } from './StudentLabWorkspaceModal';
 
 // Custom 4-layer premium button shadows

@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { useApp } from '../../context/AppContext';
-import { APP_CONFIG } from '../../config';
 import { ThemeToggle } from '../ui/ThemeToggle';
-import { RotateCcw, ShieldCheck, UserCheck, AlertTriangle } from 'lucide-react';
+import { RotateCcw, UserCheck, AlertTriangle } from 'lucide-react';
 
 export const SettingsModal: React.FC = () => {
   const {
@@ -42,16 +41,16 @@ export const SettingsModal: React.FC = () => {
             <UserCheck className="w-4 h-4 text-[#134074] dark:text-[#8DA9C4]" />
             <span className="capitalize">Active {role || 'Student'} Session</span>
           </div>
-          <div className="grid grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-400 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs text-slate-600 dark:text-slate-400 pt-1">
             <div>
               <span className="text-slate-400 dark:text-slate-500 block text-[11px]">Full Name</span>
-              <span className="font-semibold text-slate-900 dark:text-slate-100">{user?.name || student?.name || 'Aaroh User'}</span>
+              <span className="font-semibold text-slate-900 dark:text-slate-100 truncate block">{user?.name || student?.name || 'Aaroh User'}</span>
             </div>
             <div>
               <span className="text-slate-400 dark:text-slate-500 block text-[11px]">
                 {role === 'student' ? 'Roll Number' : 'Designation / ID'}
               </span>
-              <span className="font-mono text-slate-900 dark:text-slate-100">
+              <span className="font-mono text-slate-900 dark:text-slate-100 truncate block">
                 {user?.rollNumber || student?.rollNumber || user?.designation || (role === 'admin' ? 'SYS-ADM-01' : 'FAC-01')}
               </span>
             </div>
@@ -61,7 +60,7 @@ export const SettingsModal: React.FC = () => {
             </div>
             <div>
               <span className="text-slate-400 dark:text-slate-500 block text-[11px]">Department / Program</span>
-              <span className="text-slate-900 dark:text-slate-100">{user?.department || student?.program || 'Engineering & Technology'}</span>
+              <span className="text-slate-900 dark:text-slate-100 truncate block">{user?.department || student?.program || 'Engineering & Technology'}</span>
             </div>
           </div>
         </div>

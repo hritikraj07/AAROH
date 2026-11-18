@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Clock, MapPin, UserCheck, Network } from 'lucide-react';
+import { ArrowRight, MapPin, UserCheck, Network } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { AcademicService } from '../../../services/academicService';
 import { Badge } from '../../ui/Badge';
@@ -45,7 +45,7 @@ export const TodayClassesCard: React.FC = () => {
   const sessionsToDisplay = AcademicService.getSessionsForDay(filteredTimetable, displayDayNum);
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-colors duration-200">
+    <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-5 sm:p-6 flex flex-col justify-between transition-colors duration-200">
       {/* Header */}
       <div>
         <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
@@ -61,7 +61,7 @@ export const TodayClassesCard: React.FC = () => {
           </div>
           <Link
             to="/student/academics?tab=timetable"
-            className="rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-3 py-1 font-medium transition-colors flex items-center gap-1 active:scale-95 border border-[#8DA9C4]/30 shadow-sm"
+            className="rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-3.5 py-1.5 min-h-[36px] font-medium transition-colors flex items-center gap-1 active:scale-95 border border-[#8DA9C4]/30 shadow-sm"
           >
             <span>Full Schedule</span>
             <ArrowRight className="w-3 h-3" />
@@ -92,7 +92,7 @@ export const TodayClassesCard: React.FC = () => {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="font-mono text-xs font-bold text-slate-900 dark:text-slate-100">
-                          {session.startTime} – {session.endTime}
+                          {session.startTime} - {session.endTime}
                         </span>
                         <span className="text-slate-300 dark:text-slate-600">•</span>
                         <span className="text-xs font-bold text-teal-800 dark:text-teal-400">
@@ -119,14 +119,15 @@ export const TodayClassesCard: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                       <button
                         type="button"
                         onClick={() => setSelectedCourseForTree({ id: session.courseId, code: course?.code || 'CS', name: course?.name || session.courseName || 'Course' })}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-teal-700 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                        className="min-h-[44px] min-w-[44px] flex items-center justify-center p-2 rounded-lg text-slate-400 hover:text-teal-700 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                         title="View B.Tech Skill Tree"
+                        aria-label="View B.Tech Skill Tree"
                       >
-                        <Network className="w-3.5 h-3.5" />
+                        <Network className="w-4 h-4" />
                       </button>
 
                       {isNext ? (

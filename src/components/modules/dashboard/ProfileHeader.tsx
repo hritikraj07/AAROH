@@ -1,7 +1,7 @@
 import React from 'react';
 import { useApp } from '../../../context/AppContext';
 import { APP_CONFIG } from '../../../config';
-import { ShieldCheck, Calendar, BookOpen, AlertCircle, UserCheck } from 'lucide-react';
+import { ShieldCheck, AlertCircle } from 'lucide-react';
 import { AcademicService } from '../../../services/academicService';
 
 export const ProfileHeader: React.FC = () => {

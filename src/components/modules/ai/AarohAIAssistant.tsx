@@ -1,14 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, Send, X, RotateCcw, Bot, User, WifiOff, Zap } from 'lucide-react';
+import { Sparkles, Send, X, RotateCcw, User, WifiOff, Zap } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import {
   processCampusAIQuery,
   evaluateMathQuery,
   gatherStudentContextFromStorage,
-  buildCampusAISystemPrompt,
   askAarohGeminiAPI,
-  GEMINI_API_KEY,
-  GEMINI_API_ENDPOINT,
 } from '../../../utils/aiAssistant';
 
 interface ChatMessage {
@@ -225,7 +222,7 @@ export const AarohAIAssistant: React.FC = () => {
       setIsOfflineMode(false);
     } catch (err) {
       // Graceful Offline Fallback (Hackathon Safety)
-      console.warn('Gemini API call failed or timed out. Seamlessly falling back to offline logic:', err);
+      console.warn('Gemini API call failed or timed out. Falling back to offline logic:', err);
       setIsOfflineMode(true);
 
       // Subtle feedback toast for hackathon safety
@@ -307,7 +304,7 @@ export const AarohAIAssistant: React.FC = () => {
       {/* Chat Window Panel */}
       {isOpen && (
         <div
-          className="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[400px] max-h-[560px] h-[520px] bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in fade-in duration-150 font-sans"
+          className="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[400px] max-h-[calc(100dvh-6rem)] h-[520px] bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-md flex flex-col overflow-hidden animate-in fade-in duration-150 font-sans"
           role="dialog"
           aria-label="Aaroh AI Campus Assistant"
         >
@@ -346,15 +343,17 @@ export const AarohAIAssistant: React.FC = () => {
             <div className="flex items-center gap-1">
               <button
                 onClick={handleResetChat}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors"
+                className="p-2 min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors"
                 title="Reset conversation"
+                aria-label="Reset conversation"
               >
-                <RotateCcw className="w-3.5 h-3.5" />
+                <RotateCcw className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors"
+                className="p-2 min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors"
                 title="Close chat"
+                aria-label="Close chat"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -371,7 +370,7 @@ export const AarohAIAssistant: React.FC = () => {
                 key={chip.label}
                 onClick={() => handleSendMessage(chip.query)}
                 disabled={isLoading}
-                className="text-[11px] px-2.5 py-1 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] text-slate-600 dark:text-slate-300 rounded-md hover:border-teal-300 dark:hover:border-teal-700 hover:text-teal-800 dark:hover:text-teal-300 hover:bg-teal-50/50 dark:hover:bg-teal-950/30 whitespace-nowrap transition-colors disabled:opacity-50"
+                className="text-[11px] px-2.5 py-1.5 min-h-[36px] sm:min-h-[44px] bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] text-slate-600 dark:text-slate-300 rounded-md hover:border-teal-300 dark:hover:border-teal-700 hover:text-teal-800 dark:hover:text-teal-300 hover:bg-teal-50/50 dark:hover:bg-teal-950/30 whitespace-nowrap transition-colors disabled:opacity-50"
               >
                 {chip.label}
               </button>
@@ -453,15 +452,15 @@ export const AarohAIAssistant: React.FC = () => {
                 onKeyDown={handleKeyDown}
                 disabled={isLoading}
                 placeholder="Ask about next class, attendance, deadlines..."
-                className="flex-1 text-xs px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#0E0E11] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-700/20 dark:focus:ring-teal-500/20 focus:border-teal-700 dark:focus:border-teal-500 transition-all duration-150 disabled:opacity-60"
+                className="flex-1 min-h-[44px] text-xs px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#0E0E11] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-700/20 dark:focus:ring-teal-500/20 focus:border-teal-700 dark:focus:border-teal-500 transition-all duration-150 disabled:opacity-60"
               />
               <button
                 type="submit"
                 disabled={!inputText.trim() || isLoading}
-                className="p-2.5 bg-[#134074] text-white rounded-xl hover:bg-[#0B2545] active:bg-[#081B33] disabled:opacity-40 disabled:hover:bg-[#134074] transition-all duration-150 shrink-0 active:scale-95 border border-[#8DA9C4]/30"
+                className="p-2.5 min-h-[44px] min-w-[44px] flex items-center justify-center bg-[#134074] text-white rounded-xl hover:bg-[#0B2545] active:bg-[#081B33] disabled:opacity-40 disabled:hover:bg-[#134074] transition-all duration-150 shrink-0 active:scale-95 border border-[#8DA9C4]/30"
                 aria-label="Send message"
               >
-                <Send className="w-3.5 h-3.5" />
+                <Send className="w-4 h-4" />
               </button>
             </form>
           </div>

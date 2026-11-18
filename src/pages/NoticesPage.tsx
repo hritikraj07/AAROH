@@ -9,10 +9,8 @@ import {
   Search,
   Pin,
   FileText,
-  Calendar,
   CheckCheck,
   Building,
-  CheckCircle2,
   Filter,
 } from 'lucide-react';
 

@@ -1,25 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useApp } from '../../../context/AppContext';
-import { AssessmentType, SemesterGrade } from '../../../types';
 import {
   Award,
   TrendingUp,
   BookOpen,
   CheckCircle,
-  Sparkles,
   Calendar,
-  Layers,
-  ChevronDown,
-  ChevronRight,
-  Code2
+  Layers
 } from 'lucide-react';
-import {
-  getStoredSemesterGrades,
-  computeStudentSemesterMetrics,
-  marksToGradePoint,
-  marksToLetterGrade,
-  SemesterMetric
-} from '../../../utils/gradeUtils';
+import { computeStudentSemesterMetrics } from '../../../utils/gradeUtils';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
 const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
@@ -192,7 +181,7 @@ export const AcademicResultsTab: React.FC = () => {
 
                 <div>
                   <div className="text-sm font-bold font-mono text-slate-900 dark:text-slate-100">
-                    {isCompleted ? sgpa.toFixed(2) : '—'}
+                    {isCompleted ? sgpa.toFixed(2) : 'N/A'}
                   </div>
                   <div className="text-[10px] text-slate-400 font-mono">
                     {isCompleted ? `${match.totalCredits} credits` : 'Pending'}
@@ -223,7 +212,7 @@ export const AcademicResultsTab: React.FC = () => {
                 key={sem}
                 type="button"
                 onClick={() => setSelectedSemester(sem)}
-                className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors whitespace-nowrap ${
+                className={`px-3.5 py-2 min-h-[40px] text-xs font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer flex items-center justify-center ${
                   selectedSemester === sem
                     ? 'bg-white dark:bg-[#18181B] text-teal-800 dark:text-teal-400 font-bold shadow-xs'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -252,7 +241,7 @@ export const AcademicResultsTab: React.FC = () => {
               <span className="font-bold text-slate-900 dark:text-slate-100">
                 {currentSemesterMetric && currentSemesterMetric.sgpa > 0
                   ? currentSemesterMetric.sgpa.toFixed(2)
-                  : '—'}
+                  : 'N/A'}
               </span>
             </div>
             <div>
@@ -281,7 +270,7 @@ export const AcademicResultsTab: React.FC = () => {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+            <table className="w-full min-w-[700px] text-left text-xs">
               <thead className="bg-slate-50 dark:bg-[#27272A] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-mono border-b border-slate-200 dark:border-[#27272A]">
                 <tr>
                   <th className="py-3 px-4 font-semibold">Course Code</th>

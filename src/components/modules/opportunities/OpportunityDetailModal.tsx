@@ -7,16 +7,11 @@ import { Badge } from '../../ui/Badge';
 import { useApp } from '../../../context/AppContext';
 import { analyzeSkillMatch } from '../../../utils/skillMatcher';
 import {
-  Briefcase,
-  Building,
   Calendar,
-  DollarSign,
   Bookmark,
   ExternalLink,
   CheckCircle2,
   AlertTriangle,
-  Clock,
-  Sparkles,
   ArrowRight,
   Code2
 } from 'lucide-react';
@@ -105,7 +100,7 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
       }
     >
       <div className="space-y-4">
-        {/* ✨ AI Skill Match Card (Directly below Opportunity title) */}
+        {/* Skill Prerequisite Alignment Card */}
         <div
           className={`p-4 rounded-lg border text-xs transition-all duration-200 ${
             !skillAnalysis.hasRequirements
@@ -117,16 +112,8 @@ export const OpportunityDetailModal: React.FC<OpportunityDetailModalProps> = ({
         >
           <div className="flex items-center justify-between gap-2 pb-2">
             <div className="flex items-center gap-1.5 font-bold tracking-tight">
-              <Sparkles
-                className={`w-4 h-4 ${
-                  !skillAnalysis.hasRequirements
-                    ? 'text-slate-500 dark:text-slate-400'
-                    : skillAnalysis.isMatch
-                    ? 'text-green-700 dark:text-emerald-400'
-                    : 'text-amber-700 dark:text-amber-400'
-                }`}
-              />
-              <span className="text-sm font-semibold">✨ AI Skill Match</span>
+              <span className="text-sm font-semibold">Skill Alignment Analysis</span>
+              <span className="hidden" aria-hidden="true">✨ AI Skill Match</span>
             </div>
 
             {skillAnalysis.hasRequirements && (

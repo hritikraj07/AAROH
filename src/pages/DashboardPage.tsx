@@ -5,16 +5,10 @@ import {
   BookOpen,
   Briefcase,
   ShieldCheck,
-  PlusCircle,
-  Calendar,
   AlertTriangle,
   ArrowRight,
   Focus,
   FileText,
-  Sparkles,
-  ExternalLink,
-  CheckCircle2,
-  Users,
   Network,
   Coffee,
   Lock
@@ -297,7 +291,7 @@ export const DashboardPage: React.FC = () => {
         </div>
       ) : (
         /* "Free Period" UI State: Subtle, subdued banner */
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-300 px-4 py-3 rounded-2xl flex items-center justify-between text-xs sm:text-sm font-medium shadow-sm">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-white/5 text-slate-700 dark:text-slate-300 px-4 py-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm font-medium shadow-sm">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/60 flex items-center justify-center text-amber-700 dark:text-amber-400 shadow-sm shrink-0">
               <Coffee className="w-4 h-4" />
@@ -310,7 +304,7 @@ export const DashboardPage: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate('/student/assignments')}
-              className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-3.5 py-1.5 font-medium transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} flex items-center gap-1.5 cursor-pointer border border-[#8DA9C4]/30`}
+              className={`w-full sm:w-auto rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-4 py-2 min-h-[40px] font-medium transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} flex items-center justify-center gap-1.5 cursor-pointer border border-[#8DA9C4]/30`}
             >
               <BookOpen className="w-3.5 h-3.5 text-[#8DA9C4]" />
               <span>Automated Coding Labs</span>
@@ -510,7 +504,7 @@ export const DashboardPage: React.FC = () => {
           </div>
           <div className="my-3">
             <span className="text-4xl font-bold tracking-tight text-slate-900 dark:text-slate-50 tabular-nums font-mono">
-              {overallPct !== null ? `${overallPct}%` : '—'}
+              {overallPct !== null ? `${overallPct}%` : 'N/A'}
             </span>
           </div>
           <div className="text-xs text-slate-400 dark:text-slate-500 font-mono flex items-center justify-between">
