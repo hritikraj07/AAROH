@@ -11,12 +11,14 @@
   },
   "dependencies": {
     "@fontsource/ibm-plex-sans": "^5.1.0",
+    "@types/three": "^0.187.0",
     "clsx": "^2.1.1",
     "lucide-react": "^1.16.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0",
-    "tailwind-merge": "^2.5.5"
+    "tailwind-merge": "^2.5.5",
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

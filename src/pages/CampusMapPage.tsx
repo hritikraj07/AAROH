@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { CampusMap } from '../components/modules/campus/CampusMap';
+import { KrmuCampusExplorer } from '../components/modules/campus/KrmuCampusExplorer';
 import { SmartResolveModal } from '../components/modules/campus/SmartResolveModal';
 import { CampusKanbanBoard } from '../components/modules/campus/CampusKanbanBoard';
-import { CampusBuilding } from '../types';
 import {
   MapPin,
   ClipboardList,
@@ -12,12 +11,12 @@ import {
 
 export const CampusMapPage: React.FC = () => {
   const { user, campusTickets } = useApp();
-  const [selectedBuilding, setSelectedBuilding] = useState<CampusBuilding>('Academic Blocks');
+  const [selectedBuilding, setSelectedBuilding] = useState<string>('Aryabhata Block');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const isAdmin = user?.role === 'admin';
 
-  const handleSelectBuilding = (building: CampusBuilding) => {
+  const handleSelectBuilding = (building: string) => {
     setSelectedBuilding(building);
     setIsModalOpen(true);
   };
@@ -50,7 +49,7 @@ export const CampusMapPage: React.FC = () => {
           <div className="pt-2 flex items-center gap-2.5 flex-wrap">
             <button
               type="button"
-              onClick={() => handleSelectBuilding('Academic Blocks')}
+              onClick={() => handleSelectBuilding('Aryabhata Block')}
               className="rounded-full bg-[#EEF4ED] text-[#134074] hover:bg-white text-xs px-4 py-2 font-bold transition-all duration-200 active:scale-95 inline-flex items-center gap-1.5 shadow-sm cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 text-[#134074]" />
@@ -60,8 +59,10 @@ export const CampusMapPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 1. Click-to-Select Interactive Campus Map */}
-      <CampusMap onSelectBuilding={handleSelectBuilding} isAdminView={isAdmin} />
+      {/* Interactive 3D WebGL Digital Twin of K.R. Mangalam University */}
+      <div className="w-full h-[640px] sm:h-[740px] rounded-2xl overflow-hidden shadow-sm">
+        <KrmuCampusExplorer onReportIssue={handleSelectBuilding} />
+      </div>
 
       {/* 2. Admin Nexus: Kanban Board Directly Below Map */}
       {isAdmin ? (
@@ -105,10 +106,10 @@ export const CampusMapPage: React.FC = () => {
                     </div>
                     <span
                       className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full ${ticket.status === 'Resolved'
-                          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
-                          : ticket.status === 'In Progress'
-                            ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
-                            : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
+                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
+                        : ticket.status === 'In Progress'
+                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-200 dark:border-blue-800'
+                          : 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800'
                         }`}
                     >
                       {ticket.status}
