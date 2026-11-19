@@ -1,15 +1,13 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, MapPin, UserCheck, Network } from 'lucide-react';
+import { ArrowRight, MapPin, UserCheck } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import { AcademicService } from '../../../services/academicService';
 import { Badge } from '../../ui/Badge';
 import { getFacultyFullName } from '../../../utils/facultyUtils';
-import { SkillTreeModal } from '../academics/SkillTreeModal';
 
 export const TodayClassesCard: React.FC = () => {
   const { timetable, courses, user, users } = useApp();
-  const [selectedCourseForTree, setSelectedCourseForTree] = useState<{ id: string; code: string; name: string } | null>(null);
   const courseMap = new Map(courses.map(c => [c.id, c]));
 
   // Filter timetable if logged-in user is a student with program/semester
@@ -120,18 +118,8 @@ export const TodayClassesCard: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedCourseForTree({ id: session.courseId, code: course?.code || 'CS', name: course?.name || session.courseName || 'Course' })}
-                        className="min-h-[44px] min-w-[44px] flex items-center justify-center p-2 rounded-lg text-slate-400 hover:text-teal-700 dark:hover:text-teal-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                        title="View B.Tech Skill Tree"
-                        aria-label="View B.Tech Skill Tree"
-                      >
-                        <Network className="w-4 h-4" />
-                      </button>
-
-                      {isNext ? (
+                    {isNext && (
+                      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                         <span className="rounded-full bg-teal-100 dark:bg-teal-900/60 text-teal-800 dark:text-teal-300 text-[10px] font-bold font-mono uppercase px-2.5 py-1">
                           {upcomingInfo.isHappeningNow
                             ? 'Live'
@@ -139,8 +127,8 @@ export const TodayClassesCard: React.FC = () => {
                               ? `In ${upcomingInfo.minutesUntil}m`
                               : 'Next'}
                         </span>
-                      ) : null}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -154,16 +142,6 @@ export const TodayClassesCard: React.FC = () => {
           <span>{sessionsToDisplay.length} sessions listed</span>
           <span>Cohort: {user?.program || 'B.Tech'} Sem {user?.semester || 1}</span>
         </div>
-      )}
-
-      {selectedCourseForTree && (
-        <SkillTreeModal
-          courseId={selectedCourseForTree.id}
-          courseCode={selectedCourseForTree.code}
-          courseName={selectedCourseForTree.name}
-          isOpen={Boolean(selectedCourseForTree)}
-          onClose={() => setSelectedCourseForTree(null)}
-        />
       )}
     </div>
   );
