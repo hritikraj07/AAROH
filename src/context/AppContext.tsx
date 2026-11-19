@@ -235,6 +235,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
     if (typeof window !== 'undefined') {
       localStorage.setItem('aaroh_theme', theme);
+      localStorage.setItem('theme', theme);
     }
   }, [theme]);
 

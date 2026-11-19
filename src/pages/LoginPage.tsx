@@ -345,7 +345,7 @@ export const LoginPage: React.FC = () => {
         demoUser.rollNumber = '22CS042';
         demoUser.program = 'B.Tech CSE';
         demoUser.course = 'B.Tech CSE';
-        demoUser.semester = 1;
+        demoUser.semester = 3;
       } else if (targetRole === 'faculty') {
         demoUser.name = 'Prof. Ramanujan';
         demoUser.designation = 'Associate Professor';

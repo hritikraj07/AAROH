@@ -24,13 +24,13 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
       <button
         type="button"
         onClick={() => toggleTheme()}
-        className="relative inline-flex items-center justify-between w-14 h-8 p-1 rounded-full bg-slate-200/90 dark:bg-[#1E293B] border border-slate-300/80 dark:border-slate-700/80 transition-colors cursor-pointer select-none active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
-        title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-        aria-label="Toggle theme"
+        className="relative inline-flex items-center w-[56px] h-[32px] p-0 rounded-full bg-slate-200/90 dark:bg-[#18181B] border border-slate-300/80 dark:border-slate-800 transition-colors cursor-pointer select-none active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50"
+        title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+        aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       >
-        {/* Sliding active indicator thumb - 24px wide, translating by exactly 24px */}
+        {/* Sliding active indicator thumb - 24px wide, translating by exactly 24px with symmetrical 3px clearance */}
         <motion.div
-          className="absolute top-1 left-1 w-6 h-6 rounded-full bg-white dark:bg-[#0F172A] shadow-sm border border-slate-200/60 dark:border-slate-600/60 z-0 pointer-events-none"
+          className="absolute top-[3px] left-[3px] w-6 h-6 rounded-full bg-white dark:bg-[#09090B] shadow-sm border border-slate-200/80 dark:border-slate-700/80 z-0 pointer-events-none"
           animate={{ x: isDark ? 24 : 0 }}
           transition={{ type: "spring", stiffness: 450, damping: 28 }}
         />
@@ -39,7 +39,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         <motion.div
           animate={{ rotate: isDark ? -30 : 0, scale: isDark ? 0.85 : 1 }}
           transition={{ duration: 0.18 }}
-          className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+          className={`relative z-10 ml-[3px] w-6 h-6 rounded-full flex items-center justify-center transition-colors pointer-events-none ${
             !isDark
               ? 'text-amber-500'
               : 'text-slate-400 hover:text-slate-200'
@@ -52,9 +52,9 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
         <motion.div
           animate={{ rotate: isDark ? 0 : 30, scale: isDark ? 1 : 0.85 }}
           transition={{ duration: 0.18 }}
-          className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+          className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center transition-colors pointer-events-none ${
             isDark
-              ? 'text-blue-300'
+              ? 'text-sky-300'
               : 'text-slate-400 hover:text-slate-600'
           }`}
         >

@@ -53,10 +53,10 @@ export const EarlyWarningSystemCard: React.FC<EarlyWarningSystemCardProps> = ({
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-bold tracking-tight">
-                  ⚠️ Early Warning System: Intervention Required
+                <h3 className="text-sm font-bold tracking-tight text-green-950 dark:text-green-300">
+                  Early Warning System: All Students on Track
                 </h3>
-                <p className="text-xs mt-0.5 opacity-90 font-medium">
+                <p className="text-xs mt-0.5 opacity-90 font-medium text-green-800 dark:text-green-400">
                   All assigned students are currently on track.
                 </p>
               </div>

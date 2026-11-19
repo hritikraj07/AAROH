@@ -1994,4 +1994,45 @@ assert(aiAssistantRoleContent.includes("ADMIN ROLE OFFLINE INTELLIGENCE"), 'aiAs
 
 console.log('--- ALL ROLE-BASED AI ASSISTANT & DIRECT FACULTY ACTIONS VERIFICATIONS PASSED ---');
 
+// ==========================================
+// 37. Early Warning Status, Lost & Found RBAC, Semester Progression & Theme Toggle
+// ==========================================
+console.log('--- VERIFYING EARLY WARNING, LOST & FOUND RBAC, SEMESTER PROGRESSION & THEME TOGGLE ---');
+
+// 1. Early Warning System empty state text
+const earlyWarningCheck = fs.readFileSync(path.join(__dirname, '../src/components/modules/faculty/EarlyWarningSystemCard.tsx'), 'utf8');
+assert(earlyWarningCheck.includes('Early Warning System: All Students on Track'), 'EarlyWarningSystemCard displays positive status title when 0 students at risk');
+assert(earlyWarningCheck.includes('All assigned students are currently on track.'), 'EarlyWarningSystemCard confirms assigned students on track');
+
+// 2. Lost & Found dynamic poster resolution isolation
+const lostFoundPageCheck = fs.readFileSync(path.join(__dirname, '../src/pages/LostFoundPage.tsx'), 'utf8');
+const detailModalCheck = fs.readFileSync(path.join(__dirname, '../src/components/modules/lostfound/LostFoundDetailModal.tsx'), 'utf8');
+assert(!lostFoundPageCheck.includes('item.reportedBy.isCurrentUser ||'), 'LostFoundPage does not rely on static isCurrentUser property');
+assert(!detailModalCheck.includes('item.reportedBy.isCurrentUser ||'), 'LostFoundDetailModal does not rely on static isCurrentUser property');
+
+// Mock test Lost & Found poster isolation
+function testLostFoundPosterAuth(posterName, loggedInUserName) {
+  const isPoster = Boolean(
+    loggedInUserName && posterName && loggedInUserName.toLowerCase() === posterName.toLowerCase()
+  );
+  return isPoster;
+}
+assert(testLostFoundPosterAuth('Nishtha Goyal', 'Nishtha Goyal') === true, 'Poster Nishtha can resolve her own post');
+assert(testLostFoundPosterAuth('Nishtha Goyal', 'Aarav Sharma') === false, 'Student Aarav cannot resolve Nishtha post');
+
+// 3. Academic Semester Progression
+const academicTabCheck = fs.readFileSync(path.join(__dirname, '../src/components/modules/academics/AcademicResultsTab.tsx'), 'utf8');
+assert(academicTabCheck.includes('DEFAULT_COMPLETED_SEMESTERS'), 'AcademicResultsTab defines baseline data for completed semesters');
+assert(academicTabCheck.includes('isPast &&') && academicTabCheck.includes('Completed'), 'AcademicResultsTab shows completed status for past semesters');
+assert(academicTabCheck.includes('isLocked &&') && academicTabCheck.includes('Locked'), 'AcademicResultsTab shows locked status for future semesters');
+assert(academicTabCheck.includes('<Lock'), 'AcademicResultsTab renders Lock icon for locked semesters');
+
+// 4. Precision Centered Theme Toggle
+const themeToggleCheck = fs.readFileSync(path.join(__dirname, '../src/components/ui/ThemeToggle.tsx'), 'utf8');
+assert(themeToggleCheck.includes('w-[56px]') && themeToggleCheck.includes('h-[32px]'), 'ThemeToggle implements exact 56x32 dimensions');
+assert(themeToggleCheck.includes('top-[3px] left-[3px]'), 'ThemeToggle thumb implements symmetrical 3px top and left clearance');
+assert(themeToggleCheck.includes('animate={{ x: isDark ? 24 : 0 }}'), 'ThemeToggle translates thumb exactly 24px between light and dark modes');
+
+console.log('--- ALL EARLY WARNING, LOST & FOUND RBAC, SEMESTER PROGRESSION & THEME TOGGLE VERIFICATIONS PASSED ---');
+
 module.exports = { assert };

@@ -29,11 +29,15 @@ export const LostFoundDetailModal: React.FC<LostFoundDetailModalProps> = ({
   if (!item) return null;
 
   const currentUser = user || student;
-  const isPoster =
-    item.reportedBy.isCurrentUser ||
-    (currentUser?.id && item.reportedBy.id === currentUser.id) ||
-    (currentUser?.email && item.reportedBy.email === currentUser.email) ||
-    (currentUser?.name && item.reportedBy.name.toLowerCase() === currentUser.name.toLowerCase());
+  const isPoster = Boolean(
+    currentUser && (
+      (currentUser.id && item.reportedBy.id && currentUser.id === item.reportedBy.id) ||
+      (currentUser.email && item.reportedBy.email && currentUser.email.toLowerCase() === item.reportedBy.email.toLowerCase()) ||
+      (currentUser.rollNumber && item.reportedBy.studentId && currentUser.rollNumber.toLowerCase() === item.reportedBy.studentId.toLowerCase()) ||
+      (currentUser.name && item.reportedBy.name && currentUser.name.trim().toLowerCase() === item.reportedBy.name.trim().toLowerCase()) ||
+      currentUser.role === 'admin'
+    )
+  );
 
   const isResolved = item.status === 'resolved';
 

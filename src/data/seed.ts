@@ -76,7 +76,7 @@ export function generateUserFromEmail(email: string): User {
     designation: 'Undergraduate Scholar',
     program: 'B.Tech',
     department: 'Computer Science & Engineering',
-    semester: 1,
+    semester: 3,
     section: 'Section A',
     academicYear: APP_CONFIG.academicSession,
     avatarInitials: initials,

@@ -115,7 +115,7 @@ export const ReportLostFoundModal: React.FC<ReportLostFoundModalProps> = ({
         email: currentUser?.email,
         name: currentUser?.name || 'Aaroh Student',
         studentId: currentUser?.rollNumber || currentUser?.id || '22CS042',
-        isCurrentUser: true,
+        isCurrentUser: false,
       },
       imageUrl: photoBase64 || undefined,
     });

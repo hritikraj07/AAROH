@@ -304,8 +304,8 @@ export const StorageService = {
   getAuthUser(): User | null {
     const user = getStored<User | null>(STORAGE_KEYS.AUTH_USER, null);
     if (!user) return null;
-    if (user.role === 'student' && user.email === 'aarav.sharma@aaroh.edu.in' && user.semester === 5) {
-      user.semester = 1;
+    if (user.role === 'student' && user.email === 'aarav.sharma@aaroh.edu.in' && (user.semester === 5 || user.semester === 1 || !user.semester)) {
+      user.semester = 3;
       setStored(STORAGE_KEYS.AUTH_USER, user);
     }
     const roleOverride = this.getRoleProfile(user.role);
