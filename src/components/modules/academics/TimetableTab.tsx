@@ -7,6 +7,7 @@ import { getFacultyFullName } from '../../../utils/facultyUtils';
 import { SkillTreeModal } from './SkillTreeModal';
 import { TimetableCalendar } from './TimetableCalendar';
 import { UpcomingClassesCard } from './UpcomingClassesCard';
+import { TopographicBg } from '../../ui/TopographicBg';
 
 // Helper to get campus date in Asia/Kolkata timezone
 const getCampusNow = (): Date => {
@@ -235,18 +236,21 @@ export const TimetableTab: React.FC = () => {
             >
               {daySessions.length === 0 ? (
                 /* Empty state: Saturday / Sunday / Monday */
-                <div className="bg-white dark:bg-[#18181B] border border-blue-200/70 dark:border-blue-900/50 rounded-2xl p-10 sm:p-14 text-center flex flex-col items-center justify-center shadow-sm">
-                  <div className="w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-900/60 flex items-center justify-center text-[#1D4ED8] dark:text-blue-400 mb-4 shadow-inner">
-                    <CalendarIcon className="w-8 h-8 text-[#1D4ED8] dark:text-blue-400" />
+                <div className="bg-white dark:bg-[#18181B] border border-blue-200/70 dark:border-blue-900/50 rounded-2xl p-10 sm:p-14 text-center flex flex-col items-center justify-center shadow-sm relative overflow-hidden">
+                  <TopographicBg />
+                  <div className="relative z-10 flex flex-col items-center justify-center">
+                    <div className="w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-900/60 flex items-center justify-center text-[#1D4ED8] dark:text-blue-400 mb-4 shadow-inner">
+                      <CalendarIcon className="w-8 h-8 text-[#1D4ED8] dark:text-blue-400" />
+                    </div>
+                    <h4 className="text-lg font-bold text-[#0F2544] dark:text-white">
+                      No Lectures Scheduled
+                    </h4>
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mt-1.5 leading-relaxed">
+                      {selectedDayOfWeek === 0
+                        ? 'Campus is closed for regular academic lectures on Sundays.'
+                        : `No lectures scheduled for ${days.find(d => d.num === selectedDayOfWeek)?.name || 'this day'}. Enjoy your free day or make progress on your automated coding laboratories.`}
+                    </p>
                   </div>
-                  <h4 className="text-lg font-bold text-[#0F2544] dark:text-white">
-                    No Lectures Scheduled
-                  </h4>
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mt-1.5 leading-relaxed">
-                    {selectedDayOfWeek === 0
-                      ? 'Campus is closed for regular academic lectures on Sundays.'
-                      : `No lectures scheduled for ${days.find(d => d.num === selectedDayOfWeek)?.name || 'this day'}. Enjoy your free day or make progress on your automated coding laboratories.`}
-                  </p>
                 </div>
               ) : (
                 daySessions.map((session, index) => {

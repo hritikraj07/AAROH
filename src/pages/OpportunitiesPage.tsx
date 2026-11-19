@@ -7,6 +7,7 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { OpportunityDetailModal } from '../components/modules/opportunities/OpportunityDetailModal';
 import { TeammateRadar } from '../components/modules/opportunities/TeammateRadar';
+import { TopographicBg } from '../components/ui/TopographicBg';
 import {
   Briefcase,
   Bookmark,
@@ -326,40 +327,43 @@ export const OpportunitiesPage: React.FC = () => {
       </div>
 
       {/* 2. Filter and Search Controls Bar (Mode and Sort removed per user specification) */}
-      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-4 space-y-3.5">
-        {/* Type Filter Buttons */}
-        <div className="flex items-center gap-1.5 overflow-x-auto">
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mr-1 font-mono">
-            Type:
-          </span>
-          {types.map(t => {
-            const isSelected = typeFilter === t;
-            return (
-              <button
-                key={t}
-                onClick={() => setTypeFilter(t)}
-                className={`px-3.5 py-2 min-h-[40px] text-xs rounded-xl transition-all whitespace-nowrap cursor-pointer font-medium flex items-center justify-center ${
-                  isSelected
-                    ? 'bg-[#134074] text-white font-semibold shadow-sm border border-[#8DA9C4]/30'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-                }`}
-              >
-                {t}
-              </button>
-            );
-          })}
-        </div>
+      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-4 space-y-3.5 relative overflow-hidden">
+        <TopographicBg />
+        <div className="relative z-10 space-y-3.5">
+          {/* Type Filter Buttons */}
+          <div className="flex items-center gap-1.5 overflow-x-auto">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mr-1 font-mono">
+              Type:
+            </span>
+            {types.map(t => {
+              const isSelected = typeFilter === t;
+              return (
+                <button
+                  key={t}
+                  onClick={() => setTypeFilter(t)}
+                  className={`px-3.5 py-2 min-h-[40px] text-xs rounded-xl transition-all whitespace-nowrap cursor-pointer font-medium flex items-center justify-center ${
+                    isSelected
+                      ? 'bg-[#134074] text-white font-semibold shadow-sm border border-[#8DA9C4]/30'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  {t}
+                </button>
+              );
+            })}
+          </div>
 
-        {/* Search Input */}
-        <div className="relative pt-1 border-t border-slate-200 dark:border-[#27272A]">
-          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 mt-0.5" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search by role title, hosting company, eligibility, or stipend keywords..."
-            className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074]"
-          />
+          {/* Search Input */}
+          <div className="relative pt-1 border-t border-slate-200 dark:border-[#27272A]">
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 mt-0.5" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search by role title, hosting company, eligibility, or stipend keywords..."
+              className="w-full text-xs pl-8 pr-3 py-2 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074]"
+            />
+          </div>
         </div>
       </div>
 
@@ -368,33 +372,36 @@ export const OpportunitiesPage: React.FC = () => {
 
       {/* Opportunities List / Dense Grid */}
       {displayOpportunities.length === 0 ? (
-        <div className="py-16 flex flex-col items-center justify-center text-center bg-white border border-slate-200 text-slate-500 dark:bg-[#18181B] dark:border-white/5 dark:text-slate-400 rounded-2xl p-8">
-          <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-3 border border-slate-200 dark:border-white/5">
-            <Briefcase className="w-5 h-5 text-slate-400 dark:text-teal-400" />
+        <div className="py-16 flex flex-col items-center justify-center text-center bg-white border border-slate-200 text-slate-500 dark:bg-[#18181B] dark:border-white/5 dark:text-slate-400 rounded-2xl p-8 relative overflow-hidden">
+          <TopographicBg />
+          <div className="relative z-10 flex flex-col items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-3 border border-slate-200 dark:border-white/5">
+              <Briefcase className="w-5 h-5 text-slate-400 dark:text-teal-400" />
+            </div>
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
+              {viewTab === 'saved'
+                ? 'No saved opportunities'
+                : opportunities.length === 0
+                ? 'No active opportunities posted yet.'
+                : 'No matching opportunities found'}
+            </h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mb-4 leading-relaxed">
+              {viewTab === 'saved'
+                ? 'Bookmark internships, hackathons, or fellowships in the Browse tab to review them here.'
+                : opportunities.length === 0
+                ? 'Verified industry opportunities, hackathons, and research fellowships will appear here once published.'
+                : 'Try clearing your type, mode, or keyword search filters.'}
+            </p>
+            {viewTab === 'saved' && (
+              <button
+                type="button"
+                onClick={() => setViewTab('browse')}
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 shadow-sm cursor-pointer select-none"
+              >
+                <span>Explore Opportunities</span>
+              </button>
+            )}
           </div>
-          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
-            {viewTab === 'saved'
-              ? 'No saved opportunities'
-              : opportunities.length === 0
-              ? 'No active opportunities posted yet.'
-              : 'No matching opportunities found'}
-          </h4>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mb-4 leading-relaxed">
-            {viewTab === 'saved'
-              ? 'Bookmark internships, hackathons, or fellowships in the Browse tab to review them here.'
-              : opportunities.length === 0
-              ? 'Verified industry opportunities, hackathons, and research fellowships will appear here once published.'
-              : 'Try clearing your type, mode, or keyword search filters.'}
-          </p>
-          {viewTab === 'saved' && (
-            <button
-              type="button"
-              onClick={() => setViewTab('browse')}
-              className="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 shadow-sm cursor-pointer select-none"
-            >
-              <span>Explore Opportunities</span>
-            </button>
-          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

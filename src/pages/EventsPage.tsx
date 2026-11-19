@@ -6,6 +6,7 @@ import { AcademicService } from '../services/academicService';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { EventDetailModal } from '../components/modules/events/EventDetailModal';
+import { TopographicBg } from '../components/ui/TopographicBg';
 import {
   Calendar as CalendarIcon,
   Clock,
@@ -188,58 +189,61 @@ export const EventsPage: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-3.5 space-y-3">
-        {/* Category Pills Bar */}
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-            {categories.map(cat => {
-              const isSelected = categoryFilter === cat;
-              return (
-                <button
-                  key={cat}
-                  onClick={() => setCategoryFilter(cat)}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${isSelected
-                      ? 'bg-teal-50 text-teal-900 border border-teal-200 font-semibold dark:bg-[#0F766E] dark:text-white dark:border-teal-700'
-                      : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 dark:bg-[#111115] dark:border-[#27272A] dark:text-slate-300 dark:hover:bg-[#202025]'
-                    }`}
-                >
-                  {cat}
-                </button>
-              );
-            })}
+      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-3.5 space-y-3 relative overflow-hidden">
+        <TopographicBg />
+        <div className="relative z-10 space-y-3">
+          {/* Category Pills Bar */}
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+              {categories.map(cat => {
+                const isSelected = categoryFilter === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setCategoryFilter(cat)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap ${isSelected
+                        ? 'bg-teal-50 text-teal-900 border border-teal-200 font-semibold dark:bg-[#0F766E] dark:text-white dark:border-teal-700'
+                        : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200 dark:bg-[#111115] dark:border-[#27272A] dark:text-slate-300 dark:hover:bg-[#202025]'
+                      }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Toggle List / Calendar */}
+            <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#111115] p-0.5 rounded border border-slate-200 dark:border-[#27272A] text-xs">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-1.5 rounded transition-colors ${viewMode === 'list' ? 'bg-white dark:bg-[#18181B] text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white'
+                  }`}
+                title="List View"
+              >
+                <List className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setViewMode('calendar')}
+                className={`p-1.5 rounded transition-colors ${viewMode === 'calendar' ? 'bg-white dark:bg-[#18181B] text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white'
+                  }`}
+                title="Calendar View"
+              >
+                <CalendarIcon className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
-          {/* Toggle List / Calendar */}
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#111115] p-0.5 rounded border border-slate-200 dark:border-[#27272A] text-xs">
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded transition-colors ${viewMode === 'list' ? 'bg-white dark:bg-[#18181B] text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white'
-                }`}
-              title="List View"
-            >
-              <List className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => setViewMode('calendar')}
-              className={`p-1.5 rounded transition-colors ${viewMode === 'calendar' ? 'bg-white dark:bg-[#18181B] text-slate-900 dark:text-white' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white'
-                }`}
-              title="Calendar View"
-            >
-              <CalendarIcon className="w-3.5 h-3.5" />
-            </button>
+          {/* Search Input */}
+          <div className="relative pt-2 border-t border-slate-200 dark:border-[#27272A]">
+            <Search className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 mt-1" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder="Search events by title, organizer, or venue..."
+              className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50/70 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
+            />
           </div>
-        </div>
-
-        {/* Search Input */}
-        <div className="relative pt-2 border-t border-slate-200 dark:border-[#27272A]">
-          <Search className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 mt-1" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search events by title, organizer, or venue..."
-            className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50/70 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
-          />
         </div>
       </div>
 
@@ -247,24 +251,27 @@ export const EventsPage: React.FC = () => {
       {viewMode === 'list' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredEvents.length === 0 ? (
-            <div className="col-span-full py-16 flex flex-col items-center justify-center text-center bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-6">
-              <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-3">
-                <CalendarIcon className="w-5 h-5 text-slate-400 dark:text-teal-400" />
+            <div className="col-span-full py-16 flex flex-col items-center justify-center text-center bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-6 relative overflow-hidden">
+              <TopographicBg />
+              <div className="relative z-10 flex flex-col items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-3">
+                  <CalendarIcon className="w-5 h-5 text-slate-400 dark:text-teal-400" />
+                </div>
+                <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  {activeTab === 'my-registrations'
+                    ? 'No event registrations found'
+                    : events.length === 0
+                      ? 'No campus events scheduled'
+                      : 'No matching events found'}
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mt-1 leading-relaxed">
+                  {activeTab === 'my-registrations'
+                    ? "You haven't registered for any events yet. Check back when new events are published!"
+                    : events.length === 0
+                      ? 'Hackathons, workshops, cultural fests, and sports championships will appear here.'
+                      : 'Try selecting a different category or search keyword.'}
+                </p>
               </div>
-              <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                {activeTab === 'my-registrations'
-                  ? 'No event registrations found'
-                  : events.length === 0
-                    ? 'No campus events scheduled'
-                    : 'No matching events found'}
-              </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mt-1 leading-relaxed">
-                {activeTab === 'my-registrations'
-                  ? "You haven't registered for any events yet. Check back when new events are published!"
-                  : events.length === 0
-                    ? 'Hackathons, workshops, cultural fests, and sports championships will appear here.'
-                    : 'Try selecting a different category or search keyword.'}
-              </p>
             </div>
           ) : (
             filteredEvents.map(event => {

@@ -5,6 +5,7 @@ import { NoticeCategory, Notice } from '../types';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { NoticeDetailModal } from '../components/modules/notices/NoticeDetailModal';
+import { TopographicBg } from '../components/ui/TopographicBg';
 import {
   Search,
   Pin,
@@ -137,90 +138,96 @@ export const NoticesPage: React.FC = () => {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-3.5 space-y-3">
-        {/* Category Pills Bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-          {categories.map(cat => {
-            const count =
-              cat === 'All'
-                ? notices.length
-                : notices.filter(n => n.category === cat).length;
-            const isSelected = categoryFilter === cat;
+      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-3.5 space-y-3 relative overflow-hidden">
+        <TopographicBg />
+        <div className="relative z-10 space-y-3">
+          {/* Category Pills Bar */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+            {categories.map(cat => {
+              const count =
+                cat === 'All'
+                  ? notices.length
+                  : notices.filter(n => n.category === cat).length;
+              const isSelected = categoryFilter === cat;
 
-            return (
-              <button
-                key={cat}
-                onClick={() => setCategoryFilter(cat)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap flex items-center gap-1.5 ${
-                  isSelected
-                    ? 'bg-teal-50 dark:bg-teal-950/40 text-teal-900 dark:text-teal-300 border border-teal-200 dark:border-teal-800 font-semibold'
-                    : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
-                }`}
-              >
-                <span>{cat}</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 tabular-nums">
-                  {count}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Search Bar & Read Filter */}
-        <div className="flex flex-col sm:flex-row items-center gap-3 pt-2 border-t border-slate-200 dark:border-[#27272A]">
-          <div className="relative flex-1 w-full">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search circulars by subject, department, or keyword..."
-              className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50/70 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700"
-            />
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setCategoryFilter(cat)}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap flex items-center gap-1.5 ${
+                    isSelected
+                      ? 'bg-teal-50 dark:bg-teal-950/40 text-teal-900 dark:text-teal-300 border border-teal-200 dark:border-teal-800 font-semibold'
+                      : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                  }`}
+                >
+                  <span>{cat}</span>
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 tabular-nums">
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          <div className="flex items-center gap-2 self-start sm:self-auto text-xs">
-            <button
-              onClick={() => setReadFilter('all')}
-              className={`px-2.5 py-1 rounded text-xs transition-colors ${
-                readFilter === 'all'
-                  ? 'bg-slate-200 dark:bg-slate-700 font-semibold text-slate-900 dark:text-white'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-              }`}
-            >
-              All Notices
-            </button>
-            <button
-              onClick={() => setReadFilter('unread')}
-              className={`px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 ${
-                readFilter === 'unread'
-                  ? 'bg-teal-100 dark:bg-teal-950/40 font-semibold text-teal-900 dark:text-teal-300'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-              }`}
-            >
-              <span>Unread Only</span>
-              {unreadTotal > 0 && (
-                <span className="w-1.5 h-1.5 rounded-full bg-teal-600" />
-              )}
-            </button>
+          {/* Search Bar & Read Filter */}
+          <div className="flex flex-col sm:flex-row items-center gap-3 pt-2 border-t border-slate-200 dark:border-[#27272A]">
+            <div className="relative flex-1 w-full">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search circulars by subject, department, or keyword..."
+                className="w-full text-xs pl-8 pr-3 py-1.5 bg-slate-50/70 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700"
+              />
+            </div>
+
+            <div className="flex items-center gap-2 self-start sm:self-auto text-xs">
+              <button
+                onClick={() => setReadFilter('all')}
+                className={`px-2.5 py-1 rounded text-xs transition-colors ${
+                  readFilter === 'all'
+                    ? 'bg-slate-200 dark:bg-slate-700 font-semibold text-slate-900 dark:text-white'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                }`}
+              >
+                All Notices
+              </button>
+              <button
+                onClick={() => setReadFilter('unread')}
+                className={`px-2.5 py-1 rounded text-xs transition-colors flex items-center gap-1 ${
+                  readFilter === 'unread'
+                    ? 'bg-teal-100 dark:bg-teal-950/40 font-semibold text-teal-900 dark:text-teal-300'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                }`}
+              >
+                <span>Unread Only</span>
+                {unreadTotal > 0 && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-600" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Notice Cards Feed */}
       {filteredNotices.length === 0 ? (
-        <div className="py-16 flex flex-col items-center justify-center text-center bg-white border border-slate-200 text-slate-500 dark:bg-[#18181B] dark:border-white/5 dark:text-slate-400 rounded-2xl p-8">
-          <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-3 border border-slate-200 dark:border-white/5">
-            <FileText className="w-5 h-5 text-slate-400 dark:text-teal-400" />
+        <div className="py-16 flex flex-col items-center justify-center text-center bg-white border border-slate-200 text-slate-500 dark:bg-[#18181B] dark:border-white/5 dark:text-slate-400 rounded-2xl p-8 relative overflow-hidden">
+          <TopographicBg />
+          <div className="relative z-10 flex flex-col items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-3 border border-slate-200 dark:border-white/5">
+              <FileText className="w-5 h-5 text-slate-400 dark:text-teal-400" />
+            </div>
+            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
+              {notices.length === 0 ? 'No institutional notices published yet.' : 'No matching circulars found'}
+            </h4>
+            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm leading-relaxed">
+              {notices.length === 0
+                ? 'Official academic circulars, exam schedules, and administration memos will be listed here.'
+                : 'Try modifying your search query or category filters above.'}
+            </p>
           </div>
-          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
-            {notices.length === 0 ? 'No institutional notices published yet.' : 'No matching circulars found'}
-          </h4>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm leading-relaxed">
-            {notices.length === 0
-              ? 'Official academic circulars, exam schedules, and administration memos will be listed here.'
-              : 'Try modifying your search query or category filters above.'}
-          </p>
         </div>
       ) : (
         <div className="space-y-4">

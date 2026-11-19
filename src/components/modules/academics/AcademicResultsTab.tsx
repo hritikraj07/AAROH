@@ -9,6 +9,7 @@ import {
   Layers
 } from 'lucide-react';
 import { computeStudentSemesterMetrics } from '../../../utils/gradeUtils';
+import { TopographicBg } from '../../ui/TopographicBg';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
 const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
@@ -119,8 +120,10 @@ export const AcademicResultsTab: React.FC = () => {
       </div>
 
       {/* 2. Sleek SGPA Bar Chart & Visual List of Completed Semesters */}
-      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-6 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-[#27272A]">
+      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-6 space-y-4 relative overflow-hidden">
+        <TopographicBg opacity="opacity-[0.045]" />
+        <div className="relative z-10 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-[#27272A]">
           <div>
             <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
               <Layers className="w-4 h-4 text-teal-700 dark:text-teal-400" />
@@ -190,6 +193,7 @@ export const AcademicResultsTab: React.FC = () => {
               </button>
             );
           })}
+          </div>
         </div>
       </div>
 

@@ -11,6 +11,7 @@ import {
 import { useApp } from '../../../context/AppContext';
 import { CodingLab } from '../../../types';
 import { StudentLabWorkspaceModal } from './StudentLabWorkspaceModal';
+import { TopographicBg } from '../../ui/TopographicBg';
 
 // Custom 4-layer premium button shadows
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
@@ -122,14 +123,17 @@ export const StudentPendingLabsSection: React.FC = () => {
         {activeTab === 'pending' && (
           <div>
             {pendingLabs.length === 0 ? (
-              <div className="py-10 text-center border border-dashed border-slate-200 dark:border-[#27272A] rounded-xl bg-slate-50/50 dark:bg-[#18181B]/50 space-y-2">
-                <CheckCircle2 className="w-8 h-8 text-[#0F766E] mx-auto mb-1" />
-                <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono">
-                  All Automated Coding Labs completed on schedule! Great work!
-                </h4>
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
-                  There are no pending lab tasks right now. Newly published faculty labs will appear here automatically.
-                </p>
+              <div className="py-10 text-center border border-dashed border-slate-200 dark:border-[#27272A] rounded-xl bg-slate-50/50 dark:bg-[#18181B]/50 space-y-2 relative overflow-hidden">
+                <TopographicBg />
+                <div className="relative z-10 space-y-2">
+                  <CheckCircle2 className="w-8 h-8 text-[#0F766E] mx-auto mb-1" />
+                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono">
+                    All Automated Coding Labs completed on schedule! Great work!
+                  </h4>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-sm mx-auto">
+                    There are no pending lab tasks right now. Newly published faculty labs will appear here automatically.
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

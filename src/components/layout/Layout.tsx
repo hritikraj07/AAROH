@@ -123,8 +123,23 @@ export const Layout: React.FC = () => {
             pageTitle={getPageTitle(location.pathname)}
           />
 
-          <main className="flex-1 overflow-y-auto bg-[#F4F7F5] dark:bg-[#0E0E11]">
-            <div className="max-w-7xl mx-auto p-3.5 sm:p-6 lg:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
+          <main className="flex-1 overflow-y-auto bg-[#F4F7F5] dark:bg-[#0E0E11] dark:bg-[#0B1120] relative">
+            {/* Authenticated Dashboard Shell Micro-Dot Matrix Canvas & Ambient Glow */}
+            <div
+              className="pointer-events-none select-none absolute inset-0 z-0 overflow-hidden"
+              aria-hidden="true"
+            >
+              {/* Crisp evenly spaced 22px x 22px radial dot grid */}
+              <div
+                className="absolute inset-0 bg-[radial-gradient(rgba(15,37,68,0.11)_1.15px,transparent_1.15px)] dark:bg-[radial-gradient(rgba(148,163,184,0.14)_1.15px,transparent_1.15px)] bg-[size:22px_22px]"
+              />
+              {/* Subtle Top Ambient Glow pinned to top-centre edge */}
+              <div
+                className="absolute inset-0 bg-[radial-gradient(ellipse_60%_35%_at_50%_0%,rgba(29,78,216,0.08),transparent_70%)] dark:bg-[radial-gradient(ellipse_60%_35%_at_50%_0%,rgba(59,130,246,0.12),transparent_70%)]"
+              />
+            </div>
+
+            <div className="relative z-10 max-w-7xl mx-auto p-3.5 sm:p-6 lg:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={location.pathname}
