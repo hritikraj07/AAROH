@@ -1,5 +1,6 @@
-import { User, Course, Assignment, ClassSession } from '../types';
+import { User, Course, Assignment, ClassSession, Notice, NoticeCategory } from '../types';
 import { getEnrolledStudentsForCourse } from './courseEnrollmentUtils';
+import { StorageService } from '../services/storage';
 
 export interface FacultyActionContext {
   user: User | null;
@@ -10,6 +11,7 @@ export interface FacultyActionContext {
   users: User[];
   recordBatchAttendance?: (courseId: string, studentMarks: { studentId: string; isPresent: boolean }[]) => void;
   createAssignment?: (asg: Omit<Assignment, 'id' | 'status'>) => Assignment;
+  createNotice?: (notice: Omit<Notice, 'id' | 'publishedDate' | 'readByCurrentUser'>) => Notice;
   showToast?: (toast: { type: 'success' | 'error' | 'info' | 'warning'; title: string; message: string }) => void;
 }
 
@@ -63,7 +65,7 @@ function resolveFacultyCourse(text: string, facultyCourses: Course[], defaultCou
 }
 
 /**
- * Check if the query is an action intent (marking attendance, creating assignment, or creating coding lab)
+ * Check if the query is an action intent (marking attendance, creating assignment, creating coding lab, or publishing bulletins/circulars)
  */
 export function isFacultyActionIntent(query: string): boolean {
   if (!query) return false;
@@ -84,17 +86,206 @@ export function isFacultyActionIntent(query: string): boolean {
     q.includes('coding lab') || q.includes('code lab') || q.includes('coding assignment') ||
     q.includes('create lab') || q.includes('publish lab') || q.includes('new lab') || q.includes('live lab');
 
-  return isAttendance || isAssignment || isCodingLab;
+  // 4. Bulletin / Circular / Notice Action Intent
+  const hasNoticeTerm =
+    q.includes('bulletin') || q.includes('notice') || q.includes('circular') ||
+    q.includes('memo') || q.includes('advisory');
+
+  const hasActionVerb =
+    q.includes('upload') || q.includes('publish') || q.includes('post') ||
+    q.includes('create') || q.includes('draft') || q.includes('issue') ||
+    q.includes('broadcast') || q.includes('add') || q.includes('make') ||
+    q.includes('announce') || q.includes('release') || q.includes('send out');
+
+  const isReadQuery =
+    q.startsWith('list ') || q.startsWith('show ') || q.startsWith('what ') ||
+    q.startsWith('view ') || q.startsWith('check ') || q.startsWith('how many') ||
+    q.includes('any notice') || q.includes('any circular') || q.includes('active circulars') ||
+    q.includes('active notices') || q.includes('read notice') || q.includes('show circular');
+
+  const isBulletinOrNotice = hasNoticeTerm && hasActionVerb && !isReadQuery;
+
+  return isAttendance || isAssignment || isCodingLab || isBulletinOrNotice;
 }
 
 /**
- * Handle direct faculty actions with strict role-based permission verification
+ * Handle direct faculty and campus administrative actions with strict role-based permission verification
  */
 export function handleFacultyAction(query: string, ctx: FacultyActionContext): FacultyActionResult {
   const q = query.trim();
   const qLower = q.toLowerCase();
 
-  // Strict Permission Check on the Action Layer
+  // =========================================================================
+  // 0. Bulletin / Department Notice / Official Circular Action
+  // =========================================================================
+  const isBulletinActionIntent =
+    (qLower.includes('bulletin') || qLower.includes('notice') || qLower.includes('circular') || qLower.includes('memo') || qLower.includes('advisory')) &&
+    (qLower.includes('upload') || qLower.includes('publish') || qLower.includes('post') || qLower.includes('create') ||
+     qLower.includes('draft') || qLower.includes('issue') || qLower.includes('broadcast') || qLower.includes('add') ||
+     qLower.includes('make') || qLower.includes('announce') || qLower.includes('release') || qLower.includes('send out'));
+
+  if (isBulletinActionIntent) {
+    // Role Permission Check: Only faculty members and administrators are authorized to publish official circulars
+    if (ctx.role !== 'faculty' && ctx.role !== 'admin') {
+      return {
+        handled: true,
+        message: '⚠️ **Permission Denied**: Only faculty members and administrators are authorized to publish department bulletins or official circulars. Student accounts have view-only access to published bulletins.',
+      };
+    }
+
+    // Extract Title & Content
+    let noticeTitle = '';
+    let noticeContent = '';
+
+    // Check for explicit quotes: e.g. Upload bulletin "CS301 Viva Schedule"
+    const quoteMatch = q.match(/["'`]([^"'`]+)["'`]/);
+    if (quoteMatch && quoteMatch[1].trim().length >= 3) {
+      noticeTitle = quoteMatch[1].trim();
+    }
+
+    // Check for colon separator: e.g. Upload bulletin: CS301 Laboratory Schedule Change & Viva Dates
+    if (!noticeTitle) {
+      const colonMatch = q.match(/(?:bulletin|notice|circular|memo|advisory)\s*:\s*([^,\n]+)/i);
+      if (colonMatch && colonMatch[1].trim().length >= 3) {
+        noticeTitle = colonMatch[1].trim();
+      }
+    }
+
+    // Check for "titled" or "named"
+    if (!noticeTitle) {
+      const titledMatch = q.match(/(?:titled|title|named|name)\s+([^,.;\n]+)/i);
+      if (titledMatch && titledMatch[1].trim().length >= 3) {
+        noticeTitle = titledMatch[1].trim();
+      }
+    }
+
+    // Check for action phrase: e.g. Upload a bulletin on Exam Schedule
+    if (!noticeTitle) {
+      const actionPhraseMatch = q.match(/(?:upload|publish|post|create|draft|issue|broadcast|add)\s+(?:a\s+|an\s+|the\s+)?(?:department\s+|campus\s+|official\s+)?(?:bulletin|notice|circular|memo|advisory)(?:\s+(?:for|on|about|regarding))?\s+([^,.;\n]+)/i);
+      if (actionPhraseMatch && actionPhraseMatch[1].trim().length >= 3) {
+        noticeTitle = actionPhraseMatch[1].trim();
+      }
+    }
+
+    // Clean up title
+    if (noticeTitle) {
+      noticeTitle = noticeTitle.replace(/^(?:titled|named|about|for|regarding)\s+/i, '').replace(/^[:\s"'`]+|[:\s"'`]+$/g, '').trim();
+    }
+
+    // If still no meaningful title provided, prompt the user for clarification
+    if (!noticeTitle || noticeTitle.length < 3) {
+      return {
+        handled: true,
+        message: 'Please specify the title and details for the bulletin or circular you would like to publish.\n\n*Example:* `Upload bulletin: CS301 Laboratory Schedule Change & Viva Dates` or `Publish circular: Campus Placement Drive Registration Open`',
+      };
+    }
+
+    // Extract explicit content if provided
+    const contentMatch = q.match(/(?:content|body|details|description|message|guidelines)\s*:\s*([^]+)/i);
+    if (contentMatch) {
+      noticeContent = contentMatch[1].trim();
+    }
+
+    // Capitalize Title cleanly
+    noticeTitle = noticeTitle.charAt(0).toUpperCase() + noticeTitle.slice(1);
+
+    // Auto-detect Notice Category
+    let category: NoticeCategory = 'Academic';
+    const catSearch = (qLower + ' ' + noticeTitle.toLowerCase());
+    if (catSearch.includes('exam') || catSearch.includes('test') || catSearch.includes('midterm') ||
+        catSearch.includes('end-term') || catSearch.includes('endterm') || catSearch.includes('viva') ||
+        catSearch.includes('evaluation') || catSearch.includes('quiz') || catSearch.includes('assessment')) {
+      category = 'Exams';
+    } else if (catSearch.includes('placement') || catSearch.includes('recruit') || catSearch.includes('drive') ||
+               catSearch.includes('internship') || catSearch.includes('interview') || catSearch.includes('job') ||
+               catSearch.includes('career') || catSearch.includes('hire')) {
+      category = 'Placements';
+    } else if (catSearch.includes('holiday') || catSearch.includes('fee') || catSearch.includes('transport') ||
+               catSearch.includes('hostel') || catSearch.includes('closure') || catSearch.includes('maintenance') ||
+               catSearch.includes('advisory') || catSearch.includes('administrative') || catSearch.includes('admin') ||
+               catSearch.includes('registration')) {
+      category = 'Administration';
+    } else if (catSearch.includes('syllabus') || catSearch.includes('curriculum') || catSearch.includes('lecture') ||
+               catSearch.includes('class') || catSearch.includes('course') || catSearch.includes('lab') ||
+               catSearch.includes('laboratory') || catSearch.includes('academic') || catSearch.includes('faculty')) {
+      category = 'Academic';
+    } else {
+      category = 'General';
+    }
+
+    // Auto-detect Priority Tag
+    let priorityTag = 'Normal Circular';
+    if (catSearch.includes('urgent') || catSearch.includes('emergency') || catSearch.includes('immediate') || catSearch.includes('crucial')) {
+      priorityTag = 'Urgent Advisory';
+    } else if (catSearch.includes('mandatory') || catSearch.includes('compulsory')) {
+      priorityTag = 'Mandatory';
+    } else if (catSearch.includes('important') || catSearch.includes('high priority')) {
+      priorityTag = 'Important';
+    }
+
+    // Auto-detect Department & Target Audience
+    let department = ctx.user?.department || (ctx.role === 'admin' ? 'Office of Academic Affairs' : 'Department of Computer Science & Engineering');
+    let targetAudience = 'All B.Tech CSE Students';
+    if (catSearch.includes('all student') || catSearch.includes('campus') || ctx.role === 'admin') {
+      targetAudience = 'All Campus Students';
+    } else if (catSearch.includes('faculty') || catSearch.includes('staff')) {
+      targetAudience = 'Faculty & Staff';
+    }
+
+    const issuer = ctx.user?.name
+      ? `${ctx.user.name} (${ctx.role === 'admin' ? 'Admin' : 'Faculty'})`
+      : (ctx.role === 'admin' ? 'Office of the Registrar' : 'Department Coordinator');
+
+    const finalContent = noticeContent ||
+      `Official notice regarding ${noticeTitle}. All concerned students and faculty members are advised to take note of the scheduled instructions and comply accordingly. For further queries, please contact ${issuer}.`;
+
+    try {
+      const noticePayload: Omit<Notice, 'id' | 'publishedDate' | 'readByCurrentUser'> = {
+        title: noticeTitle,
+        content: finalContent,
+        category,
+        department,
+        isPinned: false,
+        priorityTag,
+        issuedBy: issuer,
+        summary: finalContent.length > 120 ? finalContent.slice(0, 117) + '...' : finalContent,
+        effectiveDate: new Date().toISOString().split('T')[0],
+      };
+
+      let createdNotice: Notice | null = null;
+      if (ctx.createNotice) {
+        createdNotice = ctx.createNotice(noticePayload);
+      } else {
+        createdNotice = StorageService.createNotice(noticePayload);
+      }
+
+      // Sync and broadcast events so all active dashboards, tables, and tabs re-render
+      try {
+        window.dispatchEvent(new CustomEvent('notice-created', { detail: createdNotice }));
+        window.dispatchEvent(new Event('aaroh_notices_updated'));
+        window.dispatchEvent(new Event('storage'));
+      } catch {}
+
+      ctx.showToast?.({
+        type: 'success',
+        title: 'Bulletin Published',
+        message: noticeTitle,
+      });
+
+      return {
+        handled: true,
+        message: `📢 **Department Bulletin Published Successfully**\n\n• **Title:** ${noticeTitle}\n• **Category:** ${category}\n• **Department:** ${department}\n• **Priority:** ${priorityTag}\n• **Target Audience:** ${targetAudience}\n• **Issued By:** ${issuer}\n• **Status:** Live on campus notice board\n\nThe bulletin has been uploaded and is now visible across Student, Faculty, and Admin notice circulars.`,
+      };
+    } catch (err) {
+      console.error('Failed to create bulletin via AI:', err);
+      return {
+        handled: true,
+        message: `An error occurred while publishing the bulletin "${noticeTitle}". Please try again.`,
+      };
+    }
+  }
+
+  // Strict Permission Check on the Action Layer for Attendance & Coursework
   if (ctx.role !== 'faculty') {
     return {
       handled: true,

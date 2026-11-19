@@ -138,6 +138,7 @@ export const AarohAIAssistant: React.FC = () => {
     opportunities,
     recordBatchAttendance,
     createAssignment,
+    createNotice,
     showToast,
   } = useApp();
 
@@ -148,10 +149,10 @@ export const AarohAIAssistant: React.FC = () => {
 
   const getInitialGreeting = () => {
     if (role === 'faculty') {
-      return `Welcome, ${user?.name || 'Professor'}! I'm your Aaroh Faculty AI Assistant. I can help you mark student attendance, publish coursework assignments, or create automated coding labs.`;
+      return `Welcome, ${user?.name || 'Professor'}! I'm your Aaroh Faculty AI Assistant. I can help you mark student attendance, publish coursework assignments, upload department bulletins, or create automated coding labs.`;
     }
     if (role === 'admin') {
-      return `Hello ${user?.name || 'Administrator'}! I'm your Aaroh Admin AI Assistant. You can ask me about campus enrollment metrics, academic departments, or active circulars.`;
+      return `Hello ${user?.name || 'Administrator'}! I'm your Aaroh Admin AI Assistant. You can ask me about campus enrollment metrics, academic departments, or publish official circulars directly in chat.`;
     }
     return `Hi ${user?.name ? user.name.split(' ')[0] : 'there'}! I'm Aaroh, your AI campus assistant powered by Gemini. Ask me about your next class, attendance status, or upcoming deadlines!`;
   };
@@ -211,7 +212,7 @@ export const AarohAIAssistant: React.FC = () => {
     setInputText('');
     setIsLoading(true);
 
-    // 1. Direct Faculty Action Evaluation (Instant write actions for Faculty, Strict RBAC enforcement)
+    // 1. Direct Faculty & Admin Action Evaluation (Instant write actions, Strict RBAC enforcement)
     if (isFacultyActionIntent(query)) {
       const actionResult = handleFacultyAction(query, {
         user,
@@ -222,6 +223,7 @@ export const AarohAIAssistant: React.FC = () => {
         users,
         recordBatchAttendance,
         createAssignment,
+        createNotice,
         showToast,
       });
 
@@ -337,14 +339,15 @@ export const AarohAIAssistant: React.FC = () => {
 
   const facultyChips = [
     { label: 'Mark attendance', query: 'Mark Aarav Sharma present in Python' },
+    { label: 'Upload bulletin', query: 'Upload bulletin: CS301 Laboratory Schedule Change & Viva Dates' },
     { label: 'Post assignment', query: 'Create assignment for Python: Problem Set 3 on Recursion' },
     { label: 'Create coding lab', query: 'Create coding lab for Python: Two Sum & Hash Map Lookup' },
   ];
 
   const adminChips = [
     { label: 'Campus metrics', query: 'Show campus enrollment summary' },
+    { label: 'Publish circular', query: 'Publish circular: Campus Maintenance & Holiday Advisory' },
     { label: 'Department circulars', query: 'List active department circulars' },
-    { label: 'Faculty courses', query: 'Overview of assigned faculty courses' },
   ];
 
   const suggestionChips = role === 'faculty' ? facultyChips : role === 'admin' ? adminChips : studentChips;

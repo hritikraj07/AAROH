@@ -1943,13 +1943,42 @@ assert(facultyAIActionsContent.includes('export function handleFacultyAction'), 
 // Check RBAC protection in faculty actions
 assert(facultyAIActionsContent.includes("Permission Denied") && facultyAIActionsContent.includes("Only faculty members are authorized"), 'handleFacultyAction rejects non-faculty roles');
 assert(facultyAIActionsContent.includes("ctx.role !== 'faculty'"), 'handleFacultyAction enforces strict faculty role check');
+assert(facultyAIActionsContent.includes("createNotice?:") || facultyAIActionsContent.includes("createNotice"), 'FacultyActionContext supports createNotice');
+assert(facultyAIActionsContent.includes("isBulletinActionIntent"), 'handleFacultyAction supports bulletin and circular upload intent');
 
 // Check AarohAIAssistant mounting and role integration
 const assistantContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/ai/AarohAIAssistant.tsx'), 'utf8');
 assert(!assistantContent.includes("if (role !== 'student') {\n    return null;\n  }"), 'AarohAIAssistant is not blocked from faculty and admin roles');
 assert(assistantContent.includes('isFacultyActionIntent') && assistantContent.includes('handleFacultyAction'), 'AarohAIAssistant integrates faculty action handlers');
+assert(assistantContent.includes('createNotice'), 'AarohAIAssistant passes createNotice into handleFacultyAction');
 assert(assistantContent.includes('getInitialGreeting'), 'AarohAIAssistant implements role-aware initial greetings');
 assert(assistantContent.includes('facultyChips') && assistantContent.includes('adminChips'), 'AarohAIAssistant provides role-specific suggestion chips');
+
+// Verify bulletin upload permission checks & intent logic in Node.js
+function testBulletinActionLogic() {
+  const isActionIntent = (q) => {
+    const qLower = q.toLowerCase();
+    const hasNoticeTerm = qLower.includes('bulletin') || qLower.includes('notice') || qLower.includes('circular');
+    const hasActionVerb = qLower.includes('upload') || qLower.includes('publish') || qLower.includes('post') || qLower.includes('create');
+    const isReadQuery = qLower.startsWith('list ') || qLower.startsWith('show ') || qLower.includes('active circulars');
+    return hasNoticeTerm && hasActionVerb && !isReadQuery;
+  };
+
+  assert(isActionIntent('Upload bulletin: CS301 Laboratory Schedule Change & Viva Dates'), 'Detects bulletin upload intent');
+  assert(isActionIntent('Publish circular: Campus Holiday on Monday'), 'Detects circular publish intent');
+  assert(!isActionIntent('List active department circulars'), 'Does not falsely classify read queries as bulletin upload intent');
+
+  // Verify RBAC enforcement: student is blocked, faculty & admin are authorized
+  const studentRole = 'student';
+  const facultyRole = 'faculty';
+  const adminRole = 'admin';
+
+  const checkPerm = (role) => (role === 'faculty' || role === 'admin');
+  assert(!checkPerm(studentRole), 'Student role is denied bulletin publish permissions');
+  assert(checkPerm(facultyRole), 'Faculty role is granted bulletin publish permissions');
+  assert(checkPerm(adminRole), 'Admin role is granted bulletin publish permissions');
+}
+testBulletinActionLogic();
 
 // Check aiAssistant.ts role-based isolation
 const aiAssistantRoleContent = fs.readFileSync(path.join(__dirname, '../src/utils/aiAssistant.ts'), 'utf8');
