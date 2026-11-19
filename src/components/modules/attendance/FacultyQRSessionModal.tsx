@@ -4,6 +4,17 @@ import { X, RefreshCw, Copy, Check, Users, ShieldCheck, Zap } from 'lucide-react
 import QRCode from 'qrcode';
 import { ClassSession, User } from '../../../types';
 
+export const isStudentMatch = (scan: any, st: User): boolean => {
+  if (!scan || !st) return false;
+  if (scan.studentId && st.id && String(scan.studentId).toLowerCase() === String(st.id).toLowerCase()) return true;
+  if (scan.studentRoll && st.rollNumber && String(scan.studentRoll).toLowerCase() === String(st.rollNumber).toLowerCase()) return true;
+  if (scan.studentEmail && st.email && String(scan.studentEmail).toLowerCase() === String(st.email).toLowerCase()) return true;
+  if (scan.studentName && st.name && scan.studentName.trim().toLowerCase() === st.name.trim().toLowerCase()) return true;
+  if (scan.studentId && st.rollNumber && String(scan.studentId).toLowerCase() === String(st.rollNumber).toLowerCase()) return true;
+  if (st.id && scan.studentRoll && String(st.id).toLowerCase() === String(scan.studentRoll).toLowerCase()) return true;
+  return false;
+};
+
 interface FacultyQRSessionModalProps {
   session: ClassSession;
   isOpen: boolean;
@@ -30,7 +41,17 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
   const [secondsRemaining, setSecondsRemaining] = useState<number>(5);
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
-  const [checkedInScans, setCheckedInScans] = useState<Array<{ studentId: string; studentName?: string; timestamp: number }>>([]);
+  const [checkedInScans, setCheckedInScans] = useState<Array<{
+    studentId: string;
+    studentName?: string;
+    studentRoll?: string;
+    studentEmail?: string;
+    classId?: string;
+    sessionId?: string;
+    courseId?: string;
+    sessionCode?: string;
+    timestamp: number;
+  }>>([]);
 
   const courseName = session.courseName || session.courseCode || 'Class Lecture';
   const division = session.section || 'A';
@@ -44,9 +65,12 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
       try {
         const raw = localStorage.getItem('aaroh_qr_attendance_scans');
         if (raw) {
-          const list: Array<{ studentId: string; studentName?: string; classId?: string; courseId?: string; timestamp: number }> = JSON.parse(raw);
+          const list: any[] = JSON.parse(raw);
           const currentSessionScans = list.filter(
-            s => s.classId === session.id || s.courseId === session.courseId
+            s =>
+              (baseSessionCode && s.sessionCode && String(s.sessionCode).toUpperCase() === baseSessionCode.toUpperCase()) ||
+              (session.id && (s.classId === session.id || s.sessionId === session.id)) ||
+              (session.courseId && s.courseId === session.courseId)
           );
           setCheckedInScans(currentSessionScans);
         }
@@ -59,12 +83,14 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
     const interval = setInterval(readScans, 1000);
     window.addEventListener('storage', readScans);
     window.addEventListener('aaroh_qr_scan_recorded', readScans);
+    window.addEventListener('aaroh_attendance_synced', readScans);
     return () => {
       clearInterval(interval);
       window.removeEventListener('storage', readScans);
       window.removeEventListener('aaroh_qr_scan_recorded', readScans);
+      window.removeEventListener('aaroh_attendance_synced', readScans);
     };
-  }, [isOpen, session.id, session.courseId]);
+  }, [isOpen, session.id, session.courseId, baseSessionCode]);
 
   // Generate payload & real scannable QR code
   useEffect(() => {
@@ -80,6 +106,8 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
       const activePayload = {
         sessionId: session.id,
         sessionCode: baseSessionCode,
+        courseId: session.courseId,
+        courseCode: session.courseCode || session.id,
         course: courseProgram,
         division,
         subject: courseName,
@@ -158,18 +186,25 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
     try {
       const scansRaw = localStorage.getItem('aaroh_qr_attendance_scans');
       const list = scansRaw ? JSON.parse(scansRaw) : [];
-      if (!list.some((s: any) => s.studentId === st.id && (s.classId === session.id || s.courseId === session.courseId))) {
+      const alreadyChecked = list.some((s: any) =>
+        isStudentMatch(s, st) &&
+        (s.classId === session.id || s.sessionId === session.id || s.courseId === session.courseId || s.sessionCode === baseSessionCode)
+      );
+      if (!alreadyChecked) {
         list.push({
           studentId: st.id,
           studentName: st.name,
           studentRoll: st.rollNumber,
+          studentEmail: st.email,
           classId: session.id,
+          sessionId: session.id,
           courseId: session.courseId,
           sessionCode: baseSessionCode,
           timestamp: Date.now(),
         });
         localStorage.setItem('aaroh_qr_attendance_scans', JSON.stringify(list));
         window.dispatchEvent(new Event('aaroh_qr_scan_recorded'));
+        window.dispatchEvent(new CustomEvent('aaroh_attendance_synced'));
       }
       onManualCheckIn?.(st.id);
     } catch {
@@ -178,8 +213,29 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
   };
 
   const pendingStudents = enrolledStudents.filter(
-    st => !checkedInScans.some(s => s.studentId === st.id)
+    st => !checkedInScans.some(s => isStudentMatch(s, st))
   );
+
+  const matchedStudentIds = useMemo(() => {
+    const ids = new Set<string>();
+    enrolledStudents.forEach(st => {
+      if (checkedInScans.some(s => isStudentMatch(s, st))) {
+        ids.add(st.id);
+      }
+    });
+    return ids;
+  }, [enrolledStudents, checkedInScans]);
+
+  const checkedInCount = Math.max(matchedStudentIds.size, checkedInScans.length);
+
+  const handleFinalizeAndClose = () => {
+    enrolledStudents.forEach(st => {
+      if (checkedInScans.some(s => isStudentMatch(s, st))) {
+        onManualCheckIn?.(st.id);
+      }
+    });
+    onClose();
+  };
 
   if (!isOpen) return null;
 
@@ -286,7 +342,7 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
               <span>Live Attendance Check-Ins</span>
             </span>
             <span className="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-400">
-              {checkedInScans.length} of {enrolledStudents.length || checkedInScans.length} Present
+              {checkedInCount} of {enrolledStudents.length || checkedInCount} Present
             </span>
           </div>
 
@@ -296,15 +352,22 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
             </p>
           ) : (
             <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pt-1">
-              {checkedInScans.map(scan => (
-                <span
-                  key={scan.studentId}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-mono bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
-                >
-                  <ShieldCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                  <span>{scan.studentName || scan.studentId}</span>
-                </span>
-              ))}
+              {checkedInScans.map((scan, idx) => {
+                const displayName =
+                  scan.studentName ||
+                  enrolledStudents.find(st => isStudentMatch(scan, st))?.name ||
+                  scan.studentRoll ||
+                  scan.studentId;
+                return (
+                  <span
+                    key={scan.studentId || idx}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-mono bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
+                  >
+                    <ShieldCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+                    <span>{displayName}</span>
+                  </span>
+                );
+              })}
             </div>
           )}
 
@@ -336,7 +399,7 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
             Students scan via Student Portal &gt; Scan Attendance QR
           </span>
           <button
-            onClick={onClose}
+            onClick={handleFinalizeAndClose}
             className="px-4 py-2 min-h-[40px] text-xs font-semibold rounded-xl bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white transition-colors cursor-pointer shadow-xs whitespace-nowrap shrink-0 w-full sm:w-auto"
           >
             Review &amp; Finalize Roster

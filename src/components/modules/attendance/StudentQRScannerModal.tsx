@@ -222,30 +222,48 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
       setIsScanning(false);
       setHasScanned(true);
 
-      const studentId = currentStudent?.id || 'demo_student';
+      const studentId = currentStudent?.id || currentStudent?.rollNumber || '22CS042';
       const studentName = currentStudent?.name || 'Aarav Sharma';
       const studentRoll = currentStudent?.rollNumber || '22CS042';
+      const studentEmail = currentStudent?.email || 'aarav.sharma@aaroh.edu.in';
+
+      const targetSessionId = targetSession.sessionId || targetSession.classId || targetSession.id;
+      const targetCourseId = targetSession.courseId || courses?.[0]?.id;
+      const targetCode = targetSession.sessionCode;
 
       // 1. Record in local QR scans array so teacher manual list updates in real time
       try {
         const scansRaw = localStorage.getItem('aaroh_qr_attendance_scans');
         const scans = scansRaw ? JSON.parse(scansRaw) : [];
         const existingIdx = scans.findIndex(
-          (s: any) => s.studentId === studentId && (s.classId === targetSession.sessionId || s.classId === targetSession.classId || s.courseId === targetSession.courseId)
+          (s: any) =>
+            (s.studentId === studentId || (studentRoll && s.studentRoll === studentRoll) || (studentEmail && s.studentEmail === studentEmail)) &&
+            ((targetSessionId && (s.classId === targetSessionId || s.sessionId === targetSessionId)) ||
+             (targetCourseId && s.courseId === targetCourseId) ||
+             (targetCode && s.sessionCode === targetCode))
         );
+
+        const scanEntry = {
+          studentId,
+          studentName,
+          studentRoll,
+          studentEmail,
+          classId: targetSessionId,
+          sessionId: targetSessionId,
+          courseId: targetCourseId,
+          sessionCode: targetCode,
+          method: methodLabel,
+          timestamp: Date.now(),
+        };
+
         if (existingIdx === -1) {
-          scans.push({
-            studentId,
-            studentName,
-            studentRoll,
-            classId: targetSession.sessionId || targetSession.classId,
-            courseId: targetSession.courseId,
-            sessionCode: targetSession.sessionCode,
-            method: methodLabel,
-            timestamp: Date.now(),
-          });
-          localStorage.setItem('aaroh_qr_attendance_scans', JSON.stringify(scans));
+          scans.push(scanEntry);
+        } else {
+          scans[existingIdx] = scanEntry;
         }
+        localStorage.setItem('aaroh_qr_attendance_scans', JSON.stringify(scans));
+        window.dispatchEvent(new Event('aaroh_qr_scan_recorded'));
+        window.dispatchEvent(new CustomEvent('aaroh_attendance_synced', { detail: scanEntry }));
       } catch {
         // storage fallback
       }
@@ -254,7 +272,6 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
       window.dispatchEvent(new Event('aaroh_qr_scan_recorded'));
 
       // 3. Record batch attendance in app context
-      const targetCourseId = targetSession.courseId || courses?.[0]?.id;
       if (targetCourseId) {
         recordBatchAttendance(targetCourseId, [
           {
@@ -408,18 +425,30 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
 
   const handleManualCodeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!activeSession) {
+    let sessionToUse = activeSession;
+    if (!sessionToUse) {
+      try {
+        const stored = localStorage.getItem('aaroh_active_qr_session');
+        if (stored) {
+          sessionToUse = JSON.parse(stored);
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    if (!sessionToUse) {
       setCodeError('No active attendance QR session is currently open in your classroom.');
       return;
     }
 
     const cleanInput = sessionCodeInput.trim().toUpperCase().replace(/\s/g, '');
-    const cleanSessionCode = (activeSession.sessionCode || '').toUpperCase().replace(/\s/g, '');
+    const cleanSessionCode = (sessionToUse.sessionCode || '').toUpperCase().replace(/\s/g, '');
 
-    if (cleanInput && (cleanInput === cleanSessionCode || cleanInput === activeSession.token || cleanSessionCode.includes(cleanInput))) {
-      performCheckIn('SESSION_CODE');
+    if (cleanInput && (cleanInput === cleanSessionCode || cleanInput === sessionToUse.token || cleanSessionCode.includes(cleanInput) || cleanInput.includes(cleanSessionCode))) {
+      performCheckIn('SESSION_CODE', sessionToUse);
     } else {
-      setCodeError(`Invalid session code. Expected format matching "${activeSession.sessionCode || 'CS-XXXX'}".`);
+      setCodeError(`Invalid session code. Expected format matching "${sessionToUse.sessionCode || 'CS-XXXX'}".`);
     }
   };
 
