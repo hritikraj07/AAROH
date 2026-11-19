@@ -204,7 +204,7 @@ export const FacultyDashboardPage: React.FC = () => {
               <span>Mark Roll Call</span>
             </button>
             <button
-              onClick={() => navigate('/faculty/notices')}
+              onClick={() => navigate('/faculty/notices?openDraft=true')}
               className="rounded-full bg-teal-800/80 hover:bg-teal-800 text-white border border-white/30 text-xs px-4 py-2.5 min-h-[44px] font-semibold transition-colors active:scale-95 inline-flex items-center justify-center gap-1.5 shadow-sm"
             >
               <Bell className="w-4 h-4" />
@@ -250,7 +250,7 @@ export const FacultyDashboardPage: React.FC = () => {
           </button>
 
           <button
-            onClick={() => navigate('/faculty/notices')}
+            onClick={() => navigate('/faculty/notices?openDraft=true')}
             className="p-3 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/60 dark:bg-[#0E0E11] hover:bg-teal-50/50 dark:hover:bg-[#27272A] hover:border-teal-300 dark:hover:border-teal-700 text-left transition-all group flex flex-col justify-between cursor-pointer"
           >
             <div className="w-8 h-8 rounded bg-blue-100/80 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 flex items-center justify-center mb-2 group-hover:bg-blue-700 group-hover:text-white transition-colors">
@@ -479,7 +479,7 @@ export const FacultyDashboardPage: React.FC = () => {
                 size="sm"
                 className="mt-3"
                 icon={<Plus className="w-3 h-3" />}
-                onClick={() => navigate('/faculty/notices')}
+                onClick={() => navigate('/faculty/notices?openDraft=true')}
               >
                 Draft First Notice
               </Button>
