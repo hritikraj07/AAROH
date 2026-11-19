@@ -270,7 +270,12 @@ export const StorageService = {
   },
 
   getAuthUser(): User | null {
-    return getStored<User | null>(STORAGE_KEYS.AUTH_USER, null);
+    const user = getStored<User | null>(STORAGE_KEYS.AUTH_USER, null);
+    if (user && user.role === 'student' && user.email === 'aarav.sharma@aaroh.edu.in' && user.semester === 5) {
+      user.semester = 1;
+      setStored(STORAGE_KEYS.AUTH_USER, user);
+    }
+    return user;
   },
 
   // Directory & User Management

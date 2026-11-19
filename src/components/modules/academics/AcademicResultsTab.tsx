@@ -21,7 +21,7 @@ export const AcademicResultsTab: React.FC = () => {
   // Active student identification
   const studentId = user?.id || 'usr_std_demo';
   const studentEmail = user?.email || 'piyush@aaroh.edu.in';
-  const currentActiveSemester = user?.semester ? Number(user.semester) : 5;
+  const currentActiveSemester = user?.semester ? Number(user.semester) : 1;
 
   // Real-time synchronization with localStorage semesterGrades
   const [localVersion, setLocalVersion] = useState(0);
@@ -40,14 +40,14 @@ export const AcademicResultsTab: React.FC = () => {
   // All 8 Semesters list
   const allSemesters = [1, 2, 3, 4, 5, 6, 7, 8];
 
-  // Selected Semester in the Breakdown UI
+  // Selected Semester in the Breakdown UI (defaults to active semester 1)
   const [selectedSemester, setSelectedSemester] = useState<number>(() => {
-    // Default to student's current active semester or latest semester with data
-    if (studentSummary.semesters.length > 0) {
-      return studentSummary.semesters[studentSummary.semesters.length - 1].semester;
-    }
     return currentActiveSemester;
   });
+
+  useEffect(() => {
+    setSelectedSemester(currentActiveSemester);
+  }, [currentActiveSemester]);
 
   // Active semester grades data
   const currentSemesterMetric = useMemo(() => {

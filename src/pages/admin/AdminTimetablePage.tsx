@@ -24,7 +24,7 @@ export const AdminTimetablePage: React.FC = () => {
   const [programFilter, setProgramFilter] = useState<string>('all');
   const [semesterFilter, setSemesterFilter] = useState<string>('all');
   const [targetClassProgram, setTargetClassProgram] = useState<string>('B.Tech CSE');
-  const [targetClassSemester, setTargetClassSemester] = useState<number>(5);
+  const [targetClassSemester, setTargetClassSemester] = useState<number>(1);
   const [targetClassSection, setTargetClassSection] = useState<string>('Section A');
 
   // Filter existing faculty members from users directory
@@ -43,7 +43,7 @@ export const AdminTimetablePage: React.FC = () => {
   const [endTime, setEndTime] = useState('10:30');
   const [sessionType, setSessionType] = useState<ClassType>('Lecture');
   const [program, setProgram] = useState('B.Tech CSE');
-  const [semester, setSemester] = useState<number>(5);
+  const [semester, setSemester] = useState<number>(1);
   const [conflictWarning, setConflictWarning] = useState<string | null>(null);
 
   // 1. Conflict-Free Timetable Assistant (useEffect scanning timetable for Room or Faculty clash)
@@ -166,7 +166,7 @@ export const AdminTimetablePage: React.FC = () => {
       facultyEmail,
       type: sessionType,
       program: program.trim() || 'B.Tech CSE',
-      semester: Number(semester) || 5,
+      semester: Number(semester) || 1,
     });
 
     setIsAddModalOpen(false);
@@ -398,7 +398,7 @@ export const AdminTimetablePage: React.FC = () => {
                       </td>
                       <td className="py-3 px-4 font-mono">
                         <span className="text-[10px] font-semibold text-slate-800 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
-                          {slot.program || 'B.Tech CSE'} • Sem {slot.semester || 5}
+                          {slot.program || 'B.Tech CSE'} • Sem {slot.semester || 1}
                         </span>
                       </td>
                       <td className="py-3 px-4">

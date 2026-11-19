@@ -133,7 +133,7 @@ export const EarlyWarningSystemCard: React.FC<EarlyWarningSystemCardProps> = ({
                       )}
                     </div>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                      {student.program || 'B.Tech CSE'} • Sem {student.semester || 5} • {student.email}
+                      {student.program || 'B.Tech CSE'} • Sem {student.semester || 1} • {student.email}
                     </p>
                   </div>
                 </div>

@@ -33,7 +33,7 @@ export const ProfileHeader: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Semester {student?.semester || 5} ({student?.section || 'Section A'}) • Academic Year {student?.academicYear || APP_CONFIG.academicSession} • {APP_CONFIG.collegeName}
+              Semester {student?.semester || 1} ({student?.section || 'Section A'}) • Academic Year {student?.academicYear || APP_CONFIG.academicSession} • {APP_CONFIG.collegeName}
             </p>
           </div>
         </div>

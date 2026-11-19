@@ -151,7 +151,7 @@ export const TodayClassesCard: React.FC = () => {
       {sessionsToDisplay.length > 0 && (
         <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-300 font-mono">
           <span>{sessionsToDisplay.length} sessions listed</span>
-          <span>Cohort: {user?.program || 'B.Tech'} Sem {user?.semester || 5}</span>
+          <span>Cohort: {user?.program || 'B.Tech'} Sem {user?.semester || 1}</span>
         </div>
       )}
 

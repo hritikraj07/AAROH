@@ -240,7 +240,7 @@ export const OpportunitiesPage: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Match with fellow students in your cohort ({user?.program || 'B.Tech CSE'} • Semester {user?.semester || 5}) for hackathons and collaborative projects.
+              Match with fellow students in your cohort ({user?.program || 'B.Tech CSE'} • Semester {user?.semester || 1}) for hackathons and collaborative projects.
             </p>
           </div>
 

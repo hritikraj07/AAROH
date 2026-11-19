@@ -440,7 +440,7 @@ export const FacultyAttendancePage: React.FC = () => {
                                 {st.program || selectedSession?.program || 'B.Tech CSE'}
                               </span>
                               <span className="text-[10px] text-slate-400 font-mono block">
-                                Sem {st.semester || selectedSession?.semester || 5} • Sec {st.section || 'A'}
+                                Sem {st.semester || selectedSession?.semester || 1} • Sec {st.section || 'A'}
                               </span>
                             </td>
                             <td className="py-3 px-4 text-center">

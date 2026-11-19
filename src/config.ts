@@ -4,7 +4,7 @@ export const APP_CONFIG = {
   collegeName: 'K.R. Mangalam University',
   collegeShortName: 'KRMU',
   academicSession: '2026-2027',
-  currentSemester: 'Semester 5 (Autumn)',
+  currentSemester: 'Semester 1 (Autumn)',
   supportEmail: 'support@aaroh.krmu.edu.in',
   defaultAttendanceThreshold: 75, // percentage
   version: '1.0.0',
