@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, QrCode, CheckCircle2, AlertCircle, Camera, RefreshCw } from 'lucide-react';
+import { X, QrCode, CheckCircle2, AlertCircle, Camera, RefreshCw, KeyRound, Check } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
@@ -21,12 +21,16 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
   const [hasScanned, setHasScanned] = useState(false);
   const [scanMessage, setScanMessage] = useState<string | null>(null);
   const [zoom, setZoom] = useState<number>(1);
+  const [sessionCodeInput, setSessionCodeInput] = useState<string>('');
+  const [codeError, setCodeError] = useState<string | null>(null);
 
   // Poll for active QR broadcast in classroom
   useEffect(() => {
     if (!isOpen) {
       setHasScanned(false);
       setScanMessage(null);
+      setSessionCodeInput('');
+      setCodeError(null);
       return;
     }
 
@@ -39,7 +43,7 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
         } else {
           setActiveSession(null);
         }
-      } catch (e) {
+      } catch {
         setActiveSession(null);
       }
     };
@@ -51,33 +55,47 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
 
   if (!isOpen) return null;
 
-  const handleConfirmScan = () => {
+  const performCheckIn = (methodLabel: string) => {
     if (!activeSession) return;
     setIsScanning(true);
+    setCodeError(null);
 
     setTimeout(() => {
       setIsScanning(false);
       setHasScanned(true);
 
       const studentId = currentStudent?.id || 'demo_student';
+      const studentName = currentStudent?.name || 'Aarav Sharma';
+      const studentRoll = currentStudent?.rollNumber || '';
 
-      // 1. Record in local QR scans array so teacher manual list updates in real-time
+      // 1. Record in local QR scans array so teacher manual list updates in real time
       try {
         const scansRaw = localStorage.getItem('aaroh_qr_attendance_scans');
         const scans = scansRaw ? JSON.parse(scansRaw) : [];
-        scans.push({
-          studentId,
-          studentName: currentStudent?.name || 'Aarav Sharma',
-          classId: activeSession.classId,
-          courseId: activeSession.courseId,
-          timestamp: Date.now(),
-        });
-        localStorage.setItem('aaroh_qr_attendance_scans', JSON.stringify(scans));
-      } catch (e) {
-        console.error('Failed to save QR scan:', e);
+        const existingIdx = scans.findIndex(
+          (s: any) => s.studentId === studentId && (s.classId === activeSession.sessionId || s.classId === activeSession.classId || s.courseId === activeSession.courseId)
+        );
+        if (existingIdx === -1) {
+          scans.push({
+            studentId,
+            studentName,
+            studentRoll,
+            classId: activeSession.sessionId || activeSession.classId,
+            courseId: activeSession.courseId,
+            sessionCode: activeSession.sessionCode,
+            method: methodLabel,
+            timestamp: Date.now(),
+          });
+          localStorage.setItem('aaroh_qr_attendance_scans', JSON.stringify(scans));
+        }
+      } catch {
+        // storage fallback
       }
 
-      // 2. Record batch attendance in app context
+      // 2. Dispatch real-time window event so teacher's roster flips to Present instantly
+      window.dispatchEvent(new Event('aaroh_qr_scan_recorded'));
+
+      // 3. Record batch attendance in app context
       if (activeSession.courseId) {
         recordBatchAttendance(activeSession.courseId, [
           {
@@ -90,21 +108,43 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
         }
       }
 
-      setScanMessage(`Attendance marked for ${activeSession.courseName || 'Class'}.`);
+      const subjectName = activeSession.subject || activeSession.courseName || 'Class';
+      setScanMessage(`Attendance marked for ${subjectName}.`);
       showToast?.({
         type: 'success',
         title: 'Attendance Verified',
-        message: `Attendance marked for ${activeSession.courseName || 'Class'}`,
+        message: `Attendance marked for ${subjectName}`,
       });
-    }, 900);
+    }, 600);
+  };
+
+  const handleConfirmScan = () => {
+    performCheckIn('QR_SCAN');
+  };
+
+  const handleManualCodeSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!activeSession) {
+      setCodeError('No active attendance QR session is currently open in your classroom.');
+      return;
+    }
+
+    const cleanInput = sessionCodeInput.trim().toUpperCase().replace(/\s/g, '');
+    const cleanSessionCode = (activeSession.sessionCode || '').toUpperCase().replace(/\s/g, '');
+
+    if (cleanInput && (cleanInput === cleanSessionCode || cleanInput === activeSession.token || cleanSessionCode.includes(cleanInput))) {
+      performCheckIn('SESSION_CODE');
+    } else {
+      setCodeError(`Invalid session code. Expected format matching "${activeSession.sessionCode || 'CS-XXXX'}".`);
+    }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150 font-sans overflow-y-auto">
-      <div className="relative w-full max-w-md bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl shadow-md overflow-hidden p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto animate-in zoom-in-95 duration-200 my-auto">
+      <div className="relative w-full max-w-md bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl shadow-xl overflow-hidden p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto animate-in zoom-in-95 duration-200 my-auto">
         {/* Header */}
         <div className="flex items-start justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <div className="p-2 rounded-xl bg-[#EEF4ED] dark:bg-[#111115] border border-[#8DA9C4]/30 text-[#134074] dark:text-[#8DA9C4]">
               <Camera className="w-4 h-4" />
             </div>
@@ -127,13 +167,13 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
         </div>
 
         {/* Viewfinder Camera Simulation */}
-        <div className="relative w-full h-52 bg-slate-950 rounded-xl overflow-hidden flex flex-col items-center justify-center border border-slate-800 shadow-inner">
+        <div className="relative w-full h-48 bg-slate-950 rounded-xl overflow-hidden flex flex-col items-center justify-center border border-slate-800 shadow-inner">
           {/* Laser scanning bar */}
           <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#8DA9C4] to-transparent animate-pulse shadow-[0_0_12px_#8DA9C4]" />
           
           {/* Viewfinder Crosshairs */}
           <div
-            className="w-36 h-36 border-2 border-[#8DA9C4]/40 rounded-xl relative flex items-center justify-center transition-transform duration-100"
+            className="w-32 h-32 border-2 border-[#8DA9C4]/40 rounded-xl relative flex items-center justify-center transition-transform duration-100"
             style={{ transform: `scale(${zoom})` }}
           >
             <div className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-[#8DA9C4]" />
@@ -154,7 +194,7 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
                 <span className="text-[10px] font-mono text-slate-300">Validating...</span>
               </div>
             ) : (
-              <QrCode className="w-12 h-12 text-[#8DA9C4]/40" />
+              <QrCode className="w-10 h-10 text-[#8DA9C4]/40" />
             )}
           </div>
 
@@ -200,12 +240,12 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
               </span>
             </div>
             <div className="font-semibold text-slate-900 dark:text-slate-100">
-              {activeSession.courseName}
+              {activeSession.subject || activeSession.courseName}
             </div>
             <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400 flex items-center gap-2">
               <span>Room: {activeSession.room}</span>
               <span>•</span>
-              <span className="truncate">Token: {activeSession.token?.slice(0, 14)}...</span>
+              <span className="font-bold text-[#134074] dark:text-[#8DA9C4]">Code: {activeSession.sessionCode || 'Active'}</span>
             </div>
           </div>
         ) : (
@@ -217,15 +257,55 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
           </div>
         )}
 
+        {/* Manual Session Code Input Option */}
+        {!hasScanned && (
+          <form onSubmit={handleManualCodeSubmit} className="space-y-2 pt-1 border-t border-slate-100 dark:border-[#27272A]">
+            <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1">
+                <KeyRound className="w-3.5 h-3.5 text-slate-400" />
+                <span>Or Enter Session Code:</span>
+              </span>
+              {activeSession?.sessionCode && (
+                <span className="text-[10px] text-teal-700 dark:text-teal-400">e.g. {activeSession.sessionCode}</span>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={sessionCodeInput}
+                onChange={e => {
+                  setSessionCodeInput(e.target.value);
+                  setCodeError(null);
+                }}
+                placeholder="Enter 6-character code..."
+                className="flex-1 px-3 py-2 text-xs font-mono font-bold uppercase rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50 dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-600"
+              />
+              <button
+                type="submit"
+                disabled={!sessionCodeInput.trim() || isScanning}
+                className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-[#134074] hover:bg-[#0B2545] disabled:opacity-50 text-white transition-colors cursor-pointer shrink-0"
+              >
+                Check In
+              </button>
+            </div>
+            {codeError && (
+              <p className="text-[10px] font-mono text-rose-600 dark:text-rose-400">
+                {codeError}
+              </p>
+            )}
+          </form>
+        )}
+
         {/* Action Button */}
         <div>
           {hasScanned ? (
             <button
               type="button"
               onClick={onClose}
-              className="w-full py-2.5 px-4 min-h-[44px] text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center"
+              className="w-full py-2.5 px-4 min-h-[44px] text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all cursor-pointer shadow-sm active:scale-95 flex items-center justify-center gap-1.5"
             >
-              Done
+              <Check className="w-4 h-4" />
+              <span>Done</span>
             </button>
           ) : (
             <button
@@ -243,3 +323,5 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
     </div>
   );
 };
+
+export default StudentQRScannerModal;

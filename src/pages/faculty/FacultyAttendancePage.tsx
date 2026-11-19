@@ -94,17 +94,46 @@ export const FacultyAttendancePage: React.FC = () => {
   const [isQROpen, setIsQROpen] = useState(false);
   const [qrVerifiedStudentIds, setQrVerifiedStudentIds] = useState<Set<string>>(new Set());
 
-  // Reset marks whenever selected session or enrolled students change
+  // Reset marks whenever selected session or enrolled students change (Default to Absent)
   useEffect(() => {
     const initialMarks: Record<string, boolean> = {};
     enrolledStudents.forEach(st => {
-      initialMarks[st.id] = true; // default all present
+      initialMarks[st.id] = false; // default all absent
     });
     setMarks(initialMarks);
     setQrVerifiedStudentIds(new Set());
   }, [selectedSessionId, enrolledStudents]);
 
-  // Real-time synchronization: Poll and listen to storage events for QR scans
+  // Handle starting a live QR session (guarantees all students initialize to Absent)
+  const handleStartQRSession = () => {
+    const absentMarks: Record<string, boolean> = {};
+    enrolledStudents.forEach(st => {
+      absentMarks[st.id] = false; // initialize all students to Absent by default
+    });
+    setMarks(absentMarks);
+    setQrVerifiedStudentIds(new Set());
+
+    // Clear previous QR scans for this session
+    try {
+      const scansRaw = localStorage.getItem('aaroh_qr_attendance_scans');
+      if (scansRaw && selectedSession) {
+        const scans = JSON.parse(scansRaw);
+        const remaining = scans.filter((s: any) => s.classId !== selectedSession.id && s.courseId !== selectedSession.courseId);
+        localStorage.setItem('aaroh_qr_attendance_scans', JSON.stringify(remaining));
+      }
+    } catch {
+      // ignore
+    }
+
+    setIsQROpen(true);
+    showToast({
+      type: 'info',
+      title: 'QR Attendance Started',
+      message: 'All students set to Absent. Present status will update in real-time as students scan.',
+    });
+  };
+
+  // Real-time synchronization: Poll and listen to storage & scan events for QR scans
   useEffect(() => {
     if (!selectedSession) return;
 
@@ -153,9 +182,11 @@ export const FacultyAttendancePage: React.FC = () => {
     syncQRScans();
     const interval = setInterval(syncQRScans, 1000);
     window.addEventListener('storage', syncQRScans);
+    window.addEventListener('aaroh_qr_scan_recorded', syncQRScans);
     return () => {
       clearInterval(interval);
       window.removeEventListener('storage', syncQRScans);
+      window.removeEventListener('aaroh_qr_scan_recorded', syncQRScans);
     };
   }, [selectedSession]);
 
@@ -182,17 +213,54 @@ export const FacultyAttendancePage: React.FC = () => {
 
     const studentMarks = enrolledStudents.map(st => ({
       studentId: st.id,
-      isPresent: marks[st.id] ?? true,
+      isPresent: marks[st.id] === true,
     }));
 
     recordBatchAttendance(selectedSession.courseId, studentMarks);
 
+    // Save completed attendance session record to localStorage for persistence
+    try {
+      const logSession = {
+        id: `att_sess_${Date.now()}`,
+        classId: selectedSession.id,
+        courseId: selectedSession.courseId,
+        courseCode: selectedSession.courseCode || selectedCourse?.code,
+        courseName: selectedSession.courseName || selectedCourse?.name,
+        program: selectedSession.program || 'B.Tech CSE',
+        division: selectedSession.section || user?.division || 'A',
+        subject: selectedSession.courseName || selectedSession.courseCode,
+        date: new Date().toISOString().split('T')[0],
+        timestamp: Date.now(),
+        presentCount,
+        absentCount,
+        totalStudents: enrolledStudents.length,
+        records: enrolledStudents.map(st => ({
+          studentId: st.id,
+          studentName: st.name,
+          studentRoll: st.rollNumber,
+          status: marks[st.id] === true ? 'Present' : 'Absent',
+          method: qrVerifiedStudentIds.has(st.id) ? 'QR_SCAN' : 'MANUAL',
+        })),
+      };
+
+      const existingRaw = localStorage.getItem('aaroh_completed_attendance_sessions');
+      const list = existingRaw ? JSON.parse(existingRaw) : [];
+      localStorage.setItem('aaroh_completed_attendance_sessions', JSON.stringify([logSession, ...list]));
+    } catch {
+      // ignore
+    }
+
     setIsSubmitting(false);
+    showToast({
+      type: 'success',
+      title: 'Roll Call Finalized',
+      message: `Attendance recorded: ${presentCount} Present, ${absentCount} Absent.`,
+    });
   };
 
   // Stats calculation
   const totalEnrolled = enrolledStudents.length;
-  const presentCount = enrolledStudents.filter(st => marks[st.id] !== false).length;
+  const presentCount = enrolledStudents.filter(st => marks[st.id] === true).length;
   const absentCount = totalEnrolled - presentCount;
   const attendanceRate = totalEnrolled > 0 ? (presentCount / totalEnrolled) * 100 : 0;
 
@@ -302,7 +370,7 @@ export const FacultyAttendancePage: React.FC = () => {
 
                   <button
                     type="button"
-                    onClick={() => setIsQROpen(true)}
+                    onClick={handleStartQRSession}
                     className={`px-3.5 py-2.5 min-h-[44px] text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-md transition-all duration-200 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
                   >
                     <QrCode className="w-4 h-4" />
@@ -530,6 +598,8 @@ export const FacultyAttendancePage: React.FC = () => {
         <FacultyQRSessionModal
           isOpen={isQROpen}
           session={selectedSession}
+          enrolledStudents={enrolledStudents}
+          onManualCheckIn={studentId => toggleStudent(studentId, true)}
           onClose={() => setIsQROpen(false)}
         />
       )}

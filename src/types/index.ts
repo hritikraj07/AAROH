@@ -55,6 +55,8 @@ export interface ClassSession {
   type: ClassType;
   program?: string;  // e.g. "B.Tech CSE"
   semester?: number; // e.g. 5
+  division?: string; // e.g. "A"
+  section?: string;  // alias for division
 }
 
 export interface AttendanceRecord {
