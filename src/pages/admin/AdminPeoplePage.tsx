@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Button } from '../../components/ui/Button';
 import {
@@ -22,6 +22,7 @@ import {
   Shield,
   Edit2,
   KeyRound,
+  RefreshCw,
 } from 'lucide-react';
 import { User, UserRole } from '../../types';
 import { APP_CONFIG } from '../../config';
@@ -31,11 +32,23 @@ import { PRE_ENROLLED_FACULTY, PRE_ENROLLED_ADMIN, convertToUser } from '../../d
 import { StorageService } from '../../services/storage';
 
 export const AdminPeoplePage: React.FC = () => {
-  const { users, createUser, deleteUser, updateUser, showToast, user: currentUser } = useApp();
+  const { users, createUser, deleteUser, updateUser, showToast, user: currentUser, refreshData } = useApp();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
+
+  // Supabase Directory Live Data State
+  const [directoryUsers, setDirectoryUsers] = useState<User[]>(() => {
+    try {
+      const stored = localStorage.getItem('aaroh_users');
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return [];
+  });
+  const [isLoadingDirectory, setIsLoadingDirectory] = useState(false);
+  const [supabaseError, setSupabaseError] = useState<string | null>(null);
+  const [provisionedToast, setProvisionedToast] = useState<string | null>(null);
 
   // Edit User State
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -51,62 +64,89 @@ export const AdminPeoplePage: React.FC = () => {
   const [isEditSyncing, setIsEditSyncing] = useState(false);
   const [editSyncSuccess, setEditSyncSuccess] = useState(false);
 
+  // Fetch all 1,110+ Supabase records in Admin Directory with pagination range 0-1999
+  const fetchUsers = useCallback(async () => {
+    setIsLoadingDirectory(true);
+    setSupabaseError(null);
+
+    // Offline seed check for 12 Faculty Chairs & Admin if not present
+    [...PRE_ENROLLED_FACULTY, PRE_ENROLLED_ADMIN].forEach(acc => {
+      const exists = users.some(u => u.username?.toLowerCase() === acc.username.toLowerCase() || u.email.toLowerCase() === acc.email.toLowerCase());
+      if (!exists) {
+        StorageService.createUser(convertToUser(acc));
+      }
+    });
+
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('aaroh_users')
+          .select('id, username, email, role, full_name, course, division, auth_user_id')
+          .range(0, 1999)
+          .order('role', { ascending: true })
+          .order('username', { ascending: true });
+
+        if (error) {
+          setSupabaseError(error.message || 'Failed to fetch directory from Supabase.');
+          setIsLoadingDirectory(false);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          const mappedUsers: User[] = data.map((row: any) => {
+            const r = (row.role?.toLowerCase() as UserRole) || 'student';
+            const roll = row.username || (row.email ? row.email.split('@')[0] : '');
+            const emailAddr = row.email || `${roll.toLowerCase()}@aaroh.edu.in`;
+            const fullName = row.full_name || (r === 'admin' ? `Admin ${roll}` : r === 'faculty' ? `Prof. ${roll}` : `Student ${roll}`);
+            const rawCourse = row.course || 'B.Tech CSE';
+            const resolvedCourse = (rawCourse.trim().toLowerCase() === 'b.tech cse (ai/ml)' || rawCourse.trim().toLowerCase() === 'b.tech cse (ai & ml)')
+              ? 'B.Tech CSE (AI & ML)'
+              : rawCourse.trim();
+
+            return {
+              id: row.id || `usr_${roll.toLowerCase()}`,
+              name: fullName,
+              email: emailAddr.toLowerCase(),
+              username: roll,
+              password: roll,
+              role: r,
+              avatarInitials: fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
+              department: r === 'admin' ? 'Central Administration' : 'Computer Science & Engineering',
+              designation: r === 'student' ? 'Undergraduate Scholar' : (r === 'admin' ? 'Campus Administrator' : 'Faculty Member'),
+              rollNumber: roll,
+              program: resolvedCourse,
+              course: resolvedCourse,
+              section: row.division && row.division !== 'none' ? `Section ${row.division}` : 'Section A',
+              division: row.division || 'A',
+              semester: 1,
+              academicYear: APP_CONFIG.academicSession,
+              attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
+            };
+          });
+
+          setDirectoryUsers(mappedUsers);
+          try {
+            localStorage.setItem('aaroh_users', JSON.stringify(mappedUsers));
+            localStorage.setItem('aarohUsers', JSON.stringify(data));
+          } catch {}
+          refreshData();
+        } else if (data && data.length === 0) {
+          setSupabaseError('Supabase returned 0 records. Ensure you are signed in with an authorized Admin account (e.g. ADM001).');
+        }
+      } catch (err: any) {
+        setSupabaseError(err?.message || 'Database connection error.');
+      } finally {
+        setIsLoadingDirectory(false);
+      }
+    } else {
+      setIsLoadingDirectory(false);
+    }
+  }, [users, refreshData]);
+
   // Synchronize live public.aaroh_users database directory on load
   useEffect(() => {
-    let isMounted = true;
-    const syncDbUsers = async () => {
-      // Offline seed check for 12 Faculty Chairs & Admin if not present
-      [...PRE_ENROLLED_FACULTY, PRE_ENROLLED_ADMIN].forEach(acc => {
-        const exists = users.some(u => u.username?.toLowerCase() === acc.username.toLowerCase() || u.email.toLowerCase() === acc.email.toLowerCase());
-        if (!exists) {
-          StorageService.createUser(convertToUser(acc));
-        }
-      });
-
-      if (supabase) {
-        try {
-          const { data, error } = await supabase.from('aaroh_users').select('*');
-          if (!error && data && data.length > 0 && isMounted) {
-            data.forEach((row: any) => {
-              const r = (row.role?.toLowerCase() as UserRole) || 'student';
-              const roll = row.username || (row.email ? row.email.split('@')[0] : '');
-              const emailAddr = row.email || `${roll}@aaroh.edu.in`;
-              const exists = users.some(u => u.email.toLowerCase() === emailAddr.toLowerCase() || u.username?.toLowerCase() === roll.toLowerCase());
-              if (!exists) {
-                const userObj: User = {
-                  id: `usr_${roll.toLowerCase()}`,
-                  name: row.full_name || row.name || (r === 'admin' ? `Admin ${roll}` : r === 'faculty' ? `Prof. ${roll}` : `Student ${roll}`),
-                  email: emailAddr.toLowerCase(),
-                  username: roll,
-                  password: row.password || roll,
-                  role: r,
-                  avatarInitials: (row.full_name || roll).split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
-                  department: row.department || (r === 'admin' ? 'Central Administration' : 'Computer Science & Engineering'),
-                  designation: r === 'student' ? 'Undergraduate Scholar' : (row.designation || (r === 'admin' ? 'Campus Administrator' : 'Faculty Member')),
-                  rollNumber: roll,
-                  program: row.course || 'B.Tech CSE',
-                  course: row.course || 'B.Tech CSE',
-                  section: row.division ? `Section ${row.division}` : 'Section A',
-                  division: row.division || 'A',
-                  semester: 1,
-                  academicYear: APP_CONFIG.academicSession,
-                  attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
-                };
-                StorageService.createUser(userObj);
-              }
-            });
-            try {
-              localStorage.setItem('aarohUsers', JSON.stringify(data));
-            } catch {}
-          }
-        } catch {
-          // offline fallback
-        }
-      }
-    };
-    syncDbUsers();
-    return () => { isMounted = false; };
-  }, []);
+    fetchUsers();
+  }, [fetchUsers]);
 
   // Available Faculty Departments
   const FACULTY_DEPARTMENTS = [
@@ -158,8 +198,11 @@ export const AdminPeoplePage: React.FC = () => {
   // Dynamic list of faculty members for class coordinator assignment
   const facultyMembers = users.filter(u => u.role === 'faculty');
 
+  // Active directory list: live Supabase users if fetched, otherwise local users
+  const activeUsers = directoryUsers.length > 0 ? directoryUsers : users;
+
   // Filtered Users
-  const filteredUsers = users.filter(u => {
+  const filteredUsers = activeUsers.filter(u => {
     const matchesRole = roleFilter === 'all' || u.role === roleFilter;
     const q = searchQuery.toLowerCase().trim();
     const matchesSearch =
@@ -167,6 +210,7 @@ export const AdminPeoplePage: React.FC = () => {
       u.name.toLowerCase().includes(q) ||
       u.email.toLowerCase().includes(q) ||
       (u.rollNumber && u.rollNumber.toLowerCase().includes(q)) ||
+      (u.username && u.username.toLowerCase().includes(q)) ||
       (u.department && u.department.toLowerCase().includes(q)) ||
       (u.program && u.program.toLowerCase().includes(q)) ||
       (u.classCoordinator && u.classCoordinator.toLowerCase().includes(q));
@@ -174,9 +218,9 @@ export const AdminPeoplePage: React.FC = () => {
     return matchesRole && matchesSearch;
   });
 
-  const studentCount = users.filter(u => u.role === 'student').length;
-  const facultyCount = users.filter(u => u.role === 'faculty').length;
-  const adminCount = users.filter(u => u.role === 'admin').length;
+  const studentCount = activeUsers.filter(u => u.role === 'student').length;
+  const facultyCount = activeUsers.filter(u => u.role === 'faculty').length;
+  const adminCount = activeUsers.filter(u => u.role === 'admin').length;
 
   const handleRoleChange = (newRole: UserRole) => {
     setRole(newRole);
@@ -217,17 +261,15 @@ export const AdminPeoplePage: React.FC = () => {
     const fullEmail = role === 'student'
       ? `${rollNo || cleanPrefix}@aaroh.edu.in`
       : `${cleanPrefix}${getEmailSuffix(role)}`;
-    const effectivePassword = password.trim() || (role === 'student' ? rollNo : '');
 
-    // Password validation for all roles
-    if (!effectivePassword) {
-      setFormError('Account Password is required.');
-      return;
-    }
-    if (effectivePassword.length < 6) {
-      setFormError('Password must be at least 6 characters.');
-      return;
-    }
+    // Prepare fields for Supabase admin_provision_user RPC
+    const username = (role === 'student' ? (rollNo || cleanPrefix) : cleanPrefix).trim();
+    const fullName = trimmedName;
+    const course = (role === 'student' ? program : department).trim();
+    const division = role === 'student' ? (section.replace(/section/i, '').trim() || 'A') : 'none';
+
+    // Password defaults to username if left blank
+    const resolvedPassword = (password || username).trim();
 
     // Role-specific validation
     if (role === 'student') {
@@ -246,28 +288,112 @@ export const AdminPeoplePage: React.FC = () => {
       return;
     }
 
-    // Check duplicate email
-    if (users.some(u => u.email.toLowerCase() === fullEmail.toLowerCase())) {
-      setFormError(`An account with email "${fullEmail}" already exists in the directory.`);
+    // Check duplicate username or email in active directory
+    if (activeUsers.some(u => u.email.toLowerCase() === fullEmail.toLowerCase() || u.username?.toLowerCase() === username.toLowerCase())) {
+      setFormError(`An account with username "${username}" or email "${fullEmail}" already exists in the directory.`);
       return;
     }
 
-    // Create User object
-    const newUserData: Omit<User, 'id'> = {
-      name: trimmedName,
+    setIsSyncing(true);
+
+    // Call Supabase admin_provision_user RPC directly
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.rpc('admin_provision_user', {
+          p_username: username.trim(),
+          p_password: (password || username).trim(),
+          p_role: role,
+          p_full_name: fullName.trim(),
+          p_course: course,
+          p_division: division || 'none'
+        });
+
+        if (error) {
+          setFormError(error.message || 'Failed to provision user in Supabase.');
+          showToast({
+            type: 'error',
+            title: 'Provisioning Failed',
+            message: error.message || 'Supabase RPC error occurred.',
+          });
+          setIsSyncing(false);
+          return;
+        }
+
+        // On success:
+        // 1. Immediately prepend/add the returned user object to the live Admin Directory state
+        const returnedRow = data || {};
+        const createdUser: User = {
+          id: returnedRow.id || `usr_${username.toLowerCase()}`,
+          name: returnedRow.full_name || fullName.trim(),
+          email: returnedRow.email || `${username.toLowerCase()}@aaroh.edu.in`,
+          username: returnedRow.username || username.trim(),
+          password: resolvedPassword,
+          role: (returnedRow.role?.toLowerCase() as UserRole) || role,
+          avatarInitials: (returnedRow.full_name || fullName).trim().split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
+          department: role === 'admin' ? 'Central Administration' : (course || 'Computer Science & Engineering'),
+          designation: role === 'student' ? 'Undergraduate Scholar' : (role === 'admin' ? 'Campus Administrator' : 'Faculty Member'),
+          rollNumber: username.trim(),
+          program: returnedRow.course || course,
+          course: returnedRow.course || course,
+          section: returnedRow.division && returnedRow.division !== 'none' ? `Section ${returnedRow.division}` : 'Section A',
+          division: returnedRow.division || division || 'A',
+          semester: Number(semester) || 1,
+          academicYear: APP_CONFIG.academicSession,
+          attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
+          classCoordinator: classCoordinator.trim() || undefined,
+        };
+
+        setDirectoryUsers(prev => [createdUser, ...prev.filter(u => u.username !== createdUser.username)]);
+        createUser(createdUser);
+
+        // 2. Re-fetch from public.aaroh_users
+        await fetchUsers();
+
+        // 3. Show a clean Deep Teal confirmation toast (User <username> provisioned in Supabase)
+        setProvisionedToast(`User ${username.trim()} provisioned in Supabase`);
+        setTimeout(() => setProvisionedToast(null), 5000);
+        showToast({
+          type: 'success',
+          title: 'User Provisioned',
+          message: `User ${username.trim()} provisioned in Supabase`,
+        });
+
+        setIsSyncing(false);
+        setSyncSuccess(true);
+
+        setTimeout(() => {
+          setName('');
+          setEmailPrefix('');
+          setPassword('');
+          setRollNumber('');
+          setClassCoordinator('');
+          setSyncSuccess(false);
+          setIsAddModalOpen(false);
+        }, 800);
+        return;
+      } catch (err: any) {
+        setFormError(err?.message || 'Database error provisioning user.');
+        setIsSyncing(false);
+        return;
+      }
+    }
+
+    // Offline fallback if Supabase client is uninitialized
+    const fallbackUserData: Omit<User, 'id'> = {
+      name: fullName,
       email: fullEmail,
-      password: effectivePassword,
+      password: resolvedPassword,
       role,
       avatarInitials: '',
       department: department.trim() || (role === 'student' ? 'Computer Science & Engineering' : 'Central Administration'),
       designation: role === 'student' ? 'Undergraduate Scholar' : designation.trim(),
       ...(role === 'student'
         ? {
-          rollNumber: rollNumber.trim(),
-          username: rollNumber.trim(),
-          course: program.trim(),
-          division: section.replace(/section/i, '').trim() || 'A',
-          program: program.trim(),
+          rollNumber: username,
+          username: username,
+          course: course,
+          division: division,
+          program: course,
           semester: Number(semester) || 1,
           section: section.trim(),
           academicYear: APP_CONFIG.academicSession,
@@ -275,87 +401,16 @@ export const AdminPeoplePage: React.FC = () => {
           classCoordinator: classCoordinator.trim() || undefined,
         }
         : {
-          username: fullEmail,
+          username: username,
         }),
     };
 
-    // 1. Save to primary database store (aaroh_users)
-    createUser(newUserData);
-
-    // 2. Dual-Sync: Save to aarohUsers array in localStorage
-    const username = role === 'student' ? rollNumber.trim() : fullEmail;
-    try {
-      const existingAarohUsers = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
-      const idx = existingAarohUsers.findIndex(
-        (u: any) => u.username?.toLowerCase() === username.toLowerCase() || u.email?.toLowerCase() === fullEmail.toLowerCase()
-      );
-      const studentPayload = role === 'student' ? {
-        username: rollNumber.trim(),
-        email: fullEmail,
-        password: effectivePassword,
-        role: 'Student',
-        full_name: trimmedName,
-        course: program.trim(),
-        division: section.replace(/section/i, '').trim() || 'A',
-      } : {
-        username: fullEmail,
-        email: fullEmail,
-        password: effectivePassword,
-        role: role === 'admin' ? 'Admin' : 'Faculty',
-        full_name: trimmedName,
-      };
-
-      if (idx >= 0) {
-        existingAarohUsers[idx] = { ...existingAarohUsers[idx], ...studentPayload };
-      } else {
-        existingAarohUsers.push(studentPayload);
-      }
-      localStorage.setItem('aarohUsers', JSON.stringify(existingAarohUsers));
-    } catch {
-      // Offline-first fallback
-    }
-
-    // 3. UI Loading feedback state
-    setIsSyncing(true);
-
-    // 4. Asynchronous registration via Native Supabase Auth & public.aaroh_users insert
-    if (supabase) {
-      try {
-        let authUserId: string | null = null;
-        const { data: signUpData, error } = await supabase.auth.signUp({
-          email: fullEmail,
-          password: effectivePassword,
-        });
-
-        if (!error && signUpData?.user?.id) {
-          authUserId = signUpData.user.id;
-        }
-
-        const studentPayload = role === 'student' ? {
-          username: rollNo,
-          email: fullEmail,
-          password: '[MANAGED_BY_SUPABASE_AUTH]',
-          auth_user_id: authUserId,
-          role: 'Student',
-          full_name: trimmedName,
-          course: program.trim(),
-          division: section.replace(/section/i, '').trim() || 'A',
-        } : {
-          username: fullEmail,
-          email: fullEmail,
-          password: '[MANAGED_BY_SUPABASE_AUTH]',
-          auth_user_id: authUserId,
-          role: role === 'admin' ? 'Admin' : 'Faculty',
-          full_name: trimmedName,
-        };
-        await supabase.from('aaroh_users').insert([studentPayload]);
-      } catch {
-        // Handle gracefully if offline or username already exists
-      }
-    }
-
+    const created = createUser(fallbackUserData);
+    setDirectoryUsers(prev => [created, ...prev]);
     setIsSyncing(false);
     setSyncSuccess(true);
+    setProvisionedToast(`User ${username.trim()} provisioned in Supabase`);
+    setTimeout(() => setProvisionedToast(null), 5000);
 
     setTimeout(() => {
       setName('');
@@ -365,7 +420,52 @@ export const AdminPeoplePage: React.FC = () => {
       setClassCoordinator('');
       setSyncSuccess(false);
       setIsAddModalOpen(false);
-    }, 1000);
+    }, 800);
+  };
+
+  const handleDeleteUser = async (targetUser: User) => {
+    const targetUsername = targetUser.username || targetUser.rollNumber || (targetUser.email ? targetUser.email.split('@')[0] : '');
+    if (!window.confirm(`Are you sure you want to remove ${targetUser.name} (${targetUsername}) from the directory?`)) {
+      return;
+    }
+
+    if (supabase && targetUsername) {
+      try {
+        const { error: delError } = await supabase
+          .from('aaroh_users')
+          .delete()
+          .eq('username', targetUsername);
+
+        if (delError) {
+          showToast({
+            type: 'error',
+            title: 'Delete Failed',
+            message: delError.message || 'Failed to remove user from Supabase.',
+          });
+          return;
+        }
+      } catch (err: any) {
+        showToast({
+          type: 'error',
+          title: 'Delete Error',
+          message: err?.message || 'Database error during deletion.',
+        });
+        return;
+      }
+    }
+
+    deleteUser(targetUser.id);
+    setDirectoryUsers(prev => prev.filter(u => u.id !== targetUser.id && u.username !== targetUsername));
+
+    if (supabase) {
+      await fetchUsers();
+    }
+
+    showToast({
+      type: 'info',
+      title: 'User Removed',
+      message: `User ${targetUsername} removed from directory.`,
+    });
   };
 
   const handleOpenEditModal = (u: User) => {
@@ -465,29 +565,76 @@ export const AdminPeoplePage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-[#27272A]">
         <div>
-          <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
-            Campus User Directory & Onboarding
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
+              Campus User Directory & Onboarding
+            </h2>
+            {isLoadingDirectory && (
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 animate-pulse font-mono">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                Syncing Supabase...
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Onboard new students and faculty, assign institutional credentials, and oversee directory access.
           </p>
         </div>
 
-        <Button
-          variant="primary"
-          size="sm"
-          icon={<UserPlus className="w-3.5 h-3.5" />}
-          onClick={() => {
-            setRole('student');
-            setDepartment('Computer Science & Engineering');
-            setIsAddModalOpen(true);
-          }}
-        >
-          Onboard New User
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<RefreshCw className={`w-3.5 h-3.5 ${isLoadingDirectory ? 'animate-spin' : ''}`} />}
+            onClick={fetchUsers}
+            disabled={isLoadingDirectory}
+            title="Refresh directory from Supabase"
+          >
+            Sync
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            icon={<UserPlus className="w-3.5 h-3.5" />}
+            onClick={() => {
+              setRole('student');
+              setDepartment('Computer Science & Engineering');
+              setIsAddModalOpen(true);
+            }}
+          >
+            Onboard New User
+          </Button>
+        </div>
       </div>
+
+      {/* Supabase Error Alert Banner */}
+      {supabaseError && (
+        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-lg text-xs text-rose-800 dark:text-rose-300 flex items-start justify-between gap-3 animate-in fade-in">
+          <div className="flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold font-mono">Supabase Query Error</p>
+              <p className="text-[11px] text-rose-700 dark:text-rose-300/80 mt-0.5 leading-relaxed font-sans">
+                {supabaseError}
+              </p>
+              <p className="text-[10px] text-rose-600 dark:text-rose-400 mt-1 font-sans">
+                Showing cached offline directory. Ensure you are signed in with an authorized Admin account (e.g. ADM001).
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={fetchUsers}
+            disabled={isLoadingDirectory}
+            className="shrink-0 text-xs py-1"
+          >
+            {isLoadingDirectory ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Retry'}
+          </Button>
+        </div>
+      )}
 
       {/* Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -497,7 +644,7 @@ export const AdminPeoplePage: React.FC = () => {
             <Users className="w-4 h-4 text-slate-700 dark:text-slate-300" />
           </div>
           <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
-            {users.length}
+            {activeUsers.length}
           </div>
           <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">Active verified directory profiles</p>
         </div>
@@ -559,7 +706,7 @@ export const AdminPeoplePage: React.FC = () => {
                 : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200'
               }`}
           >
-            All Accounts ({users.length})
+            All Accounts ({activeUsers.length})
           </button>
           <button
             onClick={() => setRoleFilter('student')}
@@ -715,11 +862,7 @@ export const AdminPeoplePage: React.FC = () => {
                           {!isCurrent && (
                             <button
                               type="button"
-                              onClick={() => {
-                                if (window.confirm(`Are you sure you want to remove ${u.name} from the directory?`)) {
-                                  deleteUser(u.id);
-                                }
-                              }}
+                              onClick={() => handleDeleteUser(u)}
                               className="text-slate-400 hover:text-rose-600 p-1.5 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
                               title="Remove User"
                               aria-label={`Remove user ${u.name}`}
@@ -864,7 +1007,7 @@ export const AdminPeoplePage: React.FC = () => {
               {/* Account Password Field */}
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Account Password <span className="text-rose-600">*</span>
+                  Account Password <span className="text-slate-400 font-normal">(Defaults to username/ID if blank)</span>
                 </label>
                 <div className="relative flex items-center">
                   <div className="absolute left-3 text-slate-400 dark:text-slate-500">
@@ -872,9 +1015,7 @@ export const AdminPeoplePage: React.FC = () => {
                   </div>
                   <input
                     type={showPassword ? 'text' : 'password'}
-                    required
-                    minLength={6}
-                    placeholder="Set account password (min 6 characters)"
+                    placeholder="Leave blank to default to username/ID"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     className="w-full text-xs font-mono pl-9 pr-9 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
@@ -882,7 +1023,7 @@ export const AdminPeoplePage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none"
+                    className="absolute right-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none cursor-pointer"
                     tabIndex={-1}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
@@ -890,7 +1031,7 @@ export const AdminPeoplePage: React.FC = () => {
                   </button>
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1">
-                  This password will be required when logging in with this institutional email.
+                  If left blank, password automatically defaults to the user's ID/Roll Number.
                 </p>
               </div>
 
@@ -1319,6 +1460,21 @@ export const AdminPeoplePage: React.FC = () => {
               </div>
             </form>
           </div>
+        </div>
+      )}
+      {/* Deep Teal Confirmation Toast */}
+      {provisionedToast && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 bg-[#0F766E] text-white rounded-xl shadow-2xl border border-teal-500/30 animate-in fade-in slide-in-from-bottom-4 duration-300 font-sans">
+          <CheckCircle className="w-4 h-4 text-teal-200 shrink-0" />
+          <span className="text-xs font-semibold">{provisionedToast}</span>
+          <button
+            type="button"
+            onClick={() => setProvisionedToast(null)}
+            className="ml-2 text-teal-200 hover:text-white p-0.5 rounded focus:outline-none cursor-pointer"
+            aria-label="Dismiss toast"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
     </div>
