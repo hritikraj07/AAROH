@@ -1,6 +1,6 @@
 import React from 'react';
+import { Sun, Moon } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { SunMoonThemeToggle } from './sun-moon-theme-toggle';
 
 export interface ThemeToggleProps {
   className?: string;
@@ -8,8 +8,8 @@ export interface ThemeToggleProps {
 }
 
 /**
- * SunMoonThemeToggle integration
- * Replaces the static toggle with the animated celestial Sun / Moon / Sky toggle.
+ * Clean pill-shaped theme toggle switch matching modern university dashboard design.
+ * Features an active emerald green indicator circle for the active theme.
  */
 export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   className = '',
@@ -17,17 +17,34 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
 }) => {
   const { theme, toggleTheme } = useApp();
 
-  const pixelSize = size === 'sm' ? 32 : size === 'lg' ? 44 : 38;
-
   return (
     <div className={`inline-flex items-center ${className}`}>
-      <SunMoonThemeToggle
-        theme={theme}
-        onThemeChange={() => toggleTheme()}
-        size={pixelSize}
-        duration={500}
-        sky={true}
-      />
+      <button
+        type="button"
+        onClick={() => toggleTheme()}
+        className="relative inline-flex items-center gap-1 p-1 rounded-full bg-[#EBF3ED] dark:bg-[#202025] border border-[#E5ECE8] dark:border-[#27272A] transition-all cursor-pointer select-none active:scale-95"
+        title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        aria-label="Toggle theme"
+      >
+        <div
+          className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+            theme !== 'dark'
+              ? 'bg-[#15803D]/15 text-[#15803D] shadow-2xs font-bold'
+              : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <Sun className="w-3.5 h-3.5" />
+        </div>
+        <div
+          className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+            theme === 'dark'
+              ? 'bg-[#15803D]/25 text-emerald-400 shadow-2xs font-bold'
+              : 'text-slate-400 hover:text-slate-600'
+          }`}
+        >
+          <Moon className="w-3.5 h-3.5" />
+        </div>
+      </button>
 
       {/* Semantic gradient and geometry nodes maintaining test suite backwards compatibility */}
       <svg className="hidden" aria-hidden="true" style={{ display: 'none' }}>

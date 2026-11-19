@@ -286,7 +286,7 @@ export const AarohAIAssistant: React.FC = () => {
       <div className="fixed bottom-6 right-6 z-40">
         <button
           onClick={() => setIsOpen(prev => !prev)}
-          className="group relative flex items-center justify-center w-12 h-12 rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white shadow-lg border border-[#8DA9C4]/40 focus:outline-none focus:ring-2 focus:ring-[#134074]/30 transition-all duration-150 ease-in-out active:scale-95"
+          className="group relative flex items-center justify-center w-12 h-12 rounded-full bg-[#0F2544] hover:bg-[#0B2545] active:bg-[#081B33] text-white shadow-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#0F2544]/30 transition-all duration-150 ease-in-out active:scale-95 /* bg-[#134074] */"
           aria-label={isOpen ? 'Close Aaroh AI Assistant' : 'Open Aaroh AI Assistant'}
           title="Aaroh AI Assistant"
         >

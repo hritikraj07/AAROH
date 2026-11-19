@@ -99,11 +99,11 @@ export const Layout: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden font-sans bg-[#EEF4ED] dark:bg-[#0E0E11]">
+    <div className="flex flex-col h-screen overflow-hidden font-sans bg-[#F4F7F5] dark:bg-[#0E0E11]">
       {/* Hidden marker preserving test suite backwards compatibility while rendering instant theme switch without delay */}
       <div className="hidden transition-colors duration-500 ease-in-out" aria-hidden="true" />
       {/* Main Shell Layout: Unified dark:bg-[#0E0E11] background */}
-      <div className="flex flex-1 overflow-hidden bg-[#EEF4ED] dark:bg-[#0E0E11] text-[#0B2545] dark:text-[#EEF4ED]">
+      <div className="flex flex-1 overflow-hidden bg-[#F4F7F5] dark:bg-[#0E0E11] text-[#0B2545] dark:text-[#EEF4ED]">
         {/* Desktop Sidebar: Always accessible and uncluttered */}
         <div className="hidden md:flex md:shrink-0">
           <Sidebar />
@@ -122,7 +122,7 @@ export const Layout: React.FC = () => {
             pageTitle={getPageTitle(location.pathname)}
           />
 
-          <main className="flex-1 overflow-y-auto bg-[#EEF4ED] dark:bg-[#0E0E11]">
+          <main className="flex-1 overflow-y-auto bg-[#F4F7F5] dark:bg-[#0E0E11]">
             <div className="max-w-7xl mx-auto p-3.5 sm:p-6 lg:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
               <Outlet />
             </div>
@@ -132,14 +132,14 @@ export const Layout: React.FC = () => {
 
       {/* Floating Scan Attendance QR Button for Students */}
       {role === 'student' && !isQRScannerOpen && (
-        <div className="fixed bottom-20 sm:bottom-22 right-6 z-30">
+        <div className="fixed bottom-6 right-20 sm:right-22 z-40">
           <button
             onClick={() => setIsQRScannerOpen(true)}
-            className="flex items-center justify-center gap-2 px-3.5 py-2.5 min-h-[44px] rounded-full bg-[#18181B] dark:bg-[#18181B] hover:bg-slate-800 text-white shadow-lg border border-[#27272A] text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer"
+            className="flex items-center justify-center gap-2 px-5 py-3 min-h-[48px] rounded-full bg-[#0F2544] hover:bg-[#0B2545] text-white shadow-lg border border-white/10 text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer"
             title="Scan Attendance QR"
             aria-label="Scan Attendance QR"
           >
-            <QrCode className="w-4 h-4 text-teal-400" />
+            <QrCode className="w-4 h-4 text-white" />
             <span className="hidden sm:inline">Scan Attendance QR</span>
           </button>
         </div>
