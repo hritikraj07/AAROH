@@ -281,6 +281,17 @@ export const EventsPage: React.FC = () => {
               const WatermarkIcon = theme.watermarkIcon;
               const percent = Math.min(100, Math.round((event.registeredCount / Math.max(1, event.capacity)) * 100));
 
+              const todayStr = new Date().toISOString().split('T')[0];
+              const eventStartDate = event.startDate || event.date;
+              const eventEndDate = event.endDate || (
+                event.itinerary && event.itinerary.length > 1 && event.itinerary[event.itinerary.length - 1].date.includes('20th')
+                  ? '2026-11-20'
+                  : eventStartDate
+              );
+              const isEventOngoing = todayStr >= eventStartDate && todayStr <= eventEndDate;
+              const isEventPast = todayStr > eventEndDate;
+              const isRegistrationClosed = isEventOngoing || isEventPast;
+
               return (
                 <div
                   key={event.id}
@@ -302,20 +313,29 @@ export const EventsPage: React.FC = () => {
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${theme.pill}`}>
                           {event.category}
                         </span>
+                        {isEventOngoing ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-pulse" />
+                            Ongoing Event
+                          </span>
+                        ) : isEventPast ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                            Event Concluded
+                          </span>
+                        ) : event.itinerary && (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200/80 dark:border-teal-800/80 font-medium">
+                            {event.itinerary.length > 1 ? `${event.itinerary.length}-Day Schedule` : '1-Day Schedule'}
+                          </span>
+                        )}
                         {event.isRegistered && (
                           <Badge variant="teal" size="sm" dot>
                             Pass Confirmed
                           </Badge>
                         )}
-                        {isFull && (
+                        {isFull && !isRegistrationClosed && (
                           <Badge variant="rose" size="sm">
                             Housefull
                           </Badge>
-                        )}
-                        {event.itinerary && (
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200/80 dark:border-teal-800/80 font-medium">
-                            2-Day Schedule
-                          </span>
                         )}
                       </div>
 
@@ -388,15 +408,17 @@ export const EventsPage: React.FC = () => {
                         <Button
                           variant={event.isRegistered ? 'outline' : 'primary'}
                           size="sm"
-                          disabled={isFull && !event.isRegistered}
+                          disabled={!event.isRegistered && (isFull || isRegistrationClosed)}
                           onClick={() => toggleEventRegistration(event.id)}
                           className={event.isRegistered ? 'text-rose-600 hover:bg-rose-50 border-rose-200 dark:border-rose-900/60 dark:hover:bg-rose-950/30' : ''}
                         >
                           {event.isRegistered
                             ? 'Cancel'
-                            : isFull
-                              ? 'Full'
-                              : 'Register'}
+                            : isRegistrationClosed
+                              ? 'Registrations Closed'
+                              : isFull
+                                ? 'Full'
+                                : 'Register'}
                         </Button>
                       </div>
                     </div>

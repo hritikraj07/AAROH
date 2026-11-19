@@ -37,6 +37,14 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
       setComplaintText('');
       setAnalyzedResult(null);
       setIsSubmitting(false);
+      const prevBodyOverflow = document.body.style.overflow;
+      const prevHtmlOverflow = document.documentElement.style.overflow;
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevBodyOverflow;
+        document.documentElement.style.overflow = prevHtmlOverflow;
+      };
     }
   }, [isOpen, selectedBuilding]);
 
@@ -88,10 +96,10 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg max-h-[92dvh] overflow-y-auto bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-md p-6 sm:p-7 select-none font-sans">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-hidden">
+      <div className="relative w-full max-w-lg bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl shadow-2xl p-5 sm:p-6 select-none font-sans overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#27272A]">
+        <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-[#27272A]">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-md bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 flex items-center justify-center border border-teal-200 dark:border-teal-800">
               <ShieldCheck className="w-5 h-5 text-[#0F766E]" />
@@ -157,7 +165,7 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
             </label>
             <textarea
               required
-              rows={4}
+              rows={3}
               value={complaintText}
               onChange={e => setComplaintText(e.target.value)}
               placeholder="Describe the issue in detail (e.g. No water on the 3rd floor washroom, or Projector broken in Room 204)..."

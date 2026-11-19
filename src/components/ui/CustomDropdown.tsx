@@ -35,9 +35,23 @@ export function CustomDropdown<T extends string | number = string | number>({
   'aria-label': ariaLabel,
 }: CustomDropdownProps<T>) {
   const [isOpen, setIsOpen] = useState(false);
+  const [openUpward, setOpenUpward] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const selectedOption = options.find(opt => opt.value === value);
+
+  useEffect(() => {
+    if (isOpen && dropdownRef.current) {
+      const rect = dropdownRef.current.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      if (spaceBelow < 240 && spaceAbove > spaceBelow) {
+        setOpenUpward(true);
+      } else {
+        setOpenUpward(false);
+      }
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -128,7 +142,9 @@ export function CustomDropdown<T extends string | number = string | number>({
         <div
           role="listbox"
           tabIndex={-1}
-          className={`absolute left-0 right-0 top-full mt-1.5 z-50 max-h-60 overflow-y-auto rounded-xl border border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#18181B] shadow-2xl p-1.5 space-y-0.5 animate-in fade-in zoom-in-95 duration-100 font-sans ${menuClassName}`}
+          className={`absolute left-0 right-0 ${
+            openUpward ? 'bottom-full mb-1.5' : 'top-full mt-1.5'
+          } z-50 max-h-56 overflow-y-auto rounded-xl border border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#18181B] shadow-2xl p-1.5 space-y-0.5 animate-in fade-in zoom-in-95 duration-100 font-sans ${menuClassName}`}
         >
           {options.length === 0 ? (
             <div className="px-3 py-2 text-xs text-slate-400 dark:text-slate-500 italic text-center">

@@ -33,6 +33,17 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpe
   const isFull = seatsLeft === 0 && !event.isRegistered;
   const capacityPct = Math.min(100, Math.round((event.registeredCount / event.capacity) * 100));
 
+  const todayStr = new Date().toISOString().split('T')[0];
+  const eventStartDate = event.startDate || event.date;
+  const eventEndDate = event.endDate || (
+    event.itinerary && event.itinerary.length > 1 && event.itinerary[event.itinerary.length - 1].date.includes('20th')
+      ? '2026-11-20'
+      : eventStartDate
+  );
+  const isEventOngoing = todayStr >= eventStartDate && todayStr <= eventEndDate;
+  const isEventPast = todayStr > eventEndDate;
+  const isRegistrationClosed = isEventOngoing || isEventPast;
+
   // Clash check
   const clash = AcademicService.checkEventClash(
     event.date,
@@ -50,7 +61,17 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpe
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={event.title}
+      title={
+        <div className="flex items-center gap-2 flex-wrap">
+          <span>{event.title}</span>
+          {isEventOngoing && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-pulse" />
+              Ongoing Event
+            </span>
+          )}
+        </div>
+      }
       subtitle={`Campus Activity • ${event.category} • ${event.venue}`}
       maxWidth="xl"
       footer={
@@ -60,6 +81,10 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpe
               <span className="text-teal-700 font-medium flex items-center gap-1.5">
                 <CheckCircle2 className="w-4 h-4" />
                 You hold an active pass for this event
+              </span>
+            ) : isRegistrationClosed ? (
+              <span className="text-amber-700 dark:text-amber-400 font-medium">
+                {isEventOngoing ? 'Event currently in progress • Registrations Closed' : 'Event concluded'}
               </span>
             ) : isFull ? (
               <span className="text-rose-600 font-medium">All seats reserved</span>
@@ -75,12 +100,14 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpe
             <Button
               variant={event.isRegistered ? 'outline' : 'primary'}
               size="sm"
-              disabled={isFull && !event.isRegistered}
+              disabled={!event.isRegistered && (isFull || isRegistrationClosed)}
               onClick={handleToggle}
               className={event.isRegistered ? 'text-rose-600 hover:bg-rose-50 border-rose-200' : ''}
             >
               {event.isRegistered
                 ? 'Cancel My Registration'
+                : isRegistrationClosed
+                ? 'Registrations Closed'
                 : isFull
                 ? 'Capacity Full'
                 : 'Confirm Registration'}

@@ -1149,9 +1149,9 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     registerBuilding('dblock', dBlockGroup);
     scene.add(dBlockGroup);
 
-    // Agricultural Garden plots & shade greenhouses placed in open ground beside D Block
+    // Agricultural Garden plots & shade greenhouses placed in open ground beside D Block (moved northwards per user specification)
     const agriGroup = new THREE.Group();
-    agriGroup.position.set(-18.0, 0.14, -23.0);
+    agriGroup.position.set(-18.0, 0.14, -35.0);
 
     const agriTex = createCanvasTexture(
       (ctx, w, h) => {
@@ -1251,12 +1251,7 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       hostelGroup.add(makeBox(0.55, 5.6, 0.55, mats.sandstoneTrim, bx, 2.8, 0, true, true));
     });
 
-    // Blue utility shed moved southwards along the road adjacent to sports courts per user annotation
-    hostelGroup.add(makeBox(7.2, 3.2, 8.5, mats.whiteColumn, 10.8, 1.6, -8.5, true, true));
-    hostelGroup.add(makeBox(7.6, 0.25, 8.9, mats.shedBlue, 10.8, 3.3, -8.5, true, true));
-    hostelGroup.add(makeBox(3.4, 2.8, 4.8, mats.whiteColumn, 8.2, 1.4, 0, true, true));
-    hostelGroup.add(makeBox(3.7, 0.22, 5.1, mats.shedBlue, 8.2, 2.9, 0, true, true));
-
+    // Yellow utility sheds removed per user specification
     registerBuilding('hostels', hostelGroup);
     scene.add(hostelGroup);
 
@@ -1334,9 +1329,9 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
 
     sportsGroup.add(courtComplex);
 
-    // Football Ground & 4-Lane Terracotta Athletics Track
+    // Football Ground & 4-Lane Terracotta Athletics Track aligned alongside courtComplex per user specification
     const fieldGroup = new THREE.Group();
-    fieldGroup.position.set(4.5, 0, 4.5);
+    fieldGroup.position.set(4.5, 0, -5.5);
 
     const trackOuterW = 19.6;
     const trackOuterD = 31.0;

@@ -234,6 +234,8 @@ export interface CampusEvent {
   isRegistered: boolean;
   registrationId?: string;
   status?: 'pending' | 'approved' | 'rejected';
+  startDate?: string;
+  endDate?: string;
   event_date?: string;
   time_window?: string;
   itinerary?: DayItinerary[];

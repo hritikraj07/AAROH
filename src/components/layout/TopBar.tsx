@@ -742,24 +742,13 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                 </div>
 
                 {role === 'student' && (
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#18181B] border border-slate-100 dark:border-[#27272A]/80">
-                      <span className="text-[10px] font-mono uppercase text-slate-400 dark:text-slate-500 block mb-0.5">
-                        Program & Sem
-                      </span>
-                      <span className="font-semibold text-slate-900 dark:text-slate-100">
-                        {user?.program || 'B.Tech CSE'} • Sem {user?.semester || 1}
-                      </span>
-                    </div>
-
-                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#18181B] border border-slate-100 dark:border-[#27272A]/80">
-                      <span className="text-[10px] font-mono uppercase text-slate-400 dark:text-slate-500 block mb-0.5">
-                        Attendance Req.
-                      </span>
-                      <span className="font-semibold text-[#134074] dark:text-[#8DA9C4]">
-                        {user?.attendanceMinimum || 75}% Minimum
-                      </span>
-                    </div>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#18181B] border border-slate-100 dark:border-[#27272A]/80">
+                    <span className="text-[10px] font-mono uppercase text-slate-400 dark:text-slate-500 block mb-0.5">
+                      Program & Sem
+                    </span>
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">
+                      {user?.program || 'B.Tech CSE'} • Sem {user?.semester || 1}
+                    </span>
                   </div>
                 )}
 

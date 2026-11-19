@@ -40,6 +40,7 @@ import {
   getUserRoleFromEmail,
 } from '../data/seed';
 import { DEFAULT_CAMPUS_EVENTS } from '../data/eventsData';
+import { DEFAULT_CAMPUS_LOST_FOUND } from '../data/lostFoundData';
 import { FEATURED_OPPORTUNITIES } from '../data/opportunitiesData';
 import { DEFAULT_CAMPUS_NOTICES } from '../data/noticesData';
 import { DEFAULT_TIMETABLE, DEFAULT_COURSES } from '../data/timetableData';
@@ -798,7 +799,9 @@ export const StorageService = {
   getLostFoundItems(): LostFoundItem[] {
     const list = getStored<LostFoundItem[]>(STORAGE_KEYS.LOST_FOUND, []);
     if (list && list.length > 0) return list;
-    return getStored<LostFoundItem[]>('lost_found_items', INITIAL_LOST_FOUND);
+    const storedOld = getStored<LostFoundItem[]>('lost_found_items', []);
+    if (storedOld && storedOld.length > 0) return storedOld;
+    return DEFAULT_CAMPUS_LOST_FOUND.length > 0 ? DEFAULT_CAMPUS_LOST_FOUND : INITIAL_LOST_FOUND;
   },
 
   createLostFoundItem(item: Omit<LostFoundItem, 'id' | 'status' | 'contactRequestsCount'>): LostFoundItem {
