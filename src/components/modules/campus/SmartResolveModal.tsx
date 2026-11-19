@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '../../../context/AppContext';
 import { CampusBuilding } from '../../../types';
 import { analyzeFacilityComplaint } from '../../../utils/smartResolveAI';
@@ -41,12 +42,19 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
       const prevHtmlOverflow = document.documentElement.style.overflow;
       document.body.style.overflow = 'hidden';
       document.documentElement.style.overflow = 'hidden';
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') onClose();
+      };
+      window.addEventListener('keydown', handleKeyDown);
+
       return () => {
         document.body.style.overflow = prevBodyOverflow;
         document.documentElement.style.overflow = prevHtmlOverflow;
+        window.removeEventListener('keydown', handleKeyDown);
       };
     }
-  }, [isOpen, selectedBuilding]);
+  }, [isOpen, selectedBuilding, onClose]);
 
   if (!isOpen) return null;
 
@@ -95,9 +103,14 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200 overflow-hidden">
-      <div className="relative w-full max-w-lg bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl shadow-2xl p-5 sm:p-6 select-none font-sans overflow-hidden">
+  const modalElement = (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-[2px] p-4 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
+      onClick={e => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="relative w-full max-w-xl bg-white dark:bg-[#18181B] rounded-2xl shadow-2xl border border-slate-200/80 dark:border-[#27272A] p-6 max-h-[90vh] overflow-y-auto my-auto font-sans flex flex-col gap-4 select-none">
         {/* Header */}
         <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-[#27272A]">
           <div className="flex items-center gap-2.5">
@@ -131,7 +144,7 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
         </div>
 
         {/* Content Form */}
-        <form onSubmit={handleSubmit} className="mt-5 space-y-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* 1. Auto-Location Logic: Pre-filled and LOCKED */}
           <div>
             <label className="block text-[11px] font-mono uppercase tracking-wider text-slate-700 dark:text-slate-300 font-semibold mb-1.5">
@@ -146,7 +159,7 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
                 readOnly
                 disabled
                 value={selectedBuilding}
-                className="w-full pl-10 pr-10 py-2.5 bg-slate-100 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-xs font-mono text-slate-800 dark:text-slate-200 font-bold cursor-not-allowed select-none opacity-90 shadow-inner"
+                className="w-full box-border pl-10 pr-20 py-2.5 bg-slate-100 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-xs font-mono text-slate-800 dark:text-slate-200 font-bold cursor-not-allowed select-none opacity-90 shadow-inner"
               />
               <div className="absolute right-3.5 top-1/2 -translate-y-1/2 flex items-center gap-1 text-[10px] font-mono text-slate-400 dark:text-slate-500 pointer-events-none">
                 <Lock className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
@@ -165,15 +178,13 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
             </label>
             <textarea
               required
-              rows={3}
+              rows={4}
               value={complaintText}
               onChange={e => setComplaintText(e.target.value)}
               placeholder="Describe the issue in detail (e.g. No water on the 3rd floor washroom, or Projector broken in Room 204)..."
-              className="w-full p-3.5 bg-white dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500 resize-none font-sans leading-relaxed"
+              className="w-full box-border min-h-[110px] max-h-48 rounded-xl border border-slate-300 dark:border-[#27272A] bg-white dark:bg-[#111115] px-3.5 py-2.5 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-teal-500/20 resize-y font-sans leading-relaxed"
             />
           </div>
-
-
 
           {/* AI Live Output Preview */}
           {analyzedResult && (
@@ -196,11 +207,11 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
           )}
 
           {/* Submit Action */}
-          <div className="pt-2 flex items-center justify-end gap-3">
+          <div className="flex items-center justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="text-xs px-4 py-2 min-h-[44px] font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors flex items-center justify-center"
+              className="whitespace-nowrap shrink-0 text-xs px-4 py-2 min-h-[44px] font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors flex items-center justify-center rounded-lg"
             >
               Cancel
             </button>
@@ -209,7 +220,7 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting || !complaintText.trim()}
-              className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-5 py-2.5 min-h-[44px] font-bold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer inline-flex items-center justify-center gap-2 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+              className={`whitespace-nowrap shrink-0 rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-5 py-2.5 min-h-[44px] font-bold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer inline-flex items-center justify-center gap-2 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
             >
               {isSubmitting ? (
                 <>
@@ -228,6 +239,12 @@ export const SmartResolveModal: React.FC<SmartResolveModalProps> = ({
       </div>
     </div>
   );
+
+  if (typeof document !== 'undefined') {
+    return createPortal(modalElement, document.body);
+  }
+
+  return modalElement;
 };
 
 export default SmartResolveModal;
