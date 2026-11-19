@@ -1,6 +1,6 @@
 import { Home, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/oversized-404-numeral-utils/button";
+import { Button } from "./Button";
 
 export default function ErrorBlock() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export default function ErrorBlock() {
           The page you are looking for does not exist or may have been moved. Let us get you back on track.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Button onClick={() => navigate("/")}>
+          <Button onClick={() => navigate("/")} variant="primary">
             <Home className="w-4 h-4 mr-2" aria-hidden="true" />
             Go home
           </Button>
