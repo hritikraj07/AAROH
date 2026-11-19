@@ -153,6 +153,22 @@ export const AdminPeoplePage: React.FC = () => {
 
   // Synchronize live public.aaroh_users database directory on load
   useEffect(() => {
+    // Proactively purge any residual mock users from browser localStorage
+    try {
+      const stored = localStorage.getItem('aaroh_users');
+      if (stored) {
+        const parsed: User[] = JSON.parse(stored);
+        const cleaned = parsed.filter(u => {
+          if (!u.name || !u.username) return false;
+          if (u.name.includes('Shalini Gupta') || u.name.includes('Alok Mathur') || u.name.includes('Rajiv Sharma')) return false;
+          if (/^FAC1\d\d$/i.test(u.username)) return false;
+          return true;
+        });
+        if (cleaned.length !== parsed.length) {
+          localStorage.setItem('aaroh_users', JSON.stringify(cleaned));
+        }
+      }
+    } catch {}
     fetchUsers();
   }, [fetchUsers]);
 
