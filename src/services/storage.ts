@@ -68,8 +68,7 @@ function getStored<T>(key: string, fallback: T): T {
     const raw = localStorage.getItem(key);
     if (!raw) return fallback;
     return JSON.parse(raw) as T;
-  } catch (e) {
-    console.error(`Error reading ${key} from localStorage:`, e);
+  } catch {
     return fallback;
   }
 }
@@ -77,8 +76,8 @@ function getStored<T>(key: string, fallback: T): T {
 function setStored<T>(key: string, data: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(data));
-  } catch (e) {
-    console.error(`Error writing ${key} to localStorage:`, e);
+  } catch {
+    // Graceful offline fallback
   }
 }
 
@@ -207,7 +206,13 @@ export const StorageService = {
     }
 
     if (existingUser) {
-      const isDefaultDemoUser = existingUser.id === 'usr_adm_demo' || existingUser.email === 'registrar@admin.aaroh.edu.in' || existingUser.password === 'campusSecure2026' || existingUser.password === 'Aaroh@Krmu#2026!Key';
+      const isDefaultDemoUser =
+        existingUser.id === 'usr_adm_demo' ||
+        existingUser.email === 'registrar@admin.aaroh.edu.in' ||
+        existingUser.email === 'prof.raman@faculty.aaroh.edu.in' ||
+        existingUser.email === 'aarav.sharma@aaroh.edu.in' ||
+        existingUser.password === 'campusSecure2026' ||
+        existingUser.password === 'Aaroh@Krmu#2026!Key';
       const passwordMatch =
         existingUser.password === password.trim() ||
         (existingUser.rollNumber && existingUser.rollNumber.trim() === password.trim()) ||
@@ -217,7 +222,7 @@ export const StorageService = {
       if (existingUser.password && !isDefaultDemoUser && !passwordMatch) {
         return {
           success: false,
-          error: 'Incorrect password. Please enter the password specified when this account was created.',
+          error: 'Access Denied: Unregistered credentials or invalid password. Only pre-enrolled university accounts are permitted.',
         };
       }
       const token = `aaroh_session_${existingUser.role}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
@@ -231,28 +236,10 @@ export const StorageService = {
       };
     }
 
-    // 2. If not found in localStorage, verify institutional domain restriction or numeric roll number
-    const role = getUserRoleFromEmail(trimmedEmail) || (/^\d+$/.test(trimmedEmail) ? 'student' : undefined);
-    if (!role) {
-      return {
-        success: false,
-        error: 'Account not found in directory. Institutional emails must end with @aaroh.edu.in, or enter a valid Roll Number.',
-      };
-    }
-
-    // Auto-provision valid domain email into directory
-    const newUser = generateUserFromEmail(trimmedEmail);
-    this.createUser(newUser);
-
-    const token = `aaroh_session_${role}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-    localStorage.setItem(STORAGE_KEYS.SESSION_TOKEN, token);
-    setStored(STORAGE_KEYS.AUTH_USER, newUser);
-
+    // 2. Strict Pre-Enrolled Denial: Deny any unrecognized or new account without provisioning
     return {
-      success: true,
-      user: newUser,
-      role: newUser.role,
-      token,
+      success: false,
+      error: 'Access Denied: Unregistered credentials or invalid password. Only pre-enrolled university accounts are permitted.',
     };
   },
 

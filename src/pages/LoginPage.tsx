@@ -86,26 +86,26 @@ export const LoginPage: React.FC = () => {
     e.preventDefault();
     setErrorMessage(null);
 
-    const trimmedEmail = email.trim();
-    if (!trimmedEmail) {
+    const rawInput = email.trim();
+    if (!rawInput) {
       setErrorMessage('Please enter your Roll Number or institutional email.');
       return;
     }
 
+    const trimmedEmail = rawInput;
+    const normalizedEmail = rawInput.includes('@')
+      ? rawInput.toLowerCase()
+      : `${rawInput.toLowerCase()}@aaroh.edu.in`;
+    const rollNumberInput = rawInput.replace(/@.*$/, '').trim();
+
     const isKnownUser = users.some(
       u =>
+        u.email.trim().toLowerCase() === normalizedEmail ||
         u.email.trim().toLowerCase() === trimmedEmail.toLowerCase() ||
-        (u.rollNumber && u.rollNumber.trim().toLowerCase() === trimmedEmail.toLowerCase()) ||
-        (u.username && u.username.trim().toLowerCase() === trimmedEmail.toLowerCase())
+        (u.rollNumber && u.rollNumber.trim().toLowerCase() === rollNumberInput.toLowerCase()) ||
+        (u.username && u.username.trim().toLowerCase() === rollNumberInput.toLowerCase())
     );
-    const detectedRole = getUserRoleFromEmail(trimmedEmail) || (/^\d+$/.test(trimmedEmail) ? 'student' : undefined);
-
-    if (!isKnownUser && !detectedRole && !supabase) {
-      setErrorMessage(
-        'Access restricted: Account not recognized in campus directory. Please enter your Roll Number or registered institutional email.'
-      );
-      return;
-    }
+    const detectedRole = getUserRoleFromEmail(normalizedEmail) || (/^\d+$/.test(rollNumberInput) ? 'student' : undefined);
 
     if (!password) {
       setErrorMessage('Please enter your password.');
@@ -114,109 +114,144 @@ export const LoginPage: React.FC = () => {
 
     setLoading(true);
 
-    const username = trimmedEmail;
-    const role = detectedRole || selectedRole;
+    const cacheStudentAndLogin = (data: any) => {
+      const studentRole: UserRole = (data.role?.toLowerCase() as UserRole) || detectedRole || selectedRole || 'student';
+      const roll = data.username || (data.email ? data.email.split('@')[0] : rollNumberInput);
+      const emailAddr = data.email || `${roll}@aaroh.edu.in`;
+      const fullName = data.full_name || data.name || (roll ? `Student ${roll}` : 'Student');
 
-    // Dual-write credentials to localStorage aarohUsers
-    try {
-      const storedAaroh = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
-      const userIndex = storedAaroh.findIndex((u: any) => u.username?.toLowerCase() === username.toLowerCase());
-      if (userIndex >= 0) {
-        storedAaroh[userIndex].password = password;
-      } else {
-        storedAaroh.push({
-          username,
-          password,
-          role,
-        });
-      }
-      localStorage.setItem('aarohUsers', JSON.stringify(storedAaroh));
-    } catch {
-      // Offline-first fallback
-    }
+      const userObj: User = {
+        id: `usr_${roll}`,
+        name: fullName,
+        email: emailAddr,
+        username: roll,
+        password: password.trim(),
+        role: studentRole,
+        avatarInitials: fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
+        department: 'Computer Science & Engineering',
+        designation: studentRole === 'student' ? 'Undergraduate Scholar' : (data.designation || 'Faculty Member'),
+        rollNumber: roll,
+        program: data.course || 'B.Tech CSE',
+        course: data.course || 'B.Tech CSE',
+        section: data.division ? `Section ${data.division}` : 'Section A',
+        division: data.division || 'A',
+        semester: 1,
+        academicYear: APP_CONFIG.academicSession,
+        attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
+      };
 
-    // 1. Attempt login against local directory credentials
-    let result = login(trimmedEmail, password);
+      StorageService.createUser(userObj);
 
-    // 2. Live Cloud Login Verification: If credentials are not found in localStorage, query Supabase
-    if (!result.success && supabase) {
       try {
-        const identifier = trimmedEmail;
-        const { data } = await supabase
+        const storedAaroh = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
+        const uIdx = storedAaroh.findIndex((u: any) => u.username?.toLowerCase() === roll.toLowerCase() || u.email?.toLowerCase() === emailAddr.toLowerCase());
+        const entry = {
+          username: roll,
+          email: emailAddr,
+          password: password.trim(),
+          role: data.role || 'Student',
+          full_name: fullName,
+          course: data.course || 'B.Tech CSE',
+          division: data.division || 'A',
+        };
+        if (uIdx >= 0) {
+          storedAaroh[uIdx] = { ...storedAaroh[uIdx], ...entry };
+        } else {
+          storedAaroh.push(entry);
+        }
+        localStorage.setItem('aarohUsers', JSON.stringify(storedAaroh));
+      } catch {
+        // Storage quota fallback
+      }
+
+      let result = login(trimmedEmail, password);
+      if (!result.success) {
+        result = login(emailAddr, password);
+      }
+      if (!result.success) {
+        result = login(roll, password);
+      }
+
+      setLoading(false);
+      if (result.success && result.role) {
+        navigate(`/${result.role}`);
+      } else {
+        setErrorMessage(result.error || 'Access Denied: Unregistered credentials or invalid password. Only pre-enrolled university accounts are permitted.');
+      }
+    };
+
+    // 1. Live Cloud Verification if Supabase is active
+    if (supabase) {
+      try {
+        const { data: authData, error } = await supabase.auth.signInWithPassword({
+          email: normalizedEmail,
+          password: password.trim(),
+        });
+
+        if (error || !authData?.user) {
+          // Direct table check for pre-enrolled student records in public.aaroh_users
+          const { data: tableProfile } = await supabase
+            .from('aaroh_users')
+            .select('*')
+            .or(`email.eq.${normalizedEmail},username.eq.${rollNumberInput}`)
+            .eq('password', password.trim())
+            .maybeSingle();
+
+          if (!tableProfile) {
+            if (supabase.auth) {
+              await supabase.auth.signOut().catch(() => {});
+            }
+            setLoading(false);
+            setErrorMessage('Access Denied: Unregistered credentials or invalid password. Only pre-enrolled university accounts are permitted.');
+            return;
+          }
+
+          cacheStudentAndLogin(tableProfile);
+          return;
+        }
+
+        // Supabase Auth session established: strictly verify profile in public.aaroh_users
+        const { data: profile, error: profileError } = await supabase
           .from('aaroh_users')
           .select('*')
-          .or(`username.eq.${identifier},email.eq.${identifier}`)
-          .eq('password', password.trim())
-          .maybeSingle();
+          .eq('auth_user_id', authData.user.id)
+          .single();
 
-        if (data) {
-          const studentRole: UserRole = (data.role?.toLowerCase() as UserRole) || detectedRole || selectedRole || 'student';
-          const roll = data.username || (data.email ? data.email.split('@')[0] : identifier);
-          const emailAddr = data.email || (data.username ? `${data.username}@aaroh.edu.in` : identifier);
-          const fullName = data.full_name || data.name || (data.username ? `Student ${data.username}` : 'Student');
+        if (profileError || !profile) {
+          const { data: altProfile } = await supabase
+            .from('aaroh_users')
+            .select('*')
+            .or(`email.eq.${normalizedEmail},username.eq.${rollNumberInput}`)
+            .maybeSingle();
 
-          const userObj: User = {
-            id: `usr_${roll}`,
-            name: fullName,
-            email: emailAddr,
-            username: roll,
-            password: password.trim(),
-            role: studentRole,
-            avatarInitials: fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
-            department: 'Computer Science & Engineering',
-            designation: studentRole === 'student' ? 'Undergraduate Scholar' : (data.designation || 'Faculty Member'),
-            rollNumber: roll,
-            program: data.course || 'B.Tech CSE',
-            course: data.course || 'B.Tech CSE',
-            section: data.division ? `Section ${data.division}` : 'Section A',
-            division: data.division || 'A',
-            semester: 1,
-            academicYear: APP_CONFIG.academicSession,
-            attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
-          };
-
-          // Cache full user profile into localStorage & StorageService
-          StorageService.createUser(userObj);
-
-          try {
-            const storedAaroh = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
-            const uIdx = storedAaroh.findIndex((u: any) => u.username?.toLowerCase() === roll.toLowerCase() || u.email?.toLowerCase() === emailAddr.toLowerCase());
-            const entry = {
-              username: roll,
-              email: emailAddr,
-              password: password.trim(),
-              role: data.role || 'Student',
-              full_name: fullName,
-              course: data.course || 'B.Tech CSE',
-              division: data.division || 'A',
-            };
-            if (uIdx >= 0) {
-              storedAaroh[uIdx] = { ...storedAaroh[uIdx], ...entry };
-            } else {
-              storedAaroh.push(entry);
-            }
-            localStorage.setItem('aarohUsers', JSON.stringify(storedAaroh));
-          } catch {
-            // fallback
+          if (!altProfile) {
+            await supabase.auth.signOut().catch(() => {});
+            setLoading(false);
+            setErrorMessage('Access Denied: Unregistered credentials or invalid password. Only pre-enrolled university accounts are permitted.');
+            return;
           }
 
-          // Retry login with newly cached local record
-          result = login(emailAddr, password);
-          if (!result.success) {
-            result = login(roll, password);
-          }
+          cacheStudentAndLogin(altProfile);
+          return;
         }
+
+        cacheStudentAndLogin(profile);
+        return;
       } catch {
-        // Handle gracefully if offline or network error
+        // Offline or network failure: proceed to strict offline fallback guard
       }
     }
 
+    // 2. Strict Offline Fallback Guard: check only against pre-cached enrolled accounts in localStorage
+    const localResult = login(trimmedEmail, password);
     setLoading(false);
 
-    if (result.success && result.role) {
-      navigate(`/${result.role}`);
+    if (localResult.success && localResult.role) {
+      navigate(`/${localResult.role}`);
     } else {
-      setErrorMessage(result.error || 'Authentication failed. Please verify credentials.');
+      setErrorMessage(
+        'Access Denied: Unregistered credentials or invalid password. Only pre-enrolled university accounts are permitted.'
+      );
     }
   };
 
@@ -231,6 +266,24 @@ export const LoginPage: React.FC = () => {
       demoEmail = 'prof.raman@faculty.aaroh.edu.in';
     }
 
+    const currentUsers = StorageService.getUsers();
+    const demoExists = currentUsers.some(u => u.email.toLowerCase() === demoEmail.toLowerCase());
+    if (!demoExists) {
+      const demoUser = generateUserFromEmail(demoEmail);
+      demoUser.password = demoPassword;
+      if (targetRole === 'student') {
+        demoUser.name = 'Aarav Sharma';
+        demoUser.rollNumber = '22CS042';
+        demoUser.program = 'B.Tech CSE';
+        demoUser.course = 'B.Tech CSE';
+        demoUser.semester = 5;
+      } else if (targetRole === 'faculty') {
+        demoUser.name = 'Prof. Ramanujan';
+        demoUser.designation = 'Associate Professor';
+      }
+      StorageService.createUser(demoUser);
+    }
+
     setSelectedRole(targetRole);
     setEmail(demoEmail);
     setPassword(demoPassword);
@@ -243,7 +296,7 @@ export const LoginPage: React.FC = () => {
     if (result.success && result.role) {
       navigate(`/${result.role}`);
     } else {
-      setErrorMessage(result.error || 'Authentication failed. Please verify credentials.');
+      setErrorMessage(result.error || 'Access Denied: Unregistered credentials or invalid password. Only pre-enrolled university accounts are permitted.');
     }
   };
 
@@ -297,6 +350,13 @@ export const LoginPage: React.FC = () => {
             <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
               Sign In to Aaroh
             </h1>
+          </div>
+
+          {/* Institutional Access Restriction Notice */}
+          <div className="p-3 bg-slate-50/80 dark:bg-[#141417]/90 border border-slate-200/80 dark:border-[#27272A] rounded-xl text-center">
+            <p className="text-[11px] text-slate-600 dark:text-slate-400 font-sans leading-relaxed">
+              Access restricted to pre-enrolled K.R. Mangalam University accounts. Contact Administration for credential provisioning.
+            </p>
           </div>
 
           {/* Error Alert */}
