@@ -32,19 +32,23 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
   const [sessionCodeInput, setSessionCodeInput] = useState<string>('');
   const [codeError, setCodeError] = useState<string | null>(null);
 
-  // Live device camera stream state
+  // Live device camera stream state & lifecycle refs
+  const [stream, setStream] = useState<MediaStream | null>(null);
   const [cameraStatus, setCameraStatus] = useState<'idle' | 'requesting' | 'active' | 'error' | 'unsupported'>('idle');
+  const [cameraStatusMessage, setCameraStatusMessage] = useState<string>('Initializing camera...');
   const [cameraError, setCameraError] = useState<string | null>(null);
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const scanFrameIdRef = useRef<number | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const isComponentMounted = useRef<boolean>(true);
 
   // Stop camera stream and release hardware tracks immediately
   const stopCamera = () => {
-    if (scanFrameIdRef.current) {
-      cancelAnimationFrame(scanFrameIdRef.current);
-      scanFrameIdRef.current = null;
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
     }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => {
@@ -57,8 +61,14 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
       streamRef.current = null;
     }
     if (videoRef.current) {
-      videoRef.current.srcObject = null;
+      try {
+        videoRef.current.pause();
+        videoRef.current.srcObject = null;
+      } catch {
+        // ignore
+      }
     }
+    setStream(null);
     setCameraStatus('idle');
   };
 
@@ -74,29 +84,34 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
     }
 
     setCameraStatus('requesting');
+    setCameraStatusMessage('Requesting camera permission...');
 
     try {
-      let stream: MediaStream;
+      let mediaStream: MediaStream;
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
+        mediaStream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } },
           audio: false,
         });
       } catch {
         // Fallback to default video input on desktop or single-camera devices
-        stream = await navigator.mediaDevices.getUserMedia({
+        mediaStream = await navigator.mediaDevices.getUserMedia({
           video: true,
           audio: false,
         });
       }
 
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play().catch(() => {});
+      if (!isComponentMounted.current) {
+        mediaStream.getTracks().forEach(t => t.stop());
+        return;
       }
+
+      streamRef.current = mediaStream;
+      setStream(mediaStream);
       setCameraStatus('active');
+      setCameraStatusMessage('Camera permission granted, starting video...');
     } catch (err: any) {
+      if (!isComponentMounted.current) return;
       setCameraStatus('error');
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
         setCameraError('Camera permission was denied. Please allow camera access in your browser settings or use the session code below.');
@@ -107,6 +122,15 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
       }
     }
   };
+
+  // Manage component mount ref for React StrictMode safety
+  useEffect(() => {
+    isComponentMounted.current = true;
+    return () => {
+      isComponentMounted.current = false;
+      stopCamera();
+    };
+  }, []);
 
   // Manage camera lifecycle based on modal visibility
   useEffect(() => {
@@ -120,6 +144,38 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
       stopCamera();
     };
   }, [isOpen, hasScanned]);
+
+  // Attach stream to <video> as soon as stream and videoRef are available in DOM
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !stream || !isOpen || hasScanned) return;
+
+    let isCancelled = false;
+
+    const playVideo = async () => {
+      try {
+        if (video.srcObject !== stream) {
+          video.srcObject = stream;
+        }
+        await video.play();
+        if (!isCancelled) {
+          setCameraStatusMessage('Point camera at QR code');
+        }
+      } catch (err: any) {
+        // Handle AbortError cleanly when switching or stopping streams
+        if (err.name !== 'AbortError' && !isCancelled) {
+          console.warn('Video play notice:', err);
+          setCameraStatusMessage('Point camera at QR code');
+        }
+      }
+    };
+
+    playVideo();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [stream, isOpen, hasScanned]);
 
   // Poll for active QR broadcast in classroom
   useEffect(() => {
@@ -275,11 +331,11 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
     performCheckIn('LIVE_CAMERA_SCAN', targetSession);
   };
 
-  // Frame processing loop with native BarcodeDetector and jsQR fallback
+  // Frame processing loop using BarcodeDetector with jsQR canvas fallback
   useEffect(() => {
-    if (cameraStatus !== 'active' || hasScanned) return;
+    if (cameraStatus !== 'active' || !stream || hasScanned) return;
 
-    let active = true;
+    let isActive = true;
     const canvas = canvasRef.current || document.createElement('canvas');
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
@@ -288,9 +344,10 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
       : null;
 
     const tick = async () => {
-      if (!active || hasScanned) return;
+      if (!isActive || hasScanned) return;
 
       const video = videoRef.current;
+      // Ensure video element has loaded enough data to extract image frames
       if (video && video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
         try {
           let detectedText: string | null = null;
@@ -302,7 +359,7 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
                 detectedText = barcodes[0].rawValue;
               }
             } catch {
-              // fallback to jsQR
+              // fallback to jsQR canvas decode
             }
           }
 
@@ -319,31 +376,31 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
             }
           }
 
-          if (detectedText && active && !hasScanned) {
-            active = false;
+          if (detectedText && isActive && !hasScanned) {
+            isActive = false;
             handleDecodedQR(detectedText);
             return;
           }
         } catch {
-          // ignore frame processing glitches
+          // ignore temporary frame decode hiccups
         }
       }
 
-      if (active && !hasScanned) {
-        scanFrameIdRef.current = requestAnimationFrame(tick);
+      if (isActive && !hasScanned) {
+        rafRef.current = requestAnimationFrame(tick);
       }
     };
 
-    scanFrameIdRef.current = requestAnimationFrame(tick);
+    rafRef.current = requestAnimationFrame(tick);
 
     return () => {
-      active = false;
-      if (scanFrameIdRef.current) {
-        cancelAnimationFrame(scanFrameIdRef.current);
-        scanFrameIdRef.current = null;
+      isActive = false;
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
       }
     };
-  }, [cameraStatus, hasScanned]);
+  }, [cameraStatus, stream, hasScanned]);
 
   const handleConfirmScan = () => {
     performCheckIn('QR_SCAN');
@@ -396,21 +453,24 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
         </div>
 
         {/* Live Camera Viewfinder / Scanner Area */}
-        <div className="relative w-full h-52 bg-slate-950 rounded-xl overflow-hidden flex flex-col items-center justify-center border border-slate-800 shadow-inner">
-          {/* Real Device Video Stream */}
-          {cameraStatus === 'active' ? (
-            <video
-              ref={videoRef}
-              playsInline
-              muted
-              autoPlay
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-100"
-              style={{ transform: `scale(${zoom})` }}
-            />
-          ) : cameraStatus === 'requesting' ? (
-            <div className="flex flex-col items-center justify-center text-slate-400 p-4">
+        <div className="relative w-full h-56 bg-slate-950 rounded-xl overflow-hidden flex flex-col items-center justify-center border border-slate-800 shadow-inner">
+          {/* Always-Mounted Video Element with Ref */}
+          <video
+            ref={videoRef}
+            playsInline
+            muted
+            autoPlay
+            className={`absolute inset-0 w-full h-full object-cover transition-transform duration-100 ${
+              cameraStatus === 'active' && stream ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            }`}
+            style={{ transform: `scale(${zoom})` }}
+          />
+
+          {/* Camera Status Overlay (when requesting or error) */}
+          {cameraStatus === 'requesting' ? (
+            <div className="flex flex-col items-center justify-center text-slate-400 p-4 z-10">
               <RefreshCw className="w-8 h-8 animate-spin text-[#8DA9C4] mb-2" />
-              <span className="text-xs font-mono">Starting live camera...</span>
+              <span className="text-xs font-mono">{cameraStatusMessage}</span>
             </div>
           ) : cameraStatus === 'error' || cameraStatus === 'unsupported' ? (
             <div className="flex flex-col items-center justify-center text-center p-4 max-w-xs space-y-2 z-10">
@@ -440,7 +500,7 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
             <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 border-b-2 border-r-2 border-[#8DA9C4]" />
 
             {/* Pulsing Scan Beam */}
-            {!hasScanned && (
+            {!hasScanned && cameraStatus === 'active' && (
               <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-teal-400 to-transparent animate-pulse shadow-[0_0_12px_#2dd4bf]" />
             )}
 
@@ -463,7 +523,7 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
 
           <div className="absolute bottom-2 z-10 text-[10px] font-mono text-slate-300 bg-black/60 px-2.5 py-0.5 rounded-full backdrop-blur-xs">
             {cameraStatus === 'active'
-              ? 'Align teacher\'s QR code within frame'
+              ? cameraStatusMessage
               : activeSession
                 ? 'Live classroom beacon detected'
                 : 'Point camera toward teacher\'s display'}
