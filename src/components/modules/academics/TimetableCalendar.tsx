@@ -187,17 +187,6 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
               }`}
             >
               <span className="leading-none text-[11px]">{item.dayNum}</span>
-
-              {/* Indicator dot for scheduled classes */}
-              {hasClasses && (
-                <span
-                  className={`w-1 h-1 rounded-full mt-0.5 shrink-0 ${
-                    isSelected
-                      ? 'bg-white'
-                      : 'bg-[#1D4ED8] dark:bg-blue-400'
-                  }`}
-                />
-              )}
             </button>
           );
         })}

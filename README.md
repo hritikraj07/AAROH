@@ -2,6 +2,14 @@
 
 > A unified, role-secured internal operating system for campus life at **K.R. Mangalam University (KRMU)**, featuring dedicated portals for **Students**, **Faculty**, and **Administration**.
 
+## 🌐 Socials:
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/hritikraj07/) [![Reddit](https://img.shields.io/badge/Reddit-%23FF4500.svg?logo=Reddit&logoColor=white)](https://www.reddit.com/user/urr_hritxkk/) [![email](https://img.shields.io/badge/Email-D14836?logo=gmail&logoColor=white)](mailto:hritikraj626@gmail.com) 
+
+# 💻 Tech Stack:
+![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white) ![Netlify](https://img.shields.io/badge/netlify-%23000000.svg?style=for-the-badge&logo=netlify&logoColor=#00C7B7) ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white) ![MySQL](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white) ![Canva](https://img.shields.io/badge/Canva-%2300C4CC.svg?style=for-the-badge&logo=Canva&logoColor=white)
+
+---
+
 Students traditionally navigate fragmented portals, paper notice boards, unofficial WhatsApp groups, and chaotic spreadsheets. **Aaroh** consolidates academics, campus circulars, events, timetable scheduling, coursework, and career opportunities behind institutional Single Sign-On (SSO) with strict Role-Based Access Control (RBAC).
 
 ---
@@ -47,8 +55,8 @@ The app enforces institutional domain routing to partition permissions across th
 - **Campus User Directory & Onboarding (`/admin/people`):** Complete user management table listing all registered students, faculty, and administrators. Includes live search, role-based filters, account deletion, and a dynamic modal form to onboard new students (with Program, Semester, Student ID) and faculty (with Department and Designation). Newly added accounts are stored in `localStorage` under `aaroh_users` and can immediately sign in.
 - **Notice Board Publisher (`/admin/notices`):** Comprehensive circular management table with search, category filtering, pin/unpin toggles, delete action, and a full modal form to author official college directives.
 - **Events & Approvals (`/admin/events`):** Oversee campus-wide events, approve student club proposals, schedule venues, and adjust capacities.
-- **Timetable Scheduler (`/admin/timetable`):** Master weekly scheduling engine across Monday–Saturday, allowing administrators to allocate lecture halls, laboratory periods, and faculty assignments.
-- **System Configuration (`/admin/settings`):** Institutional parameters, attendance regulation threshold adjuster (50%–90%), RBAC domain policy review, and a cleanly styled **"Reset Demo Data"** action.
+- **Timetable Scheduler (`/admin/timetable`):** Master weekly scheduling engine across Monday-Saturday, allowing administrators to allocate lecture halls, laboratory periods, and faculty assignments.
+- **System Configuration (`/admin/settings`):** Institutional parameters, attendance regulation threshold adjuster (50%-90%), RBAC domain policy review, and a cleanly styled **"Reset Demo Data"** action.
 
 ---
 

@@ -942,51 +942,6 @@ export const CURRICULUM_DATA: Record<SpecializationOption, CurriculumSubject[]> 
 
   'BCA (H) (Sp AI & DS) (Research)': [
     {
-      id: 'bcar_res_method',
-      name: 'Research Methodologies & Data Science',
-      code: 'BCAR101-AIDS',
-      semester: 1,
-      description: 'Scientific research protocols, literature review synthesis, quantitative experimental design, and academic reporting.',
-      nodes: [
-        {
-          id: 'bcar_res_1',
-          title: 'Unit 1: Scientific Research Design & Literature Review',
-          unitNumber: 1,
-          description: 'Research problem framing, peer-reviewed literature indexing, bibliographic tools, and academic research synthesis.',
-          prerequisites: [],
-          topics: ['Research Questions Formulation', 'Academic Literature Review', 'Citation Standards', 'Hypothesis Design'],
-          learningOutcomes: ['Formulate clear research hypotheses from academic literature gaps', 'Synthesize relevant research papers using structured citation tools']
-        },
-        {
-          id: 'bcar_res_2',
-          title: 'Unit 2: Quantitative Data Gathering & Experimental Design',
-          unitNumber: 2,
-          description: 'Controlled experimental protocols, sampling distribution plans, observational datasets, and survey methodologies.',
-          prerequisites: ['bcar_res_1'],
-          topics: ['Controlled Experimentation', 'Sampling Methodologies', 'Survey Instrument Design', 'Variable Isolation'],
-          learningOutcomes: ['Design controlled scientific experiments with proper variable isolation', 'Collect unbiased experimental data according to sampling plans']
-        },
-        {
-          id: 'bcar_res_3',
-          title: 'Unit 3: Statistical Validation & Hypothesis Testing',
-          unitNumber: 3,
-          description: 'Parametric and non-parametric statistical tests, significance p-values, confidence bounds, and replication checks.',
-          prerequisites: ['bcar_res_2'],
-          topics: ['Statistical Significance Tests', 'P-Value Interpretations', 'Confidence Interval Bounds', 'Experimental Replication'],
-          learningOutcomes: ['Validate research findings through rigorous statistical tests', 'Evaluate experimental results against standard significance thresholds']
-        },
-        {
-          id: 'bcar_res_4',
-          title: 'Unit 4: Research Ethics, Peer Review & Technical Writing',
-          unitNumber: 4,
-          description: 'Academic integrity codes, plagiarism prevention, peer review procedures, and IEEE scientific paper formatting.',
-          prerequisites: ['bcar_res_3'],
-          topics: ['Ethical Research Conduct', 'Plagiarism Checks', 'Peer Review Workflows', 'IEEE Paper Structuring'],
-          learningOutcomes: ['Author scientific research manuscripts following IEEE formatting guidelines', 'Navigate peer review revisions with rigorous academic integrity']
-        }
-      ]
-    },
-    {
       id: 'bcar_adv_python',
       name: 'Advanced Python for Scientific Computing',
       code: 'BCAR102-AIDS',

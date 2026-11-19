@@ -458,7 +458,7 @@ export const OpportunitiesPage: React.FC = () => {
                       <div className="flex items-center gap-2">
                         {/* Event Date Tag if available */}
                         {opp.eventDate && (
-                          <span className="hidden sm:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold font-mono bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                          <span className="inline-flex items-center shrink-0 whitespace-nowrap px-2.5 py-0.5 rounded-full text-[10px] font-semibold font-mono bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                             {opp.eventDate}
                           </span>
                         )}

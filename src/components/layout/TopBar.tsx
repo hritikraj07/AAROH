@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, Search, Bell, ArrowRight, X, SlidersHorizontal, ChevronRight, ChevronDown, Check, Layers } from 'lucide-react';
+import { Menu, Search, Bell, ArrowRight, X, SlidersHorizontal, ChevronRight, ChevronDown, Check, Layers, Users, UserCheck } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { APP_CONFIG } from '../../config';
@@ -8,6 +8,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getApproachingDeadlines } from '../../utils/deadlineUtils';
 import { StorageService } from '../../services/storage';
 import { CustomDropdown, CustomDropdownOption } from '../ui/CustomDropdown';
+import { teammateService } from '../../services/teammateService';
 
 export const AVAILABLE_SKILL_CATEGORIES: { category: string; skills: string[] }[] = [
   {
@@ -163,6 +164,64 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
   // Profile Dropdown State
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  // Teammate System State & Synchronization
+  const [teammateUpdateTick, setTeammateUpdateTick] = useState(0);
+  useEffect(() => {
+    const handleUpdate = () => setTeammateUpdateTick(prev => prev + 1);
+    window.addEventListener('aaroh_teammates_updated', handleUpdate);
+    return () => window.removeEventListener('aaroh_teammates_updated', handleUpdate);
+  }, []);
+
+  const connectedTeammates = useMemo(() => {
+    if (!user?.id) return [];
+    return teammateService.getConnectedTeammates(user.id);
+  }, [user?.id, teammateUpdateTick]);
+
+  const allInvites = useMemo(() => {
+    return teammateService.getInvites();
+  }, [teammateUpdateTick]);
+
+  const incomingInvites = useMemo(() => {
+    if (!user?.id) return [];
+    return allInvites.filter(i => i.receiverId === user.id && i.status === 'pending');
+  }, [allInvites, user?.id]);
+
+  const outgoingInvites = useMemo(() => {
+    if (!user?.id) return [];
+    return allInvites.filter(i => i.senderId === user.id && i.status === 'pending');
+  }, [allInvites, user?.id]);
+
+  const handleRemoveTeammate = (peerId: string, peerName: string) => {
+    if (!user) return;
+    teammateService.removeTeammate(user.id, peerId);
+    setTeammateUpdateTick(prev => prev + 1);
+    showToast({
+      type: 'info',
+      title: 'Teammate Disconnected',
+      message: `${peerName} removed from your connected teammates list.`,
+    });
+  };
+
+  const handleAcceptInvite = (inviteId: string, senderName: string) => {
+    teammateService.acceptInvite(inviteId);
+    setTeammateUpdateTick(prev => prev + 1);
+    showToast({
+      type: 'success',
+      title: 'Teammate Connected',
+      message: `You are now connected with ${senderName}!`,
+    });
+  };
+
+  const handleDeclineInvite = (inviteId: string) => {
+    teammateService.declineInvite(inviteId);
+    setTeammateUpdateTick(prev => prev + 1);
+    showToast({
+      type: 'info',
+      title: 'Invitation Declined',
+      message: 'Teammate invite dismissed.',
+    });
+  };
 
   // Skill Autocomplete Search State
   const [skillSearchQuery, setSkillSearchQuery] = useState('');
@@ -1025,6 +1084,152 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                         </div>
                       </div>
                     </div>
+                  </div>
+                )}
+
+                {/* Connected Teammates & Invites */}
+                {role === 'student' && (
+                  <div className="pt-3 border-t border-slate-100 dark:border-[#27272A] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
+                        <span>Connected Teammates</span>
+                      </span>
+                      <span className="text-[10px] font-mono text-teal-700 dark:text-teal-400 font-semibold">
+                        {connectedTeammates.length} connected
+                      </span>
+                    </div>
+
+                    {/* Connected Teammates List */}
+                    {connectedTeammates.length === 0 ? (
+                      <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#18181B] border border-slate-100 dark:border-[#27272A] text-center">
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                          No connected teammates yet.
+                        </p>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+                          Discover peers on the Opportunities page under Campus Teammate Finder.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-1.5 max-h-40 overflow-y-auto pr-0.5">
+                        {connectedTeammates.map(teammate => (
+                          <div
+                            key={teammate.id}
+                            className="p-2 rounded-xl bg-slate-50 dark:bg-[#18181B] border border-slate-200/80 dark:border-[#27272A] flex items-center justify-between gap-2 text-xs"
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="w-7 h-7 rounded-lg bg-[#134074] text-white font-mono font-bold text-[10px] flex items-center justify-center shrink-0 border border-[#8DA9C4]/30">
+                                {teammate.peerName.slice(0, 2).toUpperCase()}
+                              </div>
+                              <div className="min-w-0">
+                                <span className="font-semibold text-slate-900 dark:text-slate-100 truncate block text-[11px]">
+                                  {teammate.peerName}
+                                </span>
+                                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 truncate block">
+                                  {teammate.peerRoll ? `${teammate.peerRoll} • ` : ''}{teammate.peerProgram || 'Computer Science'}
+                                </span>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveTeammate(teammate.peerId, teammate.peerName)}
+                              className="px-2 py-1 text-[10px] font-mono font-semibold rounded-md text-rose-600 hover:text-white hover:bg-rose-600 dark:text-rose-400 dark:hover:bg-rose-900/60 dark:hover:text-rose-200 border border-rose-200 dark:border-rose-800/60 transition-colors shrink-0 cursor-pointer"
+                              title={`Remove ${teammate.peerName} from teammates`}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Incoming Teammate Invites */}
+                    {incomingInvites.length > 0 && (
+                      <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-[#27272A]/70">
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-amber-700 dark:text-amber-400 font-semibold block">
+                          Incoming Invitations ({incomingInvites.length})
+                        </span>
+                        <div className="space-y-1.5 max-h-36 overflow-y-auto pr-0.5">
+                          {incomingInvites.map(inv => (
+                            <div
+                              key={inv.id}
+                              className="p-2 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 flex items-center justify-between gap-2 text-xs"
+                            >
+                              <div className="min-w-0">
+                                <span className="font-semibold text-slate-900 dark:text-slate-100 truncate block text-[11px]">
+                                  {inv.senderName}
+                                </span>
+                                <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 truncate block">
+                                  {inv.senderRoll ? `${inv.senderRoll} • ` : ''}{inv.senderProgram || 'Peer Student'}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => handleAcceptInvite(inv.id, inv.senderName)}
+                                  className="px-2 py-1 text-[10px] font-mono font-bold rounded-md bg-[#134074] hover:bg-[#0B2545] text-white shadow-xs transition-colors cursor-pointer"
+                                >
+                                  Accept
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeclineInvite(inv.id)}
+                                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded transition-colors cursor-pointer"
+                                  title="Decline"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Outgoing Pending Invites */}
+                    {outgoingInvites.length > 0 && (
+                      <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-[#27272A]/70">
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 dark:text-slate-500 font-semibold block">
+                          Outgoing Pending Invites ({outgoingInvites.length})
+                        </span>
+                        <div className="space-y-1.5 max-h-36 overflow-y-auto pr-0.5">
+                          {outgoingInvites.map(inv => (
+                            <div
+                              key={inv.id}
+                              className="p-2 rounded-xl bg-slate-50 dark:bg-[#18181B] border border-slate-200/60 dark:border-[#27272A] flex items-center justify-between gap-2 text-xs"
+                            >
+                              <div className="min-w-0">
+                                <span className="font-semibold text-slate-900 dark:text-slate-100 truncate block text-[11px]">
+                                  {inv.receiverName}
+                                </span>
+                                <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500 truncate block">
+                                  Awaiting response
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => handleAcceptInvite(inv.id, inv.receiverName)}
+                                  className="px-2 py-0.5 text-[9px] font-mono font-bold rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 transition-colors cursor-pointer"
+                                  title="Simulate peer accepting the invite for instant testing"
+                                >
+                                  Quick Accept
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeclineInvite(inv.id)}
+                                  className="p-1 text-slate-400 hover:text-rose-500 rounded transition-colors cursor-pointer"
+                                  title="Cancel Invite"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 

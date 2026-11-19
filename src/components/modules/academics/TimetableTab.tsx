@@ -367,19 +367,6 @@ export const TimetableTab: React.FC = () => {
                             </div>
                           </div>
                         </div>
-
-                        {/* Action: View Skill Tree */}
-                        <div className="flex items-center shrink-0 self-end md:self-center">
-                          <button
-                            type="button"
-                            onClick={() => setSelectedCourseForTree({ id: session.courseId, code: course?.code || session.courseCode || 'CS', name: course?.name || session.courseName || 'Course' })}
-                            className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-full bg-blue-50 hover:bg-blue-100 text-[#1D4ED8] border border-blue-200/80 dark:bg-blue-950/50 dark:hover:bg-blue-900/50 dark:text-blue-300 dark:border-blue-800/60 transition-colors cursor-pointer"
-                            title="View Course Syllabus Skill Tree"
-                          >
-                            <Network className="w-3.5 h-3.5 text-[#1D4ED8] dark:text-blue-400" />
-                            <span>View Skill Tree</span>
-                          </button>
-                        </div>
                       </div>
                     </React.Fragment>
                   );

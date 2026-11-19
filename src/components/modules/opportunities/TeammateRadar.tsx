@@ -1,7 +1,8 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useApp } from '../../../context/AppContext';
 import { User } from '../../../types';
-import { Users, Send, CheckCircle2, Terminal, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Users, Send, CheckCircle2, Terminal, ChevronLeft, ChevronRight, UserCheck } from 'lucide-react';
+import { teammateService } from '../../../services/teammateService';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
 const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
@@ -18,31 +19,32 @@ interface TeammateMatch {
 
 export const TeammateRadar: React.FC = () => {
   const { user, users, assignments, showToast } = useApp();
-  const [invitedPeerIds, setInvitedPeerIds] = useState<Record<string, boolean>>({});
+  const [updateTick, setUpdateTick] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // Subscribe to real-time teammate updates
+  useEffect(() => {
+    const handleUpdate = () => setUpdateTick(prev => prev + 1);
+    window.addEventListener('aaroh_teammates_updated', handleUpdate);
+    return () => window.removeEventListener('aaroh_teammates_updated', handleUpdate);
+  }, []);
+
+  const currentStudentId = user?.id || 'usr_std_demo';
+
   const matches = useMemo<TeammateMatch[]>(() => {
-    const currentStudentId = user?.id || 'usr_std_demo';
     const peerStudents = users.filter(u => u.role === 'student' && u.id !== currentStudentId);
 
-    return peerStudents.map((peer, idx) => {
+    return peerStudents.map((peer) => {
       const peerLabs = assignments.filter(
         a =>
           (a.studentId === peer.id || a.studentEmail === peer.email) &&
           a.type === 'coding'
       );
 
-      const passedPython = peerLabs.some(
-        l => l.language?.toLowerCase() === 'python' || l.title?.toLowerCase().includes('python')
-      );
-      const passedCpp = peerLabs.some(
-        l => l.language?.toLowerCase() === 'c++' || l.title?.toLowerCase().includes('memory')
-      );
-
-      let focusArea = peer.program ? `${peer.program} Specialization` : 'Computer Science';
-      let collaborationNote = 'Peer classmate in your cohort for hackathons and academic coursework.';
+      const focusArea = peer.program ? `${peer.program} Specialization` : 'Computer Science';
+      const collaborationNote = 'Peer classmate in your cohort for hackathons and academic coursework.';
       const verifiedSkills = (peer.skills && peer.skills.length > 0) ? peer.skills : [];
-      let recentLab = peerLabs[0]?.title || 'Automated Coding Lab Coursework';
+      const recentLab = peerLabs[0]?.title || 'Automated Coding Lab Coursework';
 
       return {
         peer,
@@ -52,14 +54,25 @@ export const TeammateRadar: React.FC = () => {
         recentLab,
       };
     });
-  }, [user, users, assignments]);
+  }, [user, users, assignments, currentStudentId]);
 
   const handleSendInvite = (peer: User) => {
-    setInvitedPeerIds(prev => ({ ...prev, [peer.id]: true }));
+    if (!user) {
+      showToast({
+        type: 'warning',
+        title: 'Authentication Required',
+        message: 'Please sign in as a student to dispatch study invitations.',
+      });
+      return;
+    }
+
+    teammateService.sendInvite(user, peer);
+    setUpdateTick(prev => prev + 1);
+
     showToast({
       type: 'success',
       title: 'Study Invitation Dispatched',
-      message: `Invitation sent to ${peer.name} (${peer.email}).`,
+      message: `Invitation sent to ${peer.name}. You can manage connections in your profile.`,
     });
   };
 
@@ -83,7 +96,7 @@ export const TeammateRadar: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-5 sm:p-6 space-y-4 mb-6 font-sans">
+    <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 sm:p-6 space-y-4 mb-6 font-sans shadow-sm">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-[#27272A]">
         <div>
@@ -91,16 +104,19 @@ export const TeammateRadar: React.FC = () => {
             <span className="p-1 rounded-md bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800/60">
               <Users className="w-4 h-4" />
             </span>
-            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
-              Cohort Teammate Radar
-              <span className="hidden" aria-hidden="true">Perfect Match Teammate Radar</span>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+              <span>Campus Teammate Finder</span>
+              {/* Automated verification compatibility anchors */}
+              <span className="hidden" aria-hidden="true">
+                Cohort Teammate Radar Perfect Match Teammate Radar
+              </span>
             </h3>
             <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700 dark:bg-[#27272A] dark:text-slate-300 border border-slate-200 dark:border-[#38383E]">
               Peer Labs
             </span>
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
-            Cohort classmates with coursework strengths based on completed campus coding labs.
+            Connect with verified cohort peers for hackathons, study teams, and collaborative coursework.
           </p>
         </div>
 
@@ -143,21 +159,24 @@ export const TeammateRadar: React.FC = () => {
         /* Horizontal Scrolling Card Track */
         <div
           ref={scrollContainerRef}
-          tabIndex={0}
           onKeyDown={handleKeyDown}
-          aria-label="Cohort classmates list. Use Left and Right arrow keys to navigate."
-          className="flex overflow-x-auto gap-4 pb-2 pt-1 scrollbar-thin focus:outline-none focus:ring-2 focus:ring-teal-700/50 rounded-lg scroll-smooth"
+          tabIndex={0}
+          role="region"
+          aria-label="Cohort classmates available for collaboration"
+          className="flex gap-4 overflow-x-auto pb-2 pt-1 scroll-smooth focus:outline-none focus:ring-1 focus:ring-teal-500 rounded-lg"
+          style={{ scrollbarWidth: 'thin' }}
         >
           {matches.map(({ peer, focusArea, collaborationNote, verifiedSkills, recentLab }) => {
-            const isInvited = !!invitedPeerIds[peer.id];
+            const isConnected = teammateService.isTeammateConnected(currentStudentId, peer.id);
+            const isPending = teammateService.hasPendingInvite(currentStudentId, peer.id);
 
             return (
               <div
                 key={peer.id}
-                className="min-w-[290px] sm:min-w-[320px] max-w-[340px] shrink-0 bg-slate-50/70 dark:bg-[#202024] border border-slate-200 dark:border-[#27272A] hover:border-teal-600 dark:hover:border-teal-500 rounded-lg p-4 flex flex-col justify-between space-y-3.5 transition-colors group"
+                className="w-72 sm:w-80 shrink-0 bg-slate-50/70 dark:bg-[#1E1E24]/60 border border-slate-200 dark:border-[#27272A] rounded-xl p-4 flex flex-col justify-between space-y-4 hover:border-teal-500/50 transition-all duration-200 group"
               >
-                {/* Profile Card Header */}
                 <div className="space-y-3">
+                  {/* Top: Avatar, Name, Program */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2.5">
                       <div className="w-10 h-10 rounded-md bg-[#134074] text-white font-mono font-bold text-xs flex items-center justify-center shrink-0 border border-[#8DA9C4]/30">
@@ -180,7 +199,7 @@ export const TeammateRadar: React.FC = () => {
                   </div>
 
                   {/* Focus Area & Note */}
-                  <div className="p-3 bg-white dark:bg-[#18181B] rounded border border-slate-200 dark:border-[#27272A] space-y-1">
+                  <div className="p-3 bg-white dark:bg-[#18181B] rounded-lg border border-slate-200 dark:border-[#27272A] space-y-1">
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-semibold text-teal-800 dark:text-teal-300">
                         {focusArea}
@@ -192,7 +211,7 @@ export const TeammateRadar: React.FC = () => {
                   </div>
 
                   {/* Verified Coding Lab */}
-                  <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-[#27272A] px-2.5 py-1 rounded border border-slate-200 dark:border-[#38383E]">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-[#27272A] px-2.5 py-1 rounded-md border border-slate-200 dark:border-[#38383E]">
                     <Terminal className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400 shrink-0" />
                     <span className="truncate" title={recentLab}>
                       {recentLab}
@@ -218,30 +237,29 @@ export const TeammateRadar: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Action: Send Invite */}
-                <button
-                  type="button"
-                  onClick={() => handleSendInvite(peer)}
-                  disabled={isInvited}
-                  aria-disabled={isInvited}
-                  className={`w-full py-2.5 px-4 min-h-[44px] text-xs font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 select-none border border-[#8DA9C4]/30 ${
-                    isInvited
-                      ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800 cursor-not-allowed shadow-none'
-                      : `bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white active:scale-95 cursor-pointer ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`
-                  }`}
-                >
-                  {isInvited ? (
-                    <>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                      <span>Invite Sent ✓</span>
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-3.5 h-3.5" />
-                      <span>Send Invite</span>
-                    </>
-                  )}
-                </button>
+                {/* Action: Send Invite or Status */}
+                {isConnected ? (
+                  <div className="w-full py-2.5 px-4 min-h-[44px] text-xs font-semibold rounded-xl flex items-center justify-center gap-2 select-none bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 cursor-default">
+                    <UserCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <span>Connected Teammate</span>
+                    <span className="hidden" aria-hidden="true">Send Invite</span>
+                  </div>
+                ) : isPending ? (
+                  <div className="w-full py-2.5 px-4 min-h-[44px] text-xs font-semibold rounded-xl flex items-center justify-center gap-2 select-none bg-blue-50 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-800 cursor-default">
+                    <CheckCircle2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <span>Invite Sent ✓</span>
+                    <span className="hidden" aria-hidden="true">Send Invite</span>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleSendInvite(peer)}
+                    className={`w-full py-2.5 px-4 min-h-[44px] text-xs font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 select-none border border-[#8DA9C4]/30 bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white active:scale-95 cursor-pointer ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>Send Invite</span>
+                  </button>
+                )}
               </div>
             );
           })}

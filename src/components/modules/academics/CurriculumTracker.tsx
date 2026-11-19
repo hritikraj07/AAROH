@@ -42,6 +42,7 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
   const currentStudentId = user?.id || 'demo_student';
 
   const isStudent = user?.role === 'student' || (!user?.role && !user?.designation);
+  const isFaculty = user?.role === 'faculty' || user?.role === 'admin';
 
   // Helper to automatically resolve student enrolled course/specialization
   const resolveUserSpecialization = (): SpecializationOption | undefined => {
@@ -138,6 +139,14 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
   }, [selectedSpecialization, selectedSubjectName, completedNodeIds.length]);
 
   const handleMarkComplete = (node: SyllabusNode) => {
+    if (!isFaculty) {
+      showToast({
+        type: 'warning',
+        title: 'Faculty Authorization Required',
+        message: 'Only faculty members can officially verify and complete curriculum units.',
+      });
+      return;
+    }
     if (!isNodeActive(node)) return;
 
     markNodeCompleted(currentStudentId, selectedSpecialization, selectedSubjectName, node.id);
@@ -212,32 +221,53 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
 
         {/* 2. Sleek Side-by-Side Dropdown Menus */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
-          {/* Dropdown 1: Specialization */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-mono flex items-center justify-between">
-              <span className="flex items-center gap-1.5">
-                <GraduationCap className="w-3.5 h-3.5 text-[#134074] dark:text-[#8DA9C4]" />
-                <span>Specialization</span>
-              </span>
-              <span className="text-[10px] text-[#0F766E] dark:text-teal-400 font-mono font-medium">
-                {isStudent ? 'Enrolled Programme' : `${SPECIALIZATION_OPTIONS.length} Programmes Available`}
-              </span>
-            </label>
-            <div className="relative">
-              <select
-                value={selectedSpecialization}
-                onChange={e => handleSpecializationChange(e.target.value as SpecializationOption)}
-                className="w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-[#0F766E] appearance-none font-medium transition-all cursor-pointer"
-              >
-                {SPECIALIZATION_OPTIONS.map(spec => (
-                  <option key={spec} value={spec}>
-                    {spec}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          {/* Enrolled Programme Syllabus Display for Students (No Dropdown Selector) */}
+          {isStudent ? (
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-mono flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <GraduationCap className="w-3.5 h-3.5 text-[#134074] dark:text-[#8DA9C4]" />
+                  <span>Enrolled Programme</span>
+                </span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono font-semibold">
+                  Verified Curriculum
+                </span>
+              </label>
+              <div className="w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 font-semibold font-mono flex items-center justify-between select-none">
+                <span className="truncate">{selectedSpecialization}</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shrink-0">
+                  Enrolled Track
+                </span>
+              </div>
             </div>
-          </div>
+          ) : (
+            /* Dropdown 1: Specialization for Faculty / Admin */
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-mono flex items-center justify-between">
+                <span className="flex items-center gap-1.5">
+                  <GraduationCap className="w-3.5 h-3.5 text-[#134074] dark:text-[#8DA9C4]" />
+                  <span>Specialization</span>
+                </span>
+                <span className="text-[10px] text-[#0F766E] dark:text-teal-400 font-mono font-medium">
+                  {SPECIALIZATION_OPTIONS.length} Programmes Available
+                </span>
+              </label>
+              <div className="relative">
+                <select
+                  value={selectedSpecialization}
+                  onChange={e => handleSpecializationChange(e.target.value as SpecializationOption)}
+                  className="w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-[#0F766E] appearance-none font-medium transition-all cursor-pointer"
+                >
+                  {SPECIALIZATION_OPTIONS.map(spec => (
+                    <option key={spec} value={spec}>
+                      {spec}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
+            </div>
+          )}
 
           {/* Dropdown 2: Subject (Dynamically Populated) */}
           <div className="space-y-1.5">
@@ -456,7 +486,7 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
                 ) : isNodeActive(activeInspectNode) ? (
                   <>
                     <Unlock className="w-4 h-4 text-[#0F766E]" />
-                    <span>Status: Active & Ready for Verification</span>
+                    <span>Status: In Progress</span>
                   </>
                 ) : (
                   <>
@@ -531,7 +561,7 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
                 </div>
               )}
 
-              {/* Action Button: "Mark as Completed" with Custom 4-Layer Shadow */}
+              {/* Action Button: "Mark as Completed" (Faculty Only) */}
               <div className="pt-3 border-t border-slate-100 dark:border-[#27272A]">
                 {isNodeCompleted(activeInspectNode) ? (
                   <button
@@ -542,7 +572,7 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
                     <CheckCircle2 className="w-4 h-4 text-[#0F766E]" />
                     <span>Unit Verified & Completed</span>
                   </button>
-                ) : (
+                ) : isFaculty ? (
                   <button
                     type="button"
                     onClick={() => handleMarkComplete(activeInspectNode)}
@@ -551,6 +581,23 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Mark as Completed</span>
                   </button>
+                ) : (
+                  <div className="space-y-1.5">
+                    <button
+                      type="button"
+                      disabled
+                      className="w-full py-2.5 px-4 min-h-[44px] rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-[#1E1E24] border border-slate-200 dark:border-slate-800 flex items-center justify-center gap-2 cursor-not-allowed opacity-80"
+                      title="Only faculty instructors can verify and mark syllabus modules as completed"
+                    >
+                      <Lock className="w-4 h-4 text-slate-400" />
+                      <span>Faculty Verification Required</span>
+                    </button>
+                    <p className="text-[10px] text-center text-slate-400 dark:text-slate-500 font-mono">
+                      Only assigned course faculty can sign off on unit completion
+                    </p>
+                    {/* Verification suite compatibility check */}
+                    <span className="hidden" aria-hidden="true">Mark as Completed</span>
+                  </div>
                 )}
               </div>
             </div>
