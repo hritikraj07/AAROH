@@ -28,7 +28,6 @@ import { User, UserRole } from '../../types';
 import { APP_CONFIG } from '../../config';
 import { supabase } from '../../lib/supabase';
 import { SPECIALIZATION_OPTIONS } from '../../utils/curriculumData';
-import { PRE_ENROLLED_FACULTY, PRE_ENROLLED_ADMIN, convertToUser } from '../../data/facultyDirectory';
 import { StorageService } from '../../services/storage';
 
 export const AdminPeoplePage: React.FC = () => {
@@ -38,16 +37,20 @@ export const AdminPeoplePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
 
-  // Supabase Directory Live Data State
+  // Supabase Directory Live Data State: exclusively stores live records from public.aaroh_users
   const [directoryUsers, setDirectoryUsers] = useState<User[]>(() => {
     try {
       const stored = localStorage.getItem('aaroh_users');
-      if (stored) return JSON.parse(stored);
+      if (stored) {
+        const parsed: User[] = JSON.parse(stored);
+        return parsed.filter(u => !u.name?.includes('Shalini Gupta') && !u.name?.includes('Alok Mathur') && !u.name?.includes('Rajiv Sharma') && !u.username?.match(/^FAC1\d\d$/i));
+      }
     } catch {}
     return [];
   });
   const [isLoadingDirectory, setIsLoadingDirectory] = useState(false);
   const [supabaseError, setSupabaseError] = useState<string | null>(null);
+  const [authSessionWarning, setAuthSessionWarning] = useState<string | null>(null);
   const [provisionedToast, setProvisionedToast] = useState<string | null>(null);
 
   // Edit User State
@@ -68,80 +71,85 @@ export const AdminPeoplePage: React.FC = () => {
   const fetchUsers = useCallback(async () => {
     setIsLoadingDirectory(true);
     setSupabaseError(null);
+    setAuthSessionWarning(null);
 
-    // Offline seed check for 12 Faculty Chairs & Admin if not present
-    [...PRE_ENROLLED_FACULTY, PRE_ENROLLED_ADMIN].forEach(acc => {
-      const exists = users.some(u => u.username?.toLowerCase() === acc.username.toLowerCase() || u.email.toLowerCase() === acc.email.toLowerCase());
-      if (!exists) {
-        StorageService.createUser(convertToUser(acc));
-      }
-    });
+    if (!supabase) {
+      setSupabaseError('Supabase client is not configured.');
+      setIsLoadingDirectory(false);
+      return;
+    }
 
-    if (supabase) {
-      try {
-        const { data, error } = await supabase
-          .from('aaroh_users')
-          .select('id, username, email, role, full_name, course, division, auth_user_id')
-          .range(0, 1999)
-          .order('role', { ascending: true })
-          .order('username', { ascending: true });
-
-        if (error) {
-          setSupabaseError(error.message || 'Failed to fetch directory from Supabase.');
-          setIsLoadingDirectory(false);
-          return;
-        }
-
-        if (data && data.length > 0) {
-          const mappedUsers: User[] = data.map((row: any) => {
-            const r = (row.role?.toLowerCase() as UserRole) || 'student';
-            const roll = row.username || (row.email ? row.email.split('@')[0] : '');
-            const emailAddr = row.email || `${roll.toLowerCase()}@aaroh.edu.in`;
-            const fullName = row.full_name || (r === 'admin' ? `Admin ${roll}` : r === 'faculty' ? `Prof. ${roll}` : `Student ${roll}`);
-            const rawCourse = row.course || 'B.Tech CSE';
-            const resolvedCourse = (rawCourse.trim().toLowerCase() === 'b.tech cse (ai/ml)' || rawCourse.trim().toLowerCase() === 'b.tech cse (ai & ml)')
-              ? 'B.Tech CSE (AI & ML)'
-              : rawCourse.trim();
-
-            return {
-              id: row.id || `usr_${roll.toLowerCase()}`,
-              name: fullName,
-              email: emailAddr.toLowerCase(),
-              username: roll,
-              password: roll,
-              role: r,
-              avatarInitials: fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
-              department: r === 'admin' ? 'Central Administration' : 'Computer Science & Engineering',
-              designation: r === 'student' ? 'Undergraduate Scholar' : (r === 'admin' ? 'Campus Administrator' : 'Faculty Member'),
-              rollNumber: roll,
-              program: resolvedCourse,
-              course: resolvedCourse,
-              section: row.division && row.division !== 'none' ? `Section ${row.division}` : 'Section A',
-              division: row.division || 'A',
-              semester: 1,
-              academicYear: APP_CONFIG.academicSession,
-              attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
-            };
-          });
-
-          setDirectoryUsers(mappedUsers);
-          try {
-            localStorage.setItem('aaroh_users', JSON.stringify(mappedUsers));
-            localStorage.setItem('aarohUsers', JSON.stringify(data));
-          } catch {}
-          refreshData();
-        } else if (data && data.length === 0) {
-          setSupabaseError('Supabase returned 0 records. Ensure you are signed in with an authorized Admin account (e.g. ADM001).');
-        }
-      } catch (err: any) {
-        setSupabaseError(err?.message || 'Database connection error.');
-      } finally {
+    try {
+      // 1. Verify Active Supabase Auth Session Before Querying
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (!sessionData?.session || sessionError) {
+        setAuthSessionWarning('Not authenticated with Supabase Auth. Please sign out and log in again with ADM001 so RLS allows reading the directory.');
         setIsLoadingDirectory(false);
+        return;
       }
-    } else {
+
+      // 2. Fetch exclusively from public.aaroh_users
+      const { data, error } = await supabase
+        .from('aaroh_users')
+        .select('id, username, email, role, full_name, course, division, auth_user_id')
+        .range(0, 1999)
+        .order('role', { ascending: true })
+        .order('username', { ascending: true });
+
+      if (error) {
+        setSupabaseError(error.message || 'Failed to fetch directory from Supabase.');
+        setIsLoadingDirectory(false);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const mappedUsers: User[] = data.map((row: any) => {
+          const r = (row.role?.toLowerCase() as UserRole) || 'student';
+          const roll = row.username || (row.email ? row.email.split('@')[0] : '');
+          const emailAddr = row.email || `${roll.toLowerCase()}@aaroh.edu.in`;
+          const fullName = row.full_name || (r === 'admin' ? `Admin ${roll}` : r === 'faculty' ? `Prof. ${roll}` : `Student ${roll}`);
+          const rawCourse = row.course || 'B.Tech CSE';
+          const resolvedCourse = (rawCourse.trim().toLowerCase() === 'b.tech cse (ai/ml)' || rawCourse.trim().toLowerCase() === 'b.tech cse (ai & ml)')
+            ? 'B.Tech CSE (AI & ML)'
+            : rawCourse.trim();
+
+          return {
+            id: row.id || `usr_${roll.toLowerCase()}`,
+            name: fullName,
+            email: emailAddr.toLowerCase(),
+            username: roll,
+            password: roll,
+            role: r,
+            avatarInitials: fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
+            department: r === 'admin' ? 'Central Administration' : (resolvedCourse || 'Computer Science & Engineering'),
+            designation: r === 'student' ? 'Undergraduate Scholar' : (r === 'admin' ? 'Campus Administrator' : 'Faculty Member'),
+            rollNumber: roll,
+            program: resolvedCourse,
+            course: resolvedCourse,
+            section: row.division && row.division !== 'none' ? `Section ${row.division}` : 'Section A',
+            division: row.division || 'A',
+            semester: 1,
+            academicYear: APP_CONFIG.academicSession,
+            attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
+          };
+        });
+
+        setDirectoryUsers(mappedUsers);
+        try {
+          localStorage.setItem('aaroh_users', JSON.stringify(mappedUsers));
+          localStorage.setItem('aarohUsers', JSON.stringify(data));
+        } catch {}
+        refreshData();
+      } else if (data && data.length === 0) {
+        setDirectoryUsers([]);
+        setSupabaseError('Supabase returned 0 records. Ensure you are signed in with an authorized Admin account (e.g. ADM001).');
+      }
+    } catch (err: any) {
+      setSupabaseError(err?.message || 'Database connection error.');
+    } finally {
       setIsLoadingDirectory(false);
     }
-  }, [users, refreshData]);
+  }, [refreshData]);
 
   // Synchronize live public.aaroh_users database directory on load
   useEffect(() => {
@@ -196,10 +204,12 @@ export const AdminPeoplePage: React.FC = () => {
   const [formError, setFormError] = useState<string | null>(null);
 
   // Dynamic list of faculty members for class coordinator assignment
-  const facultyMembers = users.filter(u => u.role === 'faculty');
+  const facultyMembers = directoryUsers.some(u => u.role === 'faculty')
+    ? directoryUsers.filter(u => u.role === 'faculty')
+    : users.filter(u => u.role === 'faculty');
 
-  // Active directory list: live Supabase users if fetched, otherwise local users
-  const activeUsers = directoryUsers.length > 0 ? directoryUsers : users;
+  // Active directory list: exclusively live Supabase directory records
+  const activeUsers = directoryUsers;
 
   // Filtered Users
   const filteredUsers = activeUsers.filter(u => {
@@ -299,21 +309,23 @@ export const AdminPeoplePage: React.FC = () => {
     // Call Supabase admin_provision_user RPC directly
     if (supabase) {
       try {
+        const capitalizedRole = role === 'admin' ? 'Admin' : role === 'faculty' ? 'Faculty' : 'Student';
         const { data, error } = await supabase.rpc('admin_provision_user', {
           p_username: username.trim(),
           p_password: (password || username).trim(),
-          p_role: role,
+          p_role: capitalizedRole,
           p_full_name: fullName.trim(),
           p_course: course,
           p_division: division || 'none'
         });
 
         if (error) {
-          setFormError(error.message || 'Failed to provision user in Supabase.');
+          const exactMsg = error.message || 'Failed to provision user in Supabase.';
+          setFormError(exactMsg);
           showToast({
             type: 'error',
             title: 'Provisioning Failed',
-            message: error.message || 'Supabase RPC error occurred.',
+            message: exactMsg,
           });
           setIsSyncing(false);
           return;
@@ -609,6 +621,30 @@ export const AdminPeoplePage: React.FC = () => {
         </div>
       </div>
 
+      {/* Supabase Auth Session Missing Warning Banner */}
+      {authSessionWarning && (
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/80 rounded-lg text-xs text-amber-900 dark:text-amber-200 flex items-start justify-between gap-3 animate-in fade-in">
+          <div className="flex items-start gap-2.5">
+            <ShieldAlert className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold font-mono">Authentication Required for Live Directory</p>
+              <p className="text-[11px] text-amber-800 dark:text-amber-300 mt-0.5 leading-relaxed font-sans">
+                {authSessionWarning}
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={fetchUsers}
+            disabled={isLoadingDirectory}
+            className="shrink-0 text-xs py-1"
+          >
+            {isLoadingDirectory ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Re-check Session'}
+          </Button>
+        </div>
+      )}
+
       {/* Supabase Error Alert Banner */}
       {supabaseError && (
         <div className="p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-lg text-xs text-rose-800 dark:text-rose-300 flex items-start justify-between gap-3 animate-in fade-in">
@@ -766,39 +802,40 @@ export const AdminPeoplePage: React.FC = () => {
                   <th className="py-3 px-4">User</th>
                   <th className="py-3 px-4">Role</th>
                   <th className="py-3 px-4">Institutional Email</th>
-                  <th className="py-3 px-4">ID / Department</th>
+                  <th className="py-3 px-4">Course & Division</th>
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {filteredUsers.map(u => {
-                  const isCurrent = currentUser?.id === u.id;
+                  const isCurrent = currentUser?.id === u.id || (currentUser?.username && u.username && currentUser.username.toLowerCase() === u.username.toLowerCase());
                   return (
-                    <tr key={u.id} className="hover:bg-slate-50/50">
-                      {/* Name & Avatar */}
+                    <tr key={u.id} className="hover:bg-slate-50/50 dark:hover:bg-zinc-900/50 transition-colors">
+                      {/* Name & Username (row.full_name with row.username below) */}
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-2.5">
                           <div
-                            className={`w-8 h-8 rounded text-white font-mono font-bold text-xs flex items-center justify-center shrink-0 ${u.role === 'admin'
+                            className={`w-8 h-8 rounded text-white font-mono font-bold text-xs flex items-center justify-center shrink-0 ${
+                              u.role === 'admin'
                                 ? 'bg-slate-800'
                                 : u.role === 'faculty'
                                   ? 'bg-blue-800'
                                   : 'bg-teal-700'
-                              }`}
+                            }`}
                           >
                             {u.avatarInitials}
                           </div>
                           <div>
-                            <div className="font-semibold text-slate-900 flex items-center gap-1.5">
+                            <div className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
                               <span>{u.name}</span>
                               {isCurrent && (
-                                <span className="text-[9px] bg-slate-100 text-slate-600 px-1 py-0.2 rounded font-mono">
+                                <span className="text-[9px] bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-slate-300 px-1 py-0.2 rounded font-mono">
                                   You
                                 </span>
                               )}
                             </div>
-                            <div className="text-[11px] text-slate-400">
-                              {u.designation || (u.role === 'student' ? 'Student' : 'Faculty')}
+                            <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                              {u.username || u.rollNumber || 'No ID'}
                             </div>
                           </div>
                         </div>
@@ -807,44 +844,38 @@ export const AdminPeoplePage: React.FC = () => {
                       {/* Role Badge */}
                       <td className="py-3 px-4">
                         <span
-                          className={`text-[10px] font-semibold px-2 py-0.5 rounded font-mono capitalize ${u.role === 'student'
-                              ? 'bg-teal-50 text-teal-800 border border-teal-200'
+                          className={`text-[10px] font-semibold px-2 py-0.5 rounded font-mono capitalize ${
+                            u.role === 'student'
+                              ? 'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800'
                               : u.role === 'faculty'
-                                ? 'bg-blue-50 text-blue-800 border border-blue-200'
-                                : 'bg-purple-50 text-purple-800 border border-purple-200'
-                            }`}
+                                ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
+                                : 'bg-purple-50 dark:bg-purple-950/60 text-purple-800 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
+                          }`}
                         >
                           {u.role}
                         </span>
                       </td>
 
                       {/* Email */}
-                      <td className="py-3 px-4 font-mono text-slate-700">
+                      <td className="py-3 px-4 font-mono text-slate-700 dark:text-slate-300">
                         {u.email}
                       </td>
 
-                      {/* ID / Department */}
+                      {/* Course & Division */}
                       <td className="py-3 px-4">
-                        {u.role === 'student' ? (
-                          <div className="space-y-0.5">
-                            <div className="font-mono font-medium text-slate-800">
-                              {u.rollNumber || 'ID Pending'}
-                            </div>
-                            <div className="text-[11px] text-slate-500">
-                              {u.program || 'B.Tech'} • Sem {u.semester || 1}
-                            </div>
-                            {u.classCoordinator && (
-                              <div className="text-[10px] text-teal-700 font-medium">
-                                Coord: {u.classCoordinator}
-                              </div>
-                            )}
+                        <div className="space-y-0.5">
+                          <div className="font-medium text-slate-800 dark:text-slate-200">
+                            {u.course || u.program || (u.role === 'admin' ? 'All Programmes' : 'B.Tech CSE')}
                           </div>
-                        ) : (
-                          <div className="space-y-0.5">
-                            <div className="font-medium text-slate-800">{u.department}</div>
-                            <div className="text-[11px] text-slate-400">{u.designation}</div>
+                          <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                            {u.division && u.division !== 'none' ? `Division ${u.division}` : (u.section && u.section !== 'none' ? u.section : 'General')}
                           </div>
-                        )}
+                          {u.classCoordinator && (
+                            <div className="text-[10px] text-teal-700 dark:text-teal-400 font-medium">
+                              Coord: {u.classCoordinator}
+                            </div>
+                          )}
+                        </div>
                       </td>
 
                       {/* Actions */}

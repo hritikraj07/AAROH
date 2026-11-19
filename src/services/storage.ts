@@ -123,7 +123,12 @@ export const StorageService = {
 
     // Ensure users directory is seeded and includes admin account, purging legacy demo students/faculty
     const currentUsers = getStored<User[]>(STORAGE_KEYS.USERS, []);
-    const filteredUsers = currentUsers.filter(u => u.role === 'admin' || (!['usr_std_demo', 'usr_std_priya', 'usr_std_rohan', 'usr_fac_demo'].includes(u.id)));
+    const filteredUsers = currentUsers.filter(u => {
+      if (['usr_std_demo', 'usr_std_priya', 'usr_std_rohan', 'usr_fac_demo'].includes(u.id)) return false;
+      if (u.username && /^FAC1\d\d$/i.test(u.username)) return false;
+      if (u.name && (u.name.includes('Shalini Gupta') || u.name.includes('Alok Mathur') || u.name.includes('Rajiv Sharma'))) return false;
+      return true;
+    });
     let usersUpdated = filteredUsers.length !== currentUsers.length;
     const mergedUsers = [...filteredUsers];
     INITIAL_USERS.forEach(initUser => {
@@ -271,7 +276,7 @@ export const StorageService = {
       setStored(STORAGE_KEYS.USERS, INITIAL_USERS);
       return INITIAL_USERS;
     }
-    return users;
+    return users.filter(u => !u.name?.includes('Shalini Gupta') && !u.name?.includes('Alok Mathur') && !u.name?.includes('Rajiv Sharma') && !u.username?.match(/^FAC1\d\d$/i));
   },
 
   getUserById(id: string): User | null {
