@@ -165,7 +165,7 @@ const CAMPUS_DATA: CampusBuildingItem[] = [
 ];
 
 const CAMERA_PRESETS: CameraPreset[] = [
-  { id: 'overview', label: 'Aerial Overview', pos: [0, 68, 86], target: [0, 2, 0] },
+  { id: 'overview', label: 'Aerial Overview', pos: [0, 80, 98], target: [0, 2, 0] },
   { id: 'sunken', label: 'Sunken Garden & Quad', pos: [15, 22, -16], target: [15, 4, 8] },
   { id: 'dblock_ground', label: 'D Block & Bus Ground', pos: [-6, 26, 2], target: [15, 4, -24] },
   { id: 'hostel_sports', label: 'Hostels & Sports Area', pos: [-56, 30, 24], target: [-28, 3, -2] },
@@ -320,8 +320,8 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     scene.background = new THREE.Color(isDarkInit ? '#0F172A' : '#BAE6FD');
     sceneRef.current = scene;
 
-    const camera = new THREE.PerspectiveCamera(38, width / height, 0.5, 450);
-    camera.position.set(0, 68, 86);
+    const camera = new THREE.PerspectiveCamera(42, width / height, 0.5, 450);
+    camera.position.set(0, 80, 98);
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({
@@ -335,6 +335,7 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.04;
+    renderer.domElement.className = 'w-full h-full block';
     rendererRef.current = renderer;
     container.appendChild(renderer.domElement);
 
@@ -1935,6 +1936,7 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
 
     const resizeObserver = new ResizeObserver(() => onResize());
     resizeObserver.observe(container);
+    requestAnimationFrame(onResize);
 
     const clock = new THREE.Clock();
     const tempVec = new THREE.Vector3();
@@ -2018,7 +2020,7 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
   }, [handleSelectBuilding]);
 
   return (
-    <div className={`relative w-full h-full min-h-[640px] overflow-hidden bg-[#F1F5F9] text-[#0F172A] font-sans select-none ${className}`}>
+    <div className={`relative w-full h-full min-h-[480px] overflow-hidden bg-[#F1F5F9] dark:bg-[#0F172A] text-[#0F172A] dark:text-slate-100 font-sans select-none ${className}`}>
       {/* 3D WebGL Viewport */}
       <div ref={mountRef} className="absolute inset-0 w-full h-full" />
 
@@ -2071,8 +2073,8 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       </div>
 
       {/* Bottom Camera Angle Presets Dock */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-white/95 backdrop-blur-sm border border-[#CBD5E1] rounded-lg shadow-sm p-1.5 max-w-[95vw] overflow-x-auto">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B] px-2 hidden sm:inline">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 bg-white/95 dark:bg-[#18181B]/95 backdrop-blur-sm border border-[#CBD5E1] dark:border-[#27272A] rounded-xl shadow-md p-1.5 max-w-[95%] overflow-x-auto">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B] dark:text-slate-400 px-2 hidden sm:inline whitespace-nowrap">
           Views
         </span>
         {CAMERA_PRESETS.map((preset) => (
@@ -2083,10 +2085,10 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
               setSelectedId(null);
               flyTo(preset.pos, preset.target, preset.id);
             }}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
               activePreset === preset.id
-                ? 'bg-[#0F766E] text-white'
-                : 'bg-[#F8FAFC] text-[#334155] hover:bg-[#E2E8F0]/70 border border-[#E2E8F0]'
+                ? 'bg-[#0F766E] text-white shadow-xs'
+                : 'bg-[#F8FAFC] dark:bg-[#111115] text-[#334155] dark:text-slate-300 hover:bg-[#E2E8F0]/70 dark:hover:bg-[#202025] border border-[#E2E8F0] dark:border-[#27272A]'
             }`}
           >
             {preset.label}

@@ -26,7 +26,7 @@ export const CampusMapPage: React.FC = () => {
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 font-sans pb-12 select-none">
       {/* Interactive 3D WebGL Digital Twin of K.R. Mangalam University */}
-      <div className="w-full h-[680px] sm:h-[780px] rounded-2xl overflow-hidden shadow-sm">
+      <div className="h-[calc(100vh-5.5rem)] max-h-[820px] min-h-[480px] w-full flex flex-col rounded-2xl overflow-hidden shadow-sm relative">
         <KrmuCampusExplorer onReportIssue={handleSelectBuilding} />
       </div>
 
