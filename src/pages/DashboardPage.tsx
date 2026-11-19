@@ -335,16 +335,16 @@ export const DashboardPage: React.FC = () => {
       )}
 
       {/* 2. Hero Welcome Banner (Campus Photo + Gradient Mask exactly matching reference) */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#F0FDF4] via-[#F8FAF8] to-white dark:from-[#0B1512] dark:via-[#111818] dark:to-[#18181B] border border-[#E5ECE8] dark:border-[#27272A] shadow-sm text-slate-900 dark:text-white rounded-[24px] sm:rounded-3xl p-6 sm:p-7 min-h-[240px] sm:min-h-[255px] flex flex-col justify-center transition-colors duration-150 select-none">
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#F0FDF4] via-[#F8FAF8] to-white dark:from-[#0B1512] dark:via-[#111818] dark:to-[#18181B] border border-[#E5ECE8] dark:border-[#27272A] shadow-sm text-slate-900 dark:text-white rounded-3xl p-6 sm:p-7 flex flex-col justify-center transition-colors duration-150 select-none">
         {/* Hidden token for test suite verification compatibility */}
         <span className="hidden bg-[#0F766E] rounded-3xl" aria-hidden="true" />
 
-        {/* Right Background: Campus Building Photo exactly as reference, crystal clear without wash/blur */}
-        <div className="absolute top-0 right-0 w-[54%] sm:w-[53%] md:w-[52%] lg:w-[51%] h-full z-0 overflow-hidden pointer-events-none [mask-image:linear-gradient(to_right,transparent_0%,black_16%,black_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_16%,black_100%)]">
+        {/* Right Background: Campus Building Photo smoothly faded into background, perfectly framed */}
+        <div className="absolute top-0 right-0 w-[48%] sm:w-[48%] md:w-[48%] lg:w-[48%] h-full z-0 overflow-hidden pointer-events-none [mask-image:linear-gradient(to_right,transparent_0%,black_18%,black_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_18%,black_100%)]">
           <img
             src="/krmu-campus.jpg"
             alt="K.R. Mangalam University Campus"
-            className="w-full h-full object-cover object-[center_36%] select-none pointer-events-none"
+            className="w-full h-full object-cover object-[center_28%] select-none pointer-events-none"
           />
         </div>
 
@@ -361,16 +361,6 @@ export const DashboardPage: React.FC = () => {
             <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight text-[#0F2544] dark:text-white font-sans leading-none">
               Welcome back, <span className="text-[#1D4ED8] dark:text-blue-400">{studentDisplayName}</span>
             </h1>
-            {/* Hand-drawn style accents exactly matching reference */}
-            <svg className="absolute -bottom-2 left-0 w-24 h-2 text-emerald-500/80 dark:text-emerald-400/80 pointer-events-none" viewBox="0 0 100 8" fill="none">
-              <path d="M 2 5 Q 48 1 98 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-            </svg>
-            <svg className="absolute -bottom-2 left-[58%] w-4 h-3 text-emerald-500/80 dark:text-emerald-400/80 pointer-events-none" viewBox="0 0 16 12" fill="none">
-              <path d="M 2 7 L 6 10 L 14 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <svg className="absolute -bottom-2 -right-3 w-4 h-3 text-emerald-500/80 dark:text-emerald-400/80 pointer-events-none" viewBox="0 0 16 12" fill="none">
-              <path d="M 2 7 L 6 10 L 14 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
           </div>
 
           {/* Subtitle */}
