@@ -1885,4 +1885,39 @@ assert(userTypesContent.includes('avatarUrl?: string;'), 'User interface defines
 
 console.log('--- ALL ROLE-AWARE EDIT PROFILE VERIFICATIONS PASSED ---');
 
+// --- VERIFYING COURSE-SCOPED STUDENT ROSTER ISOLATION & ENROLLMENT LOGIC ---
+console.log('--- VERIFYING COURSE-SCOPED STUDENT ROSTER ISOLATION & ENROLLMENT LOGIC ---');
+const courseEnrollmentUtilsPath = path.join(__dirname, '../src/utils/courseEnrollmentUtils.ts');
+assert(fs.existsSync(courseEnrollmentUtilsPath), 'courseEnrollmentUtils.ts exists');
+const enrollmentUtilsContent = fs.readFileSync(courseEnrollmentUtilsPath, 'utf8');
+
+assert(enrollmentUtilsContent.includes('getEnrolledStudentsForCourse'), 'courseEnrollmentUtils exports getEnrolledStudentsForCourse');
+assert(enrollmentUtilsContent.includes('SEED_COURSE_STUDENTS'), 'courseEnrollmentUtils defines SEED_COURSE_STUDENTS');
+assert(enrollmentUtilsContent.includes('c_python_aiml') && enrollmentUtilsContent.includes('c_webdev_aiml'), 'courseEnrollmentUtils provides distinct course rosters');
+
+// Check User & Course type definitions
+assert(userTypesContent.includes('enrolledCourseIds?: string[];'), 'User interface defines enrolledCourseIds');
+assert(userTypesContent.includes('program?: string;') && userTypesContent.includes('semester?: number;'), 'Course interface defines program and semester');
+
+// Check Faculty Attendance Page course scoping
+const facAttendanceContent = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyAttendancePage.tsx'), 'utf8');
+assert(facAttendanceContent.includes('getEnrolledStudentsForCourse'), 'FacultyAttendancePage imports and calls getEnrolledStudentsForCourse');
+assert(facAttendanceContent.includes('setQrVerifiedStudentIds(verifiedIds)'), 'FacultyAttendancePage isolates verified scans per session');
+
+// Check Faculty Gradebook Page course scoping
+const facGradebookContent = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyGradebookPage.tsx'), 'utf8');
+assert(facGradebookContent.includes('getEnrolledStudentsForCourse'), 'FacultyGradebookPage imports and calls getEnrolledStudentsForCourse');
+assert(facGradebookContent.includes('selectedCourseId') && facGradebookContent.includes('selectedSemester'), 'FacultyGradebookPage scopes enrolled students to selected course and semester');
+
+// Check Faculty QR Session Modal course scoping
+const facQRModalContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/attendance/FacultyQRSessionModal.tsx'), 'utf8');
+assert(facQRModalContent.includes('enrolledStudents'), 'FacultyQRSessionModal accepts enrolledStudents prop');
+assert(facQRModalContent.includes('baseSessionCode'), 'FacultyQRSessionModal derives course-scoped session code');
+
+// Check Admin Attendance Page course scoping
+const adminAttendanceContent = fs.readFileSync(path.join(__dirname, '../src/pages/admin/AdminAttendancePage.tsx'), 'utf8');
+assert(adminAttendanceContent.includes('getEnrolledStudentsForCourse'), 'AdminAttendancePage imports and calls getEnrolledStudentsForCourse');
+
+console.log('--- ALL COURSE-SCOPED STUDENT ROSTER ISOLATION VERIFICATIONS PASSED ---');
+
 module.exports = { assert };

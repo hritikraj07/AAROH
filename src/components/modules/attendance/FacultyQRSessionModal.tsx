@@ -79,11 +79,12 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
         if (raw) {
           const parsed = JSON.parse(raw);
           const list: any[] = Array.isArray(parsed) ? parsed : [];
+          const isCsCourse = !session.courseCode || session.courseCode.toUpperCase().startsWith('CS') || baseSessionCode === 'CS-5831';
           const currentSessionScans = list.filter(s => {
             if (!s) return false;
             // 1. Session code match (e.g. CS-5831 or active code)
             if (s.sessionCode && baseSessionCode && String(s.sessionCode).toUpperCase() === baseSessionCode.toUpperCase()) return true;
-            if (s.sessionCode && String(s.sessionCode).toUpperCase() === 'CS-5831') return true;
+            if (isCsCourse && s.sessionCode && String(s.sessionCode).toUpperCase() === 'CS-5831') return true;
             // 2. Class ID / Session ID match
             if (session.id && (s.classId === session.id || s.sessionId === session.id)) return true;
             // 3. Course ID / Subject ID match
@@ -404,7 +405,9 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
 
           {checkedInScans.length === 0 ? (
             <p className="text-[11px] text-slate-400 dark:text-slate-500 font-mono text-center py-1.5">
-              Waiting for students to scan QR or submit code...
+              {enrolledStudents.length === 0
+                ? 'No students enrolled for this course.'
+                : 'Waiting for students to scan QR or submit code...'}
             </p>
           ) : (
             <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pt-1">

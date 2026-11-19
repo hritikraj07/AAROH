@@ -24,6 +24,7 @@ export interface User {
   classCoordinator?: string; // Assigned faculty mentor / coordinator
   savedOpportunityIds?: string[]; // Saved opportunities per user
   skills?: string[]; // Self-reported student technical skills
+  enrolledCourseIds?: string[]; // Explicit course enrollments (course IDs or course codes)
 }
 
 // Student is an alias of User for full backward compatibility
@@ -38,6 +39,8 @@ export interface Course {
   facultyEmail: string;
   roomDefault: string;
   colorTag: string; // badge accent
+  program?: string;
+  semester?: number;
 }
 
 export type ClassType = 'Lecture' | 'Lab' | 'Tutorial' | 'PP' | 'PR';

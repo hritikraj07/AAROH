@@ -4,6 +4,7 @@ import { AssessmentType, SemesterGrade } from '../../types';
 import { Award, BookOpen, Save, Search, GraduationCap, Code2, Users } from 'lucide-react';
 import { getStoredSemesterGrades, saveStoredSemesterGrades, marksToGradePoint, marksToLetterGrade } from '../../utils/gradeUtils';
 import { CustomDropdown, CustomDropdownOption } from '../../components/ui/CustomDropdown';
+import { getEnrolledStudentsForCourse } from '../../utils/courseEnrollmentUtils';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
 const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
@@ -79,13 +80,20 @@ export const FacultyGradebookPage: React.FC = () => {
   // Both class and course must be selected to reveal the student list
   const isSelectionComplete = selectedSemester !== '' && selectedCourseId !== '';
 
-  // Enrolled students filtered by semester if available
+  // Enrolled students filtered by course and semester
   const enrolledStudents = useMemo(() => {
-    const allStudents = users.filter(u => u.role === 'student');
-    if (!selectedSemester) return [];
-    const matched = allStudents.filter(st => st.semester && Number(st.semester) === Number(selectedSemester));
-    return matched.length > 0 ? matched : allStudents;
-  }, [users, selectedSemester]);
+    if (!selectedSemester || !selectedCourseId) return [];
+    return getEnrolledStudentsForCourse(
+      selectedCourseId,
+      {
+        semester: Number(selectedSemester),
+        courseId: selectedCourseId,
+        courseCode: currentCourse?.code,
+        program: currentCourse?.program || 'B.Tech CSE',
+      },
+      users
+    );
+  }, [users, selectedSemester, selectedCourseId, currentCourse]);
 
   // Local state for mark inputs (0 to 100): mapping studentId -> marks
   const [marksState, setMarksState] = useState<Record<string, number>>({});

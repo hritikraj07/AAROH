@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   ShieldCheck,
 } from 'lucide-react';
+import { getEnrolledStudentsForCourse } from '../../utils/courseEnrollmentUtils';
 
 export const AdminAttendancePage: React.FC = () => {
   const { courses, timetable, users, attendance, recordBatchAttendance, showToast } = useApp();
@@ -47,8 +48,12 @@ export const AdminAttendancePage: React.FC = () => {
     return courseMap.get(selectedCourseId) || courses[0];
   }, [courseMap, selectedCourseId, courses]);
 
-  // Enrolled students matching session program and semester
+  // Enrolled students matching session program, semester, and course
   const enrolledStudents = useMemo(() => {
+    const courseKey = selectedCourseId || selectedSession?.courseId || '';
+    const baseList = getEnrolledStudentsForCourse(courseKey, selectedSession, users);
+    if (baseList.length > 0) return baseList;
+
     const students = users.filter(u => u.role === 'student');
     if (!selectedSession) return students;
 
@@ -66,7 +71,7 @@ export const AdminAttendancePage: React.FC = () => {
     });
 
     return matched.length > 0 ? matched : students;
-  }, [selectedSession, users]);
+  }, [selectedCourseId, selectedSession, users]);
 
   // Attendance Marks State: studentId -> boolean (true = present, false = absent)
   const [marks, setMarks] = useState<Record<string, boolean>>({});

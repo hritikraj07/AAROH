@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { ClassSession, User } from '../../types';
 import { FacultyQRSessionModal, isStudentMatch } from '../../components/modules/attendance/FacultyQRSessionModal';
+import { getEnrolledStudentsForCourse } from '../../utils/courseEnrollmentUtils';
 
 const safeStr = (val: any): string => (typeof val === 'string' ? val : '');
 
@@ -178,67 +179,44 @@ export const FacultyAttendancePage: React.FC = () => {
   const enrolledStudents = useMemo(() => {
     if (!selectedSession) return [];
 
-    const baseStudents = users.filter(u => u && u.role === 'student');
-    const students = baseStudents.length > 0 ? baseStudents : DEFAULT_STUDENT_ROSTER;
-    const targetCourse = safeStr(user?.course || selectedSession.program);
+    const courseKey = selectedSession.courseId || selectedSession.courseCode || '';
+    const baseList = getEnrolledStudentsForCourse(courseKey, selectedSession, users);
+    let list = baseList.length > 0 ? [...baseList] : [];
 
-    // Filter by program and semester if present on session
-    const matched = students.filter(st => {
-      if (!st) return false;
-      const prog = safeStr(st.course || st.program);
-      if (targetCourse && prog) {
-        const p1 = prog.toLowerCase().trim();
-        const p2 = targetCourse.toLowerCase().trim();
-        const isAiml = (p1 === 'b.tech cse (ai & ml)' || p1 === 'b.tech cse (ai/ml)') &&
-                       (p2 === 'b.tech cse (ai & ml)' || p2 === 'b.tech cse (ai/ml)');
-        const progMatch =
-          isAiml ||
-          p1.includes(p2) ||
-          p2.includes(p1);
-        if (!progMatch) return false;
-      }
-      if (selectedSession.semester && st.semester) {
-        if (Number(st.semester) !== Number(selectedSession.semester)) return false;
-      }
-      return true;
-    });
+    // Fallback if no specific course match found: filter users by program / semester
+    if (list.length === 0) {
+      const baseStudents = users.filter(u => u && u.role === 'student');
+      const students = baseStudents.length > 0 ? baseStudents : DEFAULT_STUDENT_ROSTER;
+      const targetCourse = safeStr(user?.course || selectedSession.program);
 
-    let list = [...(matched.length > 0 ? matched : students)];
-
-    // Guarantee that student Aarav Sharma (22CS042) is always present in enrolled roster
-    const hasAarav = list.some(st => st && (st.rollNumber === '22CS042' || (st.name && st.name.toLowerCase().includes('aarav'))));
-    if (!hasAarav) {
-      const aaravStudent = DEFAULT_STUDENT_ROSTER.find(s => s.rollNumber === '22CS042');
-      if (aaravStudent) {
-        list = [aaravStudent, ...list];
-      }
+      list = students.filter(st => {
+        if (!st) return false;
+        const prog = safeStr(st.course || st.program);
+        if (targetCourse && prog) {
+          const p1 = prog.toLowerCase().trim();
+          const p2 = targetCourse.toLowerCase().trim();
+          const isAiml = (p1 === 'b.tech cse (ai & ml)' || p1 === 'b.tech cse (ai/ml)') &&
+                         (p2 === 'b.tech cse (ai & ml)' || p2 === 'b.tech cse (ai/ml)');
+          const progMatch = isAiml || p1.includes(p2) || p2.includes(p1);
+          if (!progMatch) return false;
+        }
+        if (selectedSession.semester && st.semester) {
+          if (Number(st.semester) !== Number(selectedSession.semester)) return false;
+        }
+        return true;
+      });
     }
 
-    // Guarantee demo cohort Pankaj, Mohak, Mukesh are present for Quick Check-in
-    const hasPankaj = list.some(st => st?.name && st.name.toLowerCase().includes('pankaj'));
-    if (!hasPankaj) {
-      const p = DEFAULT_STUDENT_ROSTER.find(s => s.name?.toLowerCase().includes('pankaj'));
-      if (p) list.push(p);
-    }
-    const hasMohak = list.some(st => st?.name && st.name.toLowerCase().includes('mohak'));
-    if (!hasMohak) {
-      const m = DEFAULT_STUDENT_ROSTER.find(s => s.name?.toLowerCase().includes('mohak'));
-      if (m) list.push(m);
-    }
-    const hasMukesh = list.some(st => st?.name && st.name.toLowerCase().includes('mukesh'));
-    if (!hasMukesh) {
-      const mu = DEFAULT_STUDENT_ROSTER.find(s => s.name?.toLowerCase().includes('mukesh'));
-      if (mu) list.push(mu);
-    }
-
-    // Dynamically append any student who verified attendance via QR scan
+    // Dynamically append any student who verified attendance via QR scan for this session or course
     const scans = getSafeArrayFromStorage<any>('aaroh_qr_attendance_scans');
+    const isCsCourse = !selectedSession.courseCode || selectedSession.courseCode.toUpperCase().startsWith('CS');
     scans.forEach(scan => {
       if (!scan) return;
       const isMatch =
-        (scan.sessionCode && String(scan.sessionCode).toUpperCase() === 'CS-5831') ||
         (selectedSession.id && (scan.classId === selectedSession.id || scan.sessionId === selectedSession.id)) ||
-        (selectedSession.courseId && (scan.courseId === selectedSession.courseId || scan.subjectId === selectedSession.courseId));
+        (selectedSession.courseId && (scan.courseId === selectedSession.courseId || scan.subjectId === selectedSession.courseId)) ||
+        (selectedSession.courseCode && scan.courseCode && String(scan.courseCode).toUpperCase() === String(selectedSession.courseCode).toUpperCase()) ||
+        (isCsCourse && scan.sessionCode && String(scan.sessionCode).toUpperCase() === 'CS-5831');
       if (isMatch) {
         const alreadyInList = list.some(st => isStudentMatch(scan, st));
         if (!alreadyInList) {
@@ -248,10 +226,10 @@ export const FacultyAttendancePage: React.FC = () => {
             rollNumber: scan.studentRoll || '22CS042',
             email: scan.studentEmail || 'aarav.sharma@aaroh.edu.in',
             role: 'student',
-            program: 'B.Tech CSE',
-            course: 'B.Tech CSE',
-            semester: 5,
-            section: 'A',
+            program: selectedSession.program || 'B.Tech CSE',
+            course: selectedSession.program || 'B.Tech CSE',
+            semester: selectedSession.semester || 1,
+            section: selectedSession.section || 'A',
             department: 'Computer Science & Engineering',
             designation: 'Undergraduate Scholar',
             avatarInitials: safeInitials(scan.studentName, scan.studentRoll),
@@ -302,10 +280,12 @@ export const FacultyAttendancePage: React.FC = () => {
           // ignore
         }
 
+        const isCsCourse = !selectedSession.courseCode || selectedSession.courseCode.toUpperCase().startsWith('CS');
+
         const matchingScans = scans.filter(
           (s: any) =>
             (s.sessionCode && activeSessionCode && String(s.sessionCode).toUpperCase() === activeSessionCode.toUpperCase()) ||
-            (s.sessionCode && String(s.sessionCode).toUpperCase() === 'CS-5831') ||
+            (isCsCourse && s.sessionCode && String(s.sessionCode).toUpperCase() === 'CS-5831') ||
             (s.classId && (s.classId === selectedSession.id || s.sessionId === selectedSession.id)) ||
             (s.courseId && (s.courseId === selectedSession.courseId || s.subjectId === selectedSession.courseId)) ||
             (s.token && typeof s.token === 'string' && selectedSession.id && s.token.startsWith(selectedSession.id))
@@ -319,16 +299,16 @@ export const FacultyAttendancePage: React.FC = () => {
           }
         });
 
-        if (verifiedIds.size > 0) {
-          setQrVerifiedStudentIds(verifiedIds);
-        }
+        setQrVerifiedStudentIds(verifiedIds);
+      } else {
+        setQrVerifiedStudentIds(new Set());
       }
     } catch {
       // ignore
     }
 
     setMarks(initialMarks);
-  }, [selectedSessionId, enrolledStudents.length]);
+  }, [selectedSessionId, enrolledStudents]);
 
   // Handle starting a live QR session
   const handleStartQRSession = () => {
@@ -365,10 +345,12 @@ export const FacultyAttendancePage: React.FC = () => {
           // ignore
         }
 
+        const isCsCourse = !selectedSession.courseCode || selectedSession.courseCode.toUpperCase().startsWith('CS');
+
         const matchingScans = scans.filter(
           (s: any) =>
             (s.sessionCode && activeSessionCode && String(s.sessionCode).toUpperCase() === activeSessionCode.toUpperCase()) ||
-            (s.sessionCode && String(s.sessionCode).toUpperCase() === 'CS-5831') ||
+            (isCsCourse && s.sessionCode && String(s.sessionCode).toUpperCase() === 'CS-5831') ||
             (s.classId && (s.classId === selectedSession.id || s.sessionId === selectedSession.id)) ||
             (s.courseId && (s.courseId === selectedSession.courseId || s.subjectId === selectedSession.courseId)) ||
             (s.token && typeof s.token === 'string' && selectedSession.id && s.token.startsWith(selectedSession.id))
