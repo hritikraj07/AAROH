@@ -491,11 +491,11 @@ export const LoginPage: React.FC = () => {
       </div>
 
       {/* 4. The Glassmorphism Login Card: Floating on the right matching reference layout */}
-      <div className="relative z-20 w-full max-w-sm sm:w-[400px] lg:w-[420px] max-h-[96vh] py-5 sm:py-6 px-5 sm:px-7 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-3xl border border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-center overflow-y-auto shrink-0 my-auto">
-        {/* Form Section: Vertically balanced with even top and bottom spacing */}
-        <div className="my-auto flex flex-col space-y-3 sm:space-y-3.5 py-1">
+      <div className="relative z-20 w-full max-w-sm sm:w-[400px] lg:w-[420px] max-h-[96vh] py-6 sm:py-7 px-5 sm:px-7 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-3xl border border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-center overflow-y-auto shrink-0 my-auto">
+        {/* Form Section: Vertically balanced with generous breathing room */}
+        <div className="my-auto flex flex-col space-y-3.5 sm:space-y-4 py-1">
           {/* Header: Logo, Aaroh, Subtitle, and Sign In heading */}
-          <div className="flex flex-col items-center justify-center text-center space-y-0.5">
+          <div className="flex flex-col items-center justify-center text-center space-y-0.5 pb-1">
             <div className="flex items-center justify-center gap-2">
               <Logo size="md" />
             </div>
@@ -509,17 +509,17 @@ export const LoginPage: React.FC = () => {
 
           {/* Error Alert */}
           {errorMessage && (
-            <div className="p-2 bg-rose-50/80 dark:bg-rose-950/50 border border-rose-200/80 dark:border-rose-900/60 rounded-xl text-xs text-rose-800 dark:text-rose-300 flex items-start gap-2 animate-in fade-in duration-150">
+            <div className="p-2.5 bg-rose-50/80 dark:bg-rose-950/50 border border-rose-200/80 dark:border-rose-900/60 rounded-xl text-xs text-rose-800 dark:text-rose-300 flex items-start gap-2 animate-in fade-in duration-150">
               <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
               <span className="leading-tight">{errorMessage}</span>
             </div>
           )}
 
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} autoComplete="off" className="space-y-2.5 sm:space-y-3">
+          {/* Login Form: Clear, spacious separation between all input boxes */}
+          <form onSubmit={handleSubmit} autoComplete="off" className="space-y-3.5 sm:space-y-4">
             {/* 1. ROLE Dropdown */}
             <div>
-              <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
+              <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
                 ROLE
               </label>
               <div className="relative">
@@ -528,7 +528,7 @@ export const LoginPage: React.FC = () => {
                   value={selectedRole}
                   onChange={(r) => handleRoleChange(r)}
                   options={roleOptions}
-                  buttonClassName="bg-white/70 dark:bg-black/60 border-slate-200/80 dark:border-white/10 py-1.5"
+                  buttonClassName="bg-white/70 dark:bg-black/60 border-slate-200/80 dark:border-white/10 py-2"
                 />
 
                 {/* Underlying select to maintain verification suite compatibility */}
@@ -548,7 +548,7 @@ export const LoginPage: React.FC = () => {
 
             {/* 2. INSTITUTIONAL EMAIL / ROLL NUMBER Input */}
             <div>
-              <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
+              <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
                 ROLL NUMBER OR INSTITUTIONAL EMAIL
               </label>
               <div className="relative">
@@ -559,14 +559,14 @@ export const LoginPage: React.FC = () => {
                   value={email}
                   onChange={e => handleEmailChange(e.target.value)}
                   placeholder="e.g. 2601010006 or aarav.sharma@aaroh.edu.in"
-                  className="w-full min-h-[38px] sm:min-h-[40px] text-xs font-mono pl-9 pr-3 py-1.5 sm:py-2 bg-white/80 dark:bg-black/70 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors shadow-xs"
+                  className="w-full min-h-[40px] sm:min-h-[42px] text-xs font-mono pl-9 pr-3 py-2 bg-white/80 dark:bg-black/70 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors shadow-xs"
                 />
               </div>
             </div>
 
             {/* 3. PASSWORD Input */}
             <div>
-              <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
+              <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
                 PASSWORD
               </label>
               <div className="relative">
@@ -586,7 +586,7 @@ export const LoginPage: React.FC = () => {
                     if (errorMessage) setErrorMessage(null);
                   }}
                   placeholder="••••••••••••"
-                  className="w-full min-h-[38px] sm:min-h-[40px] text-xs font-mono pl-9 pr-10 py-1.5 sm:py-2 bg-white/80 dark:bg-black/70 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors shadow-xs"
+                  className="w-full min-h-[40px] sm:min-h-[42px] text-xs font-mono pl-9 pr-10 py-2 bg-white/80 dark:bg-black/70 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors shadow-xs"
                 />
                 <button
                   type="button"
@@ -601,17 +601,19 @@ export const LoginPage: React.FC = () => {
             </div>
 
             {/* Primary Action Button: "Sign In ->" */}
-            <button
-              type="submit"
-              disabled={loading}
-              className={`w-full min-h-[40px] sm:min-h-[42px] inline-flex items-center justify-center gap-1.5 py-2 px-4 text-xs font-bold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} disabled:opacity-50 select-none cursor-pointer mt-0.5`}
-            >
-              <span>{loading ? 'Authenticating...' : 'Sign In ->'}</span>
-            </button>
+            <div className="pt-2 sm:pt-2.5">
+              <button
+                type="submit"
+                disabled={loading}
+                className={`w-full min-h-[42px] sm:min-h-[44px] inline-flex items-center justify-center gap-1.5 py-2.5 px-4 text-xs font-bold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} disabled:opacity-50 select-none cursor-pointer`}
+              >
+                <span>{loading ? 'Authenticating...' : 'Sign In ->'}</span>
+              </button>
+            </div>
           </form>
 
-          {/* Demo Quick Access Section */}
-          <div className="space-y-1.5 pt-0.5">
+          {/* Demo Quick Access Section with generous vertical spacing above and below */}
+          <div className="pt-4 sm:pt-5 space-y-3">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-200 dark:border-slate-800" />
@@ -623,8 +625,8 @@ export const LoginPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Role Buttons Row: student faculty admin in this order */}
-            <div className="grid grid-cols-3 gap-2">
+            {/* Role Buttons Row: student faculty admin in this order with clear spacing from divider */}
+            <div className="grid grid-cols-3 gap-2 pt-1.5">
               <button
                 type="button"
                 onClick={() => handleQuickDemoLogin('student')}
