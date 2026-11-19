@@ -12,6 +12,7 @@ import { useApp } from '../../../context/AppContext';
 import { CodingLab } from '../../../types';
 import { StudentLabWorkspaceModal } from './StudentLabWorkspaceModal';
 import { TopographicBg } from '../../ui/TopographicBg';
+import { stripMarkdown } from '../../../utils/markdownUtils';
 
 // Custom 4-layer premium button shadows
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
@@ -154,32 +155,32 @@ export const StudentPendingLabsSection: React.FC = () => {
                   return (
                     <div
                       key={lab.id}
-                      className="p-5 rounded-2xl border border-slate-200 dark:border-[#27272A] bg-slate-50/60 dark:bg-[#111115] hover:border-teal-500/50 transition-all flex flex-col justify-between space-y-4"
+                      className="min-w-0 p-5 rounded-2xl border border-slate-200 dark:border-[#27272A] bg-slate-50/60 dark:bg-[#111115] hover:border-teal-500/50 transition-all flex flex-col justify-between space-y-4"
                     >
-                      <div className="space-y-3">
+                      <div className="min-w-0 space-y-3">
                         {/* Status Header Badge */}
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
+                          <span className="whitespace-nowrap shrink-0 text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
                             Sem {lab.semester} • {lab.subject}
                           </span>
 
                           {/* Time State Badge */}
                           {isTooEarly && (
-                            <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800 flex items-center gap-1">
+                            <span className="whitespace-nowrap shrink-0 text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800 flex items-center gap-1">
                               <Lock className="w-3 h-3" />
                               <span>Starts in {getTimeRemainingText(startTime)}</span>
                             </span>
                           )}
 
                           {isActive && (
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800 flex items-center gap-1 animate-pulse">
+                            <span className="whitespace-nowrap shrink-0 text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800 flex items-center gap-1 animate-pulse">
                               <Clock className="w-3 h-3 text-[#0F766E]" />
                               <span>Live: {getTimeRemainingText(endTime)} left</span>
                             </span>
                           )}
 
                           {isExpired && (
-                            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-800 flex items-center gap-1">
+                            <span className="whitespace-nowrap shrink-0 text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/50 dark:text-red-400 dark:border-red-800 flex items-center gap-1">
                               <AlertCircle className="w-3 h-3" />
                               <span>Deadline Passed / Locked</span>
                             </span>
@@ -187,12 +188,12 @@ export const StudentPendingLabsSection: React.FC = () => {
                         </div>
 
                         {/* Lab Info */}
-                        <div>
-                          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 line-clamp-1">
+                        <div className="min-w-0">
+                          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
                             {lab.title}
                           </h3>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1">
-                            {lab.problemStatement}
+                          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1 leading-relaxed">
+                            {stripMarkdown(lab.problemStatement)}
                           </p>
                         </div>
 
@@ -210,55 +211,53 @@ export const StudentPendingLabsSection: React.FC = () => {
                       </div>
 
                       {/* Card Action Footer with Strict Button Logic */}
-                      <div className="pt-3 border-t border-slate-200/60 dark:border-[#27272A] flex items-center justify-between gap-2">
+                      <div className="pt-3 border-t border-slate-200/60 dark:border-[#27272A] flex items-center justify-between gap-3">
                         {/* State 1: Too Early (Disabled, Deep Teal text countdown/unlock) */}
                         {isTooEarly && (
-                          <div className="w-full flex items-center justify-between gap-2">
-                            <span className="text-[11px] font-mono text-[#0F766E] dark:text-teal-400 font-semibold flex items-center gap-1">
-                              <Lock className="w-3.5 h-3.5" />
+                          <div className="w-full flex items-center justify-between gap-3">
+                            <span className="text-[11px] font-mono text-[#0F766E] dark:text-teal-400 font-semibold truncate flex items-center gap-1">
+                              <Lock className="w-3.5 h-3.5 shrink-0" />
                               <span>Lab unlocks at {formatUnlockTime(lab.windowStartTime)}</span>
                             </span>
                             <button
                               type="button"
                               disabled
-                              className="px-3 py-1.5 rounded-full text-xs font-mono font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 opacity-60 cursor-not-allowed"
+                              className="whitespace-nowrap shrink-0 px-4 py-2 rounded-lg text-xs font-mono font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 opacity-60 cursor-not-allowed"
                             >
                               Open Lab
                             </button>
                           </div>
                         )}
 
-                        {/* State 2: Active (Enabled Open Lab / Launch Workspace button with 4-layer shadow) */}
+                        {/* State 2: Active (Enabled Open Lab button on a single line) */}
                         {isActive && (
-                          <div className="w-full flex items-center justify-between gap-2">
-                            <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
-                              <ShieldCheck className="w-3.5 h-3.5 text-[#0F766E]" />
-                              <span>Proctored Workspace Ready</span>
+                          <div className="w-full flex items-center justify-between gap-3">
+                            <span className="text-[11px] font-mono text-slate-600 dark:text-slate-400 truncate flex items-center gap-1">
+                              <span>Closes {formatUnlockTime(lab.windowEndTime)}</span>
                             </span>
                             <button
                               type="button"
                               onClick={() => handleOpenLab(lab)}
-                              className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 text-white text-xs font-semibold px-4 py-1.5 transition-all duration-200 active:scale-95 cursor-pointer flex items-center gap-1.5 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+                              className={`whitespace-nowrap shrink-0 px-4 py-2 rounded-lg bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 text-white text-xs font-semibold transition-all duration-200 active:scale-95 cursor-pointer flex items-center gap-1.5 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
                             >
                               <span>Open Lab</span>
-                              <span className="text-[10px] opacity-75 font-mono">• Launch Workspace</span>
-                              <ArrowRight className="w-3 h-3 ml-0.5" />
+                              <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
                             </button>
                           </div>
                         )}
 
                         {/* State 3: Expired (Permanently disabled button with red badge) */}
                         {isExpired && (
-                          <div className="w-full flex items-center justify-between gap-2">
-                            <span className="text-[10px] font-mono font-bold uppercase text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/60 px-2 py-0.5 rounded border border-red-200 dark:border-red-900">
-                              Deadline Passed / Locked
+                          <div className="w-full flex items-center justify-between gap-3">
+                            <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 truncate">
+                              Window Closed
                             </span>
                             <button
                               type="button"
                               disabled
-                              className="px-3 py-1.5 rounded-full text-xs font-mono font-medium text-red-400 bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 opacity-60 cursor-not-allowed"
+                              className="whitespace-nowrap shrink-0 px-4 py-2 rounded-lg text-xs font-mono font-medium text-red-400 bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 opacity-60 cursor-not-allowed"
                             >
-                              Open Lab
+                              Window Closed
                             </button>
                           </div>
                         )}

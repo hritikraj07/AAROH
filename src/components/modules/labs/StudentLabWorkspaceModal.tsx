@@ -262,16 +262,128 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
   };
 
   const formatTimer = (totalSecs: number) => {
-    const m = Math.floor(totalSecs / 60);
-    const s = totalSecs % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    if (totalSecs <= 0) return '00:00';
+    const days = Math.floor(totalSecs / 86400);
+    const hours = Math.floor((totalSecs % 86400) / 3600);
+    const mins = Math.floor((totalSecs % 3600) / 60);
+    const secs = totalSecs % 60;
+
+    if (days > 0) {
+      return `${days}d ${hours}h remaining`;
+    }
+    if (hours > 0) {
+      return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const renderProblemStatement = (content: string) => {
+    if (!content) return null;
+    const lines = content.split('\n');
+    const elements: React.ReactNode[] = [];
+    let inCodeBlock = false;
+    let codeBuffer: string[] = [];
+
+    lines.forEach((line, idx) => {
+      const trimmed = line.trim();
+
+      if (trimmed.startsWith('```')) {
+        if (inCodeBlock) {
+          elements.push(
+            <pre
+              key={`code-${idx}`}
+              className="p-3 my-2 rounded-xl bg-slate-900 text-teal-300 font-mono text-xs overflow-x-auto border border-slate-800 leading-relaxed"
+            >
+              <code>{codeBuffer.join('\n')}</code>
+            </pre>
+          );
+          codeBuffer = [];
+          inCodeBlock = false;
+        } else {
+          inCodeBlock = true;
+        }
+        return;
+      }
+
+      if (inCodeBlock) {
+        codeBuffer.push(line);
+        return;
+      }
+
+      if (!trimmed) {
+        elements.push(<div key={`sp-${idx}`} className="h-1.5" />);
+        return;
+      }
+
+      if (trimmed.startsWith('# ')) {
+        elements.push(
+          <h2 key={`h1-${idx}`} className="text-base font-bold text-slate-900 dark:text-white mt-1 mb-2 font-sans">
+            {trimmed.replace(/^#\s+/, '')}
+          </h2>
+        );
+        return;
+      }
+
+      if (trimmed.startsWith('## ') || trimmed.startsWith('### ')) {
+        elements.push(
+          <h3 key={`h3-${idx}`} className="text-xs font-bold text-[#0F766E] dark:text-teal-400 font-mono uppercase tracking-wider mt-3 mb-1">
+            {trimmed.replace(/^#{2,3}\s+/, '')}
+          </h3>
+        );
+        return;
+      }
+
+      const renderInline = (str: string) => {
+        const parts = str.split(/(`[^`]+`|\*\*[^*]+\*\*)/g);
+        return parts.map((part, pIdx) => {
+          if (part.startsWith('`') && part.endsWith('`')) {
+            return (
+              <code
+                key={pIdx}
+                className="px-1.5 py-0.5 rounded bg-slate-200/80 dark:bg-slate-800 text-teal-800 dark:text-teal-300 font-mono text-[11px]"
+              >
+                {part.slice(1, -1)}
+              </code>
+            );
+          }
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return (
+              <strong key={pIdx} className="font-semibold text-slate-900 dark:text-white">
+                {part.slice(2, -2)}
+              </strong>
+            );
+          }
+          return part;
+        });
+      };
+
+      if (/^\d+\.\s+/.test(trimmed)) {
+        elements.push(
+          <div key={`li-${idx}`} className="flex items-start gap-2 pl-1 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
+            <span className="font-mono text-teal-600 dark:text-teal-400 font-semibold shrink-0">
+              {trimmed.match(/^\d+\./)?.[0]}
+            </span>
+            <span className="min-w-0">{renderInline(trimmed.replace(/^\d+\.\s+/, ''))}</span>
+          </div>
+        );
+        return;
+      }
+
+      elements.push(
+        <p key={`p-${idx}`} className="text-xs leading-relaxed text-slate-600 dark:text-slate-300 font-sans">
+          {renderInline(trimmed)}
+        </p>
+      );
+    });
+
+    return <div className="space-y-1.5">{elements}</div>;
   };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-[#0E0E11] border border-slate-200 dark:border-[#27272A] w-full max-w-6xl h-[95vh] rounded-xl shadow-lg flex flex-col overflow-hidden relative transition-colors">
+      <div className="bg-white dark:bg-[#0E0E11] border border-slate-200 dark:border-[#27272A] w-full max-w-6xl max-h-[88vh] h-[88vh] rounded-2xl shadow-xl flex flex-col overflow-hidden relative transition-colors">
         
         {/* Workspace Top Bar */}
         <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-200 dark:border-[#27272A] bg-slate-50/80 dark:bg-[#18181B] flex items-center justify-between gap-3 shrink-0 select-none">
@@ -284,7 +396,7 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
                 <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 font-sans tracking-tight truncate">
                   {lab.title}
                 </h2>
-                <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800 shrink-0">
+                <span className="whitespace-nowrap shrink-0 text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
                   {lab.subject} • Sem {lab.semester}
                 </span>
               </div>
@@ -296,7 +408,7 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
 
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Proctor Security Badge */}
-            <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border transition-colors ${
+            <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold border transition-colors whitespace-nowrap shrink-0 ${
               proctorStrikes === 0
                 ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800'
                 : proctorStrikes === 1
@@ -322,7 +434,7 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
             </div>
 
             {/* Countdown Timer */}
-            <div className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-xs font-mono font-bold border ${
+            <div className={`whitespace-nowrap shrink-0 flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-xs font-mono font-bold border ${
               isTimerPaused
                 ? 'bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-800'
                 : remainingSeconds <= 300
@@ -346,19 +458,19 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
         </div>
 
         {/* Dual Panel Body: Left Problem Statement, Right Code Editor */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-slate-200 dark:divide-[#27272A]">
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 min-h-0 overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-slate-200 dark:divide-[#27272A]">
           
           {/* Left Panel: Problem Statement */}
-          <div className="lg:col-span-5 p-6 overflow-y-auto space-y-5 bg-white dark:bg-[#0E0E11] text-slate-800 dark:text-slate-200 font-sans">
+          <div className="lg:col-span-5 min-w-0 p-5 sm:p-6 overflow-y-auto space-y-5 bg-white dark:bg-[#0E0E11] text-slate-800 dark:text-slate-200 font-sans">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <FileText className="w-4 h-4 text-teal-700 dark:text-teal-400" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
+                <FileText className="w-4 h-4 text-teal-700 dark:text-teal-400 shrink-0" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono">
                   Problem Statement
                 </h3>
               </div>
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] whitespace-pre-wrap leading-relaxed text-sm font-sans">
-                {lab.problemStatement}
+              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] text-sm font-sans leading-relaxed">
+                {renderProblemStatement(lab.problemStatement)}
               </div>
             </div>
 
@@ -376,7 +488,7 @@ export const StudentLabWorkspaceModal: React.FC<StudentLabWorkspaceModalProps> =
           </div>
 
           {/* Right Panel: Code Editor (Textarea with syntax appearance) */}
-          <div className="lg:col-span-7 flex flex-col justify-between overflow-hidden bg-slate-950">
+          <div className="lg:col-span-7 min-w-0 flex flex-col justify-between overflow-hidden bg-slate-950">
             {/* Editor Sub-header */}
             <div className="px-4 py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-xs font-mono text-slate-400 select-none">
               <div className="flex items-center gap-2">

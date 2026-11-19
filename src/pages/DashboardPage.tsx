@@ -52,6 +52,7 @@ import { SmartResolveModal } from '../components/modules/campus/SmartResolveModa
 import { CampusBuilding } from '../types';
 import { StudentLabWorkspaceModal } from '../components/modules/labs/StudentLabWorkspaceModal';
 import { UniversityBuildingWireframe } from '../components/ui/UniversityBuildingWireframe';
+import { stripMarkdown } from '../utils/markdownUtils';
 
 // Exact custom 4-layer tactile button shadow system
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
@@ -1095,47 +1096,47 @@ export const DashboardPage: React.FC = () => {
                       return (
                         <div
                           key={lab.id}
-                          className="p-3.5 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/50 dark:bg-[#111115] hover:border-teal-500/50 transition-all flex flex-col justify-between space-y-3"
+                          className="min-w-0 p-4 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/50 dark:bg-[#111115] hover:border-teal-500/50 transition-all flex flex-col justify-between space-y-3"
                         >
-                          <div>
-                            <div className="flex items-center justify-between gap-2 mb-1.5">
-                              <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
+                          <div className="min-w-0 space-y-2">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="whitespace-nowrap shrink-0 text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
                                 Sem {lab.semester} • {lab.subject}
                               </span>
                               {isExpired && (
-                                <span className="text-[10px] font-mono font-bold text-red-600 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 px-1.5 py-0.5 rounded">
+                                <span className="whitespace-nowrap shrink-0 text-[10px] font-mono font-bold text-red-600 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 px-2 py-0.5 rounded">
                                   Deadline Passed / Locked
                                 </span>
                               )}
                               {isActive && (
-                                <span className="text-[10px] font-mono text-teal-800 dark:text-teal-300 font-semibold flex items-center gap-1">
+                                <span className="whitespace-nowrap shrink-0 text-[10px] font-mono text-teal-800 dark:text-teal-300 font-semibold flex items-center gap-1 bg-teal-50 dark:bg-teal-950/50 border border-teal-200 dark:border-teal-800 px-2 py-0.5 rounded">
                                   <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
                                   Active Window
                                 </span>
                               )}
                               {isTooEarly && (
-                                <span className="text-[10px] font-mono text-amber-700 dark:text-amber-400 font-semibold">
+                                <span className="whitespace-nowrap shrink-0 text-[10px] font-mono text-amber-700 dark:text-amber-400 font-semibold bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 px-2 py-0.5 rounded">
                                   Upcoming
                                 </span>
                               )}
                             </div>
-                            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 line-clamp-1">
+                            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
                               {lab.title}
                             </h3>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1">
-                              {lab.problemStatement}
+                            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                              {stripMarkdown(lab.problemStatement)}
                             </p>
                           </div>
 
-                          <div className="pt-2 border-t border-slate-200/60 dark:border-[#27272A] space-y-2">
+                          <div className="pt-2.5 border-t border-slate-200/60 dark:border-[#27272A] space-y-2">
                             {isTooEarly && (
-                              <div className="text-[11px] font-mono text-[#0F766E] dark:text-teal-400 font-medium">
+                              <div className="text-[11px] font-mono text-[#0F766E] dark:text-teal-400 font-medium truncate">
                                 Lab unlocks at {formatUnlock(lab.windowStartTime)}
                               </div>
                             )}
 
-                            <div className="flex items-center justify-between">
-                              <span className="text-[11px] font-mono text-slate-600 dark:text-slate-400">
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="text-[11px] font-mono text-slate-600 dark:text-slate-400 truncate">
                                 {isExpired ? 'Window Closed' : `Closes ${formatUnlock(lab.windowEndTime)}`}
                               </span>
 
@@ -1143,9 +1144,9 @@ export const DashboardPage: React.FC = () => {
                                 <button
                                   type="button"
                                   disabled
-                                  className="rounded-full bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-[11px] font-medium px-3 py-1 cursor-not-allowed opacity-70"
+                                  className="whitespace-nowrap shrink-0 px-4 py-2 rounded-lg text-xs font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 opacity-60 cursor-not-allowed"
                                 >
-                                  <span>Open Lab</span>
+                                  Open Lab
                                 </button>
                               )}
 
@@ -1156,11 +1157,12 @@ export const DashboardPage: React.FC = () => {
                                     setSelectedGlobalLab(lab);
                                     setIsWorkspaceModalOpen(true);
                                   }}
-                                  className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-[11px] font-medium px-3 py-1 transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} flex items-center gap-1 cursor-pointer border border-[#8DA9C4]/30`}
+                                  className={`whitespace-nowrap shrink-0 px-4 py-2 rounded-lg text-xs font-semibold bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white flex items-center gap-1.5 cursor-pointer border border-[#8DA9C4]/30 transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow}`}
+                                  title="Open Lab • Launch Workspace"
                                 >
                                   <span>Open Lab</span>
-                                  <span className="hidden sm:inline text-[9px] opacity-80">• Launch Workspace</span>
-                                  <ArrowRight className="w-3 h-3" />
+                                  <ArrowRight className="w-3.5 h-3.5" />
+                                  <span className="sr-only">Launch Workspace</span>
                                 </button>
                               )}
 
@@ -1168,9 +1170,9 @@ export const DashboardPage: React.FC = () => {
                                 <button
                                   type="button"
                                   disabled
-                                  className="rounded-full bg-red-100 dark:bg-red-950/40 text-red-400 text-[11px] font-medium px-3 py-1 cursor-not-allowed opacity-60"
+                                  className="whitespace-nowrap shrink-0 px-4 py-2 rounded-lg text-xs font-medium bg-red-100 dark:bg-red-950/40 text-red-400 cursor-not-allowed opacity-60"
                                 >
-                                  <span>Open Lab</span>
+                                  Window Closed
                                 </button>
                               )}
                             </div>

@@ -21,6 +21,7 @@ import { useApp } from '../context/AppContext';
 import { CodingLab } from '../types';
 import { StudentLabWorkspaceModal } from '../components/modules/labs/StudentLabWorkspaceModal';
 import { TopographicBg } from '../components/ui/TopographicBg';
+import { stripMarkdown } from '../utils/markdownUtils';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
 const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
@@ -268,49 +269,49 @@ export const StudentCodingLabsPage: React.FC = () => {
             return (
               <div
                 key={lab.id}
-                className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 sm:p-6 shadow-sm hover:border-teal-500/50 transition-all flex flex-col justify-between space-y-4"
+                className="min-w-0 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 sm:p-6 shadow-sm hover:border-teal-500/50 transition-all flex flex-col justify-between space-y-4"
               >
-                <div className="space-y-3">
+                <div className="min-w-0 space-y-3">
                   {/* Top Metadata Row */}
                   <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-md bg-teal-50 dark:bg-teal-950/60 text-[#0F766E] dark:text-teal-300 border border-teal-200/60 dark:border-teal-900/60">
+                    <span className="whitespace-nowrap shrink-0 text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-md bg-teal-50 dark:bg-teal-950/60 text-[#0F766E] dark:text-teal-300 border border-teal-200/60 dark:border-teal-900/60">
                       Sem {lab.semester} • {lab.courseId || 'CS-500'}
                     </span>
 
                     {isSubmitted ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                      <span className="whitespace-nowrap shrink-0 inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                         <CheckCircle2 className="w-3 h-3" />
                         Completed & Passed
                       </span>
                     ) : isExpired ? (
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-red-50 dark:bg-red-950/60 text-red-600 border border-red-200 dark:border-red-900">
+                      <span className="whitespace-nowrap shrink-0 text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-red-50 dark:bg-red-950/60 text-red-600 border border-red-200 dark:border-red-900">
                         Deadline Passed
                       </span>
                     ) : isActive ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                      <span className="whitespace-nowrap shrink-0 inline-flex items-center gap-1 text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                         <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
                         Active Window
                       </span>
                     ) : (
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                      <span className="whitespace-nowrap shrink-0 text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                         Upcoming
                       </span>
                     )}
                   </div>
 
                   {/* Subject and Lab Title */}
-                  <div>
-                    <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 font-medium block">
+                  <div className="min-w-0">
+                    <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 font-medium block truncate">
                       {lab.subject}
                     </span>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white leading-snug mt-0.5">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white leading-snug mt-0.5 truncate">
                       {lab.title}
                     </h3>
                   </div>
 
                   {/* Problem Snippet */}
                   <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">
-                    {lab.problemStatement.replace(/[#*`]/g, '')}
+                    {stripMarkdown(lab.problemStatement)}
                   </p>
 
                   {/* Time Window Details */}
