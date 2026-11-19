@@ -180,6 +180,8 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
     st => !checkedInScans.some(s => s.studentId === st.id)
   );
 
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150 overflow-y-auto font-sans">
       <div className="relative w-full max-w-lg bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl shadow-xl overflow-hidden p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto animate-in zoom-in-95 duration-200 my-auto">

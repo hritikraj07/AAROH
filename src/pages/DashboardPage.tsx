@@ -612,19 +612,10 @@ export const DashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* 2. Hero Welcome Banner (Campus Photo + Gradient Mask + Micro-Utilities) */}
+      {/* 2. Hero Welcome Banner (Micro-Utilities) */}
       <div className="relative overflow-hidden bg-gradient-to-r from-[#F0FDF4] via-[#F8FAF8] to-white dark:from-[#0B1512] dark:via-[#111818] dark:to-[#18181B] border border-[#E5ECE8] dark:border-[#27272A] shadow-sm text-slate-900 dark:text-white rounded-3xl p-6 sm:p-7 flex flex-col justify-center transition-colors duration-150 select-none">
         {/* Hidden token for test suite verification compatibility */}
         <span className="hidden bg-[#0F766E] rounded-3xl" aria-hidden="true" />
-
-        {/* Right Background: Campus Building Photo smoothly faded into background, perfectly framed */}
-        <div className="absolute top-0 right-0 w-[48%] sm:w-[48%] md:w-[48%] lg:w-[48%] h-full z-0 overflow-hidden pointer-events-none [mask-image:linear-gradient(to_right,transparent_0%,black_18%,black_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_18%,black_100%)]">
-          <img
-            src="/krmu-campus.jpg"
-            alt="K.R. Mangalam University Campus"
-            className="w-full h-full object-cover object-[center_28%] select-none pointer-events-none"
-          />
-        </div>
 
         {/* Floating Exam & Practical Countdown Chip in bottom-right corner */}
         <div
