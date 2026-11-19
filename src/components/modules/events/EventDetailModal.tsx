@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal } from '../../ui/Modal';
 import { Button } from '../../ui/Button';
 import { CampusEvent } from '../../../types';
@@ -13,6 +13,8 @@ import {
   CheckCircle2,
   Building,
   UserCheck,
+  ShieldCheck,
+  FileCheck2,
 } from 'lucide-react';
 
 export interface EventDetailModalProps {
@@ -23,6 +25,7 @@ export interface EventDetailModalProps {
 
 export const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpen, onClose }) => {
   const { timetable, courses, toggleEventRegistration } = useApp();
+  const [activeItineraryTab, setActiveItineraryTab] = useState<number>(0);
 
   if (!event) return null;
 
@@ -48,8 +51,8 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpe
       isOpen={isOpen}
       onClose={onClose}
       title={event.title}
-      subtitle={`Campus Activity • ${event.category}`}
-      maxWidth="lg"
+      subtitle={`Campus Activity • ${event.category} • ${event.venue}`}
+      maxWidth="xl"
       footer={
         <div className="flex items-center justify-between w-full">
           <div className="text-xs text-slate-500">
@@ -108,18 +111,18 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpe
         )}
 
         {/* Schedule & Venue Metadata */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-xs">
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
               <Calendar className="w-4 h-4 text-teal-700 dark:text-teal-400 shrink-0" />
               <span>
-                Date: <strong className="font-mono text-slate-900 dark:text-slate-100">{event.date}</strong>
+                Date: <strong className="font-mono text-slate-900 dark:text-slate-100">{event.event_date || event.date}</strong>
               </span>
             </div>
             <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
               <Clock className="w-4 h-4 text-teal-700 dark:text-teal-400 shrink-0" />
               <span>
-                Time: <strong className="font-mono text-slate-900 dark:text-slate-100">{event.startTime} - {event.endTime}</strong>
+                Time Window: <strong className="font-mono text-slate-900 dark:text-slate-100">{event.time_window || `${event.startTime} - ${event.endTime}`}</strong>
               </span>
             </div>
           </div>
@@ -141,7 +144,7 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpe
         </div>
 
         {/* Capacity Bar */}
-        <div className="p-3 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-md space-y-2">
+        <div className="p-3 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
@@ -171,20 +174,121 @@ export const EventDetailModal: React.FC<EventDetailModalProps> = ({ event, isOpe
 
         {/* Description */}
         <div className="space-y-1">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Event Overview & Guidelines
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            Event Overview
           </h4>
-          <p className="text-xs text-slate-700 leading-relaxed whitespace-pre-line pt-1">
+          <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line pt-0.5">
             {event.description}
           </p>
         </div>
 
+        {/* Itinerary Section: Full Day 1 & Day 2 Schedule */}
+        {event.itinerary && event.itinerary.length > 0 && (
+          <div className="space-y-2 pt-1">
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+                <span>Hackathon Itinerary & Schedule</span>
+              </h4>
+
+              {/* Day Tabs */}
+              <div className="flex items-center gap-1 bg-slate-100 dark:bg-[#111115] p-0.5 rounded-lg border border-slate-200 dark:border-[#27272A] text-xs">
+                {event.itinerary.map((dayItem, idx) => (
+                  <button
+                    key={dayItem.day}
+                    type="button"
+                    onClick={() => setActiveItineraryTab(idx)}
+                    className={`px-2.5 py-1 rounded-md font-medium transition-colors ${
+                      activeItineraryTab === idx
+                        ? 'bg-white dark:bg-[#18181B] text-teal-700 dark:text-teal-400 font-semibold shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                    }`}
+                  >
+                    {dayItem.day} ({dayItem.date.split(' ')[0]})
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Current Day Schedule Table */}
+            {event.itinerary[activeItineraryTab] && (
+              <div className="border border-slate-200 dark:border-[#27272A] rounded-xl overflow-hidden bg-white dark:bg-[#18181B]">
+                <div className="bg-slate-50 dark:bg-[#111115] px-3.5 py-2 border-b border-slate-200 dark:border-[#27272A] flex items-center justify-between text-xs">
+                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                    {event.itinerary[activeItineraryTab].day} Schedule - {event.itinerary[activeItineraryTab].date}
+                  </span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {event.itinerary[activeItineraryTab].slots.length} Activities Planned
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-200 dark:border-[#27272A] text-[11px] text-slate-500 dark:text-slate-400 bg-slate-50/50 dark:bg-[#111115]/50">
+                        <th className="py-2 px-3.5 font-semibold w-40">Time Window</th>
+                        <th className="py-2 px-3.5 font-semibold">Activity & Milestones</th>
+                        <th className="py-2 px-3.5 font-semibold w-44">Location</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-[#27272A]">
+                      {event.itinerary[activeItineraryTab].slots.map((slot, sIdx) => (
+                        <tr key={sIdx} className="hover:bg-slate-50/80 dark:hover:bg-[#202025]/50 transition-colors">
+                          <td className="py-2 px-3.5 font-mono text-[11px] font-semibold text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                            {slot.time}
+                          </td>
+                          <td className="py-2 px-3.5 text-slate-800 dark:text-slate-200 font-medium">
+                            {slot.activity}
+                          </td>
+                          <td className="py-2 px-3.5 text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+                            <MapPin className="w-3 h-3 text-teal-600 dark:text-teal-400 shrink-0" />
+                            <span>{slot.location || event.venue}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Mandatory Guidelines Section */}
+        {event.guidelines && event.guidelines.length > 0 && (
+          <div className="space-y-2 pt-1">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+              <ShieldCheck className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+              <span>Mandatory Participation Guidelines (Strict Compliance Required)</span>
+            </h4>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {event.guidelines.map((guideline, gIdx) => (
+                <div
+                  key={gIdx}
+                  className="p-2.5 rounded-lg border border-slate-200 dark:border-[#27272A] bg-slate-50/70 dark:bg-[#111115] flex items-start gap-2.5 text-xs"
+                >
+                  <span className="w-5 h-5 rounded-full bg-teal-100 dark:bg-teal-900/60 text-teal-800 dark:text-teal-300 text-[10px] font-bold font-mono flex items-center justify-center shrink-0 mt-0.5">
+                    {gIdx + 1}
+                  </span>
+                  <span className="text-slate-700 dark:text-slate-300 leading-relaxed">
+                    {guideline}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Registration Slip if Registered */}
         {event.isRegistered && (
-          <div className="p-3 bg-teal-50/60 border border-teal-200 rounded-md text-xs text-teal-900 flex items-center justify-between">
-            <div>
-              <p className="font-bold">E-Pass ID: {event.registrationId || 'REG-ACTIVE'}</p>
-              <p className="text-[11px] text-teal-800">Pass holder: Aarav Sharma (22CS042)</p>
+          <div className="p-3 bg-teal-50/60 border border-teal-200 rounded-xl text-xs text-teal-900 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <FileCheck2 className="w-5 h-5 text-teal-700 shrink-0" />
+              <div>
+                <p className="font-bold">E-Pass ID: {event.registrationId || 'REG-ACTIVE'}</p>
+                <p className="text-[11px] text-teal-800">Pass verified for entry at Reception & Moot Court</p>
+              </div>
             </div>
             <UserCheck className="w-5 h-5 text-teal-700" />
           </div>

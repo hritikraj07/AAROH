@@ -195,6 +195,18 @@ export interface Notice {
 
 export type EventCategory = 'Tech' | 'Cultural' | 'Sports' | 'Workshops' | 'Clubs';
 
+export interface ItinerarySlot {
+  time: string;
+  activity: string;
+  location?: string;
+}
+
+export interface DayItinerary {
+  day: string;
+  date: string;
+  slots: ItinerarySlot[];
+}
+
 export interface CampusEvent {
   id: string;
   title: string;
@@ -210,6 +222,10 @@ export interface CampusEvent {
   isRegistered: boolean;
   registrationId?: string;
   status?: 'pending' | 'approved' | 'rejected';
+  event_date?: string;
+  time_window?: string;
+  itinerary?: DayItinerary[];
+  guidelines?: string[];
 }
 
 export interface Registration {

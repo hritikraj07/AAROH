@@ -16,6 +16,7 @@ import {
   Filter,
   List,
   Ticket,
+  Building,
 } from 'lucide-react';
 
 export const EventsPage: React.FC = () => {
@@ -209,12 +210,12 @@ export const EventsPage: React.FC = () => {
               return (
                 <div
                   key={event.id}
-                  className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg p-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between"
+                  className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 hover:border-slate-300 dark:hover:border-slate-700 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
                 >
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {/* Top Row: Category and Date Badge */}
                     <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <Badge
                           variant={
                             event.category === 'Tech'
@@ -241,17 +242,22 @@ export const EventsPage: React.FC = () => {
                             Housefull
                           </Badge>
                         )}
+                        {event.itinerary && (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200/80 dark:border-teal-800/80 font-medium">
+                            2-Day Schedule
+                          </span>
+                        )}
                       </div>
 
-                      <span className="font-mono text-xs text-slate-600 dark:text-slate-300 font-semibold">
-                        {event.date}
+                      <span className="font-mono text-xs text-slate-600 dark:text-slate-300 font-semibold whitespace-nowrap">
+                        {event.event_date || event.date}
                       </span>
                     </div>
 
                     {/* Title */}
                     <h3
                       onClick={() => handleOpenDetail(event)}
-                      className="text-sm font-bold text-slate-900 dark:text-slate-100 hover:text-teal-800 dark:hover:text-teal-400 cursor-pointer leading-snug pt-0.5 line-clamp-1"
+                      className="text-base font-bold text-slate-900 dark:text-slate-100 hover:text-teal-800 dark:hover:text-teal-400 cursor-pointer leading-snug pt-0.5 line-clamp-1"
                     >
                       {event.title}
                     </h3>
@@ -260,12 +266,16 @@ export const EventsPage: React.FC = () => {
                       {event.description}
                     </p>
 
-                    {/* Venue & Organizer Details */}
-                    <div className="space-y-1 pt-1 text-xs text-slate-500 dark:text-slate-400">
+                    {/* Venue, Time & Organizer Details */}
+                    <div className="space-y-1.5 pt-1 text-xs text-slate-500 dark:text-slate-400">
+                      <div className="flex items-center gap-2">
+                        <Building className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
+                        <span className="truncate">{event.organizer}</span>
+                      </div>
                       <div className="flex items-center gap-2">
                         <Clock className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0" />
                         <span className="font-mono text-[11px]">
-                          {event.startTime} - {event.endTime}
+                          {event.time_window || `${event.startTime} - ${event.endTime}`}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -276,7 +286,7 @@ export const EventsPage: React.FC = () => {
 
                     {/* Clash warning */}
                     {clash.hasClash && (
-                      <div className="p-2 rounded bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-[11px] text-amber-900 dark:text-amber-200 flex items-start gap-1.5 mt-2">
+                      <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/60 text-[11px] text-amber-900 dark:text-amber-200 flex items-start gap-1.5 mt-2">
                         <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
                         <span>
                           <strong>Class Overlap:</strong> Clashes with {clash.clashingCourse?.code} ({clash.clashingSession?.startTime}-{clash.clashingSession?.endTime})
@@ -301,7 +311,7 @@ export const EventsPage: React.FC = () => {
                         size="sm"
                         onClick={() => handleOpenDetail(event)}
                       >
-                        Details
+                        View Details
                       </Button>
 
                       <Button
@@ -352,12 +362,12 @@ export const EventsPage: React.FC = () => {
                 <div
                   key={event.id}
                   onClick={() => handleOpenDetail(event)}
-                  className="p-3.5 rounded-lg border border-slate-200 dark:border-[#27272A] hover:bg-slate-50 dark:hover:bg-[#1c1c22] cursor-pointer transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className="p-4 rounded-xl border border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#18181B] hover:bg-slate-50 dark:hover:bg-[#1c1c22] cursor-pointer transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-16 h-14 rounded bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800/80 text-teal-900 dark:text-teal-200 flex flex-col items-center justify-center shrink-0">
+                    <div className="w-18 h-14 rounded-lg bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800/80 text-teal-900 dark:text-teal-200 flex flex-col items-center justify-center shrink-0 px-1">
                       <span className="text-[10px] uppercase font-bold text-teal-700 dark:text-teal-400">
-                        {event.date.split('-')[1]}/{event.date.split('-')[2]}
+                        {event.date.includes('-') ? `${event.date.split('-')[1]}/${event.date.split('-')[2]}` : 'Nov'}
                       </span>
                       <span className="text-xs font-mono font-bold">
                         {event.startTime}
@@ -374,6 +384,11 @@ export const EventsPage: React.FC = () => {
                             Registered
                           </Badge>
                         )}
+                        {event.event_date && (
+                          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
+                            {event.event_date}
+                          </span>
+                        )}
                       </div>
                       <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 mt-1">
                         {event.title}
@@ -389,7 +404,7 @@ export const EventsPage: React.FC = () => {
                       {event.registeredCount} / {event.capacity} Attendees
                     </span>
                     <Button variant="outline" size="sm">
-                      View
+                      View Details
                     </Button>
                   </div>
                 </div>

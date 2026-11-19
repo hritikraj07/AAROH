@@ -39,6 +39,8 @@ import {
   generateUserFromEmail,
   getUserRoleFromEmail,
 } from '../data/seed';
+import { DEFAULT_CAMPUS_EVENTS } from '../data/eventsData';
+import { supabase } from '../lib/supabase';
 import { findPreEnrolledAccount, convertToUser } from '../data/facultyDirectory';
 import { APP_CONFIG } from '../config';
 
@@ -627,7 +629,43 @@ export const StorageService = {
 
   // Events
   getEvents(): CampusEvent[] {
-    return getStored<CampusEvent[]>(STORAGE_KEYS.EVENTS, INITIAL_EVENTS);
+    const list = getStored<CampusEvent[]>(STORAGE_KEYS.EVENTS, []);
+    if (list && list.length > 0) return list;
+    setStored(STORAGE_KEYS.EVENTS, DEFAULT_CAMPUS_EVENTS);
+    return DEFAULT_CAMPUS_EVENTS;
+  },
+
+  async syncEventsFromSupabase(): Promise<CampusEvent[]> {
+    if (!supabase) return this.getEvents();
+    try {
+      const { data, error } = await supabase.from('aaroh_events').select('*');
+      if (!error && data && data.length > 0) {
+        const mapped: CampusEvent[] = data.map((row: any) => ({
+          id: row.id || `evt_${(row.title || 'event').toLowerCase().replace(/\s+/g, '_')}`,
+          title: row.title,
+          description: row.description || '',
+          category: row.category || 'Tech',
+          date: row.date || row.event_date || '2026-11-19',
+          startTime: row.start_time || row.startTime || '16:00',
+          endTime: row.end_time || row.endTime || '15:00',
+          event_date: row.event_date || row.date || '19th - 20th November 2026',
+          time_window: row.time_window || `${row.start_time || row.startTime || '16:00'} - ${row.end_time || row.endTime || '15:00'}`,
+          venue: row.venue || 'Reception & Moot Court, K.R. Mangalam University',
+          organizer: row.organizer || 'Organising Team, AARAMBHATHON 2.0 (K.R. Mangalam University)',
+          capacity: Number(row.capacity) || 300,
+          registeredCount: Number(row.registered_count || row.registeredCount) || 0,
+          isRegistered: Boolean(row.is_registered || row.isRegistered),
+          status: row.status || 'approved',
+          itinerary: row.itinerary || undefined,
+          guidelines: row.guidelines || undefined,
+        }));
+        setStored(STORAGE_KEYS.EVENTS, mapped);
+        return mapped;
+      }
+    } catch {
+      // Graceful offline fallback
+    }
+    return this.getEvents();
   },
 
   createEvent(ev: Omit<CampusEvent, 'id' | 'registeredCount' | 'isRegistered'>): CampusEvent {

@@ -208,6 +208,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     StorageService.initializeData(false);
+    StorageService.syncEventsFromSupabase().then(evts => {
+      if (evts && evts.length > 0) setEvents(evts);
+    }).catch(() => {});
     window.addEventListener('storage', refreshData);
     return () => window.removeEventListener('storage', refreshData);
   }, [refreshData]);
