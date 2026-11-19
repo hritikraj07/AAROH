@@ -548,7 +548,7 @@ export const FacultyDashboardPage: React.FC = () => {
               variant="outline"
               size="sm"
               icon={<ClipboardList className="w-3.5 h-3.5" />}
-              onClick={() => navigate('/faculty/attendance')}
+              onClick={() => navigate('/faculty/attendance?openQR=true')}
             >
               Take Attendance
             </Button>

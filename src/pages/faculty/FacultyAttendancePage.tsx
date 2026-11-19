@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { Button } from '../../components/ui/Button';
@@ -16,6 +16,35 @@ import {
 } from 'lucide-react';
 import { ClassSession, User } from '../../types';
 import { FacultyQRSessionModal, isStudentMatch } from '../../components/modules/attendance/FacultyQRSessionModal';
+
+const safeStr = (val: any): string => (typeof val === 'string' ? val : '');
+
+const safeInitials = (name?: string, roll?: string): string => {
+  if (name && typeof name === 'string') {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length >= 2 && parts[0][0] && parts[1][0]) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    if (parts.length === 1 && parts[0].length >= 2) {
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+  }
+  if (roll && typeof roll === 'string' && roll.length >= 2) {
+    return roll.slice(0, 2).toUpperCase();
+  }
+  return 'ST';
+};
+
+const getSafeArrayFromStorage = <T,>(key: string): T[] => {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
 
 const DEFAULT_STUDENT_ROSTER: User[] = [
   {
@@ -149,13 +178,14 @@ export const FacultyAttendancePage: React.FC = () => {
   const enrolledStudents = useMemo(() => {
     if (!selectedSession) return [];
 
-    const baseStudents = users.filter(u => u.role === 'student');
+    const baseStudents = users.filter(u => u && u.role === 'student');
     const students = baseStudents.length > 0 ? baseStudents : DEFAULT_STUDENT_ROSTER;
-    const targetCourse = user?.course || selectedSession.program || '';
+    const targetCourse = safeStr(user?.course || selectedSession.program);
 
     // Filter by program and semester if present on session
     const matched = students.filter(st => {
-      const prog = st.course || st.program || '';
+      if (!st) return false;
+      const prog = safeStr(st.course || st.program);
       if (targetCourse && prog) {
         const p1 = prog.toLowerCase().trim();
         const p2 = targetCourse.toLowerCase().trim();
@@ -163,8 +193,8 @@ export const FacultyAttendancePage: React.FC = () => {
                        (p2 === 'b.tech cse (ai & ml)' || p2 === 'b.tech cse (ai/ml)');
         const progMatch =
           isAiml ||
-          prog.toLowerCase().includes(targetCourse.toLowerCase()) ||
-          targetCourse.toLowerCase().includes(prog.toLowerCase());
+          p1.includes(p2) ||
+          p2.includes(p1);
         if (!progMatch) return false;
       }
       if (selectedSession.semester && st.semester) {
@@ -176,63 +206,59 @@ export const FacultyAttendancePage: React.FC = () => {
     let list = [...(matched.length > 0 ? matched : students)];
 
     // Guarantee that student Aarav Sharma (22CS042) is always present in enrolled roster
-    const hasAarav = list.some(st => st.rollNumber === '22CS042' || st.name.toLowerCase().includes('aarav'));
+    const hasAarav = list.some(st => st && (st.rollNumber === '22CS042' || (st.name && st.name.toLowerCase().includes('aarav'))));
     if (!hasAarav) {
-      const aaravStudent = DEFAULT_STUDENT_ROSTER.find(s => s.rollNumber === '22CS042')!;
-      list = [aaravStudent, ...list];
+      const aaravStudent = DEFAULT_STUDENT_ROSTER.find(s => s.rollNumber === '22CS042');
+      if (aaravStudent) {
+        list = [aaravStudent, ...list];
+      }
     }
 
     // Guarantee demo cohort Pankaj, Mohak, Mukesh are present for Quick Check-in
-    const hasPankaj = list.some(st => st.name.toLowerCase().includes('pankaj'));
+    const hasPankaj = list.some(st => st?.name && st.name.toLowerCase().includes('pankaj'));
     if (!hasPankaj) {
-      const p = DEFAULT_STUDENT_ROSTER.find(s => s.name.toLowerCase().includes('pankaj'))!;
-      list.push(p);
+      const p = DEFAULT_STUDENT_ROSTER.find(s => s.name?.toLowerCase().includes('pankaj'));
+      if (p) list.push(p);
     }
-    const hasMohak = list.some(st => st.name.toLowerCase().includes('mohak'));
+    const hasMohak = list.some(st => st?.name && st.name.toLowerCase().includes('mohak'));
     if (!hasMohak) {
-      const m = DEFAULT_STUDENT_ROSTER.find(s => s.name.toLowerCase().includes('mohak'))!;
-      list.push(m);
+      const m = DEFAULT_STUDENT_ROSTER.find(s => s.name?.toLowerCase().includes('mohak'));
+      if (m) list.push(m);
     }
-    const hasMukesh = list.some(st => st.name.toLowerCase().includes('mukesh'));
+    const hasMukesh = list.some(st => st?.name && st.name.toLowerCase().includes('mukesh'));
     if (!hasMukesh) {
-      const mu = DEFAULT_STUDENT_ROSTER.find(s => s.name.toLowerCase().includes('mukesh'))!;
-      list.push(mu);
+      const mu = DEFAULT_STUDENT_ROSTER.find(s => s.name?.toLowerCase().includes('mukesh'));
+      if (mu) list.push(mu);
     }
 
     // Dynamically append any student who verified attendance via QR scan
-    try {
-      const scansRaw = localStorage.getItem('aaroh_qr_attendance_scans');
-      if (scansRaw) {
-        const scans: any[] = JSON.parse(scansRaw);
-        scans.forEach(scan => {
-          const isMatch =
-            (scan.sessionCode && String(scan.sessionCode).toUpperCase() === 'CS-5831') ||
-            (selectedSession.id && (scan.classId === selectedSession.id || scan.sessionId === selectedSession.id)) ||
-            (selectedSession.courseId && (scan.courseId === selectedSession.courseId || scan.subjectId === selectedSession.courseId));
-          if (isMatch) {
-            const alreadyInList = list.some(st => isStudentMatch(scan, st));
-            if (!alreadyInList) {
-              list.push({
-                id: scan.studentId || `usr_std_${scan.studentRoll || Date.now()}`,
-                name: scan.studentName || 'Aarav Sharma',
-                rollNumber: scan.studentRoll || '22CS042',
-                email: scan.studentEmail || 'aarav.sharma@aaroh.edu.in',
-                role: 'student',
-                program: 'B.Tech CSE',
-                course: 'B.Tech CSE',
-                semester: 5,
-                section: 'A',
-                department: 'Computer Science & Engineering',
-                designation: 'Undergraduate Scholar',
-                avatarInitials: (scan.studentName || 'AS').split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase(),
-              });
-            }
-          }
-        });
+    const scans = getSafeArrayFromStorage<any>('aaroh_qr_attendance_scans');
+    scans.forEach(scan => {
+      if (!scan) return;
+      const isMatch =
+        (scan.sessionCode && String(scan.sessionCode).toUpperCase() === 'CS-5831') ||
+        (selectedSession.id && (scan.classId === selectedSession.id || scan.sessionId === selectedSession.id)) ||
+        (selectedSession.courseId && (scan.courseId === selectedSession.courseId || scan.subjectId === selectedSession.courseId));
+      if (isMatch) {
+        const alreadyInList = list.some(st => isStudentMatch(scan, st));
+        if (!alreadyInList) {
+          list.push({
+            id: scan.studentId || `usr_std_${scan.studentRoll || Date.now()}`,
+            name: scan.studentName || 'Aarav Sharma',
+            rollNumber: scan.studentRoll || '22CS042',
+            email: scan.studentEmail || 'aarav.sharma@aaroh.edu.in',
+            role: 'student',
+            program: 'B.Tech CSE',
+            course: 'B.Tech CSE',
+            semester: 5,
+            section: 'A',
+            department: 'Computer Science & Engineering',
+            designation: 'Undergraduate Scholar',
+            avatarInitials: safeInitials(scan.studentName, scan.studentRoll),
+          });
+        }
       }
-    } catch {
-      // ignore
-    }
+    });
 
     return list;
   }, [selectedSession, users, user?.course]);
@@ -240,26 +266,37 @@ export const FacultyAttendancePage: React.FC = () => {
   // Attendance Marks State: studentId -> boolean (true = present, false = absent)
   const [marks, setMarks] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isQROpen, setIsQROpen] = useState(false);
+  const shouldAutoOpen = searchParams.get('openQR') === 'true' || searchParams.get('qr') === '1';
+  const [isQROpen, setIsQROpen] = useState<boolean>(shouldAutoOpen);
   const [qrVerifiedStudentIds, setQrVerifiedStudentIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    if (searchParams.get('openQR') === 'true' || searchParams.get('qr') === '1') {
+      setIsQROpen(true);
+    }
+  }, [searchParams]);
 
   // Reset marks whenever selected session changes, preserving any live verified scans
   useEffect(() => {
     const initialMarks: Record<string, boolean> = {};
     enrolledStudents.forEach(st => {
-      initialMarks[st.id] = false; // default all absent
+      if (st?.id) {
+        initialMarks[st.id] = false; // default all absent
+      }
     });
 
     // Restore any existing verified scans for this session
     try {
-      const scansRaw = localStorage.getItem('aaroh_qr_attendance_scans');
-      if (scansRaw && selectedSession) {
-        const scans: any[] = JSON.parse(scansRaw);
+      const scans = getSafeArrayFromStorage<any>('aaroh_qr_attendance_scans');
+      if (scans.length > 0 && selectedSession) {
         let activeSessionCode = '';
         try {
           const activeRaw = localStorage.getItem('aaroh_active_qr_session');
           if (activeRaw) {
-            activeSessionCode = JSON.parse(activeRaw).sessionCode || '';
+            const parsed = JSON.parse(activeRaw);
+            if (parsed && typeof parsed === 'object') {
+              activeSessionCode = parsed.sessionCode || '';
+            }
           }
         } catch {
           // ignore
@@ -276,7 +313,7 @@ export const FacultyAttendancePage: React.FC = () => {
 
         const verifiedIds = new Set<string>();
         enrolledStudents.forEach(st => {
-          if (matchingScans.some((scan: any) => isStudentMatch(scan, st))) {
+          if (st && matchingScans.some((scan: any) => isStudentMatch(scan, st))) {
             initialMarks[st.id] = true;
             verifiedIds.add(st.id);
           }
@@ -303,21 +340,26 @@ export const FacultyAttendancePage: React.FC = () => {
     });
   };
 
+  const enrolledStudentsRef = useRef(enrolledStudents);
+  enrolledStudentsRef.current = enrolledStudents;
+
   // Real-time synchronization: Poll and listen to storage & scan events for QR scans
   useEffect(() => {
     if (!selectedSession) return;
 
     const syncQRScans = () => {
       try {
-        const scansRaw = localStorage.getItem('aaroh_qr_attendance_scans');
-        if (!scansRaw) return;
-        const scans: any[] = JSON.parse(scansRaw);
+        const scans = getSafeArrayFromStorage<any>('aaroh_qr_attendance_scans');
+        if (scans.length === 0) return;
 
         let activeSessionCode = '';
         try {
           const activeRaw = localStorage.getItem('aaroh_active_qr_session');
           if (activeRaw) {
-            activeSessionCode = JSON.parse(activeRaw).sessionCode || '';
+            const parsed = JSON.parse(activeRaw);
+            if (parsed && typeof parsed === 'object') {
+              activeSessionCode = parsed.sessionCode || '';
+            }
           }
         } catch {
           // ignore
@@ -334,8 +376,8 @@ export const FacultyAttendancePage: React.FC = () => {
 
         if (matchingScans.length > 0) {
           const newlyVerifiedIds = new Set<string>();
-          enrolledStudents.forEach(st => {
-            if (matchingScans.some(s => isStudentMatch(s, st))) {
+          enrolledStudentsRef.current.forEach(st => {
+            if (st && matchingScans.some(s => isStudentMatch(s, st))) {
               newlyVerifiedIds.add(st.id);
             }
           });
@@ -385,7 +427,7 @@ export const FacultyAttendancePage: React.FC = () => {
       window.removeEventListener('aaroh_attendance_synced', syncQRScans);
       window.removeEventListener('attendance-updated', syncQRScans);
     };
-  }, [selectedSession, enrolledStudents]);
+  }, [selectedSession?.id]);
 
   const toggleStudent = (studentId: string, isPresent: boolean) => {
     setMarks(prev => ({
@@ -691,11 +733,11 @@ export const FacultyAttendancePage: React.FC = () => {
                             <td className="py-3 px-4 font-medium text-slate-900">
                               <div className="flex items-center gap-2">
                                 <div className="w-6 h-6 rounded bg-slate-100 text-slate-700 text-[10px] font-mono flex items-center justify-center font-semibold">
-                                  {st.avatarInitials || st.name.slice(0, 2).toUpperCase()}
+                                  {st.avatarInitials || safeInitials(st.name, st.rollNumber)}
                                 </div>
                                 <div>
                                   <div className="flex items-center gap-2">
-                                    <span className="font-semibold">{st.name}</span>
+                                    <span className="font-semibold">{st.name || st.rollNumber || 'Student'}</span>
                                     {qrVerifiedStudentIds.has(st.id) && (
                                       <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                         <CheckCircle2 className="w-3 h-3" />
@@ -704,7 +746,7 @@ export const FacultyAttendancePage: React.FC = () => {
                                     )}
                                   </div>
                                   <span className="block text-[10px] text-slate-400 font-mono">
-                                    {st.email}
+                                    {st.email || 'student@aaroh.edu.in'}
                                   </span>
                                 </div>
                               </div>

@@ -77,7 +77,8 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
       try {
         const raw = localStorage.getItem('aaroh_qr_attendance_scans');
         if (raw) {
-          const list: any[] = JSON.parse(raw);
+          const parsed = JSON.parse(raw);
+          const list: any[] = Array.isArray(parsed) ? parsed : [];
           const currentSessionScans = list.filter(s => {
             if (!s) return false;
             // 1. Session code match (e.g. CS-5831 or active code)
@@ -207,7 +208,8 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
   const handleQuickDemoCheckIn = (st: User) => {
     try {
       const scansRaw = localStorage.getItem('aaroh_qr_attendance_scans');
-      const list = scansRaw ? JSON.parse(scansRaw) : [];
+      const parsed = scansRaw ? JSON.parse(scansRaw) : [];
+      const list = Array.isArray(parsed) ? parsed : [];
       const alreadyChecked = list.some((s: any) =>
         isStudentMatch(s, st) &&
         (s.classId === session.id || s.sessionId === session.id || s.courseId === session.courseId || s.sessionCode === baseSessionCode)
@@ -254,7 +256,12 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
           section: 'A',
           department: 'Computer Science & Engineering',
           designation: 'Undergraduate Scholar',
-          avatarInitials: (scan.studentName || 'AS').split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase(),
+          avatarInitials: (() => {
+            const nm = scan.studentName || 'Aarav Sharma';
+            const parts = nm.trim().split(/\s+/).filter(Boolean);
+            if (parts.length >= 2 && parts[0][0] && parts[1][0]) return (parts[0][0] + parts[1][0]).toUpperCase();
+            return nm.slice(0, 2).toUpperCase();
+          })(),
         });
       }
     });
@@ -431,10 +438,10 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
                     type="button"
                     onClick={() => handleQuickDemoCheckIn(st)}
                     className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-semibold bg-white dark:bg-[#18181B] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-slate-700 dark:text-slate-300 hover:text-emerald-700 border border-slate-200 dark:border-[#27272A] transition-colors cursor-pointer flex items-center gap-1 min-h-[30px]"
-                    title={`Mark ${st.name} present`}
+                    title={`Mark ${st.name || st.rollNumber || 'student'} present`}
                   >
                     <Zap className="w-2.5 h-2.5 text-amber-500" />
-                    <span>{st.name.split(' ')[0]}</span>
+                    <span>{(st.name ? st.name.trim().split(/\s+/)[0] : st.rollNumber || 'Student')}</span>
                   </button>
                 ))}
               </div>

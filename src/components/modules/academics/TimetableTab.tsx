@@ -2,9 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../../context/AppContext';
 import { ClassSession } from '../../../types';
-import { Clock, MapPin, User as UserIcon, Network, Calendar as CalendarIcon } from 'lucide-react';
+import { Clock, MapPin, User as UserIcon, Calendar as CalendarIcon } from 'lucide-react';
 import { getFacultyFullName } from '../../../utils/facultyUtils';
-import { SkillTreeModal } from './SkillTreeModal';
 import { TimetableCalendar } from './TimetableCalendar';
 import { UpcomingClassesCard } from './UpcomingClassesCard';
 import { TopographicBg } from '../../ui/TopographicBg';
@@ -35,8 +34,6 @@ const toMinutes = (timeStr: string): number => {
 export const TimetableTab: React.FC = () => {
   const { timetable, courses, user, users } = useApp();
   const [viewMode, setViewMode] = useState<'grid' | 'day'>('day');
-  const [selectedCourseForTree, setSelectedCourseForTree] = useState<{ id: string; code: string; name: string } | null>(null);
-
   // Campus current date in Asia/Kolkata timezone
   const campusNow = useMemo(() => getCampusNow(), []);
 
@@ -500,17 +497,6 @@ export const TimetableTab: React.FC = () => {
           }}
         />
       </div>
-
-      {/* Course Skill Tree Modal */}
-      {selectedCourseForTree && (
-        <SkillTreeModal
-          courseId={selectedCourseForTree.id}
-          courseCode={selectedCourseForTree.code}
-          courseName={selectedCourseForTree.name}
-          isOpen={Boolean(selectedCourseForTree)}
-          onClose={() => setSelectedCourseForTree(null)}
-        />
-      )}
     </div>
   );
 };
