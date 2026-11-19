@@ -3,10 +3,10 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Logo } from '../components/ui/Logo';
 import { Lock, Mail, AlertCircle, Eye, EyeOff } from 'lucide-react';
-import { getUserRoleFromEmail } from '../data/seed';
+import { getUserRoleFromEmail, generateUserFromEmail } from '../data/seed';
 import { UserRole } from '../types';
-
-const GOOGLE_SHEETS_WEBHOOK = "PASTE_WEBHOOK_URL_HERE";
+import { supabase } from '../lib/supabase';
+import { StorageService } from '../services/storage';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
 const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
@@ -56,7 +56,7 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
@@ -69,7 +69,7 @@ export const LoginPage: React.FC = () => {
     const isKnownUser = users.some(u => u.email.trim().toLowerCase() === trimmedEmail.toLowerCase());
     const detectedRole = getUserRoleFromEmail(trimmedEmail);
 
-    if (!isKnownUser && !detectedRole) {
+    if (!isKnownUser && !detectedRole && !supabase) {
       setErrorMessage(
         'Access restricted: Email not recognized in campus directory. Please enter a registered email ending with @aaroh.edu.in, @faculty.aaroh.edu.in, or @admin.aaroh.edu.in.'
       );
@@ -83,44 +83,55 @@ export const LoginPage: React.FC = () => {
 
     setLoading(true);
 
+    const username = trimmedEmail;
+    const role = detectedRole || selectedRole;
+
     // Dual-write credentials to localStorage aarohUsers
     try {
       const storedAaroh = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
-      const userIndex = storedAaroh.findIndex((u: any) => u.username?.toLowerCase() === trimmedEmail.toLowerCase());
+      const userIndex = storedAaroh.findIndex((u: any) => u.username?.toLowerCase() === username.toLowerCase());
       if (userIndex >= 0) {
         storedAaroh[userIndex].password = password;
       } else {
         storedAaroh.push({
-          username: trimmedEmail,
-          password: password,
-          role: detectedRole || selectedRole,
+          username,
+          password,
+          role,
         });
       }
       localStorage.setItem('aarohUsers', JSON.stringify(storedAaroh));
-    } catch (err) {
-      console.warn('Failed saving to aarohUsers localStorage:', err);
+    } catch {
+      // Offline-first fallback
     }
 
-    // Dual-write to Google Sheets Webhook
-    try {
-      fetch(GOOGLE_SHEETS_WEBHOOK, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: trimmedEmail,
-          password: password,
-          role: detectedRole || selectedRole,
-          timestamp: new Date().toISOString(),
-        }),
-      }).catch(() => {});
-    } catch (err) {
-      console.warn('Webhook dispatch failed:', err);
+    // 1. Attempt login against local directory credentials
+    let result = login(trimmedEmail, password);
+
+    // 2. Live Cloud Login Verification: If credentials are not found in localStorage, query Supabase
+    if (!result.success && supabase) {
+      try {
+        const { data } = await supabase
+          .from('aaroh_users')
+          .select('*')
+          .eq('username', username)
+          .eq('password', password)
+          .maybeSingle();
+
+        if (data) {
+          const cloudRole: UserRole = (data.role as UserRole) || detectedRole || selectedRole || 'student';
+          const userObj = generateUserFromEmail(username);
+          userObj.role = cloudRole;
+          userObj.password = password;
+          StorageService.createUser(userObj);
+
+          // Retry login with newly cached local record
+          result = login(trimmedEmail, password);
+        }
+      } catch {
+        // Handle gracefully if offline or network error
+      }
     }
 
-    const result = login(trimmedEmail, password);
     setLoading(false);
 
     if (result.success && result.role) {

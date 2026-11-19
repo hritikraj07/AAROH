@@ -25,8 +25,7 @@ import {
 } from 'lucide-react';
 import { User, UserRole } from '../../types';
 import { APP_CONFIG } from '../../config';
-
-const GOOGLE_SHEETS_WEBHOOK = "PASTE_WEBHOOK_URL_HERE";
+import { supabase } from '../../lib/supabase';
 
 export const AdminPeoplePage: React.FC = () => {
   const { users, createUser, deleteUser, updateUser, showToast, user: currentUser } = useApp();
@@ -211,44 +210,30 @@ export const AdminPeoplePage: React.FC = () => {
     createUser(newUserData);
 
     // 2. Dual-Sync: Save to aarohUsers array in localStorage
+    const username = fullEmail;
     try {
       const existingAarohUsers = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
-      const idx = existingAarohUsers.findIndex((u: any) => u.username?.toLowerCase() === fullEmail.toLowerCase());
+      const idx = existingAarohUsers.findIndex((u: any) => u.username?.toLowerCase() === username.toLowerCase());
       if (idx >= 0) {
-        existingAarohUsers[idx] = { username: fullEmail, password: password.trim(), role };
+        existingAarohUsers[idx] = { username, password: password.trim(), role };
       } else {
-        existingAarohUsers.push({ username: fullEmail, password: password.trim(), role });
+        existingAarohUsers.push({ username, password: password.trim(), role });
       }
       localStorage.setItem('aarohUsers', JSON.stringify(existingAarohUsers));
-    } catch (err) {
-      console.warn('Failed saving to aarohUsers localStorage:', err);
+    } catch {
+      // Offline-first fallback
     }
 
     // 3. UI Loading feedback state
     setIsSyncing(true);
 
-    // 4. Asynchronous fetch call to Google Sheets Webhook
-    try {
-      await fetch(GOOGLE_SHEETS_WEBHOOK, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          username: fullEmail,
-          password: password.trim(),
-          role,
-          name: trimmedName,
-          email: fullEmail,
-          rollNumber: role === 'student' ? rollNumber.trim() : undefined,
-          department: role !== 'student' ? department.trim() : undefined,
-          timestamp: new Date().toISOString(),
-        }),
-      });
-    } catch (fetchErr) {
-      // Fail silently offline
-      console.warn('Google Sheets Webhook sync error (offline-first mode):', fetchErr);
+    // 4. Asynchronous insert into Supabase aaroh_users table
+    if (supabase) {
+      try {
+        const { error } = await supabase.from('aaroh_users').insert([{ username, password: password.trim(), role }]);
+      } catch {
+        // Handle gracefully if offline or username already exists
+      }
     }
 
     setIsSyncing(false);
@@ -325,33 +310,22 @@ export const AdminPeoplePage: React.FC = () => {
         });
       }
       localStorage.setItem('aarohUsers', JSON.stringify(existing));
-    } catch (err) {
-      console.warn('Failed updating aarohUsers in localStorage:', err);
+    } catch {
+      // Offline-first fallback
     }
 
-    // 3. Dual-Sync: Asynchronous fetch call to Google Sheets Webhook
+    // 3. Supabase Cloud Sync
     setIsEditSyncing(true);
-    try {
-      await fetch(GOOGLE_SHEETS_WEBHOOK, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'UPDATE_CREDENTIALS',
+    if (supabase) {
+      try {
+        await supabase.from('aaroh_users').upsert([{
           username: editingUser.email,
           password: trimmedPassword,
           role: editingUser.role,
-          name: updates.name,
-          email: editingUser.email,
-          rollNumber: updates.rollNumber,
-          department: updates.department,
-          timestamp: new Date().toISOString(),
-        }),
-      });
-    } catch (fetchErr) {
-      console.warn('Google Sheets Webhook sync error (offline-first mode):', fetchErr);
+        }], { onConflict: 'username' });
+      } catch {
+        // Handle gracefully if offline
+      }
     }
 
     setIsEditSyncing(false);
@@ -1011,7 +985,7 @@ export const AdminPeoplePage: React.FC = () => {
                   {isSyncing ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>Syncing Credentials...</span>
+                      <span>Authenticating...</span>
                     </>
                   ) : syncSuccess ? (
                     <>
@@ -1193,7 +1167,7 @@ export const AdminPeoplePage: React.FC = () => {
                   {isEditSyncing ? (
                     <>
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      <span>Saving Credentials...</span>
+                      <span>Authenticating...</span>
                     </>
                   ) : editSyncSuccess ? (
                     <>
