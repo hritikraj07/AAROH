@@ -40,6 +40,7 @@ import {
   getUserRoleFromEmail,
 } from '../data/seed';
 import { DEFAULT_CAMPUS_EVENTS } from '../data/eventsData';
+import { FEATURED_OPPORTUNITIES } from '../data/opportunitiesData';
 import { supabase } from '../lib/supabase';
 import { findPreEnrolledAccount, convertToUser } from '../data/facultyDirectory';
 import { APP_CONFIG } from '../config';
@@ -794,7 +795,41 @@ export const StorageService = {
 
   // Opportunities
   getOpportunities(): Opportunity[] {
-    const list = getStored<Opportunity[]>(STORAGE_KEYS.OPPORTUNITIES, INITIAL_OPPORTUNITIES);
+    let list = getStored<Opportunity[]>(STORAGE_KEYS.OPPORTUNITIES, INITIAL_OPPORTUNITIES);
+    let changed = false;
+    const existingIds = new Set(list.map(opp => opp.id));
+    const missing = FEATURED_OPPORTUNITIES.filter(opp => !existingIds.has(opp.id));
+    if (missing.length > 0) {
+      list = [...list, ...missing];
+      changed = true;
+    }
+
+    list = list.map(item => {
+      const feat = FEATURED_OPPORTUNITIES.find(f => f.id === item.id);
+      if (feat && (!item.eventWebsite || !item.contactNumber || !item.tracks || !item.venue)) {
+        changed = true;
+        return {
+          ...feat,
+          ...item,
+          eventWebsite: item.eventWebsite || feat.eventWebsite,
+          contactNumber: item.contactNumber || feat.contactNumber,
+          tracks: item.tracks || feat.tracks,
+          entryFee: item.entryFee || feat.entryFee,
+          teamSize: item.teamSize || feat.teamSize,
+          eventDate: item.eventDate || feat.eventDate,
+          timeWindow: item.timeWindow || feat.timeWindow,
+          venue: item.venue || feat.venue,
+          categorySubtitle: item.categorySubtitle || feat.categorySubtitle,
+          tags: item.tags || feat.tags,
+        };
+      }
+      return item;
+    });
+
+    if (changed) {
+      setStored(STORAGE_KEYS.OPPORTUNITIES, list);
+    }
+
     const user = this.getAuthUser();
     const savedIds = user?.savedOpportunityIds || [];
 
@@ -929,7 +964,10 @@ export const StorageService = {
       const matchDesc = opp.description?.toLowerCase().includes(q);
       const matchOrg = opp.organization?.toLowerCase().includes(q);
       const matchElig = opp.eligibility?.toLowerCase().includes(q);
-      if (matchTitle || matchDesc || matchOrg || matchElig) {
+      const matchTags = opp.tags?.some(t => t.toLowerCase().includes(q));
+      const matchTracks = opp.tracks?.some(t => t.title.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q));
+      const matchVenue = opp.venue?.toLowerCase().includes(q);
+      if (matchTitle || matchDesc || matchOrg || matchElig || matchTags || matchTracks || matchVenue) {
         results.push({
           id: opp.id,
           type: 'Opportunity',

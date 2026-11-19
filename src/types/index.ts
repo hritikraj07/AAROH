@@ -265,6 +265,13 @@ export interface LostFoundItem {
 export type OpportunityType = 'Internship' | 'Hackathon' | 'Competition';
 export type OpportunityMode = 'Remote' | 'On-site' | 'Hybrid';
 
+export interface OpportunityTrack {
+  day: string;
+  title: string;
+  desc: string;
+  tag?: string;
+}
+
 export interface Opportunity {
   id: string;
   title: string;
@@ -280,6 +287,17 @@ export interface Opportunity {
   applyUrl?: string;
   description?: string;
   isSaved?: boolean;
+  // Extended fields for Hackathons / Featured Opportunities
+  eventWebsite?: string;
+  entryFee?: string;
+  teamSize?: string;
+  contactNumber?: string;
+  eventDate?: string;
+  timeWindow?: string;
+  venue?: string;
+  tracks?: OpportunityTrack[];
+  categorySubtitle?: string;
+  tags?: string[];
 }
 
 export type NotificationType = 'notice' | 'deadline' | 'attendance' | 'event';
