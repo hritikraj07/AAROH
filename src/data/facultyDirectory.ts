@@ -215,10 +215,10 @@ export const PRE_ENROLLED_ADMIN: PreEnrolledAccount = {
   email: 'adm001@aaroh.edu.in',
   password: 'ADM001',
   role: 'Admin',
-  full_name: 'Central Institutional Administrator (ADM001)',
+  full_name: 'Dr. Ananya Sengupta',
   course: 'All Programmes',
   division: 'HQ',
-  designation: 'Chief Academic Registrar',
+  designation: 'Campus Administrator',
   department: 'Central Administration',
 };
 

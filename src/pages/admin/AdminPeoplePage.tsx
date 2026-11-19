@@ -88,22 +88,39 @@ export const AdminPeoplePage: React.FC = () => {
         return;
       }
 
-      // 2. Fetch exclusively from public.aaroh_users
-      const { data, error } = await supabase
+      // 2. Fetch exclusively from public.aaroh_users via range 0-1999 (handling PostgREST 1000 max_rows)
+      let allRows: any[] = [];
+      const { data: firstBatch, error: firstError } = await supabase
         .from('aaroh_users')
         .select('id, username, email, role, full_name, course, division, auth_user_id')
-        .range(0, 1999)
+        .range(0, 999)
         .order('role', { ascending: true })
         .order('username', { ascending: true });
 
-      if (error) {
-        setSupabaseError(error.message || 'Failed to fetch directory from Supabase.');
+      if (firstError) {
+        setSupabaseError(firstError.message || 'Failed to fetch directory from Supabase.');
         setIsLoadingDirectory(false);
         return;
       }
 
-      if (data && data.length > 0) {
-        const mappedUsers: User[] = data.map((row: any) => {
+      if (firstBatch && firstBatch.length > 0) {
+        allRows = [...firstBatch];
+        if (firstBatch.length === 1000) {
+          const { data: secondBatch, error: secondError } = await supabase
+            .from('aaroh_users')
+            .select('id, username, email, role, full_name, course, division, auth_user_id')
+            .range(1000, 1999)
+            .order('role', { ascending: true })
+            .order('username', { ascending: true });
+
+          if (!secondError && secondBatch && secondBatch.length > 0) {
+            allRows = allRows.concat(secondBatch);
+          }
+        }
+      }
+
+      if (allRows.length > 0) {
+        const mappedUsers: User[] = allRows.map((row: any) => {
           const r = (row.role?.toLowerCase() as UserRole) || 'student';
           const roll = row.username || (row.email ? row.email.split('@')[0] : '');
           const emailAddr = row.email || `${roll.toLowerCase()}@aaroh.edu.in`;
@@ -137,10 +154,10 @@ export const AdminPeoplePage: React.FC = () => {
         setDirectoryUsers(mappedUsers);
         try {
           localStorage.setItem('aaroh_users', JSON.stringify(mappedUsers));
-          localStorage.setItem('aarohUsers', JSON.stringify(data));
+          localStorage.setItem('aarohUsers', JSON.stringify(allRows));
         } catch {}
         refreshData();
-      } else if (data && data.length === 0) {
+      } else if (allRows.length === 0) {
         setDirectoryUsers([]);
         setSupabaseError('Supabase returned 0 records. Ensure you are signed in with an authorized Admin account (e.g. ADM001).');
       }
