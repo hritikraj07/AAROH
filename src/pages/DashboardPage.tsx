@@ -94,8 +94,8 @@ export const DashboardPage: React.FC = () => {
   const overallPct = totalHours > 0 ? Math.round((totalAttended / totalHours) * 100) : null;
   const lowAttendanceCount = analyses.filter(a => a.isBelowThreshold).length;
 
-  // 2. Classes KPI (filtered for cohort)
-  const filteredTimetable = timetable.filter(s => {
+  // 2. Classes KPI (filtered for cohort, with universal fallback so every student sees schedule)
+  const rawFilteredTimetable = timetable.filter(s => {
     if (user?.role === 'student') {
       if (s.program && user.program && !s.program.toLowerCase().includes(user.program.toLowerCase()) && !user.program.toLowerCase().includes(s.program.toLowerCase())) {
         return false;
@@ -106,6 +106,7 @@ export const DashboardPage: React.FC = () => {
     }
     return true;
   });
+  const filteredTimetable = rawFilteredTimetable.length > 0 ? rawFilteredTimetable : timetable;
   const now = new Date();
   const todaySessions = AcademicService.getSessionsForDay(filteredTimetable, now.getDay());
   const upcomingInfo = AcademicService.getNextUpcomingClass(filteredTimetable, now);

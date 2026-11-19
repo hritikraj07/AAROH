@@ -42,6 +42,7 @@ import {
 import { DEFAULT_CAMPUS_EVENTS } from '../data/eventsData';
 import { FEATURED_OPPORTUNITIES } from '../data/opportunitiesData';
 import { DEFAULT_CAMPUS_NOTICES } from '../data/noticesData';
+import { DEFAULT_TIMETABLE, DEFAULT_COURSES } from '../data/timetableData';
 import { supabase } from '../lib/supabase';
 import { findPreEnrolledAccount, convertToUser } from '../data/facultyDirectory';
 import { APP_CONFIG } from '../config';
@@ -372,7 +373,14 @@ export const StorageService = {
 
   // Courses & Timetable
   getCourses(): Course[] {
-    return getStored<Course[]>(STORAGE_KEYS.COURSES, INITIAL_COURSES);
+    let list = getStored<Course[]>(STORAGE_KEYS.COURSES, INITIAL_COURSES);
+    const existingIds = new Set(list.map(c => c.id));
+    const missing = DEFAULT_COURSES.filter(c => !existingIds.has(c.id));
+    if (missing.length > 0) {
+      list = [...list, ...missing];
+      setStored(STORAGE_KEYS.COURSES, list);
+    }
+    return list;
   },
 
   createCourse(course: Omit<Course, 'id'>): Course {
@@ -396,7 +404,14 @@ export const StorageService = {
   },
 
   getTimetable(): ClassSession[] {
-    return getStored<ClassSession[]>(STORAGE_KEYS.TIMETABLE, INITIAL_TIMETABLE);
+    let list = getStored<ClassSession[]>(STORAGE_KEYS.TIMETABLE, INITIAL_TIMETABLE);
+    const existingIds = new Set(list.map(s => s.id));
+    const missing = DEFAULT_TIMETABLE.filter(s => !existingIds.has(s.id));
+    if (missing.length > 0) {
+      list = [...list, ...missing];
+      setStored(STORAGE_KEYS.TIMETABLE, list);
+    }
+    return list;
   },
 
   createTimetableSession(session: Omit<ClassSession, 'id'>): ClassSession {

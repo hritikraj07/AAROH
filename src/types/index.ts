@@ -39,7 +39,7 @@ export interface Course {
   colorTag: string; // badge accent
 }
 
-export type ClassType = 'Lecture' | 'Lab' | 'Tutorial';
+export type ClassType = 'Lecture' | 'Lab' | 'Tutorial' | 'PP' | 'PR';
 
 export interface ClassSession {
   id: string;

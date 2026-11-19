@@ -114,11 +114,11 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
   }
 
   return (
-    <div className="bg-[#FFFFFF] dark:bg-[#18181B] rounded-[10px] border border-[#EAE9E4] dark:border-[#27272A] p-3.5 select-none transition-colors">
+    <div className="bg-white dark:bg-[#18181B] rounded-2xl border border-blue-200/70 dark:border-blue-900/50 p-4 select-none transition-colors shadow-sm">
       {/* Header: Month Year & Navigation */}
-      <div className="flex items-center justify-between pb-2.5 mb-2 border-b border-[#EAE9E4] dark:border-[#27272A]">
+      <div className="flex items-center justify-between pb-3 mb-2.5 border-b border-blue-100 dark:border-blue-900/50">
         <div>
-          <h3 className="text-xs font-bold text-[#252823] dark:text-[#EAE9E4] tracking-tight">
+          <h3 className="text-xs sm:text-sm font-bold text-[#0F2544] dark:text-white tracking-tight">
             {monthNames[viewMonth]} {viewYear}
           </h3>
         </div>
@@ -127,7 +127,7 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
           <button
             type="button"
             onClick={handleJumpToday}
-            className="text-[10px] font-mono px-2 py-0.5 rounded text-[#77786F] hover:text-[#252823] hover:bg-[#F7F6F2] dark:hover:bg-[#202025] dark:hover:text-[#EAE9E4] transition-colors cursor-pointer"
+            className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold bg-blue-50 hover:bg-blue-100 text-[#1D4ED8] dark:bg-blue-950/60 dark:text-blue-300 transition-colors cursor-pointer"
             title="Jump to today"
           >
             Today
@@ -135,7 +135,7 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
           <button
             type="button"
             onClick={handlePrevMonth}
-            className="p-1 rounded text-[#77786F] hover:text-[#252823] hover:bg-[#F7F6F2] dark:hover:bg-[#202025] dark:hover:text-[#EAE9E4] transition-colors cursor-pointer"
+            className="p-1 rounded text-slate-500 hover:text-[#1D4ED8] hover:bg-blue-50 dark:hover:bg-blue-950/40 dark:hover:text-blue-300 transition-colors cursor-pointer"
             aria-label="Previous month"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
@@ -143,7 +143,7 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
           <button
             type="button"
             onClick={handleNextMonth}
-            className="p-1 rounded text-[#77786F] hover:text-[#252823] hover:bg-[#F7F6F2] dark:hover:bg-[#202025] dark:hover:text-[#EAE9E4] transition-colors cursor-pointer"
+            className="p-1 rounded text-slate-500 hover:text-[#1D4ED8] hover:bg-blue-50 dark:hover:bg-blue-950/40 dark:hover:text-blue-300 transition-colors cursor-pointer"
             aria-label="Next month"
           >
             <ChevronRight className="w-3.5 h-3.5" />
@@ -152,11 +152,11 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
       </div>
 
       {/* Weekday Headers */}
-      <div className="grid grid-cols-7 mb-1 text-center">
+      <div className="grid grid-cols-7 mb-1.5 text-center">
         {weekdayHeaders.map(wd => (
           <span
             key={wd}
-            className="text-[10px] font-mono font-medium text-[#77786F] dark:text-[#A1A1AA] py-0.5"
+            className="text-[10px] font-mono font-bold text-[#1D4ED8] dark:text-blue-400 py-0.5"
           >
             {wd}
           </span>
@@ -176,25 +176,25 @@ export const TimetableCalendar: React.FC<TimetableCalendarProps> = ({
               key={idx}
               type="button"
               onClick={() => onSelectDate(item.date)}
-              className={`relative h-7 w-full flex flex-col items-center justify-center rounded-[6px] text-xs transition-colors cursor-pointer ${
+              className={`relative h-7 w-full flex flex-col items-center justify-center rounded-lg text-xs transition-colors cursor-pointer ${
                 isSelected
-                  ? 'bg-[#252823] text-white dark:bg-[#EAE9E4] dark:text-[#252823] font-semibold'
+                  ? 'bg-[#1D4ED8] text-white font-bold shadow-sm'
                   : isToday
-                  ? 'text-[#252823] dark:text-[#EAE9E4] font-semibold ring-1 ring-[#A49B83] dark:ring-[#A49B83] hover:bg-[#F7F6F2] dark:hover:bg-[#202025]'
+                  ? 'text-[#1D4ED8] dark:text-blue-300 font-bold ring-2 ring-[#1D4ED8]/60 hover:bg-blue-50 dark:hover:bg-blue-950/40'
                   : item.isCurrentMonth
-                  ? 'text-[#252823] dark:text-[#EAE9E4] hover:bg-[#F7F6F2] dark:hover:bg-[#202025]'
-                  : 'text-[#77786F]/40 dark:text-[#77786F]/40 hover:bg-[#F7F6F2]/60 dark:hover:bg-[#202025]/40'
+                  ? 'text-slate-700 dark:text-slate-200 hover:bg-blue-50/60 dark:hover:bg-blue-950/30'
+                  : 'text-slate-300 dark:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800/40'
               }`}
             >
               <span className="leading-none text-[11px]">{item.dayNum}</span>
 
-              {/* Small monochrome indicator for scheduled classes */}
+              {/* Indicator dot for scheduled classes */}
               {hasClasses && (
                 <span
                   className={`w-1 h-1 rounded-full mt-0.5 shrink-0 ${
                     isSelected
-                      ? 'bg-white dark:bg-[#252823]'
-                      : 'bg-[#77786F] dark:bg-[#A1A1AA]'
+                      ? 'bg-white'
+                      : 'bg-[#1D4ED8] dark:bg-blue-400'
                   }`}
                 />
               )}

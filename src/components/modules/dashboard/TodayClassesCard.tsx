@@ -13,7 +13,7 @@ export const TodayClassesCard: React.FC = () => {
   const courseMap = new Map(courses.map(c => [c.id, c]));
 
   // Filter timetable if logged-in user is a student with program/semester
-  const filteredTimetable = timetable.filter(s => {
+  const rawFilteredTimetable = timetable.filter(s => {
     if (user?.role === 'student') {
       if (s.program && user.program && !s.program.toLowerCase().includes(user.program.toLowerCase()) && !user.program.toLowerCase().includes(s.program.toLowerCase())) {
         return false;
@@ -24,6 +24,7 @@ export const TodayClassesCard: React.FC = () => {
     }
     return true;
   });
+  const filteredTimetable = rawFilteredTimetable.length > 0 ? rawFilteredTimetable : timetable;
 
   const now = new Date();
   const currentDayOfWeek = now.getDay(); // 0 = Sun, 1 = Mon ... 6 = Sat
