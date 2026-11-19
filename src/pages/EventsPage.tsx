@@ -17,7 +17,78 @@ import {
   List,
   Ticket,
   Building,
+  Code2,
+  Music,
+  Trophy,
+  Lightbulb,
 } from 'lucide-react';
+
+interface EventThemeConfig {
+  cardBg: string;
+  border: string;
+  topStrip: string;
+  pill: string;
+  progressBg: string;
+  watermarkIcon: React.ComponentType<{ className?: string }>;
+}
+
+const EVENT_THEMES: Record<string, EventThemeConfig> = {
+  tech: {
+    cardBg: 'bg-gradient-to-br from-blue-50/90 via-white to-indigo-50/60 dark:from-blue-950/30 dark:via-slate-900 dark:to-indigo-950/20',
+    border: 'border-blue-200/70 hover:border-blue-300 dark:border-blue-900/60 dark:hover:border-blue-700/80',
+    topStrip: 'h-1.5 bg-gradient-to-r from-blue-600 to-indigo-500',
+    pill: 'bg-blue-100/80 text-blue-700 border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800/80',
+    progressBg: 'bg-gradient-to-r from-blue-600 to-indigo-500',
+    watermarkIcon: Code2,
+  },
+  cultural: {
+    cardBg: 'bg-gradient-to-br from-rose-50/90 via-white to-amber-50/60 dark:from-rose-950/30 dark:via-slate-900 dark:to-amber-950/20',
+    border: 'border-rose-200/70 hover:border-rose-300 dark:border-rose-900/60 dark:hover:border-rose-700/80',
+    topStrip: 'h-1.5 bg-gradient-to-r from-rose-500 to-amber-500',
+    pill: 'bg-rose-100/80 text-rose-700 border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/80',
+    progressBg: 'bg-gradient-to-r from-rose-500 to-amber-500',
+    watermarkIcon: Music,
+  },
+  sports: {
+    cardBg: 'bg-gradient-to-br from-emerald-50/90 via-white to-teal-50/60 dark:from-emerald-950/30 dark:via-slate-900 dark:to-teal-950/20',
+    border: 'border-emerald-200/70 hover:border-emerald-300 dark:border-emerald-900/60 dark:hover:border-emerald-700/80',
+    topStrip: 'h-1.5 bg-gradient-to-r from-emerald-600 to-teal-500',
+    pill: 'bg-emerald-100/80 text-emerald-700 border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/80',
+    progressBg: 'bg-gradient-to-r from-emerald-600 to-teal-500',
+    watermarkIcon: Trophy,
+  },
+  workshops: {
+    cardBg: 'bg-gradient-to-br from-violet-50/90 via-white to-purple-50/60 dark:from-violet-950/30 dark:via-slate-900 dark:to-purple-950/20',
+    border: 'border-violet-200/70 hover:border-violet-300 dark:border-violet-900/60 dark:hover:border-violet-700/80',
+    topStrip: 'h-1.5 bg-gradient-to-r from-violet-600 to-purple-500',
+    pill: 'bg-violet-100/80 text-violet-700 border-violet-200 dark:bg-violet-950/60 dark:text-violet-300 dark:border-violet-800/80',
+    progressBg: 'bg-gradient-to-r from-violet-600 to-purple-500',
+    watermarkIcon: Lightbulb,
+  },
+  clubs: {
+    cardBg: 'bg-gradient-to-br from-amber-50/90 via-white to-orange-50/60 dark:from-amber-950/30 dark:via-slate-900 dark:to-orange-950/20',
+    border: 'border-amber-200/70 hover:border-amber-300 dark:border-amber-900/60 dark:hover:border-amber-700/80',
+    topStrip: 'h-1.5 bg-gradient-to-r from-amber-500 to-orange-500',
+    pill: 'bg-amber-100/80 text-amber-800 border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/80',
+    progressBg: 'bg-gradient-to-r from-amber-500 to-orange-500',
+    watermarkIcon: Users,
+  },
+};
+
+const DEFAULT_THEME: EventThemeConfig = {
+  cardBg: 'bg-gradient-to-br from-slate-50/90 via-white to-slate-100/60 dark:from-slate-900/60 dark:via-slate-900 dark:to-slate-950/40',
+  border: 'border-slate-200/80 hover:border-slate-300 dark:border-slate-800 dark:hover:border-slate-700',
+  topStrip: 'h-1.5 bg-gradient-to-r from-slate-500 to-slate-600',
+  pill: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700',
+  progressBg: 'bg-gradient-to-r from-slate-500 to-slate-600',
+  watermarkIcon: CalendarIcon,
+};
+
+const getEventTheme = (category?: string): EventThemeConfig => {
+  if (!category) return DEFAULT_THEME;
+  const key = category.trim().toLowerCase();
+  return EVENT_THEMES[key] || DEFAULT_THEME;
+};
 
 export const EventsPage: React.FC = () => {
   const { events, timetable, courses, toggleEventRegistration } = useApp();
@@ -206,32 +277,31 @@ export const EventsPage: React.FC = () => {
                 timetable,
                 courses
               );
+              const theme = getEventTheme(event.category);
+              const WatermarkIcon = theme.watermarkIcon;
+              const percent = Math.min(100, Math.round((event.registeredCount / Math.max(1, event.capacity)) * 100));
 
               return (
                 <div
                   key={event.id}
-                  className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 hover:border-slate-300 dark:hover:border-slate-700 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+                  className={`relative overflow-hidden rounded-2xl border transition-all duration-200 hover:-translate-y-1 hover:shadow-lg flex flex-col justify-between ${theme.cardBg} ${theme.border} shadow-xs`}
                 >
-                  <div className="space-y-2.5">
+                  {/* Top Accent Strip */}
+                  <div className={`w-full ${theme.topStrip} absolute top-0 left-0 right-0 z-10`} />
+
+                  {/* Subtle Background Pattern */}
+                  <div className="absolute inset-0 bg-[radial-gradient(#00000008_1px,transparent_1px)] dark:bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+
+                  {/* Watermark Icon */}
+                  <WatermarkIcon className="absolute -top-3 -right-3 w-32 h-32 opacity-[0.06] dark:opacity-[0.04] pointer-events-none select-none text-current" />
+
+                  <div className="relative z-10 p-5 pb-0 space-y-2.5">
                     {/* Top Row: Category and Date Badge */}
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <Badge
-                          variant={
-                            event.category === 'Tech'
-                              ? 'teal'
-                              : event.category === 'Cultural'
-                                ? 'violet'
-                                : event.category === 'Sports'
-                                  ? 'emerald'
-                                  : event.category === 'Workshops'
-                                    ? 'blue'
-                                    : 'slate'
-                          }
-                          size="sm"
-                        >
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${theme.pill}`}>
                           {event.category}
-                        </Badge>
+                        </span>
                         {event.isRegistered && (
                           <Badge variant="teal" size="sm" dot>
                             Pass Confirmed
@@ -295,38 +365,48 @@ export const EventsPage: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Bottom Action Footer */}
-                  <div className="mt-4 pt-3 border-t border-slate-200 dark:border-[#27272A] flex items-center justify-between gap-3 text-xs">
-                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[11px]">
-                      <Users className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
-                      <span className="font-mono font-medium text-slate-700 dark:text-slate-300">
-                        {event.registeredCount}/{event.capacity}
-                      </span>
-                      <span>({seatsLeft} left)</span>
+                  {/* Bottom Action Footer with Progress Bar */}
+                  <div className="relative z-10 p-5 pt-3 mt-3 border-t border-slate-200/80 dark:border-slate-800/80 space-y-2.5">
+                    <div className="flex items-center justify-between gap-3 text-xs">
+                      <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 text-[11px]">
+                        <Users className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                        <span className="font-mono font-medium text-slate-700 dark:text-slate-300">
+                          {event.registeredCount}/{event.capacity}
+                        </span>
+                        <span>({seatsLeft} left)</span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleOpenDetail(event)}
+                        >
+                          View Details
+                        </Button>
+
+                        <Button
+                          variant={event.isRegistered ? 'outline' : 'primary'}
+                          size="sm"
+                          disabled={isFull && !event.isRegistered}
+                          onClick={() => toggleEventRegistration(event.id)}
+                          className={event.isRegistered ? 'text-rose-600 hover:bg-rose-50 border-rose-200 dark:border-rose-900/60 dark:hover:bg-rose-950/30' : ''}
+                        >
+                          {event.isRegistered
+                            ? 'Cancel'
+                            : isFull
+                              ? 'Full'
+                              : 'Register'}
+                        </Button>
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleOpenDetail(event)}
-                      >
-                        View Details
-                      </Button>
-
-                      <Button
-                        variant={event.isRegistered ? 'outline' : 'primary'}
-                        size="sm"
-                        disabled={isFull && !event.isRegistered}
-                        onClick={() => toggleEventRegistration(event.id)}
-                        className={event.isRegistered ? 'text-rose-600 hover:bg-rose-50 border-rose-200 dark:border-rose-900/60 dark:hover:bg-rose-950/30' : ''}
-                      >
-                        {event.isRegistered
-                          ? 'Cancel'
-                          : isFull
-                            ? 'Full'
-                            : 'Register'}
-                      </Button>
+                    {/* Seat Progress Bar */}
+                    <div className="w-full bg-slate-200/70 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-500 ${theme.progressBg}`}
+                        style={{ width: `${percent}%` }}
+                      />
                     </div>
                   </div>
                 </div>
@@ -376,9 +456,9 @@ export const EventsPage: React.FC = () => {
 
                     <div>
                       <div className="flex items-center gap-2">
-                        <Badge variant="slate" size="sm">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold border ${getEventTheme(event.category).pill}`}>
                           {event.category}
-                        </Badge>
+                        </span>
                         {event.isRegistered && (
                           <Badge variant="teal" size="sm">
                             Registered

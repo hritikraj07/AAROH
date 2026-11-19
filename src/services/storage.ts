@@ -630,7 +630,16 @@ export const StorageService = {
   // Events
   getEvents(): CampusEvent[] {
     const list = getStored<CampusEvent[]>(STORAGE_KEYS.EVENTS, []);
-    if (list && list.length > 0) return list;
+    if (list && list.length > 0) {
+      const existingIds = new Set(list.map(e => e.id));
+      const missing = DEFAULT_CAMPUS_EVENTS.filter(e => !existingIds.has(e.id));
+      if (missing.length > 0) {
+        const merged = [...list, ...missing];
+        setStored(STORAGE_KEYS.EVENTS, merged);
+        return merged;
+      }
+      return list;
+    }
     setStored(STORAGE_KEYS.EVENTS, DEFAULT_CAMPUS_EVENTS);
     return DEFAULT_CAMPUS_EVENTS;
   },
