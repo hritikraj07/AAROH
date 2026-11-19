@@ -20,7 +20,7 @@ export const AcademicResultsTab: React.FC = () => {
 
   // Active student identification
   const studentId = user?.id || 'usr_std_demo';
-  const studentEmail = user?.email || 'piyush@krmu.edu.in';
+  const studentEmail = user?.email || 'piyush@aaroh.edu.in';
   const currentActiveSemester = user?.semester ? Number(user.semester) : 5;
 
   // Real-time synchronization with localStorage semesterGrades

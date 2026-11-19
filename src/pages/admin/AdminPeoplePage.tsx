@@ -69,7 +69,7 @@ export const AdminPeoplePage: React.FC = () => {
         return '@admin.aaroh.edu.in';
       case 'student':
       default:
-        return '@krmu.edu.in';
+        return '@aaroh.edu.in';
     }
   };
 

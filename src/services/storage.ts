@@ -164,7 +164,6 @@ export const StorageService = {
       u.email.trim().toLowerCase() === trimmedEmail ||
       (u.rollNumber && u.rollNumber.trim().toLowerCase() === trimmedEmail) ||
       (u.username && u.username.trim().toLowerCase() === trimmedEmail) ||
-      (u.email.trim().toLowerCase() === `${trimmedEmail}@krmu.edu.in`) ||
       (u.email.trim().toLowerCase() === `${trimmedEmail}@aaroh.edu.in`)
     );
 
@@ -175,7 +174,7 @@ export const StorageService = {
         const match = storedAaroh.find((u: any) =>
           u.username?.trim().toLowerCase() === trimmedEmail ||
           u.email?.trim().toLowerCase() === trimmedEmail ||
-          (u.username && `${u.username.trim().toLowerCase()}@krmu.edu.in` === trimmedEmail) ||
+          (u.username && `${u.username.trim().toLowerCase()}@aaroh.edu.in` === trimmedEmail) ||
           (u.email && u.email.split('@')[0].trim().toLowerCase() === trimmedEmail)
         );
         if (match && (match.password === password.trim() || match.username === password.trim() || !match.password)) {
@@ -184,7 +183,7 @@ export const StorageService = {
           existingUser = {
             id: `usr_${roll}`,
             name: match.full_name || match.name || `Student ${roll}`,
-            email: match.email || `${roll}@krmu.edu.in`,
+            email: match.email || `${roll}@aaroh.edu.in`,
             username: roll,
             password: match.password || password.trim(),
             role: studentRole,
@@ -237,7 +236,7 @@ export const StorageService = {
     if (!role) {
       return {
         success: false,
-        error: 'Account not found in directory. Institutional emails must end with @aaroh.edu.in, @krmu.edu.in, or enter a valid Roll Number.',
+        error: 'Account not found in directory. Institutional emails must end with @aaroh.edu.in, or enter a valid Roll Number.',
       };
     }
 

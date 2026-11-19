@@ -152,7 +152,7 @@ export const LoginPage: React.FC = () => {
         if (data) {
           const studentRole: UserRole = (data.role?.toLowerCase() as UserRole) || detectedRole || selectedRole || 'student';
           const roll = data.username || (data.email ? data.email.split('@')[0] : identifier);
-          const emailAddr = data.email || (data.username ? `${data.username}@krmu.edu.in` : identifier);
+          const emailAddr = data.email || (data.username ? `${data.username}@aaroh.edu.in` : identifier);
           const fullName = data.full_name || data.name || (data.username ? `Student ${data.username}` : 'Student');
 
           const userObj: User = {
@@ -350,7 +350,7 @@ export const LoginPage: React.FC = () => {
                   required
                   value={email}
                   onChange={e => handleEmailChange(e.target.value)}
-                  placeholder="e.g. 2601010006 or 2601010006@krmu.edu.in"
+                  placeholder="e.g. 2601010006 or 2601010006@aaroh.edu.in"
                   className="w-full min-h-[44px] text-xs font-mono pl-10 pr-3.5 py-2.5 bg-white/80 dark:bg-black/70 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors shadow-xs"
                 />
               </div>
