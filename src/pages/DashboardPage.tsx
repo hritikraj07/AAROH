@@ -703,7 +703,7 @@ export const DashboardPage: React.FC = () => {
 
         {/* Architectural Wireframe SVG of University Building */}
         <UniversityBuildingWireframe
-          wrapperClassName="hidden lg:flex items-end justify-end absolute right-3 bottom-0 w-[42%] max-w-[460px] h-[88%] pointer-events-none select-none z-0"
+          wrapperClassName="hidden lg:flex items-end justify-end absolute right-3 bottom-0 w-[44%] max-w-[480px] h-[90%] pointer-events-none select-none z-0"
           className="w-full h-full text-[#4a7c59]/25 dark:text-emerald-400/25"
         />
       </div>
