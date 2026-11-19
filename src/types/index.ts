@@ -181,6 +181,11 @@ export interface NoticeAttachment {
   type: string;
 }
 
+export interface NoticeCircularPoint {
+  label: string;
+  text: string;
+}
+
 export interface Notice {
   id: string;
   title: string;
@@ -191,6 +196,13 @@ export interface Notice {
   isPinned: boolean;
   attachments?: NoticeAttachment[];
   readByCurrentUser: boolean;
+  // Extended circular fields
+  priorityTag?: string;
+  issuedBy?: string;
+  startWindow?: string;
+  summary?: string;
+  circularPoints?: NoticeCircularPoint[];
+  effectiveDate?: string;
 }
 
 export type EventCategory = 'Tech' | 'Cultural' | 'Sports' | 'Workshops' | 'Clubs';

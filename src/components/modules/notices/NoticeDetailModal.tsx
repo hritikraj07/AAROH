@@ -125,8 +125,8 @@ export const NoticeDetailModal: React.FC<NoticeDetailModalProps> = ({ notice, is
         )}
 
         {/* Meta Bar */}
-        <div className="p-3 bg-slate-50 rounded-md border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2">
+        <div className="p-3 bg-slate-50 dark:bg-[#27272A]/50 rounded-xl border border-slate-200 dark:border-[#27272A] flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 flex-wrap">
             <Badge
               variant={
                 notice.category === 'Exams'
@@ -141,29 +141,76 @@ export const NoticeDetailModal: React.FC<NoticeDetailModalProps> = ({ notice, is
             >
               {notice.category}
             </Badge>
+            {notice.priorityTag && (
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-200/80 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-mono">
+                {notice.priorityTag}
+              </span>
+            )}
             {notice.isPinned && (
-              <span className="text-[11px] font-semibold text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">
+              <span className="text-[11px] font-semibold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 px-2 py-0.5 rounded-full font-mono">
                 Official Pinned Notice
               </span>
             )}
           </div>
 
-          <div className="flex items-center gap-4 text-slate-500 font-mono text-[11px]">
+          <div className="flex items-center gap-4 text-slate-500 dark:text-slate-400 font-mono text-[11px]">
             <span className="flex items-center gap-1">
               <Calendar className="w-3.5 h-3.5 text-slate-400" />
-              Published: {notice.publishedDate}
+              Published: {notice.publishedDate.includes('-') && notice.publishedDate.startsWith('2026') ? '19 November 2026' : notice.publishedDate}
             </span>
           </div>
         </div>
 
         {/* Issuing Authority */}
-        <div className="flex items-center gap-2 text-xs text-slate-600">
+        <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
           <Building className="w-4 h-4 text-slate-400 shrink-0" />
-          <span>Issued by: <strong className="text-slate-900">{notice.department}</strong></span>
+          <span>
+            Issued by: <strong className="text-slate-900 dark:text-slate-100">{notice.issuedBy || notice.department}</strong>
+          </span>
         </div>
 
+        {/* Effective Timeline / Examination Window */}
+        {(notice.effectiveDate || notice.startWindow) && (
+          <div className="p-3 bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-800/60 rounded-xl flex items-start gap-2.5 text-xs text-blue-900 dark:text-blue-200">
+            <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+            <div>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-blue-700 dark:text-blue-300 block font-mono">
+                Effective Timeline & Examination Window
+              </span>
+              <span className="font-semibold text-xs leading-relaxed">
+                {notice.effectiveDate || notice.startWindow}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Structured Circular Directives */}
+        {notice.circularPoints && notice.circularPoints.length > 0 && (
+          <div className="space-y-2 pt-1">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Mandatory Circular Directives & Guidelines
+            </h4>
+            <div className="grid grid-cols-1 gap-2">
+              {notice.circularPoints.map((point, idx) => (
+                <div
+                  key={idx}
+                  className="p-3 bg-slate-50 dark:bg-[#27272A]/50 border border-slate-200 dark:border-[#27272A] rounded-xl text-xs space-y-0.5"
+                >
+                  <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-slate-100">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0" />
+                    <span>{point.label}</span>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed pl-3">
+                    {point.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Full Notice Content */}
-        <div className="text-slate-800 text-sm leading-relaxed whitespace-pre-line py-2 border-t border-b border-slate-200">
+        <div className="text-slate-800 dark:text-slate-200 text-sm leading-relaxed whitespace-pre-line py-2 border-t border-b border-slate-200 dark:border-[#27272A]">
           {notice.content}
         </div>
 

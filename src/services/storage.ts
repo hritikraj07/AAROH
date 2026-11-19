@@ -41,6 +41,7 @@ import {
 } from '../data/seed';
 import { DEFAULT_CAMPUS_EVENTS } from '../data/eventsData';
 import { FEATURED_OPPORTUNITIES } from '../data/opportunitiesData';
+import { DEFAULT_CAMPUS_NOTICES } from '../data/noticesData';
 import { supabase } from '../lib/supabase';
 import { findPreEnrolledAccount, convertToUser } from '../data/facultyDirectory';
 import { APP_CONFIG } from '../config';
@@ -583,7 +584,38 @@ export const StorageService = {
 
   // Notices
   getNotices(): Notice[] {
-    return getStored<Notice[]>(STORAGE_KEYS.NOTICES, INITIAL_NOTICES);
+    let list = getStored<Notice[]>(STORAGE_KEYS.NOTICES, INITIAL_NOTICES);
+    let changed = false;
+    const existingIds = new Set(list.map(n => n.id));
+    const missing = DEFAULT_CAMPUS_NOTICES.filter(n => !existingIds.has(n.id));
+    if (missing.length > 0) {
+      list = [...list, ...missing];
+      changed = true;
+    }
+
+    list = list.map(item => {
+      const def = DEFAULT_CAMPUS_NOTICES.find(d => d.id === item.id);
+      if (def && (!item.issuedBy || !item.priorityTag || !item.startWindow || !item.summary || !item.circularPoints)) {
+        changed = true;
+        return {
+          ...def,
+          ...item,
+          issuedBy: item.issuedBy || def.issuedBy,
+          priorityTag: item.priorityTag || def.priorityTag,
+          startWindow: item.startWindow || def.startWindow,
+          summary: item.summary || def.summary,
+          circularPoints: item.circularPoints || def.circularPoints,
+          effectiveDate: item.effectiveDate || def.effectiveDate,
+        };
+      }
+      return item;
+    });
+
+    if (changed) {
+      setStored(STORAGE_KEYS.NOTICES, list);
+    }
+
+    return list;
   },
 
   createNotice(notice: Omit<Notice, 'id' | 'publishedDate' | 'readByCurrentUser'>): Notice {
@@ -927,7 +959,11 @@ export const StorageService = {
       const matchTitle = notice.title?.toLowerCase().includes(q);
       const matchContent = notice.content?.toLowerCase().includes(q);
       const matchDesc = (notice as any).description?.toLowerCase().includes(q);
-      if (matchTitle || matchContent || matchDesc) {
+      const matchSummary = notice.summary?.toLowerCase().includes(q);
+      const matchIssued = notice.issuedBy?.toLowerCase().includes(q);
+      const matchDept = notice.department?.toLowerCase().includes(q);
+      const matchPoints = notice.circularPoints?.some(p => p.label.toLowerCase().includes(q) || p.text.toLowerCase().includes(q));
+      if (matchTitle || matchContent || matchDesc || matchSummary || matchIssued || matchDept || matchPoints) {
         results.push({
           id: notice.id,
           type: 'Notice',

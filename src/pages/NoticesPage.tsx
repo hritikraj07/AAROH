@@ -12,6 +12,7 @@ import {
   CheckCheck,
   Building,
   Filter,
+  Calendar,
 } from 'lucide-react';
 
 export const NoticesPage: React.FC = () => {
@@ -44,8 +45,31 @@ export const NoticesPage: React.FC = () => {
     'General',
   ];
 
+  const formatDateDisplay = (dateStr: string) => {
+    if (!dateStr) return '';
+    if (dateStr.includes('November') || dateStr.includes('Dec')) return dateStr;
+    try {
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        const year = parts[0];
+        const monthIndex = parseInt(parts[1], 10) - 1;
+        const day = parseInt(parts[2], 10);
+        const months = [
+          'January', 'February', 'March', 'April', 'May', 'June',
+          'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        if (months[monthIndex]) {
+          return `${day} ${months[monthIndex]} ${year}`;
+        }
+      }
+    } catch {
+      // fallback
+    }
+    return dateStr;
+  };
+
   const filteredNotices = useMemo(() => {
-    return notices.filter(n => {
+    const list = notices.filter(n => {
       // Category filter
       if (categoryFilter !== 'All' && n.category !== categoryFilter) return false;
 
@@ -58,15 +82,26 @@ export const NoticesPage: React.FC = () => {
         const matchTitle = n.title.toLowerCase().includes(q);
         const matchContent = n.content.toLowerCase().includes(q);
         const matchDept = n.department.toLowerCase().includes(q);
-        if (!matchTitle && !matchContent && !matchDept) return false;
+        const matchSummary = n.summary?.toLowerCase().includes(q);
+        const matchIssued = n.issuedBy?.toLowerCase().includes(q);
+        const matchPriority = n.priorityTag?.toLowerCase().includes(q);
+        const matchWindow = n.startWindow?.toLowerCase().includes(q);
+        const matchPoints = n.circularPoints?.some(p => p.label.toLowerCase().includes(q) || p.text.toLowerCase().includes(q));
+        if (!matchTitle && !matchContent && !matchDept && !matchSummary && !matchIssued && !matchPriority && !matchWindow && !matchPoints) return false;
       }
 
       return true;
     });
+
+    // Pinned notices first, then sorted by publishedDate descending
+    return list.sort((a, b) => {
+      if (a.isPinned !== b.isPinned) {
+        return a.isPinned ? -1 : 1;
+      }
+      return b.publishedDate.localeCompare(a.publishedDate);
+    });
   }, [notices, categoryFilter, readFilter, searchQuery]);
 
-  const pinnedList = filteredNotices.filter(n => n.isPinned);
-  const regularList = filteredNotices.filter(n => !n.isPinned);
   const unreadTotal = notices.filter(n => !n.readByCurrentUser).length;
 
   const handleOpenNotice = (notice: Notice) => {
@@ -172,33 +207,48 @@ export const NoticesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 1. Pinned Notices Section */}
-      {pinnedList.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1">
-            <Pin className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400 rotate-45" />
-            <span>Pinned Official Circulars</span>
+      {/* Notice Cards Feed */}
+      {filteredNotices.length === 0 ? (
+        <div className="py-16 flex flex-col items-center justify-center text-center bg-white border border-slate-200 text-slate-500 dark:bg-[#18181B] dark:border-white/5 dark:text-slate-400 rounded-2xl p-8">
+          <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-3 border border-slate-200 dark:border-white/5">
+            <FileText className="w-5 h-5 text-slate-400 dark:text-teal-400" />
           </div>
+          <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
+            {notices.length === 0 ? 'No institutional notices published yet.' : 'No matching circulars found'}
+          </h4>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm leading-relaxed">
+            {notices.length === 0
+              ? 'Official academic circulars, exam schedules, and administration memos will be listed here.'
+              : 'Try modifying your search query or category filters above.'}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {filteredNotices.map(notice => {
+            const isExams = notice.category === 'Exams';
+            const isAcademic = notice.category === 'Academic';
 
-          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg divide-y divide-slate-200 dark:divide-[#27272A]">
-            {pinnedList.map(notice => (
+            return (
               <div
                 key={notice.id}
                 onClick={() => handleOpenNotice(notice)}
-                className={`p-4 transition-colors hover:bg-slate-50/80 dark:hover:bg-[#27272A]/40 cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                  !notice.readByCurrentUser ? 'bg-teal-50/20 dark:bg-teal-950/20' : ''
-                }`}
+                className={`bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 sm:p-6 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col justify-between gap-4 cursor-pointer select-none ${
+                  isExams
+                    ? 'border-l-4 border-l-rose-500'
+                    : isAcademic
+                    ? 'border-l-4 border-l-blue-600'
+                    : 'border-l-4 border-l-slate-400'
+                } ${!notice.readByCurrentUser ? 'bg-gradient-to-r from-blue-50/15 via-white to-transparent dark:from-blue-950/10 dark:via-[#18181B]' : ''}`}
               >
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2">
-                    {!notice.readByCurrentUser && (
-                      <span className="w-2 h-2 rounded-full bg-teal-600 shrink-0" title="Unread" />
-                    )}
+                {/* Top row: Category pill, Priority tag, Unread blue dot indicator, and Published Date */}
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {/* Category pill */}
                     <Badge
                       variant={
-                        notice.category === 'Exams'
+                        isExams
                           ? 'rose'
-                          : notice.category === 'Academic'
+                          : isAcademic
                           ? 'indigo'
                           : 'slate'
                       }
@@ -206,121 +256,93 @@ export const NoticesPage: React.FC = () => {
                     >
                       {notice.category}
                     </Badge>
-                    <span className="text-[11px] text-slate-400 font-mono">
-                      {notice.publishedDate}
-                    </span>
-                  </div>
 
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 leading-snug">
-                    {notice.title}
-                  </h4>
+                    {/* Priority tag */}
+                    {notice.priorityTag && (
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-mono">
+                        {notice.priorityTag}
+                      </span>
+                    )}
 
-                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                    {notice.content}
-                  </p>
+                    {/* Unread blue dot indicator */}
+                    {!notice.readByCurrentUser && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 px-2 py-0.5 rounded-full">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0" />
+                        <span>Unread</span>
+                      </span>
+                    )}
 
-                  <div className="flex items-center gap-3 text-[11px] text-slate-400 dark:text-slate-500 pt-1">
-                    <span className="flex items-center gap-1">
-                      <Building className="w-3 h-3 text-slate-400" />
-                      {notice.department}
-                    </span>
-                    {notice.attachments && notice.attachments.length > 0 && (
-                      <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300 font-medium">
-                        <FileText className="w-3 h-3 text-teal-700 dark:text-teal-400" />
-                        {notice.attachments.length} attached file{notice.attachments.length > 1 ? 's' : ''}
+                    {notice.isPinned && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-teal-800 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 px-2 py-0.5 rounded-full font-mono">
+                        <Pin className="w-2.5 h-2.5 rotate-45" />
+                        <span>Pinned</span>
                       </span>
                     )}
                   </div>
+
+                  {/* Published Date */}
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+                    {formatDateDisplay(notice.publishedDate)}
+                  </span>
                 </div>
 
-                <div className="shrink-0 flex items-center">
-                  <Button variant="ghost" size="sm" className="text-teal-700 dark:text-teal-400">
-                    Read Circular →
-                  </Button>
+                {/* Middle: Bold circular title, Issued by metadata line, and 2-line summary */}
+                <div className="space-y-1.5">
+                  <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 leading-snug hover:text-blue-700 dark:hover:text-blue-400 transition-colors">
+                    {notice.title}
+                  </h3>
+
+                  <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    <Building className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                    <span>
+                      Issued by:{' '}
+                      <strong className="text-slate-700 dark:text-slate-300 font-medium">
+                        {notice.issuedBy || notice.department}
+                      </strong>
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                    {notice.summary || notice.content}
+                  </p>
+                </div>
+
+                {/* Bottom row: Key date highlight pill on left, and Read Circular button on right */}
+                <div className="pt-2 border-t border-slate-100 dark:border-[#27272A] flex items-center justify-between gap-3 text-xs">
+                  <div>
+                    {notice.startWindow ? (
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-[#27272A]/50 border border-slate-200/80 dark:border-[#27272A] text-slate-700 dark:text-slate-300 font-medium">
+                        <Calendar className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                        <span className="font-mono text-[11px] font-semibold text-slate-800 dark:text-slate-200">
+                          {notice.startWindow}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-[11px] text-slate-400 font-mono">
+                        Ref: CIR-{notice.id.toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenNotice(notice);
+                      }}
+                      className="text-blue-700 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 font-semibold text-xs"
+                    >
+                      Read Circular →
+                    </Button>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       )}
-
-      {/* 2. Regular Feed List */}
-      <div className="space-y-2">
-        {pinnedList.length > 0 && regularList.length > 0 && (
-          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1 pt-2">
-            General Notice Archive
-          </div>
-        )}
-
-        <div className="bg-white border border-slate-200 text-slate-500 dark:bg-[#18181B] dark:border-white/5 dark:text-slate-400 rounded-2xl divide-y divide-slate-200 dark:divide-[#27272A]">
-          {filteredNotices.length === 0 ? (
-            <div className="py-16 flex flex-col items-center justify-center text-center p-8">
-              <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-[#111115] flex items-center justify-center text-slate-400 dark:text-teal-400 mb-3 border border-slate-200 dark:border-white/5">
-                <FileText className="w-5 h-5 text-slate-400 dark:text-teal-400" />
-              </div>
-              <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">
-                {notices.length === 0 ? 'No institutional notices published yet.' : 'No matching circulars found'}
-              </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm leading-relaxed">
-                {notices.length === 0
-                  ? 'Official academic circulars, exam schedules, and administration memos will be listed here.'
-                  : 'Try modifying your search query or category filters above.'}
-              </p>
-            </div>
-          ) : (
-            regularList.map(notice => (
-              <div
-                key={notice.id}
-                onClick={() => handleOpenNotice(notice)}
-                className={`p-4 transition-colors hover:bg-slate-50/80 dark:hover:bg-[#27272A]/40 cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
-                  !notice.readByCurrentUser ? 'bg-teal-50/20 dark:bg-teal-950/20' : ''
-                }`}
-              >
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2">
-                    {!notice.readByCurrentUser && (
-                      <span className="w-2 h-2 rounded-full bg-teal-600 shrink-0" title="Unread" />
-                    )}
-                    <Badge variant="slate" size="sm">
-                      {notice.category}
-                    </Badge>
-                    <span className="text-[11px] text-slate-400 font-mono">
-                      {notice.publishedDate}
-                    </span>
-                  </div>
-
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-slate-100 leading-snug">
-                    {notice.title}
-                  </h4>
-
-                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                    {notice.content}
-                  </p>
-
-                  <div className="flex items-center gap-3 text-[11px] text-slate-400 dark:text-slate-500 pt-1">
-                    <span className="flex items-center gap-1">
-                      <Building className="w-3 h-3 text-slate-400" />
-                      {notice.department}
-                    </span>
-                    {notice.attachments && notice.attachments.length > 0 && (
-                      <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300 font-medium">
-                        <FileText className="w-3 h-3 text-teal-700 dark:text-teal-400" />
-                        {notice.attachments.length} attachment{notice.attachments.length > 1 ? 's' : ''}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="shrink-0 flex items-center">
-                  <Button variant="ghost" size="sm" className="text-teal-700 dark:text-teal-400">
-                    Read Circular →
-                  </Button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
 
       {/* Notice Detail Modal */}
       <NoticeDetailModal
