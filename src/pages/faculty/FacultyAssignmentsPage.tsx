@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { Button } from '../../components/ui/Button';
@@ -658,475 +659,492 @@ export const FacultyAssignmentsPage: React.FC = () => {
 
       {/* Standard Assignment Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-[2px] p-4 sm:p-6 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-white dark:bg-[#18181B] rounded-2xl shadow-2xl border border-slate-200 dark:border-[#27272A] overflow-hidden flex flex-col max-h-[90vh] my-auto animate-in fade-in duration-150">
-            {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-[#27272A] flex items-center justify-between shrink-0 bg-white dark:bg-[#18181B]">
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-teal-800 dark:text-teal-400" />
-                <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">
-                  Post Standard Assignment
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsAddModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                title="Close modal"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+        (() => {
+          const modalContent = (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-[2px] p-4 sm:p-6 overflow-y-auto">
+              <div className="w-full max-w-2xl bg-white dark:bg-[#18181B] rounded-2xl shadow-2xl border border-slate-200 dark:border-[#27272A] overflow-hidden flex flex-col max-h-[90vh] my-auto animate-in fade-in duration-150">
+                {/* Modal Header */}
+                <div className="px-6 py-4 border-b border-slate-100 dark:border-[#27272A] flex items-center justify-between shrink-0 bg-white dark:bg-[#18181B]">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-teal-800 dark:text-teal-400" />
+                    <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">
+                      Post Standard Assignment
+                    </h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsAddModalOpen(false)}
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    title="Close modal"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
 
-            {/* Modal Form */}
-            <form onSubmit={handleCreateStandardAssignment} className="flex flex-col flex-1 min-h-0 overflow-hidden">
-              <div className="p-6 space-y-4 overflow-y-auto flex-1">
-                {/* Target Course */}
-                <div className="w-full min-w-0 box-border">
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
-                    Target Course <span className="text-rose-600">*</span>
-                  </label>
-                  <div className="relative w-full min-w-0 box-border">
-                    <CustomDropdown<string>
-                      value={courseId}
-                      onChange={val => setCourseId(val)}
-                      options={courseSelectOptions}
-                      placeholder="Select course..."
-                      className="w-full min-w-0 box-border"
-                      buttonClassName="px-3.5 py-2.5 rounded-xl w-full"
-                    />
-                    <select
-                      aria-hidden="true"
-                      tabIndex={-1}
-                      value={courseId}
-                      onChange={e => setCourseId(e.target.value)}
-                      className="sr-only pointer-events-none"
+                {/* Modal Form */}
+                <form onSubmit={handleCreateStandardAssignment} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+                  <div className="p-6 space-y-4 overflow-y-auto flex-1">
+                    {/* Target Course */}
+                    <div className="w-full min-w-0 box-border">
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
+                        Target Course <span className="text-rose-600">*</span>
+                      </label>
+                      <div className="relative w-full min-w-0 box-border">
+                        <CustomDropdown<string>
+                          value={courseId}
+                          onChange={val => setCourseId(val)}
+                          options={courseSelectOptions}
+                          placeholder="Select course..."
+                          className="w-full min-w-0 box-border"
+                          buttonClassName="px-3.5 py-2.5 rounded-xl w-full"
+                        />
+                        <select
+                          aria-hidden="true"
+                          tabIndex={-1}
+                          value={courseId}
+                          onChange={e => setCourseId(e.target.value)}
+                          className="sr-only pointer-events-none"
+                        >
+                          {courses.map(c => (
+                            <option key={c.id} value={c.id}>
+                              {c.code} - {c.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Assignment Title */}
+                    <div className="w-full min-w-0 box-border">
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
+                        Assignment Title <span className="text-rose-600">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Problem Set 3: Database Normalization"
+                        value={title}
+                        onChange={e => setTitle(e.target.value)}
+                        className="w-full min-w-0 box-border text-xs px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition-all"
+                      />
+                    </div>
+
+                    {/* Description & Submission Guidelines */}
+                    <div className="w-full min-w-0 box-border">
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
+                        Description & Submission Guidelines
+                      </label>
+                      <textarea
+                        rows={4}
+                        placeholder="Provide instructions, rubric criteria, or problem set links..."
+                        value={description}
+                        onChange={e => setDescription(e.target.value)}
+                        className="w-full min-w-0 box-border min-h-[100px] text-xs px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F766E] resize-y transition-all"
+                      />
+                    </div>
+
+                    {/* Bottom Row: Due Date & Max Marks */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+                      <div className="min-w-0 w-full">
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
+                          Due Date <span className="text-rose-600">*</span>
+                        </label>
+                        <input
+                          type="date"
+                          required
+                          value={dueDate}
+                          onChange={e => setDueDate(e.target.value)}
+                          className="w-full min-w-0 box-border text-xs font-mono px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition-all"
+                        />
+                      </div>
+                      <div className="min-w-0 w-full">
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
+                          Max Marks
+                        </label>
+                        <input
+                          type="number"
+                          min={5}
+                          max={100}
+                          value={maxMarks}
+                          onChange={e => setMaxMarks(Number(e.target.value))}
+                          className="w-full min-w-0 box-border text-xs font-mono px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition-all"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Modal Footer */}
+                  <div className="px-6 py-4 bg-slate-50/70 dark:bg-[#111115] border-t border-slate-100 dark:border-[#27272A] flex items-center justify-end gap-3 shrink-0">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setIsAddModalOpen(false)}
+                      className="whitespace-nowrap shrink-0"
                     >
-                      {courses.map(c => (
-                        <option key={c.id} value={c.id}>
-                          {c.code} - {c.name}
-                        </option>
-                      ))}
-                    </select>
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      size="sm"
+                      disabled={courses.length === 0}
+                      className="whitespace-nowrap shrink-0"
+                    >
+                      Publish Task
+                    </Button>
                   </div>
-                </div>
-
-                {/* Assignment Title */}
-                <div className="w-full min-w-0 box-border">
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
-                    Assignment Title <span className="text-rose-600">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Problem Set 3: Database Normalization"
-                    value={title}
-                    onChange={e => setTitle(e.target.value)}
-                    className="w-full min-w-0 box-border text-xs px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition-all"
-                  />
-                </div>
-
-                {/* Description & Submission Guidelines */}
-                <div className="w-full min-w-0 box-border">
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
-                    Description & Submission Guidelines
-                  </label>
-                  <textarea
-                    rows={4}
-                    placeholder="Provide instructions, rubric criteria, or problem set links..."
-                    value={description}
-                    onChange={e => setDescription(e.target.value)}
-                    className="w-full min-w-0 box-border min-h-[100px] text-xs px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F766E] resize-y transition-all"
-                  />
-                </div>
-
-                {/* Bottom Row: Due Date & Max Marks */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
-                  <div className="min-w-0 w-full">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
-                      Due Date <span className="text-rose-600">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      required
-                      value={dueDate}
-                      onChange={e => setDueDate(e.target.value)}
-                      className="w-full min-w-0 box-border text-xs font-mono px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition-all"
-                    />
-                  </div>
-                  <div className="min-w-0 w-full">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
-                      Max Marks
-                    </label>
-                    <input
-                      type="number"
-                      min={5}
-                      max={100}
-                      value={maxMarks}
-                      onChange={e => setMaxMarks(Number(e.target.value))}
-                      className="w-full min-w-0 box-border text-xs font-mono px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition-all"
-                    />
-                  </div>
-                </div>
+                </form>
               </div>
-
-              {/* Modal Footer */}
-              <div className="px-6 py-4 bg-slate-50/70 dark:bg-[#111115] border-t border-slate-100 dark:border-[#27272A] flex items-center justify-end gap-3 shrink-0">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setIsAddModalOpen(false)}
-                  className="whitespace-nowrap shrink-0"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="sm"
-                  disabled={courses.length === 0}
-                  className="whitespace-nowrap shrink-0"
-                >
-                  Publish Task
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
+            </div>
+          );
+          return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : modalContent;
+        })()
       )}
 
       {/* Coding Assignment Creation Modal */}
       {isCodingModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-[2px] p-4 sm:p-6 overflow-y-auto">
-          <div className="w-full max-w-3xl bg-white dark:bg-[#18181B] rounded-2xl shadow-2xl border border-slate-200 dark:border-[#27272A] overflow-hidden flex flex-col max-h-[90vh] my-auto animate-in fade-in duration-150">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-5 py-4 sm:px-6 sm:py-4 border-b border-slate-200 dark:border-[#27272A] shrink-0 bg-white dark:bg-[#18181B]">
-              <div className="flex items-center gap-2">
-                <Code className="w-4 h-4 text-teal-700 dark:text-teal-400" />
-                <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Create Live Lab Coding Assignment</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsCodingModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                title="Close modal"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Modal Form */}
-            <form onSubmit={handleCreateCodingAssignment} className="flex flex-col flex-1 min-h-0 overflow-hidden">
-              <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
-                {/* Target Course & Programming Language */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                  <div className="min-w-0">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Target Course <span className="text-rose-600">*</span>
-                    </label>
-                    <div className="relative min-w-0">
-                      <CustomDropdown<string>
-                        value={codingCourseId}
-                        onChange={val => setCodingCourseId(val)}
-                        options={courseSelectOptions}
-                        placeholder="Select course..."
-                      />
-                      <select
-                        aria-hidden="true"
-                        tabIndex={-1}
-                        value={codingCourseId}
-                        onChange={e => setCodingCourseId(e.target.value)}
-                        className="sr-only pointer-events-none"
-                      >
-                        {courses.map(c => (
-                          <option key={c.id} value={c.id}>
-                            {c.code} - {c.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+        (() => {
+          const modalContent = (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-[2px] p-4 sm:p-6 overflow-y-auto">
+              <div className="w-full max-w-3xl bg-white dark:bg-[#18181B] rounded-2xl shadow-2xl border border-slate-200 dark:border-[#27272A] overflow-hidden flex flex-col max-h-[90vh] my-auto animate-in fade-in duration-150">
+                {/* Modal Header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-[#27272A] shrink-0 bg-white dark:bg-[#18181B]">
+                  <div className="flex items-center gap-2">
+                    <Code className="w-4 h-4 text-teal-700 dark:text-teal-400" />
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Create Live Lab Coding Assignment</h3>
                   </div>
-
-                  <div className="min-w-0">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Programming Language <span className="text-rose-600">*</span>
-                    </label>
-                    <div className="relative min-w-0">
-                      <CustomDropdown<string>
-                        value={codingLanguage}
-                        onChange={val => setCodingLanguage(val)}
-                        options={languageOptions}
-                        placeholder="Select language..."
-                      />
-                      <select
-                        aria-hidden="true"
-                        tabIndex={-1}
-                        value={codingLanguage}
-                        onChange={e => setCodingLanguage(e.target.value)}
-                        className="sr-only pointer-events-none"
-                      >
-                        <option value="python">Python 3 (CPython)</option>
-                        <option value="javascript">JavaScript (Node.js ES6)</option>
-                        <option value="cpp">C++ (GCC 11)</option>
-                        <option value="java">Java (OpenJDK 17)</option>
-                      </select>
-                    </div>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsCodingModalOpen(false)}
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                    title="Close modal"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
 
-                {/* Lab Problem Title */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Lab Problem Title <span className="text-rose-600">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Lab 04: Binary Search Algorithm"
-                    value={codingTitle}
-                    onChange={e => setCodingTitle(e.target.value)}
-                    className="w-full min-w-0 box-border text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-lg bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700"
-                  />
-                </div>
-
-                {/* Problem Description & Constraints */}
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Problem Description & Constraints
-                  </label>
-                  <textarea
-                    rows={3}
-                    required
-                    placeholder="Detailed specifications, runtime constraints, and input format..."
-                    value={codingDescription}
-                    onChange={e => setCodingDescription(e.target.value)}
-                    className="w-full min-w-0 box-border text-xs p-3 border border-slate-200 dark:border-[#27272A] rounded-lg bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 resize-y font-sans leading-relaxed"
-                  />
-                </div>
-
-                {/* Starter Code Editor */}
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      Starter Code Template <span className="text-rose-600">*</span>
-                    </label>
-                    <span className="text-[10px] font-mono text-slate-400">
-                      Pre-filled in student workspace
-                    </span>
-                  </div>
-                  <textarea
-                    rows={4}
-                    required
-                    value={starterCode}
-                    onChange={e => setStarterCode(e.target.value)}
-                    className="w-full min-w-0 box-border text-xs font-mono p-3 bg-slate-900 text-slate-100 rounded-lg border border-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-500 resize-y leading-relaxed"
-                  />
-                </div>
-
-                {/* Dynamic Test Cases Builder */}
-                <div className="p-4 bg-slate-50 dark:bg-[#27272A]/50 border border-slate-200 dark:border-[#27272A] rounded-xl space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
-                      <span className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
-                        Automated Test Cases Builder ({testCases.length})
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleAddTestCase}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 transition-colors cursor-pointer"
-                    >
-                      <Plus className="w-3 h-3" />
-                      <span>Add Test Case</span>
-                    </button>
-                  </div>
-
-                  <div className="space-y-3">
-                    {testCases.map((tc, index) => (
-                      <div
-                        key={tc.id}
-                        className="p-3 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-3 items-center text-xs"
-                      >
-                        <div className="min-w-0">
-                          <label className="block text-[10px] font-mono text-slate-400 uppercase mb-0.5">
-                            Test #{index + 1} Input
-                          </label>
-                          <input
-                            type="text"
-                            required
-                            placeholder="e.g. nums = [2, 7], target = 9"
-                            value={tc.input}
-                            onChange={e => handleUpdateTestCase(tc.id, 'input', e.target.value)}
-                            className="w-full min-w-0 box-border text-xs font-mono px-3 py-1.5 border border-slate-200 dark:border-[#27272A] rounded-md bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                {/* Modal Form */}
+                <form onSubmit={handleCreateCodingAssignment} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+                  <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5 min-w-0">
+                    {/* Target Course & Programming Language */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                      <div className="min-w-0">
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                          Target Course <span className="text-rose-600">*</span>
+                        </label>
+                        <div className="relative min-w-0">
+                          <CustomDropdown<string>
+                            value={codingCourseId}
+                            onChange={val => setCodingCourseId(val)}
+                            options={courseSelectOptions}
+                            placeholder="Select course..."
                           />
-                        </div>
-                        <div className="min-w-0">
-                          <label className="block text-[10px] font-mono text-slate-400 uppercase mb-0.5">
-                            Expected Output
-                          </label>
-                          <input
-                            type="text"
-                            required
-                            placeholder="e.g. [0, 1]"
-                            value={tc.expectedOutput}
-                            onChange={e => handleUpdateTestCase(tc.id, 'expectedOutput', e.target.value)}
-                            className="w-full min-w-0 box-border text-xs font-mono px-3 py-1.5 border border-slate-200 dark:border-[#27272A] rounded-md bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
-                          />
-                        </div>
-                        <div className="flex justify-end sm:justify-center shrink-0 pt-1 sm:pt-4">
-                          {testCases.length > 1 ? (
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveTestCase(tc.id)}
-                              className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
-                              title="Remove test case"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          ) : (
-                            <div className="w-7 h-7 shrink-0 hidden sm:block" />
-                          )}
+                          <select
+                            aria-hidden="true"
+                            tabIndex={-1}
+                            value={codingCourseId}
+                            onChange={e => setCodingCourseId(e.target.value)}
+                            className="sr-only pointer-events-none"
+                          >
+                            {courses.map(c => (
+                              <option key={c.id} value={c.id}>
+                                {c.code} - {c.name}
+                              </option>
+                            ))}
+                          </select>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
 
-                {/* Due Date & Max Marks */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="min-w-0">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Due Date <span className="text-rose-600">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      required
-                      value={codingDueDate}
-                      onChange={e => setCodingDueDate(e.target.value)}
-                      className="w-full min-w-0 box-border text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-lg bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Max Marks</label>
-                    <input
-                      type="number"
-                      min={5}
-                      max={100}
-                      value={codingMaxMarks}
-                      onChange={e => setCodingMaxMarks(Number(e.target.value))}
-                      className="w-full min-w-0 box-border text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-lg bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
-                    />
-                  </div>
-                </div>
-              </div>
+                      <div className="min-w-0">
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                          Programming Language <span className="text-rose-600">*</span>
+                        </label>
+                        <div className="relative min-w-0">
+                          <CustomDropdown<string>
+                            value={codingLanguage}
+                            onChange={val => setCodingLanguage(val)}
+                            options={languageOptions}
+                            placeholder="Select language..."
+                          />
+                          <select
+                            aria-hidden="true"
+                            tabIndex={-1}
+                            value={codingLanguage}
+                            onChange={e => setCodingLanguage(e.target.value)}
+                            className="sr-only pointer-events-none"
+                          >
+                            <option value="python">Python 3 (CPython)</option>
+                            <option value="javascript">JavaScript (Node.js ES6)</option>
+                            <option value="cpp">C++ (GCC 11)</option>
+                            <option value="java">Java (OpenJDK 17)</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
 
-              {/* Action Footer */}
-              <div className="flex items-center justify-end gap-2 px-5 py-3.5 sm:px-6 sm:py-4 border-t border-slate-200 dark:border-[#27272A] bg-slate-50/80 dark:bg-[#18181B] shrink-0">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setIsCodingModalOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="sm"
-                  disabled={courses.length === 0}
-                >
-                  Create Live Lab (Locked)
-                </Button>
+                    {/* Lab Problem Title */}
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Lab Problem Title <span className="text-rose-600">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Lab 04: Binary Search Algorithm"
+                        value={codingTitle}
+                        onChange={e => setCodingTitle(e.target.value)}
+                        className="w-full min-w-0 box-border text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-lg bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700"
+                      />
+                    </div>
+
+                    {/* Problem Description & Constraints */}
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Problem Description & Constraints
+                      </label>
+                      <textarea
+                        rows={3}
+                        required
+                        placeholder="Detailed specifications, runtime constraints, and input format..."
+                        value={codingDescription}
+                        onChange={e => setCodingDescription(e.target.value)}
+                        className="w-full min-w-0 box-border text-xs p-3 border border-slate-200 dark:border-[#27272A] rounded-lg bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 resize-y font-sans leading-relaxed"
+                      />
+                    </div>
+
+                    {/* Starter Code Editor */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                          Starter Code Template <span className="text-rose-600">*</span>
+                        </label>
+                        <span className="text-[10px] font-mono text-slate-400">
+                          Pre-filled in student workspace
+                        </span>
+                      </div>
+                      <textarea
+                        rows={4}
+                        required
+                        value={starterCode}
+                        onChange={e => setStarterCode(e.target.value)}
+                        className="w-full min-w-0 box-border text-xs font-mono p-3 bg-slate-900 text-slate-100 rounded-lg border border-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-500 resize-y leading-relaxed"
+                      />
+                    </div>
+
+                    {/* Dynamic Test Cases Builder */}
+                    <div className="p-4 bg-slate-50 dark:bg-[#27272A]/50 border border-slate-200 dark:border-[#27272A] rounded-xl space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
+                          <span className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
+                            Automated Test Cases Builder ({testCases.length})
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleAddTestCase}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 transition-colors cursor-pointer"
+                        >
+                          <Plus className="w-3 h-3" />
+                          <span>Add Test Case</span>
+                        </button>
+                      </div>
+
+                      <div className="space-y-3">
+                        {testCases.map((tc, index) => (
+                          <div
+                            key={tc.id}
+                            className="p-3 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-3 items-center text-xs"
+                          >
+                            <div className="min-w-0">
+                              <label className="block text-[10px] font-mono text-slate-400 uppercase mb-0.5">
+                                Test #{index + 1} Input
+                              </label>
+                              <input
+                                type="text"
+                                required
+                                placeholder="e.g. nums = [2, 7], target = 9"
+                                value={tc.input}
+                                onChange={e => handleUpdateTestCase(tc.id, 'input', e.target.value)}
+                                className="w-full min-w-0 box-border text-xs font-mono px-3 py-1.5 border border-slate-200 dark:border-[#27272A] rounded-md bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                              />
+                            </div>
+                            <div className="min-w-0">
+                              <label className="block text-[10px] font-mono text-slate-400 uppercase mb-0.5">
+                                Expected Output
+                              </label>
+                              <input
+                                type="text"
+                                required
+                                placeholder="e.g. [0, 1]"
+                                value={tc.expectedOutput}
+                                onChange={e => handleUpdateTestCase(tc.id, 'expectedOutput', e.target.value)}
+                                className="w-full min-w-0 box-border text-xs font-mono px-3 py-1.5 border border-slate-200 dark:border-[#27272A] rounded-md bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                              />
+                            </div>
+                            <div className="flex justify-end sm:justify-center shrink-0 pt-1 sm:pt-4">
+                              {testCases.length > 1 ? (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveTestCase(tc.id)}
+                                  className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                                  title="Remove test case"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              ) : (
+                                <div className="w-7 h-7 shrink-0 hidden sm:block" />
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Due Date & Max Marks */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="min-w-0">
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                          Due Date <span className="text-rose-600">*</span>
+                        </label>
+                        <input
+                          type="date"
+                          required
+                          value={codingDueDate}
+                          onChange={e => setCodingDueDate(e.target.value)}
+                          className="w-full min-w-0 box-border text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-lg bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Max Marks</label>
+                        <input
+                          type="number"
+                          min={5}
+                          max={100}
+                          value={codingMaxMarks}
+                          onChange={e => setCodingMaxMarks(Number(e.target.value))}
+                          className="w-full min-w-0 box-border text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-lg bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Footer */}
+                  <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 dark:border-[#27272A] bg-slate-50/70 dark:bg-[#18181B] shrink-0">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setIsCodingModalOpen(false)}
+                      className="whitespace-nowrap shrink-0"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      size="sm"
+                      disabled={courses.length === 0}
+                      className="whitespace-nowrap shrink-0"
+                    >
+                      Create Live Lab (Locked)
+                    </Button>
+                  </div>
+                </form>
               </div>
-            </form>
-          </div>
-        </div>
+            </div>
+          );
+          return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : modalContent;
+        })()
       )}
 
       {/* Incident Review Modal */}
       {incidentReviewAsg && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="max-w-2xl w-full bg-[#18181B] border-2 border-rose-600 rounded-2xl p-6 sm:p-7 space-y-5 shadow-2xl relative overflow-hidden font-sans">
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#0F766E] via-rose-500 to-[#0F766E]" />
+        (() => {
+          const modalContent = (
+            <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+              <div className="max-w-2xl w-full bg-[#18181B] border-2 border-rose-600 rounded-2xl p-6 sm:p-7 space-y-5 shadow-2xl relative overflow-hidden font-sans">
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#0F766E] via-rose-500 to-[#0F766E]" />
 
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-rose-950 border border-rose-500/50 flex items-center justify-center text-rose-400">
-                  <ShieldAlert className="w-5 h-5 text-rose-500" />
+                <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-rose-950 border border-rose-500/50 flex items-center justify-center text-rose-400">
+                      <ShieldAlert className="w-5 h-5 text-rose-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
+                        Cybersecurity Incident Review
+                      </h3>
+                      <p className="text-[11px] text-slate-400 font-mono">
+                        Zero-Trust 2-Strike Proctoring Engine Audit Trail
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIncidentReviewAsg(null)}
+                    className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
-                <div>
-                  <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
-                    Cybersecurity Incident Review
-                  </h3>
-                  <p className="text-[11px] text-slate-400 font-mono">
-                    Zero-Trust 2-Strike Proctoring Engine Audit Trail
+
+                {/* Student & Violation Breakdown */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
+                  <div className="p-3 bg-black/40 border border-white/10 rounded-xl space-y-1">
+                    <div className="text-[10px] text-slate-400 uppercase">Student Candidate</div>
+                    <div className="font-bold text-slate-100">{incidentReviewAsg.studentName || 'Aarav Sharma'}</div>
+                    <div className="text-[11px] text-teal-400">{incidentReviewAsg.studentEmail || 'aarav.sharma@aaroh.edu.in'}</div>
+                  </div>
+
+                  <div className="p-3 bg-black/40 border border-white/10 rounded-xl space-y-1">
+                    <div className="text-[10px] text-slate-400 uppercase">Breach Classification</div>
+                    <div className="font-bold text-rose-400">Security Flag: Biometric / Focus Anomaly</div>
+                    <div className="text-[11px] text-amber-300">Strikes: 2 / 2 (Exam Terminated)</div>
+                  </div>
+                </div>
+
+                {/* Breach Reason & Trigger Log */}
+                <div className="p-3.5 bg-rose-950/40 border border-rose-900/60 rounded-xl space-y-1.5 font-mono text-xs text-slate-200">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-rose-400 font-bold uppercase">Incident Log & Violation Trigger</span>
+                    <span className="text-slate-400">{incidentReviewAsg.submittedAt ? new Date(incidentReviewAsg.submittedAt).toLocaleTimeString() : 'Recent'}</span>
+                  </div>
+                  <p className="text-xs text-rose-200 leading-relaxed">
+                    {incidentReviewAsg.securityIncident?.reason ||
+                      '🚨 Warning: Biometric Anomaly Detected. Unnatural typing speed or clipboard pasting is strictly prohibited.'}
                   </p>
                 </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIncidentReviewAsg(null)}
-                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            {/* Student & Violation Breakdown */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono text-xs">
-              <div className="p-3 bg-black/40 border border-white/10 rounded-xl space-y-1">
-                <div className="text-[10px] text-slate-400 uppercase">Student Candidate</div>
-                <div className="font-bold text-slate-100">{incidentReviewAsg.studentName || 'Aarav Sharma'}</div>
-                <div className="text-[11px] text-teal-400">{incidentReviewAsg.studentEmail || 'aarav.sharma@aaroh.edu.in'}</div>
-              </div>
+                {/* Captured Code Snapshot */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                    <span>CAPTURED CODE SNAPSHOT AT LOCKDOWN:</span>
+                    <span>Language: {incidentReviewAsg.language || 'python'}</span>
+                  </div>
+                  <div className="max-h-48 overflow-y-auto bg-black/70 border border-white/10 rounded-xl p-3 font-mono text-xs text-slate-300 leading-relaxed">
+                    <pre className="whitespace-pre-wrap select-text">
+                      {incidentReviewAsg.studentCode || incidentReviewAsg.starterCode || '// No code captured prior to lockout'}
+                    </pre>
+                  </div>
+                </div>
 
-              <div className="p-3 bg-black/40 border border-white/10 rounded-xl space-y-1">
-                <div className="text-[10px] text-slate-400 uppercase">Breach Classification</div>
-                <div className="font-bold text-rose-400">Security Flag: Biometric / Focus Anomaly</div>
-                <div className="text-[11px] text-amber-300">Strikes: 2 / 2 (Exam Terminated)</div>
-              </div>
-            </div>
-
-            {/* Breach Reason & Trigger Log */}
-            <div className="p-3.5 bg-rose-950/40 border border-rose-900/60 rounded-xl space-y-1.5 font-mono text-xs text-slate-200">
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="text-rose-400 font-bold uppercase">Incident Log & Violation Trigger</span>
-                <span className="text-slate-400">{incidentReviewAsg.submittedAt ? new Date(incidentReviewAsg.submittedAt).toLocaleTimeString() : 'Recent'}</span>
-              </div>
-              <p className="text-xs text-rose-200 leading-relaxed">
-                {incidentReviewAsg.securityIncident?.reason ||
-                  '🚨 Warning: Biometric Anomaly Detected. Unnatural typing speed or clipboard pasting is strictly prohibited.'}
-              </p>
-            </div>
-
-            {/* Captured Code Snapshot */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-[11px] font-mono text-slate-400">
-                <span>CAPTURED CODE SNAPSHOT AT LOCKDOWN:</span>
-                <span>Language: {incidentReviewAsg.language || 'python'}</span>
-              </div>
-              <div className="max-h-48 overflow-y-auto bg-black/70 border border-white/10 rounded-xl p-3 font-mono text-xs text-slate-300 leading-relaxed">
-                <pre className="whitespace-pre-wrap select-text">
-                  {incidentReviewAsg.studentCode || incidentReviewAsg.starterCode || '// No code captured prior to lockout'}
-                </pre>
+                {/* Actions */}
+                <div className="pt-2 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIncidentReviewAsg(null)}
+                    className={`px-4 py-2 text-xs font-bold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-xl transition-all duration-200 active:scale-95 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
+                  >
+                    <span>Acknowledge & Close Incident</span>
+                  </button>
+                </div>
               </div>
             </div>
-
-            {/* Actions */}
-            <div className="pt-2 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIncidentReviewAsg(null)}
-                className={`px-4 py-2 text-xs font-bold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-xl transition-all duration-200 active:scale-95 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
-              >
-                <span>Acknowledge & Close Incident</span>
-              </button>
-            </div>
-          </div>
-        </div>
+          );
+          return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : modalContent;
+        })()
       )}
     </div>
   );

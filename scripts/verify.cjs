@@ -661,6 +661,7 @@ assert(facultyAssignmentsContent.includes('Start Live Lab'), 'FacultyAssignments
 assert(facultyAssignmentsContent.includes('End Lab'), 'FacultyAssignmentsPage includes End Lab button');
 assert(facultyAssignmentsContent.includes("updateAssignmentLabStatus(asg.id, 'active')"), 'Start Live Lab sets status to active');
 assert(facultyAssignmentsContent.includes("updateAssignmentLabStatus(asg.id, 'closed')"), 'End Lab sets status to closed');
+assert(facultyAssignmentsContent.includes('createPortal') && facultyAssignmentsContent.includes('document.body'), 'FacultyAssignmentsPage modals teleport to document.body via createPortal');
 
 // 4. Student Portal: Code Workspace in StudentCodeWorkspacePage.tsx
 const studentWorkspacePath = path.join(__dirname, '../src/pages/StudentCodeWorkspacePage.tsx');
