@@ -24,13 +24,13 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
       <button
         type="button"
         onClick={() => toggleTheme()}
-        className="relative inline-flex items-center p-1 rounded-full bg-[#EBF3ED] dark:bg-[#202025] border border-[#E5ECE8] dark:border-[#27272A] transition-colors cursor-pointer select-none active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4ED8]/40"
+        className="relative inline-flex items-center p-1 rounded-full bg-[#F0ECE4] dark:bg-[#263140] border border-[#D0C4B3]/40 dark:border-[#38475C] transition-colors cursor-pointer select-none active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#485C7A]/40"
         title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         aria-label="Toggle theme"
       >
         {/* Sliding active indicator thumb */}
         <motion.div
-          className="absolute top-1 bottom-1 w-6 h-6 rounded-full bg-[#15803D]/15 dark:bg-[#15803D]/30 shadow-2xs z-0"
+          className="absolute top-1 bottom-1 w-6 h-6 rounded-full bg-[#485C7A]/15 dark:bg-[#D0C4B3]/25 shadow-2xs z-0"
           animate={{ x: isDark ? 28 : 0 }}
           transition={{ type: "spring", stiffness: 420, damping: 28 }}
         />
@@ -40,7 +40,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
           transition={{ duration: 0.2 }}
           className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
             !isDark
-              ? 'text-[#15803D] font-bold'
+              ? 'text-[#485C7A] font-bold'
               : 'text-slate-400 hover:text-slate-600'
           }`}
         >
@@ -51,7 +51,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
           transition={{ duration: 0.2 }}
           className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
             isDark
-              ? 'text-emerald-400 font-bold'
+              ? 'text-[#D0C4B3] font-bold'
               : 'text-slate-400 hover:text-slate-600'
           }`}
         >
