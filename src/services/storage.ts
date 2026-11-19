@@ -46,6 +46,7 @@ import { DEFAULT_CAMPUS_NOTICES } from '../data/noticesData';
 import { DEFAULT_TIMETABLE, DEFAULT_COURSES } from '../data/timetableData';
 import { supabase } from '../lib/supabase';
 import { findPreEnrolledAccount, convertToUser } from '../data/facultyDirectory';
+import { DEFAULT_GLOBAL_LABS, DEFAULT_LAB_SUBMISSIONS } from '../data/labsData';
 import { APP_CONFIG } from '../config';
 
 const STORAGE_KEYS = {
@@ -1325,7 +1326,12 @@ export const StorageService = {
 
   // --- Automated Coding Labs Lifecycle (globalLabs & labSubmissions) ---
   getGlobalLabs(): CodingLab[] {
-    return getStored<CodingLab[]>(STORAGE_KEYS.GLOBAL_LABS, []);
+    const list = getStored<CodingLab[]>(STORAGE_KEYS.GLOBAL_LABS, []);
+    if (!list || list.length === 0) {
+      this.saveGlobalLabs(DEFAULT_GLOBAL_LABS);
+      return DEFAULT_GLOBAL_LABS;
+    }
+    return list;
   },
 
   saveGlobalLabs(labs: CodingLab[]): void {
@@ -1355,7 +1361,12 @@ export const StorageService = {
   },
 
   getLabSubmissions(): LabSubmission[] {
-    return getStored<LabSubmission[]>(STORAGE_KEYS.LAB_SUBMISSIONS, []);
+    const list = getStored<LabSubmission[]>(STORAGE_KEYS.LAB_SUBMISSIONS, []);
+    if (!list || list.length === 0) {
+      this.saveLabSubmissions(DEFAULT_LAB_SUBMISSIONS);
+      return DEFAULT_LAB_SUBMISSIONS;
+    }
+    return list;
   },
 
   saveLabSubmissions(submissions: LabSubmission[]): void {

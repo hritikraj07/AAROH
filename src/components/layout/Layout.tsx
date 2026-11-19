@@ -35,6 +35,9 @@ export const Layout: React.FC = () => {
       case '/student/academics':
       case '/academics':
         return 'Academics & Timetable';
+      case '/student/labs':
+      case '/student/coding-labs':
+        return 'Automated Coding Labs';
       case '/student/notices':
       case '/notices':
       case '/student/campus-updates':

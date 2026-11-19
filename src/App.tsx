@@ -14,6 +14,7 @@ import { EventsPage } from './pages/EventsPage';
 import { LostFoundPage } from './pages/LostFoundPage';
 import { OpportunitiesPage } from './pages/OpportunitiesPage';
 import { StudentCodeWorkspacePage } from './pages/StudentCodeWorkspacePage';
+import { StudentCodingLabsPage } from './pages/StudentCodingLabsPage';
 import { ErrorBlock } from './components/ui/oversized-404-numeral';
 
 const CampusMapPage = React.lazy(() => import('./pages/CampusMapPage'));
@@ -78,6 +79,8 @@ export const AppRoutes: React.FC = () => {
         <Route index element={<StudentDashboardPage />} />
         <Route path="dashboard" element={<Navigate to="/student" replace />} />
         <Route path="academics" element={<AcademicsPage />} />
+        <Route path="labs" element={<StudentCodingLabsPage />} />
+        <Route path="coding-labs" element={<StudentCodingLabsPage />} />
         <Route path="assignments" element={<Navigate to="/student/academics?tab=assignments" replace />} />
         <Route path="assignments/code/:id" element={<StudentCodeWorkspacePage />} />
         <Route path="notices" element={<NoticesPage />} />

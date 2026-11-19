@@ -521,7 +521,7 @@ export const DashboardPage: React.FC = () => {
 
               <button
                 type="button"
-                onClick={() => navigate('/student/assignments')}
+                onClick={() => navigate('/student/labs')}
                 className={`group rounded-full bg-[#0F2544] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-4 py-2 font-medium transition-all duration-200 active:scale-[0.97] hover:-translate-y-0.5 flex items-center justify-center gap-1.5 cursor-pointer shadow-sm ${exactLightShadow} ${exactDarkShadow}`}
               >
                 <Code2 className="w-3.5 h-3.5 text-slate-300" />
@@ -1040,7 +1040,7 @@ export const DashboardPage: React.FC = () => {
 
                 <button
                   type="button"
-                  onClick={() => navigate('/student/academics?tab=assignments')}
+                  onClick={() => navigate('/student/labs')}
                   className="text-xs text-teal-700 dark:text-teal-400 hover:underline font-mono font-medium flex items-center gap-1 cursor-pointer shrink-0"
                 >
                   <span>View All</span>
