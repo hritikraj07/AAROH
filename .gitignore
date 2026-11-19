@@ -30,6 +30,10 @@ lerna-debug.log*
 scratch/
 anti-slop/
 .agents/
+# Understand-Anything scratch files
+.ua/intermediate/
+.ua/tmp/
+.ua/diff-overlay.json
 
 # Editor directories and files
 .vscode/*

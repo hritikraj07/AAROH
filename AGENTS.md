@@ -30,3 +30,6 @@ Before executing any UI, visual, copywriting, accessibility, mobile layout, or c
    - No fake statistics or ungrounded percentages per R-17 and C-5.
    - No generic marketing buzzwords or AI hype labels per R-16.
    - No ungrounded decorative sparkles, stars, or generic icons per R-04.
+
+6. **Architecture & Knowledge Graph Verification**:
+   - Before refactoring shared state, backend schemas, database models, or multi-file flows, consult `.ua/knowledge-graph.json` or invoke the `understand` / `understand-diff` skills to evaluate structural dependencies and cross-module impact.
