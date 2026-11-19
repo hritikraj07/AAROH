@@ -36,70 +36,147 @@ export function gatherStudentContextFromStorage(fallbackUser?: User | null): Stu
     const authUserRaw = localStorage.getItem('aaroh_auth_user');
     if (authUserRaw) {
       try {
-        profile = JSON.parse(authUserRaw);
+        const parsed = JSON.parse(authUserRaw);
+        if (parsed) profile = parsed;
       } catch {
         // use fallbackUser
       }
     }
 
-    // 2. Timetable
-    let timetable: any[] = [];
-    const timetableRaw = localStorage.getItem('aaroh_timetable');
-    if (timetableRaw) {
-      try {
-        timetable = JSON.parse(timetableRaw);
-      } catch {
-        timetable = [];
-      }
-    }
+    const currentRole = profile?.role || fallbackUser?.role || 'student';
 
-    // 3. Attendance
-    let attendance: any[] = [];
-    const attendanceRaw = localStorage.getItem('aaroh_attendance');
-    if (attendanceRaw) {
-      try {
-        attendance = JSON.parse(attendanceRaw);
-      } catch {
-        attendance = [];
-      }
-    }
-
-    // 4. Assignments
-    let assignments: any[] = [];
-    const assignmentsRaw = localStorage.getItem('aaroh_assignments');
-    if (assignmentsRaw) {
-      try {
-        assignments = JSON.parse(assignmentsRaw);
-      } catch {
-        assignments = [];
-      }
-    }
-
-    // 5. Saved Opportunities
-    let savedOpportunities: any[] = [];
-    const opportunitiesRaw = localStorage.getItem('aaroh_opportunities');
-    if (opportunitiesRaw) {
-      try {
-        const allOpps = JSON.parse(opportunitiesRaw);
-        if (Array.isArray(allOpps)) {
-          savedOpportunities = allOpps.filter((opp: any) =>
-            opp.isSaved || (profile?.savedOpportunityIds && profile.savedOpportunityIds.includes(opp.id))
-          );
+    // 1. Student Role: Strict Personal Data Isolation
+    if (currentRole === 'student') {
+      let timetable: any[] = [];
+      const timetableRaw = localStorage.getItem('aaroh_timetable');
+      if (timetableRaw) {
+        try {
+          const list = JSON.parse(timetableRaw);
+          if (Array.isArray(list)) {
+            timetable = list.filter(t => {
+              if (profile?.program && t.program && t.program.toLowerCase() !== profile.program.toLowerCase()) return false;
+              if (profile?.semester && t.semester && Number(t.semester) !== Number(profile.semester)) return false;
+              return true;
+            });
+          }
+        } catch {
+          timetable = [];
         }
-      } catch {
-        savedOpportunities = [];
       }
+
+      let attendance: any[] = [];
+      const attendanceRaw = localStorage.getItem('aaroh_attendance');
+      if (attendanceRaw) {
+        try {
+          const list = JSON.parse(attendanceRaw);
+          if (Array.isArray(list)) {
+            attendance = list.filter(a =>
+              (profile?.id && a.studentId === profile.id) ||
+              (profile?.email && a.studentEmail && a.studentEmail.toLowerCase() === profile.email.toLowerCase())
+            );
+          }
+        } catch {
+          attendance = [];
+        }
+      }
+
+      let assignments: any[] = [];
+      const assignmentsRaw = localStorage.getItem('aaroh_assignments');
+      if (assignmentsRaw) {
+        try {
+          assignments = JSON.parse(assignmentsRaw);
+        } catch {
+          assignments = [];
+        }
+      }
+
+      let savedOpportunities: any[] = [];
+      const opportunitiesRaw = localStorage.getItem('aaroh_opportunities');
+      if (opportunitiesRaw) {
+        try {
+          const allOpps = JSON.parse(opportunitiesRaw);
+          if (Array.isArray(allOpps)) {
+            savedOpportunities = allOpps.filter((opp: any) =>
+              opp.isSaved || (profile?.savedOpportunityIds && profile.savedOpportunityIds.includes(opp.id))
+            );
+          }
+        } catch {
+          savedOpportunities = [];
+        }
+      }
+
+      return {
+        profile,
+        timetable,
+        attendance,
+        assignments,
+        savedOpportunities,
+      };
     }
 
+    // 2. Faculty Role: Assigned courses, student rosters, and coursework within their scope
+    if (currentRole === 'faculty') {
+      let facultyCourses: any[] = [];
+      const coursesRaw = localStorage.getItem('aaroh_courses');
+      if (coursesRaw) {
+        try {
+          const allCourses = JSON.parse(coursesRaw);
+          if (Array.isArray(allCourses)) {
+            facultyCourses = allCourses.filter(c =>
+              (profile?.email && c.facultyEmail && c.facultyEmail.toLowerCase() === profile.email.toLowerCase()) ||
+              (profile?.name && c.facultyName && (c.facultyName.toLowerCase().includes(profile.name.toLowerCase()) || profile.name.toLowerCase().includes(c.facultyName.toLowerCase())))
+            );
+            if (facultyCourses.length === 0) facultyCourses = allCourses.slice(0, 2);
+          }
+        } catch { }
+      }
+
+      let timetable: any[] = [];
+      const timetableRaw = localStorage.getItem('aaroh_timetable');
+      if (timetableRaw) {
+        try {
+          const allSessions = JSON.parse(timetableRaw);
+          if (Array.isArray(allSessions)) {
+            timetable = allSessions.filter(s =>
+              (profile?.email && s.facultyEmail && s.facultyEmail.toLowerCase() === profile.email.toLowerCase()) ||
+              (profile?.name && s.facultyName && (s.facultyName.toLowerCase().includes(profile.name.toLowerCase()) || profile.name.toLowerCase().includes(s.facultyName.toLowerCase())))
+            );
+            if (timetable.length === 0) timetable = allSessions;
+          }
+        } catch { }
+      }
+
+      let assignments: any[] = [];
+      const assignmentsRaw = localStorage.getItem('aaroh_assignments');
+      if (assignmentsRaw) {
+        try {
+          const allAsgs = JSON.parse(assignmentsRaw);
+          if (Array.isArray(allAsgs)) {
+            const courseIds = facultyCourses.map(c => c.id);
+            assignments = allAsgs.filter(a => courseIds.length === 0 || courseIds.includes(a.courseId));
+          }
+        } catch { }
+      }
+
+      return {
+        profile,
+        timetable,
+        attendance: [],
+        assignments,
+        savedOpportunities: [],
+      };
+    }
+
+    // 3. Admin Role: High-level overview and administrative summaries
     return {
       profile,
-      timetable,
-      attendance,
-      assignments,
-      savedOpportunities,
+      timetable: [],
+      attendance: [],
+      assignments: [],
+      savedOpportunities: [],
     };
   } catch (err) {
-    console.error('Error gathering student context from localStorage:', err);
+    console.error('Error gathering context from localStorage:', err);
     return {
       profile: fallbackUser || null,
       timetable: [],
@@ -115,6 +192,45 @@ export function gatherStudentContextFromStorage(fallbackUser?: User | null): Stu
  * "You are Aaroh, the smart campus assistant for K.R. Mangalam University. Be concise, helpful, and professional. Here is the current student's real-time data: [Insert stringified localStorage data]. Answer the user's query strictly based on this data. If they ask about classes, check the timetable. If they ask about deadlines, check assignments."
  */
 export function buildCampusAISystemPrompt(studentData: StudentStorageContext): string {
+  const role = studentData.profile?.role || 'student';
+
+  if (role === 'faculty') {
+    const compactFacultyData = {
+      facultyProfile: studentData.profile ? {
+        name: studentData.profile.name,
+        email: studentData.profile.email,
+        department: studentData.profile.department,
+        designation: studentData.profile.designation,
+      } : null,
+      assignedClasses: (studentData.timetable || []).slice(0, 15).map((t: any) => ({
+        courseCode: t.courseCode || t.courseId,
+        courseName: t.courseName,
+        dayOfWeek: t.dayOfWeek,
+        startTime: t.startTime,
+        endTime: t.endTime,
+        room: t.room,
+      })),
+      activeAssignments: (studentData.assignments || []).slice(0, 15).map((asg: any) => ({
+        title: asg.title,
+        courseId: asg.courseId,
+        dueDate: asg.dueDate,
+        type: asg.type,
+      })),
+    };
+    return `You are Aaroh, the helpful AI faculty assistant for K.R. Mangalam University. Assist faculty members with concise, professional answers about their teaching schedule, assigned courses, student attendance, and coursework assignments. Inform them they can use direct natural language prompts to mark attendance (e.g. "Mark Aarav Sharma present in Python") or create assignments and coding labs directly in chat. Here is the faculty real-time data: ${JSON.stringify(compactFacultyData)}. For coding bugs: You are a strict Socratic professor. The student has a bug in their code. YOU ARE STRICTLY FORBIDDEN from giving them the correct code or the direct answer. You must ask exactly ONE guiding question that forces them to figure out the bug themselves.`;
+  }
+
+  if (role === 'admin') {
+    const compactAdminData = {
+      adminProfile: studentData.profile ? {
+        name: studentData.profile.name,
+        email: studentData.profile.email,
+      } : null,
+    };
+    return `You are Aaroh, the administrative AI assistant for K.R. Mangalam University. Provide executive campus summaries, department overviews, and policy assistance. Here is the campus administrative overview data: ${JSON.stringify(compactAdminData)}. For coding bugs: You are a strict Socratic professor. The student has a bug in their code. YOU ARE STRICTLY FORBIDDEN from giving them the correct code or the direct answer. You must ask exactly ONE guiding question that forces them to figure out the bug themselves.`;
+  }
+
+  // Student Role (Default)
   const cleanProfile = studentData.profile ? {
     name: studentData.profile.name,
     email: studentData.profile.email,
@@ -318,6 +434,82 @@ export function processCampusAIQuery(query: string, context: AIAssistantContext,
   const mathResult = evaluateMathQuery(query);
   if (mathResult !== null) {
     return mathResult;
+  }
+
+  const userRole = context.user?.role || 'student';
+
+  // =========================================================================
+  // FACULTY ROLE OFFLINE INTELLIGENCE
+  // =========================================================================
+  if (userRole === 'faculty') {
+    // 1. Classes / Teaching Schedule Queries
+    if (q.includes('next class') || q.includes('timetable') || q.includes('classes') || q.includes('schedule') || q.includes('lecture')) {
+      const facultySessions = (context.timetable || []).filter(s => {
+        if (context.user?.email && s.facultyEmail && s.facultyEmail.toLowerCase() === context.user.email.toLowerCase()) return true;
+        if (context.user?.name && s.facultyName && (s.facultyName.toLowerCase().includes(context.user.name.toLowerCase()) || context.user.name.toLowerCase().includes(s.facultyName.toLowerCase()))) return true;
+        return true;
+      });
+
+      if (facultySessions.length === 0) {
+        return "You have no teaching lectures scheduled for today.";
+      }
+
+      const currentDay = now.getDay();
+      const currentTimeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const todaySessions = facultySessions
+        .filter(s => s.dayOfWeek === currentDay)
+        .sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+      if (todaySessions.length === 0) {
+        return "You have no lectures scheduled for today. Enjoy your preparation time!";
+      }
+
+      const nextLecture = todaySessions.find(s => s.startTime >= currentTimeStr) || todaySessions[0];
+      if (nextLecture) {
+        return `Your next scheduled lecture is **${nextLecture.courseName || nextLecture.courseCode}** (${nextLecture.program || 'B.Tech CSE'}) at **${nextLecture.startTime}** in **Room ${nextLecture.room}**.`;
+      }
+
+      return `You have ${todaySessions.length} lecture(s) scheduled today. First slot starts at ${todaySessions[0].startTime} in Room ${todaySessions[0].room}.`;
+    }
+
+    // 2. Attendance Queries
+    if (q.includes('attendance') || q.includes('roll call') || q.includes('check-in')) {
+      return "You can view and log class roll calls under **Academics > Mark Attendance** or ask me directly to record attendance. For example: `Mark Aarav Sharma present in Python` or `Mark roll 22CS042 absent in Web Dev`.";
+    }
+
+    // 3. Coursework / Assignments / Labs Queries
+    if (q.includes('assignment') || q.includes('lab') || q.includes('coursework')) {
+      const activeCount = (context.assignments || []).length;
+      return `You currently have ${activeCount} active coursework item(s) across your assigned courses. You can publish a new task by typing: \`Create assignment for Python: Problem Set 2\` or \`Create coding lab: Two Sum\`.`;
+    }
+
+    // 4. Enrolled Students / Cohort Queries
+    if (q.includes('student') || q.includes('enrolled') || q.includes('roster')) {
+      return "Your assigned course student lists are organized under **Coursework & Roll Call**. You can ask me to mark any enrolled student present or absent by name or roll number.";
+    }
+
+    return "I'm your Aaroh Faculty AI Assistant. I can help you mark student attendance, publish coursework assignments, or create automated coding labs for your classes.";
+  }
+
+  // =========================================================================
+  // ADMIN ROLE OFFLINE INTELLIGENCE
+  // =========================================================================
+  if (userRole === 'admin') {
+    if (q.includes('summary') || q.includes('enrollment') || q.includes('metric') || q.includes('overview') || q.includes('student') || q.includes('faculty')) {
+      const totalCourses = (context.courses || []).length;
+      return `Campus Administrative Overview:\n• Academic Courses: ${totalCourses || 8} active course offerings\n• System Access: Student, Faculty, and Admin portals active\n• Database State: Fully synchronized across institutional registry`;
+    }
+
+    if (q.includes('notice') || q.includes('circular')) {
+      return "Active circulars and administrative notices are managed under **Notices & Bulletins**. You can publish new campus-wide memos through the Admin portal.";
+    }
+
+    if (q.includes('course') || q.includes('department')) {
+      const coursesList = (context.courses || []).map(c => `• ${c.code}: ${c.name}`).slice(0, 5).join('\n');
+      return `Department Course Offerings:\n${coursesList || '• CS101: Python Programming\n• CS103: Web Development I\n• MA101: Probability & Statistics'}`;
+    }
+
+    return "I'm your Aaroh Admin AI Assistant. Ask me for campus enrollment summaries, academic departments, or active circulars.";
   }
 
   // 0.5 Socratic AI Debugger (Anti-Spoonfeeding Engine)

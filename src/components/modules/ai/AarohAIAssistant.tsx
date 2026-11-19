@@ -8,6 +8,7 @@ import {
   gatherStudentContextFromStorage,
   askAarohGeminiAPI,
 } from '../../../utils/aiAssistant';
+import { isFacultyActionIntent, handleFacultyAction } from '../../../utils/facultyAIActions';
 
 interface ChatMessage {
   id: string;
@@ -128,32 +129,53 @@ const MarkdownBubble: React.FC<{ content: string }> = ({ content }) => {
 export const AarohAIAssistant: React.FC = () => {
   const {
     user,
+    users,
     role,
     timetable,
     attendance,
     courses,
     assignments,
     opportunities,
+    recordBatchAttendance,
+    createAssignment,
     showToast,
   } = useApp();
-
-  // Only render for students
-  if (role !== 'student') {
-    return null;
-  }
 
   const [isOpen, setIsOpen] = useState(false);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isOfflineMode, setIsOfflineMode] = useState(false);
+
+  const getInitialGreeting = () => {
+    if (role === 'faculty') {
+      return `Welcome, ${user?.name || 'Professor'}! I'm your Aaroh Faculty AI Assistant. I can help you mark student attendance, publish coursework assignments, or create automated coding labs.`;
+    }
+    if (role === 'admin') {
+      return `Hello ${user?.name || 'Administrator'}! I'm your Aaroh Admin AI Assistant. You can ask me about campus enrollment metrics, academic departments, or active circulars.`;
+    }
+    return `Hi ${user?.name ? user.name.split(' ')[0] : 'there'}! I'm Aaroh, your AI campus assistant powered by Gemini. Ask me about your next class, attendance status, or upcoming deadlines!`;
+  };
+
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
     {
       id: 'msg_initial',
       sender: 'ai',
-      text: `Hi ${user?.name ? user.name.split(' ')[0] : 'there'}! I'm Aaroh, your AI campus assistant powered by Gemini. Ask me about your next class, attendance status, or upcoming deadlines!`,
+      text: getInitialGreeting(),
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     },
   ]);
+
+  // Sync initial message if user or role switches
+  useEffect(() => {
+    setMessages([
+      {
+        id: 'msg_initial',
+        sender: 'ai',
+        text: getInitialGreeting(),
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      },
+    ]);
+  }, [role, user?.id]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -188,6 +210,34 @@ export const AarohAIAssistant: React.FC = () => {
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     setIsLoading(true);
+
+    // 1. Direct Faculty Action Evaluation (Instant write actions for Faculty, Strict RBAC enforcement)
+    if (isFacultyActionIntent(query)) {
+      const actionResult = handleFacultyAction(query, {
+        user,
+        role,
+        courses,
+        assignments,
+        timetable,
+        users,
+        recordBatchAttendance,
+        createAssignment,
+        showToast,
+      });
+
+      if (actionResult.handled) {
+        const aiMessage: ChatMessage = {
+          id: `ai_${Date.now()}`,
+          sender: 'ai',
+          text: actionResult.message,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          isOffline: false,
+        };
+        setMessages(prev => [...prev, aiMessage]);
+        setIsLoading(false);
+        return;
+      }
+    }
 
     // Instant arithmetic & logic evaluation (guarantees accurate math without hallucinations or string concatenation)
     const mathResult = evaluateMathQuery(query);
@@ -269,17 +319,35 @@ export const AarohAIAssistant: React.FC = () => {
       {
         id: `msg_reset_${Date.now()}`,
         sender: 'ai',
-        text: `Chat cleared. Ask me about your next class, attendance warnings, or upcoming deadlines!`,
+        text: role === 'faculty'
+          ? `Chat cleared. Ask me to mark attendance, post an assignment, or create a coding lab!`
+          : role === 'admin'
+          ? `Chat cleared. Ask me for campus enrollment summaries or circulars!`
+          : `Chat cleared. Ask me about your next class, attendance warnings, or upcoming deadlines!`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
   };
 
-  const suggestionChips = [
+  const studentChips = [
     { label: 'Next class', query: 'When is my next class?' },
     { label: 'Attendance status', query: 'Check my attendance status' },
     { label: 'Upcoming deadlines', query: 'What is due in the next 48 hours?' },
   ];
+
+  const facultyChips = [
+    { label: 'Mark attendance', query: 'Mark Aarav Sharma present in Python' },
+    { label: 'Post assignment', query: 'Create assignment for Python: Problem Set 3 on Recursion' },
+    { label: 'Create coding lab', query: 'Create coding lab for Python: Two Sum & Hash Map Lookup' },
+  ];
+
+  const adminChips = [
+    { label: 'Campus metrics', query: 'Show campus enrollment summary' },
+    { label: 'Department circulars', query: 'List active department circulars' },
+    { label: 'Faculty courses', query: 'Overview of assigned faculty courses' },
+  ];
+
+  const suggestionChips = role === 'faculty' ? facultyChips : role === 'admin' ? adminChips : studentChips;
 
   return (
     <>
@@ -333,7 +401,11 @@ export const AarohAIAssistant: React.FC = () => {
                   <span className="hidden" aria-hidden="true">Socratic Mode Enabled</span>
                 </div>
                 <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-1 leading-none">
-                  K.R. Mangalam University • Campus Assistant
+                  {role === 'faculty'
+                    ? 'K.R. Mangalam University • Faculty Assistant'
+                    : role === 'admin'
+                    ? 'K.R. Mangalam University • Admin Intelligence'
+                    : 'K.R. Mangalam University • Campus Assistant'}
                 </div>
               </div>
             </div>
@@ -449,7 +521,13 @@ export const AarohAIAssistant: React.FC = () => {
                 onChange={e => setInputText(e.target.value)}
                 onKeyDown={handleKeyDown}
                 disabled={isLoading}
-                placeholder="Ask about next class, attendance, deadlines..."
+                placeholder={
+                  role === 'faculty'
+                    ? 'Mark attendance, post assignment, or ask about classes...'
+                    : role === 'admin'
+                    ? 'Ask about enrollment metrics, departments, or notices...'
+                    : 'Ask about next class, attendance, deadlines...'
+                }
                 className="flex-1 min-h-[44px] text-xs px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#0E0E11] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-teal-700/20 dark:focus:ring-teal-500/20 focus:border-teal-700 dark:focus:border-teal-500 transition-all duration-150 disabled:opacity-60"
               />
               <button

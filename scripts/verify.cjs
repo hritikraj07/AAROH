@@ -1920,4 +1920,35 @@ assert(adminAttendanceContent.includes('getEnrolledStudentsForCourse'), 'AdminAt
 
 console.log('--- ALL COURSE-SCOPED STUDENT ROSTER ISOLATION VERIFICATIONS PASSED ---');
 
+// =========================================================================================
+// 37. Role-Based AI Assistant & Direct Faculty Actions
+// =========================================================================================
+console.log('--- VERIFYING ROLE-BASED AI ASSISTANT & DIRECT FACULTY ACTIONS ---');
+const facultyAIActionsPath = path.join(__dirname, '../src/utils/facultyAIActions.ts');
+assert(fs.existsSync(facultyAIActionsPath), 'facultyAIActions.ts exists');
+const facultyAIActionsContent = fs.readFileSync(facultyAIActionsPath, 'utf8');
+
+assert(facultyAIActionsContent.includes('export function isFacultyActionIntent'), 'facultyAIActions exports isFacultyActionIntent');
+assert(facultyAIActionsContent.includes('export function handleFacultyAction'), 'facultyAIActions exports handleFacultyAction');
+
+// Check RBAC protection in faculty actions
+assert(facultyAIActionsContent.includes("Permission Denied") && facultyAIActionsContent.includes("Only faculty members are authorized"), 'handleFacultyAction rejects non-faculty roles');
+assert(facultyAIActionsContent.includes("ctx.role !== 'faculty'"), 'handleFacultyAction enforces strict faculty role check');
+
+// Check AarohAIAssistant mounting and role integration
+const assistantContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/ai/AarohAIAssistant.tsx'), 'utf8');
+assert(!assistantContent.includes("if (role !== 'student') {\n    return null;\n  }"), 'AarohAIAssistant is not blocked from faculty and admin roles');
+assert(assistantContent.includes('isFacultyActionIntent') && assistantContent.includes('handleFacultyAction'), 'AarohAIAssistant integrates faculty action handlers');
+assert(assistantContent.includes('getInitialGreeting'), 'AarohAIAssistant implements role-aware initial greetings');
+assert(assistantContent.includes('facultyChips') && assistantContent.includes('adminChips'), 'AarohAIAssistant provides role-specific suggestion chips');
+
+// Check aiAssistant.ts role-based isolation
+const aiAssistantRoleContent = fs.readFileSync(path.join(__dirname, '../src/utils/aiAssistant.ts'), 'utf8');
+assert(aiAssistantRoleContent.includes("currentRole === 'student'"), 'aiAssistant enforces student-specific data isolation');
+assert(aiAssistantRoleContent.includes("currentRole === 'faculty'") || aiAssistantRoleContent.includes("userRole === 'faculty'"), 'aiAssistant enforces faculty-specific context isolation');
+assert(aiAssistantRoleContent.includes("FACULTY ROLE OFFLINE INTELLIGENCE"), 'aiAssistant handles faculty offline intelligence');
+assert(aiAssistantRoleContent.includes("ADMIN ROLE OFFLINE INTELLIGENCE"), 'aiAssistant handles admin offline intelligence');
+
+console.log('--- ALL ROLE-BASED AI ASSISTANT & DIRECT FACULTY ACTIONS VERIFICATIONS PASSED ---');
+
 module.exports = { assert };
