@@ -23,7 +23,7 @@ export const WeekAssignmentsWidget: React.FC = () => {
       <div>
         <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
+            <span className="text-xs font-semibold tracking-wider text-slate-600 dark:text-slate-300 uppercase font-mono">
               ACTIVE COURSEWORK
             </span>
             {pendingCount > 0 && (
@@ -45,7 +45,7 @@ export const WeekAssignmentsWidget: React.FC = () => {
           {sortedAssignments.length === 0 ? (
             <div className="py-10 text-center">
               <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">No active coursework</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 font-mono">Assignments and lab tasks will appear here</p>
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 font-mono">Assignments and lab tasks will appear here</p>
             </div>
           ) : (
             <div className="space-y-1">

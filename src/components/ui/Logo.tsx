@@ -14,6 +14,10 @@ export const LogoIcon: React.FC<LogoIconProps> = ({ className = 'w-6 h-6 text-te
       <img
         src="/aaroh_logo.png"
         alt="Aaroh Monogram"
+        width={24}
+        height={24}
+        loading="eager"
+        decoding="async"
         className="w-full h-full object-contain select-none"
       />
       {/* Hidden semantic SVG for accessibility and geometry tests */}

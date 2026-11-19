@@ -50,11 +50,11 @@ export const TodayClassesCard: React.FC = () => {
       <div>
         <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
+            <span className="text-xs font-semibold tracking-wider text-slate-600 dark:text-slate-300 uppercase font-mono">
               {headerLabel}
             </span>
             {isDisplayingFutureDay && (
-              <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 font-mono">
+              <span className="text-[10px] font-medium text-slate-600 dark:text-slate-300 font-mono">
                 (NEXT ACTIVE)
               </span>
             )}
@@ -73,7 +73,7 @@ export const TodayClassesCard: React.FC = () => {
           {sessionsToDisplay.length === 0 ? (
             <div className="py-10 text-center">
               <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">No scheduled sessions</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 font-mono">Timetable records will populate here</p>
+              <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 font-mono">Timetable records will populate here</p>
             </div>
           ) : (
             <div className="space-y-1">
@@ -149,7 +149,7 @@ export const TodayClassesCard: React.FC = () => {
       </div>
 
       {sessionsToDisplay.length > 0 && (
-        <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-mono">
+        <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-300 font-mono">
           <span>{sessionsToDisplay.length} sessions listed</span>
           <span>Cohort: {user?.program || 'B.Tech'} Sem {user?.semester || 5}</span>
         </div>

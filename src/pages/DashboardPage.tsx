@@ -313,37 +313,27 @@ export const DashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* 2. Hero Banner: Refined Theme matching #134074 & #8DA9C4 */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#134074] via-[#244970] to-[#355B82] border border-[#8DA9C4]/30 shadow-lg text-white rounded-3xl p-6 sm:p-10 transition-all duration-300 select-none">
-        <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full border-[20px] border-white/10 pointer-events-none" />
-        <div className="absolute right-28 -top-16 w-52 h-52 rounded-full border-[14px] border-white/10 pointer-events-none" />
-        <div className="absolute top-6 right-16 text-white/20 pointer-events-none select-none">
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-          </svg>
-        </div>
-        <div className="absolute bottom-8 right-52 text-white/15 pointer-events-none select-none">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-          </svg>
-        </div>
+      {/* 2. Hero Banner: True Dark / Light Mode Institutional Overview */}
+      <div className="relative overflow-hidden bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] shadow-sm text-slate-900 dark:text-white rounded-3xl p-6 sm:p-8 transition-colors duration-150 select-none">
+        <div className="absolute top-0 left-0 w-1.5 h-full bg-[#0F766E] rounded-l-3xl" />
+        <div className="absolute top-0 right-0 w-96 h-full bg-gradient-to-l from-teal-500/5 via-teal-500/0 to-transparent pointer-events-none" />
 
-        <div className="relative z-10 max-w-2xl space-y-2.5">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white backdrop-blur-sm border border-white/20 font-mono uppercase tracking-wider">
+        <div className="relative z-10 max-w-2xl space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md text-xs font-semibold bg-teal-50 dark:bg-teal-950/50 text-[#0F766E] dark:text-teal-300 border border-teal-200/80 dark:border-teal-800/60 font-mono uppercase tracking-wider">
             <span>{APP_CONFIG.collegeName} • {APP_CONFIG.academicSession}</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-white font-sans">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white font-sans">
             Welcome back, {studentDisplayName}
           </h1>
-          <p className="text-xs sm:text-sm text-teal-100 font-normal leading-relaxed max-w-xl">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal leading-relaxed max-w-xl">
             Here is your institutional overview for today. All scheduled coursework, live attendance metrics, and campus opportunities are synchronized.
           </p>
 
-          <div className="pt-2 flex items-center gap-2.5 flex-wrap">
-            <span className="text-xs font-mono font-medium text-white bg-white/20 border border-white/30 px-2.5 py-1 rounded-full">
+          <div className="pt-1 flex items-center gap-2.5 flex-wrap">
+            <span className="text-xs font-mono font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-[#27272A] border border-slate-200 dark:border-slate-700 px-3 py-1 rounded-md">
               Roll No: {user?.rollNumber || '22CS042'}
             </span>
-            <span className="text-xs font-medium text-[#134074] bg-[#EEF4ED] px-2.5 py-1 rounded-full">
+            <span className="text-xs font-mono font-semibold text-[#0F766E] dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800/60 px-3 py-1 rounded-md">
               {user?.program || 'B.Tech'} Sem {user?.semester || 5}
             </span>
           </div>
@@ -387,7 +377,7 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-[#27272A] text-xs">
-              <span className="text-[11px] text-slate-400 dark:text-slate-500 font-mono">
+              <span className="text-[11px] text-slate-600 dark:text-slate-300 font-mono">
                 {quickNotes.trim().split(/\s+/).filter(Boolean).length} words • Autosaved
               </span>
               <div className="flex items-center gap-2">
@@ -398,7 +388,7 @@ export const DashboardPage: React.FC = () => {
                       setQuickNotes('');
                       localStorage.removeItem('aaroh_dashboard_quick_notes');
                     }}
-                    className="text-[11px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 font-medium px-2 py-1"
+                    className="text-[11px] text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white font-medium px-2 py-1"
                   >
                     Clear
                   </button>
@@ -434,22 +424,22 @@ export const DashboardPage: React.FC = () => {
 
             <div className="space-y-3">
               <div>
-                <span className="text-[10px] uppercase font-mono text-slate-400 dark:text-slate-500">In Session Now</span>
+                <span className="text-[10px] uppercase font-mono text-slate-600 dark:text-slate-300">In Session Now</span>
                 <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 mt-0.5 leading-snug">
                   Current Class: {currentSubjectName}
                 </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
                   Instructor: {getFacultyFullName(activeFocusSession, activeCourse, users)} • Room: {activeFocusSession.room || 'Lecture Lab'}
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3 pt-1">
                 <div className="p-3 bg-slate-50 dark:bg-[#111115] rounded-xl border border-slate-100 dark:border-[#27272A]">
-                  <span className="text-[10px] font-mono text-slate-400 uppercase">Roll Call Sync</span>
+                  <span className="text-[10px] font-mono text-slate-600 dark:text-slate-300 uppercase">Roll Call Sync</span>
                   <p className="text-xs font-bold text-teal-700 dark:text-teal-400 mt-0.5 font-mono">Active (QR Synced)</p>
                 </div>
                 <div className="p-3 bg-slate-50 dark:bg-[#111115] rounded-xl border border-slate-100 dark:border-[#27272A]">
-                  <span className="text-[10px] font-mono text-slate-400 uppercase">Class Slot</span>
+                  <span className="text-[10px] font-mono text-slate-600 dark:text-slate-300 uppercase">Class Slot</span>
                   <p className="text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5 font-mono">
                     {activeFocusSession.startTime} - {activeFocusSession.endTime}
                   </p>
@@ -497,7 +487,7 @@ export const DashboardPage: React.FC = () => {
           className="bg-white border border-slate-200 text-slate-900 dark:bg-[#18181B] dark:border-[#27272A] dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
+            <span className="text-xs font-semibold tracking-wider text-slate-600 dark:text-slate-300 uppercase font-mono">
               ATTENDANCE RATE
             </span>
             <ShieldCheck className="w-4 h-4 text-teal-700 dark:text-teal-400" />
@@ -507,7 +497,7 @@ export const DashboardPage: React.FC = () => {
               {overallPct !== null ? `${overallPct}%` : 'N/A'}
             </span>
           </div>
-          <div className="text-xs text-slate-400 dark:text-slate-500 font-mono flex items-center justify-between">
+          <div className="text-xs text-slate-600 dark:text-slate-300 font-mono flex items-center justify-between">
             <span>Req: &ge;{minThreshold}%</span>
             {lowAttendanceCount > 0 ? (
               <span className="text-rose-600 dark:text-rose-400 font-medium flex items-center gap-1">
@@ -526,7 +516,7 @@ export const DashboardPage: React.FC = () => {
           className="bg-white border border-slate-200 text-slate-900 dark:bg-[#18181B] dark:border-[#27272A] dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
+            <span className="text-xs font-semibold tracking-wider text-slate-600 dark:text-slate-300 uppercase font-mono">
               CLASSES TODAY
             </span>
             <Clock className="w-4 h-4 text-teal-700 dark:text-teal-400" />
@@ -536,7 +526,7 @@ export const DashboardPage: React.FC = () => {
               {todaySessions.length}
             </span>
           </div>
-          <div className="text-xs text-slate-400 dark:text-slate-500 font-mono truncate">
+          <div className="text-xs text-slate-600 dark:text-slate-300 font-mono truncate">
             {upcomingInfo.session
               ? `Next: ${upcomingInfo.session.startTime} (${upcomingInfo.session.room})`
               : 'No further sessions today'}
@@ -549,7 +539,7 @@ export const DashboardPage: React.FC = () => {
           className="bg-white border border-slate-200 text-slate-900 dark:bg-[#18181B] dark:border-[#27272A] dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
+            <span className="text-xs font-semibold tracking-wider text-slate-600 dark:text-slate-300 uppercase font-mono">
               PENDING TASKS
             </span>
             <BookOpen className="w-4 h-4 text-teal-700 dark:text-teal-400" />
@@ -559,7 +549,7 @@ export const DashboardPage: React.FC = () => {
               {pendingAssignments.length}
             </span>
           </div>
-          <div className="text-xs text-slate-400 dark:text-slate-500 font-mono flex items-center justify-between">
+          <div className="text-xs text-slate-600 dark:text-slate-300 font-mono flex items-center justify-between">
             <span>{assignments.length} total tasks</span>
             {overdueAssignments.length > 0 ? (
               <span className="text-rose-600 dark:text-rose-400 font-medium">
@@ -577,7 +567,7 @@ export const DashboardPage: React.FC = () => {
           className="bg-white border border-slate-200 text-slate-900 dark:bg-[#18181B] dark:border-[#27272A] dark:text-slate-50 rounded-2xl p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col justify-between"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 uppercase font-mono">
+            <span className="text-xs font-semibold tracking-wider text-slate-600 dark:text-slate-300 uppercase font-mono">
               SAVED OPPORTUNITIES
             </span>
             <Briefcase className="w-4 h-4 text-teal-700 dark:text-teal-400" />
@@ -587,7 +577,7 @@ export const DashboardPage: React.FC = () => {
               {savedOpportunities.length}
             </span>
           </div>
-          <div className="text-xs text-slate-400 dark:text-slate-500 font-mono">
+          <div className="text-xs text-slate-600 dark:text-slate-300 font-mono">
             {opportunities.length} active listings
           </div>
         </div>
