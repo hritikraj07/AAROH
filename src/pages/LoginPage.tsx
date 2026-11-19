@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Logo } from '../components/ui/Logo';
-import { Lock, Mail, AlertCircle, Eye, EyeOff, GraduationCap, Briefcase, Shield } from 'lucide-react';
+import { Lock, Mail, AlertCircle, Eye, EyeOff, GraduationCap, Briefcase, Shield, Lightbulb, TrendingUp, Users } from 'lucide-react';
 import { getUserRoleFromEmail, generateUserFromEmail } from '../data/seed';
 import { User, UserRole } from '../types';
 import { APP_CONFIG } from '../config';
 import { supabase } from '../lib/supabase';
 import { StorageService } from '../services/storage';
 import { CustomDropdown, CustomDropdownOption } from '../components/ui/CustomDropdown';
+
+// Configurable Video Showcase Slot: easily swappable with any campus video asset
+const CAMPUS_PREVIEW_VIDEO = '/campus-preview.mp4';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
 const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
@@ -348,7 +351,7 @@ export const LoginPage: React.FC = () => {
   return (
     <div
       onMouseMove={handleMouseMove}
-      className="min-h-screen w-full h-screen overflow-hidden flex items-stretch justify-end p-0 relative bg-[#EEF4ED] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
+      className="min-h-screen w-full h-screen overflow-hidden flex flex-col lg:flex-row items-center justify-end lg:justify-between p-4 sm:p-6 lg:p-10 xl:p-14 relative bg-[#EEF4ED] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
     >
       {/* 1. Global Campus Background: Converted from JPG to SVG format */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -357,8 +360,8 @@ export const LoginPage: React.FC = () => {
           alt="K.R. Mangalam University Campus"
           className="w-full h-full min-h-screen object-cover object-center"
         />
-        {/* Ambient overlay for dark/light mode readability */}
-        <div className="absolute inset-0 bg-slate-900/10 dark:bg-black/60" />
+        {/* Scrim Overlay: Deep navy scrim on the left fading to light/transparent on right */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#07172C]/95 via-[#0A2242]/85 to-[#0A2242]/20 dark:from-black/95 dark:via-black/85 dark:to-black/40 pointer-events-none" />
 
         {/* Ambient Interactive Blurred Geometric Blobs for Depth */}
         <div
@@ -371,17 +374,78 @@ export const LoginPage: React.FC = () => {
         />
       </div>
 
-      {/* 2. Institutional Header Banner: High quality official vector banner, full uncropped view */}
-      <div className="absolute top-4 left-4 sm:top-6 sm:left-6 md:top-8 md:left-8 z-30 flex items-center pointer-events-none select-none">
+      {/* 2. Mobile Top Banner (visible on screens < lg) */}
+      <div className="lg:hidden absolute top-4 left-4 z-30 pointer-events-none select-none">
         <img
           src="/krmu_banner.svg"
           alt="K.R. Mangalam University - The Complete World of Education - NAAC Grade A"
-          className="w-[260px] xs:w-[320px] sm:w-[420px] md:w-[480px] lg:w-[540px] max-w-[85vw] h-auto object-contain block drop-shadow-md select-none pointer-events-none"
+          className="w-[240px] xs:w-[280px] max-w-[75vw] h-auto object-contain block drop-shadow-md select-none pointer-events-none"
         />
       </div>
 
-      {/* 3. The Glassmorphism Login Card: Full height / length matching design screenshot */}
-      <div className="relative z-10 w-full max-w-sm sm:w-[420px] md:w-[460px] lg:w-[480px] h-full min-h-screen max-h-screen py-3 sm:py-4 px-5 sm:px-8 md:px-9 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-none sm:rounded-l-3xl border-l border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-between overflow-hidden">
+      {/* 3. Left Hero Showcase (matching reference screenshot layout) */}
+      <div className="hidden lg:flex flex-col justify-center max-w-xl xl:max-w-2xl z-20 py-4 pr-6 animate-in fade-in slide-in-from-left-4 duration-700 ease-out">
+        {/* Institutional Header Banner */}
+        <div className="mb-5 pointer-events-none select-none">
+          <img
+            src="/krmu_banner.svg"
+            alt="K.R. Mangalam University - The Complete World of Education - NAAC Grade A"
+            className="w-[360px] xl:w-[460px] max-w-full h-auto object-contain block drop-shadow-md select-none pointer-events-none"
+          />
+        </div>
+
+        {/* Tagline Badge */}
+        <div className="flex items-center gap-2 mb-2">
+          <span className="w-8 h-0.5 bg-amber-400 rounded-full" />
+          <span className="text-xs uppercase font-mono tracking-widest text-slate-200 font-bold">
+            WELCOME TO AAROH
+          </span>
+        </div>
+
+        {/* Headline with 'Brighter Future' highlighted */}
+        <h1 className="text-3xl xl:text-4xl 2xl:text-5xl font-extrabold tracking-tight text-white leading-tight mb-4">
+          Shaping a <span className="text-amber-400">Brighter Future</span>
+          <br />
+          Through Quality Education.
+        </h1>
+
+        {/* 4 Icon Pillars: Learn, Innovate, Grow, Collaborate */}
+        <div className="grid grid-cols-4 max-w-lg mb-5 border-y border-white/20 py-2.5 backdrop-blur-xs bg-white/5 rounded-xl">
+          <div className="flex flex-col items-center justify-center text-center px-2 border-r border-white/20">
+            <GraduationCap className="w-5 h-5 text-amber-400 mb-1" />
+            <span className="text-xs font-semibold text-white tracking-wide">Learn</span>
+          </div>
+          <div className="flex flex-col items-center justify-center text-center px-2 border-r border-white/20">
+            <Lightbulb className="w-5 h-5 text-amber-400 mb-1" />
+            <span className="text-xs font-semibold text-white tracking-wide">Innovate</span>
+          </div>
+          <div className="flex flex-col items-center justify-center text-center px-2 border-r border-white/20">
+            <TrendingUp className="w-5 h-5 text-amber-400 mb-1" />
+            <span className="text-xs font-semibold text-white tracking-wide">Grow</span>
+          </div>
+          <div className="flex flex-col items-center justify-center text-center px-2">
+            <Users className="w-5 h-5 text-amber-400 mb-1" />
+            <span className="text-xs font-semibold text-white tracking-wide">Collaborate</span>
+          </div>
+        </div>
+
+        {/* Video Preview Card: Autoplay, No Buttons, No Borders, Transparent/Blended */}
+        <div className="w-full max-w-lg rounded-2xl overflow-hidden border-none shadow-2xl bg-black/30 backdrop-blur-xs">
+          <video
+            src={CAMPUS_PREVIEW_VIDEO}
+            autoPlay
+            loop
+            muted
+            playsInline
+            controls={false}
+            aria-label="K.R. Mangalam University Campus Preview"
+            className="w-full h-auto aspect-video object-cover border-none outline-none block pointer-events-none select-none rounded-2xl"
+          />
+        </div>
+      </div>
+
+      {/* 4. The Glassmorphism Login Card: Floating on the right matching reference layout */}
+      <div className="relative z-20 w-full max-w-sm sm:w-[400px] lg:w-[420px] max-h-[96vh] py-3.5 sm:py-4 px-5 sm:px-7 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-3xl border border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-between overflow-y-auto shrink-0 my-auto">
         {/* Form Section: Vertically balanced with even top and bottom spacing */}
         <div className="my-auto flex flex-col space-y-2.5 sm:space-y-3 py-1">
           {/* Header: Logo, Aaroh, Subtitle, and Sign In heading */}
@@ -443,10 +507,10 @@ export const LoginPage: React.FC = () => {
               </div>
             </div>
 
-            {/* 2. ROLL NUMBER OR INSTITUTIONAL EMAIL Input */}
+            {/* 2. INSTITUTIONAL EMAIL Input */}
             <div>
               <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
-                ROLL NUMBER OR INSTITUTIONAL EMAIL
+                INSTITUTIONAL EMAIL
               </label>
               <div className="relative">
                 <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
@@ -455,7 +519,7 @@ export const LoginPage: React.FC = () => {
                   required
                   value={email}
                   onChange={e => handleEmailChange(e.target.value)}
-                  placeholder="e.g. 2601010006 or 2601010006@aaroh.edu.in"
+                  placeholder="aarav.sharma@aaroh.edu.in"
                   className="w-full min-h-[38px] sm:min-h-[40px] text-xs font-mono pl-9 pr-3 py-1.5 sm:py-2 bg-white/80 dark:bg-black/70 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors shadow-xs"
                 />
               </div>
