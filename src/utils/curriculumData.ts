@@ -9,11 +9,10 @@ export interface CurriculumSubject {
   nodes: SyllabusNode[];
 }
 
-export const CURRICULUM_DATA: Record<SpecializationOption, CurriculumSubject[]> = {
-  'B.Tech CSE (AI/ML)': [
-    {
-      id: 'aiml_python',
-      name: 'Programming for Problem Solving Using Python',
+const btechAimlSubjects: CurriculumSubject[] = [
+  {
+    id: 'aiml_python',
+    name: 'Programming for Problem Solving Using Python',
       code: 'CS101-AIML',
       semester: 1,
       description: 'Foundations of algorithmic problem solving, procedural abstractions, and computational Python workflows.',
@@ -146,7 +145,11 @@ export const CURRICULUM_DATA: Record<SpecializationOption, CurriculumSubject[]> 
         }
       ]
     }
-  ],
+  ];
+
+export const CURRICULUM_DATA: Record<SpecializationOption, CurriculumSubject[]> = {
+  'B.Tech CSE (AI & ML)': btechAimlSubjects,
+  'B.Tech CSE (AI/ML)': btechAimlSubjects,
 
   'B.Tech CSE (Core)': [
     {
@@ -1352,13 +1355,383 @@ export const CURRICULUM_DATA: Record<SpecializationOption, CurriculumSubject[]> 
         }
       ]
     }
+  ],
+
+  'MCA (AI & ML) Microsoft Certifications': [
+    {
+      id: 'mca_ms_ai_eng',
+      name: 'Azure AI Engineering & Cognitive Services',
+      code: 'MCA-AI-101',
+      semester: 1,
+      description: 'Enterprise machine learning workloads, Microsoft Azure AI services, conversational AI agents, and computer vision deployment.',
+      nodes: [
+        {
+          id: 'mca_ms_1',
+          title: 'Unit 1: Azure Machine Learning Studio & Cloud Workspaces',
+          unitNumber: 1,
+          description: 'Provisioning Azure ML workspaces, compute instances, compute clusters, registered datastores, and automated ML pipelines.',
+          prerequisites: [],
+          topics: ['Azure ML Workspaces', 'Compute Clusters', 'Data Assets & Datastores', 'Automated ML Runs'],
+          learningOutcomes: ['Provision Azure Machine Learning workspace resources', 'Execute automated machine learning experiments']
+        },
+        {
+          id: 'mca_ms_2',
+          title: 'Unit 2: Cognitive Services & Applied NLP Solutions',
+          unitNumber: 2,
+          description: 'Pre-trained cognitive language models, Azure OpenAI API integration, sentiment analysis, entity extraction, and conversational bots.',
+          prerequisites: ['mca_ms_1'],
+          topics: ['Azure OpenAI Service', 'Language Understanding Models', 'Text Analytics & Sentiment', 'Conversational AI Bots'],
+          learningOutcomes: ['Integrate cognitive language models into enterprise systems', 'Deploy intelligent conversational bots with Azure Bot Service']
+        },
+        {
+          id: 'mca_ms_3',
+          title: 'Unit 3: Computer Vision & Document Intelligence',
+          unitNumber: 3,
+          description: 'Image classification, object detection with Custom Vision, OCR document intelligence, and video spatial analysis.',
+          prerequisites: ['mca_ms_2'],
+          topics: ['Azure Computer Vision', 'Custom Vision Model Training', 'Form Recognizer & OCR', 'Spatial Analysis Pipelines'],
+          learningOutcomes: ['Train custom image classification models on cloud compute', 'Extract structured tabular data using Document Intelligence']
+        },
+        {
+          id: 'mca_ms_4',
+          title: 'Unit 4: Responsible AI & Enterprise MLOps',
+          unitNumber: 4,
+          description: 'Fairness metrics, error analysis, model explainability with InterpretML, drift monitoring, and automated CI/CD for AI models.',
+          prerequisites: ['mca_ms_3'],
+          topics: ['Responsible AI Principles', 'Model Drift Detection', 'MLflow Registry Integration', 'Azure DevOps CI/CD for AI'],
+          learningOutcomes: ['Implement ethical guardrails and bias detection metrics', 'Orchestrate continuous deployment pipelines for cloud models']
+        }
+      ]
+    },
+    {
+      id: 'mca_ms_deep_learn',
+      name: 'Deep Learning & Neural Architectures',
+      code: 'MCA-AI-102',
+      semester: 1,
+      description: 'Multi-layer perceptrons, backpropagation gradients, convolutional vision models, sequence modeling, and transformer blocks.',
+      nodes: [
+        {
+          id: 'mca_dl_1',
+          title: 'Unit 1: Neural Network Foundations & PyTorch Tensors',
+          unitNumber: 1,
+          description: 'Tensor math, automatic differentiation engines, multilayer perceptrons, activation functions, and gradient descent optimizers.',
+          prerequisites: [],
+          topics: ['Tensor Operations', 'Autograd Gradient Engine', 'Multi-Layer Perceptrons', 'Loss Functions & Optimizers'],
+          learningOutcomes: ['Construct end-to-end feedforward networks in PyTorch', 'Compute backpropagation gradients with stochastic gradient descent']
+        },
+        {
+          id: 'mca_dl_2',
+          title: 'Unit 2: Convolutional Networks & Feature Extraction',
+          unitNumber: 2,
+          description: '2D convolutions, pooling strides, batch normalization, residual architectures (ResNet), and transfer learning strategies.',
+          prerequisites: ['mca_dl_1'],
+          topics: ['Convolution Kernels', 'Pooling & Normalization', 'Residual Networks (ResNet)', 'Transfer Learning Strategies'],
+          learningOutcomes: ['Architect convolutional layers for image feature extraction', 'Fine-tune pre-trained vision backbones on custom domain datasets']
+        },
+        {
+          id: 'mca_dl_3',
+          title: 'Unit 3: Sequence Modeling & Transformer Encoders',
+          unitNumber: 3,
+          description: 'Recurrent cells (LSTM/GRU), vanishing gradient mitigations, scaled dot-product attention, multi-head attention, and positional encodings.',
+          prerequisites: ['mca_dl_2'],
+          topics: ['Recurrent Cells (LSTM/GRU)', 'Self-Attention Mechanisms', 'Transformer Blocks', 'Positional Encoding'],
+          learningOutcomes: ['Model temporal dependencies using gated recurrent units', 'Implement scaled dot-product attention in custom layers']
+        },
+        {
+          id: 'mca_dl_4',
+          title: 'Unit 4: Generative Models & Parameter-Efficient Fine-Tuning',
+          unitNumber: 4,
+          description: 'Variational autoencoders, diffusion foundations, Low-Rank Adaptation (LoRA), quantization techniques (QLoRA), and model serving.',
+          prerequisites: ['mca_dl_3'],
+          topics: ['Variational Autoencoders', 'Diffusion Foundations', 'Low-Rank Adaptation (LoRA)', 'Inference Optimization'],
+          learningOutcomes: ['Formulate generative model training objectives', 'Fine-tune large language models using parameter-efficient adapters']
+        }
+      ]
+    }
+  ],
+
+  'B.Sc. (H) DS': [
+    {
+      id: 'bsc_ds_stats',
+      name: 'Statistical Methods & Exploratory Data Analysis',
+      code: 'BSCDS-101',
+      semester: 1,
+      description: 'Probability spaces, discrete and continuous random variables, parametric inference, hypothesis testing, and exploratory visual analytics.',
+      nodes: [
+        {
+          id: 'bsc_ds_st_1',
+          title: 'Unit 1: Descriptive Statistics & Probability Foundations',
+          unitNumber: 1,
+          description: 'Measures of central tendency, dispersion, sample variance, conditional probability, Bayes theorem, and probability mass functions.',
+          prerequisites: [],
+          topics: ['Measures of Central Tendency', 'Variance & Skewness', 'Conditional Probability & Bayes Rule', 'Random Variables'],
+          learningOutcomes: ['Calculate statistical moments on multivariate datasets', 'Apply Bayes theorem to diagnostic probability problems']
+        },
+        {
+          id: 'bsc_ds_st_2',
+          title: 'Unit 2: Theoretical Distributions & Sampling Theorems',
+          unitNumber: 2,
+          description: 'Binomial, Poisson, uniform, exponential, and normal distributions, standard normal z-scores, and the Central Limit Theorem.',
+          prerequisites: ['bsc_ds_st_1'],
+          topics: ['Binomial & Poisson Models', 'Normal Distribution & Z-Scores', 'Central Limit Theorem', 'Sampling Distributions'],
+          learningOutcomes: ['Model real phenomena using standard probability distributions', 'Demonstrate Central Limit Theorem bounds empirically']
+        },
+        {
+          id: 'bsc_ds_st_3',
+          title: 'Unit 3: Hypothesis Testing & Parametric Significance',
+          unitNumber: 3,
+          description: 'Null and alternative hypotheses, Type I/II errors, p-value criteria, Student t-tests, paired t-tests, Chi-square tests, and ANOVA.',
+          prerequisites: ['bsc_ds_st_2'],
+          topics: ['Null & Alternative Hypotheses', 'Student t-Tests', 'Chi-Square Goodness of Fit', 'ANOVA Testing'],
+          learningOutcomes: ['Formulate rigorous scientific hypotheses', 'Conduct two-sample t-tests and one-way ANOVA analyses']
+        },
+        {
+          id: 'bsc_ds_st_4',
+          title: 'Unit 4: Correlation & Linear Regression Models',
+          unitNumber: 4,
+          description: 'Covariance, Pearson and Spearman correlation, Ordinary Least Squares regression, coefficient interpretation, and residual analysis.',
+          prerequisites: ['bsc_ds_st_3'],
+          topics: ['Pearson & Spearman Correlation', 'Ordinary Least Squares', 'Residual Diagnostics', 'Multicollinearity & VIF'],
+          learningOutcomes: ['Fit bivariate and multiple linear regression models', 'Validate residual normality and homoscedasticity assumptions']
+        }
+      ]
+    },
+    {
+      id: 'bsc_ds_python',
+      name: 'Python for Data Science & Numerical Computing',
+      code: 'BSCDS-102',
+      semester: 1,
+      description: 'NumPy vectorized arrays, pandas tabular manipulations, exploratory visualizations with Matplotlib/Seaborn, and clean data pipelines.',
+      nodes: [
+        {
+          id: 'bsc_ds_py_1',
+          title: 'Unit 1: NumPy Array Architecture & Vectorized Math',
+          unitNumber: 1,
+          description: 'Ndarray memory layout, slicing, striding, broadcasting semantics, universal functions, and matrix algebra operations.',
+          prerequisites: [],
+          topics: ['Ndarray Slicing & Memory Views', 'Broadcasting Rules', 'Universal Functions (ufuncs)', 'Linear Algebra Routines'],
+          learningOutcomes: ['Leverage NumPy vectorization to eliminate explicit iteration loops', 'Perform matrix decompositions and eigenvalue calculations']
+        },
+        {
+          id: 'bsc_ds_py_2',
+          title: 'Unit 2: Pandas DataFrames & Tabular Transformations',
+          unitNumber: 2,
+          description: 'Series and DataFrame data models, filtering, handling nulls, multi-level indexing, groupby aggregations, and tabular joins.',
+          prerequisites: ['bsc_ds_py_1'],
+          topics: ['Series & DataFrame Structures', 'Hierarchical Indexing', 'Groupby Aggregations', 'Merge & Reshape Operations'],
+          learningOutcomes: ['Ingest and clean heterogeneous structured CSV/Excel files', 'Execute split-apply-combine aggregations with groupby']
+        },
+        {
+          id: 'bsc_ds_py_3',
+          title: 'Unit 3: Exploratory Data Visualization & Insight Synthesis',
+          unitNumber: 3,
+          description: 'Matplotlib object-oriented interfaces, Seaborn statistical plots, distribution histograms, pair plots, and categorical plots.',
+          prerequisites: ['bsc_ds_py_2'],
+          topics: ['Matplotlib Figure Canvas', 'Seaborn Distribution Plots', 'Correlation Heatmaps', 'Multi-panel FacetGrids'],
+          learningOutcomes: ['Generate production quality statistical visualizations', 'Synthesize exploratory patterns into quantitative executive summaries']
+        },
+        {
+          id: 'bsc_ds_py_4',
+          title: 'Unit 4: Data Cleaning & Automated ETL Pipelines',
+          unitNumber: 4,
+          description: 'Imputation strategies for missing values, interquartile range outlier detection, feature standardization, and pipeline chaining.',
+          prerequisites: ['bsc_ds_py_3'],
+          topics: ['Handling Missing Values (Imputation)', 'Outlier Detection (IQR/Z-Score)', 'Feature Scaling (StandardScaler/MinMax)', 'Pipeline Automation'],
+          learningOutcomes: ['Design automated tabular data preprocessing pipelines', 'Apply robust imputation strategies to corrupted datasets']
+        }
+      ]
+    }
+  ],
+
+  'B.Sc. (H) Cyber Security': [
+    {
+      id: 'bsc_cs_defense',
+      name: 'Information Security Principles & Network Defense',
+      code: 'BSCCS-101',
+      semester: 1,
+      description: 'Core security models, CIA triad, TCP/IP network protocol analysis, firewall architectures, and host defense mechanisms.',
+      nodes: [
+        {
+          id: 'bsc_cs_def_1',
+          title: 'Unit 1: Security Fundamentals & Threat Modeling',
+          unitNumber: 1,
+          description: 'Confidentiality, integrity, availability, STRIDE threat taxonomy, threat modeling, attack surfaces, and security controls.',
+          prerequisites: [],
+          topics: ['CIA Triad & Non-Repudiation', 'STRIDE Threat Modeling', 'Vulnerability vs Threat vs Risk', 'Attack Surface Analysis'],
+          learningOutcomes: ['Assess organizational attack vectors using STRIDE', 'Categorize security controls by preventative, detective, and corrective roles']
+        },
+        {
+          id: 'bsc_cs_def_2',
+          title: 'Unit 2: Network Protocol Vulnerabilities & Packet Analysis',
+          unitNumber: 2,
+          description: 'TCP/IP handshake mechanics, packet headers, Wireshark packet capture, ARP cache poisoning, DNS spoofing, and port scanning.',
+          prerequisites: ['bsc_cs_def_1'],
+          topics: ['TCP Three-Way Handshake Exploits', 'DNS Spoofing & ARP Poisoning', 'Wireshark Packet Inspection', 'Port Scanning Strategies'],
+          learningOutcomes: ['Analyze live packet captures to identify malicious traffic', 'Detect unauthorized ARP spoofing and MITM attempts']
+        },
+        {
+          id: 'bsc_cs_def_3',
+          title: 'Unit 3: Firewalls & Intrusion Detection Systems',
+          unitNumber: 3,
+          description: 'Packet filtering, stateful inspection, next-generation firewalls, Snort signature writing, and intrusion prevention rules.',
+          prerequisites: ['bsc_cs_def_2'],
+          topics: ['Stateful vs Stateless Packet Filtering', 'Next-Generation Firewalls (NGFW)', 'Snort IDS Rule Writing', 'DMZ Network Topology'],
+          learningOutcomes: ['Author custom Snort detection signatures for signature-based IDS', 'Design perimeter DMZ network boundaries with iptables rules']
+        },
+        {
+          id: 'bsc_cs_def_4',
+          title: 'Unit 4: Host Hardening & Defensive Endpoint Security',
+          unitNumber: 4,
+          description: 'Principle of least privilege, file permission hardening, audit daemon logging, patch cadence, and endpoint monitoring.',
+          prerequisites: ['bsc_cs_def_3'],
+          topics: ['Least Privilege & Access Control Lists (ACL)', 'System Audit Logging (Syslog/SIEM)', 'Patch Management Systems', 'Endpoint Detection & Response'],
+          learningOutcomes: ['Harden Linux and Windows servers against common privilege escalations', 'Configure centralized syslog alerting for anomalous host actions']
+        }
+      ]
+    },
+    {
+      id: 'bsc_cs_crypto',
+      name: 'Applied Cryptography & Secure Communications',
+      code: 'BSCCS-102',
+      semester: 1,
+      description: 'Mathematical foundation of cryptography, symmetric/asymmetric algorithms, hashing, digital certificates, and TLS secure protocols.',
+      nodes: [
+        {
+          id: 'bsc_cs_cry_1',
+          title: 'Unit 1: Classical Ciphers & Modular Arithmetic',
+          unitNumber: 1,
+          description: 'Historical substitution and transposition ciphers, modular arithmetic, greatest common divisor, and cryptanalysis fundamentals.',
+          prerequisites: [],
+          topics: ['Substitution & Transposition Ciphers', 'Modular Arithmetic & GCD', 'Frequency Analysis & Cryptanalysis', 'One-Time Pad Information Security'],
+          learningOutcomes: ['Break classical substitution schemes through frequency analysis', 'Perform modular exponentiation for cryptographic key derivations']
+        },
+        {
+          id: 'bsc_cs_cry_2',
+          title: 'Unit 2: Symmetric Block Ciphers & Hash Functions',
+          unitNumber: 2,
+          description: 'Feistel networks, AES substitution-permutation networks, cipher block modes (CBC, GCM), SHA-256 properties, and HMAC.',
+          prerequisites: ['bsc_cs_cry_1'],
+          topics: ['AES & DES Block Structures', 'Cipher Modes (CBC, GCM, CTR)', 'SHA-2 & SHA-3 Hash Properties', 'HMAC Message Authentication'],
+          learningOutcomes: ['Implement AES-GCM authenticated encryption routines', 'Verify data integrity and authenticity using SHA-256 HMAC tokens']
+        },
+        {
+          id: 'bsc_cs_cry_3',
+          title: 'Unit 3: Asymmetric Cryptography & Key Distribution',
+          unitNumber: 3,
+          description: 'Prime number factorization, RSA public-private key generation, discrete logarithms, and Diffie-Hellman key exchange.',
+          prerequisites: ['bsc_cs_cry_2'],
+          topics: ['RSA Key Generation & Decryption', 'Diffie-Hellman Key Exchange', 'Elliptic Curve Cryptography (ECC)', 'Discrete Logarithm Problem'],
+          learningOutcomes: ['Derive public and private RSA key pairs from prime integers', 'Execute secure Diffie-Hellman key exchange over insecure channels']
+        },
+        {
+          id: 'bsc_cs_cry_4',
+          title: 'Unit 4: Digital Signatures & Public Key Infrastructure',
+          unitNumber: 4,
+          description: 'Digital Signature Standard, X.509 certificate formats, certificate authority trust hierarchies, and TLS handshake workflows.',
+          prerequisites: ['bsc_cs_cry_3'],
+          topics: ['Digital Signature Standard (DSS)', 'X.509 Certificate Chain Verification', 'Certificate Authorities (CA)', 'TLS 1.3 Handshake Architecture'],
+          learningOutcomes: ['Validate X.509 certificate trust chains and revocation lists', 'Trace TLS 1.3 cryptographic key derivation and session protection']
+        }
+      ]
+    }
+  ],
+
+  'B.Sc. (H) CS': [
+    {
+      id: 'bsc_cs_cpp',
+      name: 'Object Oriented Programming with C++',
+      code: 'BSCC-101',
+      semester: 1,
+      description: 'Modern C++, memory semantics, pointer arithmetic, class design, virtual method dispatch, and Standard Template Library algorithms.',
+      nodes: [
+        {
+          id: 'bsc_c_cpp_1',
+          title: 'Unit 1: C++ Foundations & Dynamic Memory Management',
+          unitNumber: 1,
+          description: 'C++ primitive types, pointers, pointer arithmetic, reference variables, dynamic heap allocation with new/delete, and namespaces.',
+          prerequisites: [],
+          topics: ['Primitive Types & References', 'Pointers & Pointer Arithmetic', 'Dynamic Memory (new/delete)', 'Scope & Namespaces'],
+          learningOutcomes: ['Allocate and safely deallocate heap memory in C++', 'Manipulate raw pointers and references without memory leaks']
+        },
+        {
+          id: 'bsc_c_cpp_2',
+          title: 'Unit 2: Classes, Constructors & Encapsulation',
+          unitNumber: 2,
+          description: 'Class declarations, member visibility, constructor overloading, copy constructors, destructor cleanup, and operator overloading.',
+          prerequisites: ['bsc_c_cpp_1'],
+          topics: ['Encapsulation & Access Modifiers', 'Constructors & Destructors', 'Deep Copy vs Shallow Copy', 'Operator Overloading'],
+          learningOutcomes: ['Implement rule of three (copy constructor, assignment operator, destructor)', 'Overload arithmetic and stream operators for custom classes']
+        },
+        {
+          id: 'bsc_c_cpp_3',
+          title: 'Unit 3: Inheritance, Polymorphism & Virtual Tables',
+          unitNumber: 3,
+          description: 'Single, multiple, and hierarchical inheritance, virtual functions, runtime dynamic binding, pure virtual methods, and vtables.',
+          prerequisites: ['bsc_c_cpp_2'],
+          topics: ['Single & Multiple Inheritance', 'Virtual Functions & Late Binding', 'Abstract Classes & Pure Virtuals', 'vtable Runtime Mechanics'],
+          learningOutcomes: ['Design flexible class hierarchies with polymorphism', 'Trace virtual table lookup mechanics during runtime dispatch']
+        },
+        {
+          id: 'bsc_c_cpp_4',
+          title: 'Unit 4: Templates & Standard Template Library (STL)',
+          unitNumber: 4,
+          description: 'Function templates, class templates, STL sequential containers (vector, list), associative maps, iterators, and exception handling.',
+          prerequisites: ['bsc_c_cpp_3'],
+          topics: ['Function & Class Templates', 'STL Containers (vector, list, map)', 'STL Iterators & Algorithms', 'Exception Handling Mechanisms'],
+          learningOutcomes: ['Author reusable generic algorithms with C++ templates', 'Harness STL vectors and maps for optimal algorithmic complexity']
+        }
+      ]
+    },
+    {
+      id: 'bsc_cs_math',
+      name: 'Discrete Mathematical Structures for Computing',
+      code: 'BSCC-102',
+      semester: 1,
+      description: 'Propositional logic, predicate calculus, set theory, binary relations, graph theory, trees, and recurrence relations.',
+      nodes: [
+        {
+          id: 'bsc_c_m_1',
+          title: 'Unit 1: Propositional Logic & Mathematical Proofs',
+          unitNumber: 1,
+          description: 'Truth tables, logical connectives, propositional equivalences, universal and existential quantifiers, and mathematical induction.',
+          prerequisites: [],
+          topics: ['Truth Tables & Logical Equivalences', 'Universal & Existential Quantifiers', 'Direct & Indirect Proofs', 'Mathematical Induction'],
+          learningOutcomes: ['Evaluate complex Boolean expressions via truth tables', 'Prove mathematical theorems using formal induction techniques']
+        },
+        {
+          id: 'bsc_c_m_2',
+          title: 'Unit 2: Sets, Relations & Partial Orderings',
+          unitNumber: 2,
+          description: 'Set identities, Cartesian products, equivalence relations, equivalence classes, partial orderings, and Hasse diagrams.',
+          prerequisites: ['bsc_c_m_1'],
+          topics: ['Set Operations & Power Sets', 'Equivalence Relations & Partitions', 'Partial Order Sets (Posets)', 'Hasse Diagrams'],
+          learningOutcomes: ['Demonstrate equivalence relation properties on binary mappings', 'Construct Hasse diagrams for partial ordering lattices']
+        },
+        {
+          id: 'bsc_c_m_3',
+          title: 'Unit 3: Graph Theory & Shortest Path Trees',
+          unitNumber: 3,
+          description: 'Graph terminology, adjacency matrix and list representation, Euler and Hamiltonian circuits, spanning trees, and Dijkstra algorithm.',
+          prerequisites: ['bsc_c_m_2'],
+          topics: ['Graph Representations (Adjacency Matrix/List)', 'Eulerian & Hamiltonian Paths', 'Spanning Trees (Kruskal/Prim)', 'Shortest Paths (Dijkstra)'],
+          learningOutcomes: ['Model computational networks as directed and undirected graphs', 'Compute minimal spanning trees using greedy algorithms']
+        },
+        {
+          id: 'bsc_c_m_4',
+          title: 'Unit 4: Combinatorics & Recurrence Relations',
+          unitNumber: 4,
+          description: 'Permutations, combinations, pigeonhole principle, solving linear homogeneous and non-homogeneous recurrence relations.',
+          prerequisites: ['bsc_c_m_3'],
+          topics: ['Permutations & Combinations', 'Pigeonhole Principle', 'Solving Linear Recurrence Relations', 'Generating Functions'],
+          learningOutcomes: ['Solve recurrence relations using characteristic equations', 'Apply pigeonhole principle bounds to algorithmic constraints']
+        }
+      ]
+    }
   ]
 };
 
 export const SPECIALIZATION_OPTIONS: SpecializationOption[] = [
-  'B.Tech CSE (AI/ML)',
-  'B.Tech CSE (Core)',
-  'B.Tech CSE (AI/DS)',
+  'B.Tech CSE (AI & ML)',
   'B.Tech CSE',
   'B.Tech CSE (Cyber Security) EC-Council',
   'B.Tech CSE (DS) IBM',
@@ -1369,13 +1742,26 @@ export const SPECIALIZATION_OPTIONS: SpecializationOption[] = [
   'BCA (Cyber Security)',
   'BCA (Hons./ Hons. with Research)',
   'MCA',
+  'MCA (AI & ML) Microsoft Certifications',
+  'B.Sc. (H) DS',
+  'B.Sc. (H) Cyber Security',
+  'B.Sc. (H) CS',
+  // Backward compatibility aliases
+  'B.Tech CSE (AI/ML)',
+  'B.Tech CSE (Core)',
+  'B.Tech CSE (AI/DS)',
 ];
 
-export const getSubjectsForSpecialization = (spec: SpecializationOption): CurriculumSubject[] => {
-  return CURRICULUM_DATA[spec] || [];
+export const getSubjectsForSpecialization = (spec: SpecializationOption | string): CurriculumSubject[] => {
+  if (!spec) return [];
+  const trimmed = spec.trim();
+  if (trimmed.toLowerCase() === 'b.tech cse (ai/ml)' || trimmed.toLowerCase() === 'b.tech cse (ai & ml)') {
+    return CURRICULUM_DATA['B.Tech CSE (AI & ML)'] || CURRICULUM_DATA['B.Tech CSE (AI/ML)'] || [];
+  }
+  return CURRICULUM_DATA[trimmed as SpecializationOption] || CURRICULUM_DATA[spec as SpecializationOption] || [];
 };
 
-export const getSubjectData = (spec: SpecializationOption, subjectNameOrId: string): CurriculumSubject | undefined => {
+export const getSubjectData = (spec: SpecializationOption | string, subjectNameOrId: string): CurriculumSubject | undefined => {
   const list = getSubjectsForSpecialization(spec);
   return list.find(s => s.name === subjectNameOrId || s.id === subjectNameOrId);
 };

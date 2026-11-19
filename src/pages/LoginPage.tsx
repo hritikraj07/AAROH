@@ -129,6 +129,13 @@ export const LoginPage: React.FC = () => {
       const emailAddr = data.email || `${roll.toLowerCase()}@aaroh.edu.in`;
       const fullName = data.full_name || data.name || (resolvedRole === 'admin' ? `Administrator ${roll}` : resolvedRole === 'faculty' ? `Prof. ${roll}` : `Student ${roll}`);
 
+      const rawCourse = data.course || data.program || 'B.Tech CSE';
+      const resolvedCourse = (rawCourse.trim().toLowerCase() === 'b.tech cse (ai/ml)' || rawCourse.trim().toLowerCase() === 'b.tech cse (ai & ml)')
+        ? 'B.Tech CSE (AI & ML)'
+        : rawCourse.trim();
+
+      const studentStatus = data.student_status || data.status || 'Regular';
+
       const userObj: User = {
         id: `usr_${roll.toLowerCase()}`,
         name: fullName,
@@ -140,10 +147,12 @@ export const LoginPage: React.FC = () => {
         department: data.department || (resolvedRole === 'admin' ? 'Central Administration' : 'Computer Science & Engineering'),
         designation: resolvedRole === 'student' ? 'Undergraduate Scholar' : (data.designation || (resolvedRole === 'admin' ? 'Campus Administrator' : 'Faculty Member')),
         rollNumber: roll,
-        program: data.course || 'B.Tech CSE',
-        course: data.course || 'B.Tech CSE',
+        program: resolvedCourse,
+        course: resolvedCourse,
         section: data.division ? `Section ${data.division}` : 'Section A',
         division: data.division || 'A',
+        student_status: studentStatus,
+        status: studentStatus,
         semester: 1,
         academicYear: APP_CONFIG.academicSession,
         attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
@@ -160,10 +169,12 @@ export const LoginPage: React.FC = () => {
           password: password.trim(),
           role: data.role || (resolvedRole === 'admin' ? 'Admin' : resolvedRole === 'faculty' ? 'Faculty' : 'Student'),
           full_name: fullName,
-          course: data.course || 'B.Tech CSE',
+          course: resolvedCourse,
           division: data.division || 'A',
           designation: userObj.designation,
           department: userObj.department,
+          student_status: studentStatus,
+          status: studentStatus,
         };
         if (uIdx >= 0) {
           storedAaroh[uIdx] = { ...storedAaroh[uIdx], ...entry };

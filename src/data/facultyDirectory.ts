@@ -34,7 +34,7 @@ export const PRE_ENROLLED_FACULTY: PreEnrolledAccount[] = [
     password: 'FAC102',
     role: 'Faculty',
     full_name: 'Dr. Anita Desai',
-    course: 'B.Tech CSE (AI/ML)',
+    course: 'B.Tech CSE (AI & ML)',
     division: 'A',
     designation: 'Associate Professor',
     department: 'Department of Computer Science & Engineering',

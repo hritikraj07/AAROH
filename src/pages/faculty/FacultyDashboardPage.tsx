@@ -42,11 +42,14 @@ export const FacultyDashboardPage: React.FC = () => {
       setLoadingStudents(true);
       if (supabase) {
         try {
-          const { data, error } = await supabase
-            .from('aaroh_users')
-            .select('*')
-            .ilike('role', 'student')
-            .ilike('course', facultyCourse);
+          let query = supabase.from('aaroh_users').select('*').ilike('role', 'student');
+          const isAiml = facultyCourse.toLowerCase() === 'b.tech cse (ai & ml)' || facultyCourse.toLowerCase() === 'b.tech cse (ai/ml)';
+          if (isAiml) {
+            query = query.or('course.ilike.B.Tech CSE (AI & ML),course.ilike.B.Tech CSE (AI/ML)');
+          } else {
+            query = query.ilike('course', facultyCourse);
+          }
+          const { data, error } = await query;
 
           if (!error && data && data.length > 0 && isMounted) {
             setEnrolledStudents(data);
@@ -59,13 +62,25 @@ export const FacultyDashboardPage: React.FC = () => {
       }
 
       // Offline fallback: filter from localStorage aarohUsers or users
+      const isCourseMatch = (c?: string) => {
+        if (!c) return false;
+        const cl = c.trim().toLowerCase();
+        const fl = facultyCourse.trim().toLowerCase();
+        if (cl === fl) return true;
+        if ((cl === 'b.tech cse (ai & ml)' || cl === 'b.tech cse (ai/ml)') &&
+            (fl === 'b.tech cse (ai & ml)' || fl === 'b.tech cse (ai/ml)')) {
+          return true;
+        }
+        return false;
+      };
+
       let fallbackStudents: any[] = [];
       try {
         const stored = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
         fallbackStudents = stored.filter(
           (u: any) =>
             u.role?.toLowerCase() === 'student' &&
-            u.course?.toLowerCase() === facultyCourse.toLowerCase()
+            isCourseMatch(u.course || u.program)
         );
       } catch {}
 
@@ -73,8 +88,7 @@ export const FacultyDashboardPage: React.FC = () => {
         fallbackStudents = users.filter(
           u =>
             u.role === 'student' &&
-            (u.course?.toLowerCase() === facultyCourse.toLowerCase() ||
-             u.program?.toLowerCase() === facultyCourse.toLowerCase())
+            (isCourseMatch(u.course) || isCourseMatch(u.program))
         );
       }
 

@@ -331,10 +331,25 @@ export const DashboardPage: React.FC = () => {
 
           <div className="pt-1 flex items-center gap-2.5 flex-wrap">
             <span className="text-xs font-mono font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-[#27272A] border border-slate-200 dark:border-slate-700 px-3 py-1 rounded-md">
-              Roll No: {user?.rollNumber || '22CS042'}
+              Roll No: {user?.rollNumber || user?.username || '2601010007'}
             </span>
             <span className="text-xs font-mono font-semibold text-[#0F766E] dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800/60 px-3 py-1 rounded-md">
-              {user?.program || 'B.Tech'} Sem {user?.semester || 5}
+              {user?.course || user?.program || 'B.Tech CSE (AI & ML)'} (Sem {user?.semester || 1})
+            </span>
+            <span className="text-xs font-mono font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-[#27272A] border border-slate-200 dark:border-slate-700 px-3 py-1 rounded-md">
+              {user?.division ? `Section ${user.division}` : (user?.section || 'Section A')}
+            </span>
+            <span className={`inline-flex items-center gap-1.5 text-xs font-mono font-medium px-2.5 py-1 rounded-md border ${
+              (user?.student_status || (user as any)?.status || 'Regular').toLowerCase() === 'provisional'
+                ? 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60'
+                : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60'
+            }`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${
+                (user?.student_status || (user as any)?.status || 'Regular').toLowerCase() === 'provisional'
+                  ? 'bg-amber-500'
+                  : 'bg-emerald-500'
+              }`} />
+              {user?.student_status || (user as any)?.status || 'Regular'}
             </span>
           </div>
         </div>
@@ -371,7 +386,7 @@ export const DashboardPage: React.FC = () => {
                     // Ignore quota
                   }
                 }}
-                placeholder="Take quick notes in Markdown... (e.g. # Algorithm Steps, - Key Formulas, `console.log()`)"
+                placeholder="Take quick notes in Markdown... (e.g. # Algorithm Steps, - Key Formulas, `print()`)"
                 className="w-full h-40 p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 font-mono focus:outline-none focus:ring-1 focus:ring-teal-700 resize-none transition-colors"
               />
             </div>

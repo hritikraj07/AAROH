@@ -69,7 +69,12 @@ export const FacultyAttendancePage: React.FC = () => {
     const matched = students.filter(st => {
       const prog = st.course || st.program || '';
       if (targetCourse && prog) {
+        const p1 = prog.toLowerCase().trim();
+        const p2 = targetCourse.toLowerCase().trim();
+        const isAiml = (p1 === 'b.tech cse (ai & ml)' || p1 === 'b.tech cse (ai/ml)') &&
+                       (p2 === 'b.tech cse (ai & ml)' || p2 === 'b.tech cse (ai/ml)');
         const progMatch =
+          isAiml ||
           prog.toLowerCase().includes(targetCourse.toLowerCase()) ||
           targetCourse.toLowerCase().includes(prog.toLowerCase());
         if (!progMatch) return false;

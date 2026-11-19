@@ -23,6 +23,8 @@ export interface User {
   classCoordinator?: string; // Assigned faculty mentor / coordinator
   savedOpportunityIds?: string[]; // Saved opportunities per user
   skills?: string[]; // Self-reported student technical skills
+  student_status?: 'Regular' | 'Provisional' | string;
+  status?: string;
 }
 
 // Student is an alias of User for full backward compatibility
@@ -290,9 +292,7 @@ export interface GlobalSearchResult {
 
 // B.Tech Curriculum Tracker & Hierarchical Prerequisite System
 export type SpecializationOption =
-  | 'B.Tech CSE (Core)'
-  | 'B.Tech CSE (AI/ML)'
-  | 'B.Tech CSE (AI/DS)'
+  | 'B.Tech CSE (AI & ML)'
   | 'B.Tech CSE'
   | 'B.Tech CSE (Cyber Security) EC-Council'
   | 'B.Tech CSE (DS) IBM'
@@ -302,7 +302,14 @@ export type SpecializationOption =
   | 'BCA (H) (Sp AI & DS) (Research)'
   | 'BCA (Cyber Security)'
   | 'BCA (Hons./ Hons. with Research)'
-  | 'MCA';
+  | 'MCA'
+  | 'MCA (AI & ML) Microsoft Certifications'
+  | 'B.Sc. (H) DS'
+  | 'B.Sc. (H) Cyber Security'
+  | 'B.Sc. (H) CS'
+  | 'B.Tech CSE (Core)'
+  | 'B.Tech CSE (AI/ML)'
+  | 'B.Tech CSE (AI/DS)';
 
 export interface SyllabusNode {
   id: string;

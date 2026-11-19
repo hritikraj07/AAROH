@@ -33,7 +33,7 @@ interface CurriculumTrackerProps {
 }
 
 export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
-  initialSpecialization = 'B.Tech CSE (AI/ML)',
+  initialSpecialization = 'B.Tech CSE (AI & ML)',
   initialSubjectName,
   onOpenModal,
   isModalView = false,
@@ -48,6 +48,10 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
     const raw = (user as any)?.course || (user as any)?.specialization || user?.program;
     if (!raw || typeof raw !== 'string') return undefined;
     const trimmed = raw.trim();
+    // Alias legacy "B.Tech CSE (AI/ML)" references to "B.Tech CSE (AI & ML)"
+    if (trimmed.toLowerCase() === 'b.tech cse (ai/ml)' || trimmed.toLowerCase() === 'b.tech cse (ai & ml)') {
+      return 'B.Tech CSE (AI & ML)';
+    }
     const exact = SPECIALIZATION_OPTIONS.find(opt => opt.toLowerCase() === trimmed.toLowerCase());
     if (exact) return exact;
     const partial = SPECIALIZATION_OPTIONS.find(

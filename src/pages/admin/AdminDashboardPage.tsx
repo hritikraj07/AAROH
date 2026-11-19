@@ -76,10 +76,9 @@ export const AdminDashboardPage: React.FC = () => {
   const adminCount = liveAccounts.filter(a => (a.role || '').toLowerCase() === 'admin').length;
   const totalCount = liveAccounts.length;
 
-  const ALL_10_PROGRAMMES = [
+  const ALL_15_PROGRAMMES = [
+    'B.Tech CSE (AI & ML)',
     'B.Tech CSE',
-    'B.Tech CSE (AI/ML)',
-    'B.Tech CSE (AI/DS)',
     'B.Tech CSE (Cyber Security) EC-Council',
     'B.Tech CSE (DS) IBM',
     'B.Tech CSE (Robotics & AI)',
@@ -89,15 +88,20 @@ export const AdminDashboardPage: React.FC = () => {
     'BCA (Cyber Security)',
     'BCA (Hons./ Hons. with Research)',
     'MCA',
+    'MCA (AI & ML) Microsoft Certifications',
+    'B.Sc. (H) DS',
+    'B.Sc. (H) Cyber Security',
+    'B.Sc. (H) CS',
   ];
 
   const programmeBreakdown = useMemo(() => {
-    return ALL_10_PROGRAMMES.map(prog => {
+    return ALL_15_PROGRAMMES.map(prog => {
       const enrolled = liveAccounts.filter(a => {
         const isStudent = (a.role || '').toLowerCase() === 'student';
+        const courseStr = (a.course || a.program || '').trim().toLowerCase();
         const matchesProg =
-          (a.course && a.course.toLowerCase() === prog.toLowerCase()) ||
-          (a.program && a.program.toLowerCase() === prog.toLowerCase());
+          courseStr === prog.toLowerCase() ||
+          (prog === 'B.Tech CSE (AI & ML)' && courseStr === 'b.tech cse (ai/ml)');
         return isStudent && matchesProg;
       }).length;
       return { program: prog, count: enrolled };
@@ -239,7 +243,7 @@ export const AdminDashboardPage: React.FC = () => {
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Live account metrics queried from public.aaroh_users across all 10 KRMU programmes
+              Live account metrics queried from public.aaroh_users across all 15 SOET programmes
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -294,13 +298,13 @@ export const AdminDashboardPage: React.FC = () => {
               <Building className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
             </div>
             <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 font-mono">
-              {ALL_10_PROGRAMMES.length}
+              {ALL_15_PROGRAMMES.length}
             </div>
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 font-mono">KRMU Degree Tracks</p>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5 font-mono">SOET Degree Tracks</p>
           </div>
         </div>
 
-        {/* Live Programme Breakdown Grid across all 10 programmes */}
+        {/* Live Programme Breakdown Grid across all 15 programmes */}
         <div className="space-y-2 pt-1">
           <div className="text-xs font-semibold text-slate-700 dark:text-slate-300 font-mono uppercase tracking-wider">
             Student Distribution by Programme (Live Dataset)
