@@ -39,6 +39,7 @@ import {
   generateUserFromEmail,
   getUserRoleFromEmail,
 } from '../data/seed';
+import { APP_CONFIG } from '../config';
 
 const STORAGE_KEYS = {
   INITIALIZED: 'aaroh_initialized_v3',
@@ -159,11 +160,60 @@ export const StorageService = {
 
     // 1. Query the localStorage users array first
     const users = this.getUsers();
-    const existingUser = users.find(u => u.email.trim().toLowerCase() === trimmedEmail);
+    let existingUser = users.find(u =>
+      u.email.trim().toLowerCase() === trimmedEmail ||
+      (u.rollNumber && u.rollNumber.trim().toLowerCase() === trimmedEmail) ||
+      (u.username && u.username.trim().toLowerCase() === trimmedEmail) ||
+      (u.email.trim().toLowerCase() === `${trimmedEmail}@krmu.edu.in`) ||
+      (u.email.trim().toLowerCase() === `${trimmedEmail}@aaroh.edu.in`)
+    );
+
+    // Check offline aarohUsers store if not present in users array
+    if (!existingUser) {
+      try {
+        const storedAaroh = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
+        const match = storedAaroh.find((u: any) =>
+          u.username?.trim().toLowerCase() === trimmedEmail ||
+          u.email?.trim().toLowerCase() === trimmedEmail ||
+          (u.username && `${u.username.trim().toLowerCase()}@krmu.edu.in` === trimmedEmail) ||
+          (u.email && u.email.split('@')[0].trim().toLowerCase() === trimmedEmail)
+        );
+        if (match && (match.password === password.trim() || match.username === password.trim() || !match.password)) {
+          const studentRole: UserRole = (match.role?.toLowerCase() as UserRole) || 'student';
+          const roll = match.username || (match.email ? match.email.split('@')[0] : trimmedEmail);
+          existingUser = {
+            id: `usr_${roll}`,
+            name: match.full_name || match.name || `Student ${roll}`,
+            email: match.email || `${roll}@krmu.edu.in`,
+            username: roll,
+            password: match.password || password.trim(),
+            role: studentRole,
+            avatarInitials: (match.full_name || 'ST').split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
+            department: 'Computer Science & Engineering',
+            designation: studentRole === 'student' ? 'Undergraduate Scholar' : 'Faculty Member',
+            rollNumber: roll,
+            program: match.course || 'B.Tech CSE',
+            course: match.course || 'B.Tech CSE',
+            section: match.division ? `Section ${match.division}` : 'Section A',
+            division: match.division || 'A',
+            semester: 1,
+            academicYear: APP_CONFIG.academicSession,
+            attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
+          };
+          this.createUser(existingUser);
+        }
+      } catch {
+        // fallback
+      }
+    }
 
     if (existingUser) {
       const isDefaultDemoUser = existingUser.id === 'usr_adm_demo' || existingUser.email === 'registrar@admin.aaroh.edu.in' || existingUser.password === 'campusSecure2026' || existingUser.password === 'Aaroh@Krmu#2026!Key';
-      const passwordMatch = existingUser.password === password.trim() || (isDefaultDemoUser && (password.trim() === 'campusSecure2026' || password.trim() === 'Aaroh@Krmu#2026!Key' || password.trim().length > 0));
+      const passwordMatch =
+        existingUser.password === password.trim() ||
+        (existingUser.rollNumber && existingUser.rollNumber.trim() === password.trim()) ||
+        (existingUser.username && existingUser.username.trim() === password.trim()) ||
+        (isDefaultDemoUser && (password.trim() === 'campusSecure2026' || password.trim() === 'Aaroh@Krmu#2026!Key' || password.trim().length > 0));
 
       if (existingUser.password && !isDefaultDemoUser && !passwordMatch) {
         return {
@@ -182,12 +232,12 @@ export const StorageService = {
       };
     }
 
-    // 2. If not found in localStorage, verify institutional domain restriction
-    const role = getUserRoleFromEmail(trimmedEmail);
+    // 2. If not found in localStorage, verify institutional domain restriction or numeric roll number
+    const role = getUserRoleFromEmail(trimmedEmail) || (/^\d+$/.test(trimmedEmail) ? 'student' : undefined);
     if (!role) {
       return {
         success: false,
-        error: 'Account not found in directory. Institutional emails must end with @aaroh.edu.in (Student), @faculty.aaroh.edu.in (Faculty), or @admin.aaroh.edu.in (Admin).',
+        error: 'Account not found in directory. Institutional emails must end with @aaroh.edu.in, @krmu.edu.in, or enter a valid Roll Number.',
       };
     }
 

@@ -4,7 +4,8 @@ import { useApp } from '../context/AppContext';
 import { Logo } from '../components/ui/Logo';
 import { Lock, Mail, AlertCircle, Eye, EyeOff, GraduationCap, Briefcase, Shield } from 'lucide-react';
 import { getUserRoleFromEmail, generateUserFromEmail } from '../data/seed';
-import { UserRole } from '../types';
+import { User, UserRole } from '../types';
+import { APP_CONFIG } from '../config';
 import { supabase } from '../lib/supabase';
 import { StorageService } from '../services/storage';
 import { CustomDropdown, CustomDropdownOption } from '../components/ui/CustomDropdown';
@@ -87,16 +88,21 @@ export const LoginPage: React.FC = () => {
 
     const trimmedEmail = email.trim();
     if (!trimmedEmail) {
-      setErrorMessage('Please enter your institutional email address.');
+      setErrorMessage('Please enter your Roll Number or institutional email.');
       return;
     }
 
-    const isKnownUser = users.some(u => u.email.trim().toLowerCase() === trimmedEmail.toLowerCase());
-    const detectedRole = getUserRoleFromEmail(trimmedEmail);
+    const isKnownUser = users.some(
+      u =>
+        u.email.trim().toLowerCase() === trimmedEmail.toLowerCase() ||
+        (u.rollNumber && u.rollNumber.trim().toLowerCase() === trimmedEmail.toLowerCase()) ||
+        (u.username && u.username.trim().toLowerCase() === trimmedEmail.toLowerCase())
+    );
+    const detectedRole = getUserRoleFromEmail(trimmedEmail) || (/^\d+$/.test(trimmedEmail) ? 'student' : undefined);
 
     if (!isKnownUser && !detectedRole && !supabase) {
       setErrorMessage(
-        'Access restricted: Email not recognized in campus directory. Please enter a registered email ending with @aaroh.edu.in, @faculty.aaroh.edu.in, or @admin.aaroh.edu.in.'
+        'Access restricted: Account not recognized in campus directory. Please enter your Roll Number or registered institutional email.'
       );
       return;
     }
@@ -135,22 +141,70 @@ export const LoginPage: React.FC = () => {
     // 2. Live Cloud Login Verification: If credentials are not found in localStorage, query Supabase
     if (!result.success && supabase) {
       try {
+        const identifier = trimmedEmail;
         const { data } = await supabase
           .from('aaroh_users')
           .select('*')
-          .eq('username', username)
-          .eq('password', password)
+          .or(`username.eq.${identifier},email.eq.${identifier}`)
+          .eq('password', password.trim())
           .maybeSingle();
 
         if (data) {
-          const cloudRole: UserRole = (data.role as UserRole) || detectedRole || selectedRole || 'student';
-          const userObj = generateUserFromEmail(username);
-          userObj.role = cloudRole;
-          userObj.password = password;
+          const studentRole: UserRole = (data.role?.toLowerCase() as UserRole) || detectedRole || selectedRole || 'student';
+          const roll = data.username || (data.email ? data.email.split('@')[0] : identifier);
+          const emailAddr = data.email || (data.username ? `${data.username}@krmu.edu.in` : identifier);
+          const fullName = data.full_name || data.name || (data.username ? `Student ${data.username}` : 'Student');
+
+          const userObj: User = {
+            id: `usr_${roll}`,
+            name: fullName,
+            email: emailAddr,
+            username: roll,
+            password: password.trim(),
+            role: studentRole,
+            avatarInitials: fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
+            department: 'Computer Science & Engineering',
+            designation: studentRole === 'student' ? 'Undergraduate Scholar' : (data.designation || 'Faculty Member'),
+            rollNumber: roll,
+            program: data.course || 'B.Tech CSE',
+            course: data.course || 'B.Tech CSE',
+            section: data.division ? `Section ${data.division}` : 'Section A',
+            division: data.division || 'A',
+            semester: 1,
+            academicYear: APP_CONFIG.academicSession,
+            attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
+          };
+
+          // Cache full user profile into localStorage & StorageService
           StorageService.createUser(userObj);
 
+          try {
+            const storedAaroh = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
+            const uIdx = storedAaroh.findIndex((u: any) => u.username?.toLowerCase() === roll.toLowerCase() || u.email?.toLowerCase() === emailAddr.toLowerCase());
+            const entry = {
+              username: roll,
+              email: emailAddr,
+              password: password.trim(),
+              role: data.role || 'Student',
+              full_name: fullName,
+              course: data.course || 'B.Tech CSE',
+              division: data.division || 'A',
+            };
+            if (uIdx >= 0) {
+              storedAaroh[uIdx] = { ...storedAaroh[uIdx], ...entry };
+            } else {
+              storedAaroh.push(entry);
+            }
+            localStorage.setItem('aarohUsers', JSON.stringify(storedAaroh));
+          } catch {
+            // fallback
+          }
+
           // Retry login with newly cached local record
-          result = login(trimmedEmail, password);
+          result = login(emailAddr, password);
+          if (!result.success) {
+            result = login(roll, password);
+          }
         }
       } catch {
         // Handle gracefully if offline or network error
@@ -284,19 +338,19 @@ export const LoginPage: React.FC = () => {
               </div>
             </div>
 
-            {/* 2. INSTITUTIONAL EMAIL Input */}
+            {/* 2. ROLL NUMBER OR INSTITUTIONAL EMAIL Input */}
             <div>
               <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
-                INSTITUTIONAL EMAIL
+                ROLL NUMBER OR INSTITUTIONAL EMAIL
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
                 <input
-                  type="email"
+                  type="text"
                   required
                   value={email}
                   onChange={e => handleEmailChange(e.target.value)}
-                  placeholder="aarav.sharma@aaroh.edu.in"
+                  placeholder="e.g. 2601010006 or 2601010006@krmu.edu.in"
                   className="w-full min-h-[44px] text-xs font-mono pl-10 pr-3.5 py-2.5 bg-white/80 dark:bg-black/70 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors shadow-xs"
                 />
               </div>
@@ -310,6 +364,8 @@ export const LoginPage: React.FC = () => {
               <div className="relative">
                 <Lock className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
                 <input
+                  id="aaroh_auth_key"
+                  name="aaroh_auth_key"
                   type={showPassword ? 'text' : 'password'}
                   required
                   autoComplete="new-password"

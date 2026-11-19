@@ -1791,12 +1791,6 @@ export function KrmuCampusExplorer({ onReportIssue, className = '' }: KrmuCampus
       southRowBus.rotation.y = 0.42;
       vehiclesGroup.add(southRowBus);
     }
-    for (let i = 0; i < 4; i++) {
-      const eastRowBus = createKrmuBus();
-      eastRowBus.position.set(27.2, 0.15, -22.2 + i * 2.6);
-      eastRowBus.rotation.y = Math.PI / 2 - 0.25;
-      vehiclesGroup.add(eastRowBus);
-    }
     [
       [-10.4, 31.2, 0, 0, false],
       [-6.0, 31.2, 0, 1, true],

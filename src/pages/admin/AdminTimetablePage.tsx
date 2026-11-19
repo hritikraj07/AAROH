@@ -13,6 +13,7 @@ import {
   GraduationCap
 } from 'lucide-react';
 import { ClassType } from '../../types';
+import { SPECIALIZATION_OPTIONS } from '../../utils/curriculumData';
 import { getFacultyFullName } from '../../utils/facultyUtils';
 
 export const AdminTimetablePage: React.FC = () => {
@@ -231,12 +232,11 @@ export const AdminTimetablePage: React.FC = () => {
               className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-slate-50 dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-600"
             >
               <option value="all">All Academic Programs</option>
-              <option value="B.Tech CSE">B.Tech Computer Science (CSE)</option>
-              <option value="B.Tech ECE">B.Tech Electronics & Comm (ECE)</option>
-              <option value="B.Sc IT">B.Sc Information Technology</option>
-              <option value="BCA">Bachelor of Computer Applications (BCA)</option>
-              <option value="MCA">Master of Computer Applications (MCA)</option>
-              <option value="M.Tech">M.Tech AI & Data Science</option>
+              {SPECIALIZATION_OPTIONS.map(opt => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -623,10 +623,11 @@ export const AdminTimetablePage: React.FC = () => {
                       onChange={e => setProgram(e.target.value)}
                       className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-teal-700 dark:focus:ring-teal-500"
                     >
-                      <option value="B.Tech CSE">B.Tech Computer Science</option>
-                      <option value="B.Tech ECE">B.Tech Electronics & Comm.</option>
-                      <option value="B.Sc IT">B.Sc Information Tech</option>
-                      <option value="M.Tech">M.Tech AI & Data Science</option>
+                      {SPECIALIZATION_OPTIONS.map(opt => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
                     </select>
                   </div>
 

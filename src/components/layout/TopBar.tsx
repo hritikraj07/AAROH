@@ -163,6 +163,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
   // Skill Autocomplete Search State
   const [skillSearchQuery, setSkillSearchQuery] = useState('');
   const [isSkillSearchOpen, setIsSkillSearchOpen] = useState(false);
+  const [skillSelectedIndex, setSkillSelectedIndex] = useState(0);
   const [selectedSkillCategory, setSelectedSkillCategory] = useState<string>('Programming Languages');
   const skillSearchContainerRef = useRef<HTMLDivElement>(null);
 
@@ -784,24 +785,31 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                         Search & Add Skills:
                       </label>
                       <div className="relative">
-                        <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <Search className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                         <input
                           id="skill-autocomplete-search"
                           type="text"
                           value={skillSearchQuery}
                           onChange={(e) => {
                             setSkillSearchQuery(e.target.value);
+                            setSkillSelectedIndex(0);
                             setIsSkillSearchOpen(true);
                           }}
                           onFocus={() => setIsSkillSearchOpen(true)}
                           onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
+                            if (e.key === 'ArrowDown') {
                               e.preventDefault();
-                              const firstAvailable = filteredSkills.find(
+                              setSkillSelectedIndex((prev) => (prev + 1) % Math.max(1, filteredSkills.length));
+                            } else if (e.key === 'ArrowUp') {
+                              e.preventDefault();
+                              setSkillSelectedIndex((prev) => (prev - 1 + filteredSkills.length) % Math.max(1, filteredSkills.length));
+                            } else if (e.key === 'Enter') {
+                              e.preventDefault();
+                              const targetItem = filteredSkills[skillSelectedIndex] || filteredSkills.find(
                                 item => !(user?.skills || []).includes(item.skill)
                               );
-                              if (firstAvailable) {
-                                handleAddSkill(firstAvailable.skill);
+                              if (targetItem) {
+                                handleAddSkill(targetItem.skill);
                                 setSkillSearchQuery('');
                                 setIsSkillSearchOpen(false);
                               }
@@ -809,8 +817,8 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                               setIsSkillSearchOpen(false);
                             }
                           }}
-                          placeholder="Type to search (e.g. Python, React)..."
-                          className="w-full pl-8 pr-7 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-[#27272A] bg-slate-50 dark:bg-[#18181B] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-teal-600 font-sans"
+                          placeholder="Type to search skills (e.g. Python, React, PyTorch)..."
+                          className="w-full pl-8 pr-7 py-2 text-xs rounded-xl border border-slate-200 dark:border-[#27272A] bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-600 focus:border-teal-600 font-sans shadow-xs transition-colors"
                         />
                         {skillSearchQuery && (
                           <button
@@ -819,30 +827,31 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                               setSkillSearchQuery('');
                               setIsSkillSearchOpen(false);
                             }}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-0.5 cursor-pointer"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1 cursor-pointer"
                             aria-label="Clear skill search"
                           >
-                            <X className="w-3 h-3" />
+                            <X className="w-3.5 h-3.5" />
                           </button>
                         )}
                       </div>
 
                       {/* Autocomplete Dropdown Menu */}
                       {isSkillSearchOpen && skillSearchQuery.trim().length > 0 && (
-                        <div className="mt-1.5 w-full bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl shadow-lg max-h-48 overflow-y-auto p-1 divide-y divide-slate-100 dark:divide-[#27272A]">
-                          <div className="px-2.5 py-1 text-[10px] font-mono text-slate-400 dark:text-slate-500 flex justify-between items-center bg-slate-50/70 dark:bg-[#141417] rounded-t-lg">
-                            <span>Matching Skills ({filteredSkills.length})</span>
-                            <span className="text-[9px]">Press Enter to add</span>
+                        <div className="mt-2 w-full bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl shadow-xl max-h-56 overflow-y-auto p-1 divide-y divide-slate-100 dark:divide-[#27272A] animate-in fade-in zoom-in-95 duration-150">
+                          <div className="px-3 py-1.5 text-[10px] font-mono text-slate-500 dark:text-slate-400 flex justify-between items-center bg-slate-50 dark:bg-[#141417] rounded-t-lg">
+                            <span className="font-semibold uppercase tracking-wider">Matching Skills ({filteredSkills.length})</span>
+                            <span className="text-[9px] text-teal-700 dark:text-teal-400">↑↓ to navigate • Enter to add</span>
                           </div>
 
                           <div className="pt-1 space-y-0.5">
                             {filteredSkills.length === 0 ? (
-                              <div className="px-3 py-2 text-xs text-slate-400 dark:text-slate-500 italic text-center">
-                                No matching skills found in catalog.
+                              <div className="px-3 py-3 text-xs text-slate-400 dark:text-slate-500 italic text-center">
+                                No matching skills found in campus catalog.
                               </div>
                             ) : (
-                              filteredSkills.map(item => {
+                              filteredSkills.map((item, idx) => {
                                 const isAdded = (user?.skills || []).includes(item.skill);
+                                const isSelected = idx === skillSelectedIndex;
                                 return (
                                   <button
                                     key={item.skill}
@@ -853,20 +862,26 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                                       setSkillSearchQuery('');
                                       setIsSkillSearchOpen(false);
                                     }}
-                                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left text-xs transition-colors cursor-pointer ${
+                                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-left text-xs transition-colors cursor-pointer ${
                                       isAdded
                                         ? 'opacity-50 cursor-not-allowed bg-slate-50/50 dark:bg-[#141417]/50'
-                                        : 'hover:bg-teal-50 dark:hover:bg-teal-950/40 text-slate-900 dark:text-slate-100'
+                                        : isSelected
+                                          ? 'bg-teal-50 dark:bg-teal-950/60 text-slate-900 dark:text-slate-100 border border-teal-200 dark:border-teal-800'
+                                          : 'hover:bg-teal-50/60 dark:hover:bg-teal-950/30 text-slate-900 dark:text-slate-100'
                                     }`}
                                   >
-                                    <span className="font-medium">{item.skill}</span>
+                                    <span className="font-semibold">{item.skill}</span>
                                     <div className="flex items-center gap-1.5">
-                                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-[#27272A] text-slate-600 dark:text-slate-400">
                                         {item.category.split(' ')[0]}
                                       </span>
-                                      {isAdded && (
-                                        <span className="text-[10px] font-mono text-teal-700 dark:text-teal-400 flex items-center gap-0.5">
+                                      {isAdded ? (
+                                        <span className="text-[10px] font-mono font-medium text-emerald-700 dark:text-emerald-400 flex items-center gap-0.5">
                                           ✓ Added
+                                        </span>
+                                      ) : (
+                                        <span className="text-[10px] font-mono font-medium text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/50 px-1.5 py-0.5 rounded border border-teal-200 dark:border-teal-800/60">
+                                          + Add
                                         </span>
                                       )}
                                     </div>

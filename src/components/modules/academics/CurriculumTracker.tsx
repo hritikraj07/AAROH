@@ -43,13 +43,22 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
 
   const isStudent = user?.role === 'student' || (!user?.role && !user?.designation);
 
-  // 1. Dynamic Course & Subject Selectors State
+  // Helper to automatically resolve student enrolled course/specialization
+  const resolveUserSpecialization = (): SpecializationOption | undefined => {
+    const raw = (user as any)?.course || (user as any)?.specialization || user?.program;
+    if (!raw || typeof raw !== 'string') return undefined;
+    const trimmed = raw.trim();
+    const exact = SPECIALIZATION_OPTIONS.find(opt => opt.toLowerCase() === trimmed.toLowerCase());
+    if (exact) return exact;
+    const partial = SPECIALIZATION_OPTIONS.find(
+      opt => opt.toLowerCase().includes(trimmed.toLowerCase()) || trimmed.toLowerCase().includes(opt.toLowerCase())
+    );
+    return partial;
+  };
+
+  // 1. Dynamic Course & Subject Selectors State (pre-selected from user profile)
   const [selectedSpecialization, setSelectedSpecialization] = useState<SpecializationOption>(() => {
-    const userSpec = (user as any)?.specialization || user?.program;
-    if (userSpec && SPECIALIZATION_OPTIONS.includes(userSpec as SpecializationOption)) {
-      return userSpec as SpecializationOption;
-    }
-    return initialSpecialization;
+    return resolveUserSpecialization() || initialSpecialization;
   });
   const subjectsForSpecialization = getSubjectsForSpecialization(selectedSpecialization);
 
@@ -60,6 +69,14 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
     }
     return subjectsForSpecialization[0]?.name || '';
   });
+
+  // Automatically sync/pre-select course from user profile when user logs in or updates
+  useEffect(() => {
+    const matched = resolveUserSpecialization();
+    if (matched && matched !== selectedSpecialization) {
+      handleSpecializationChange(matched);
+    }
+  }, [user]);
 
   // When specialization changes, dynamically populate and default to the first subject
   const handleSpecializationChange = (newSpec: SpecializationOption) => {
@@ -198,18 +215,15 @@ export const CurriculumTracker: React.FC<CurriculumTrackerProps> = ({
                 <GraduationCap className="w-3.5 h-3.5 text-[#134074] dark:text-[#8DA9C4]" />
                 <span>Specialization</span>
               </span>
-              <span className="text-[10px] text-[#134074] dark:text-[#8DA9C4] font-mono font-medium">
-                {isStudent ? 'Enrolled Program' : '3 Majors Available'}
+              <span className="text-[10px] text-[#0F766E] dark:text-teal-400 font-mono font-medium">
+                {isStudent ? 'Enrolled Programme' : `${SPECIALIZATION_OPTIONS.length} Programmes Available`}
               </span>
             </label>
             <div className="relative">
               <select
                 value={selectedSpecialization}
                 onChange={e => handleSpecializationChange(e.target.value as SpecializationOption)}
-                disabled={isStudent}
-                className={`w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-[#134074] appearance-none font-medium transition-all ${
-                  isStudent ? 'cursor-default opacity-90' : 'cursor-pointer'
-                }`}
+                className="w-full px-4 py-2.5 text-xs bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-[#0F766E] appearance-none font-medium transition-all cursor-pointer"
               >
                 {SPECIALIZATION_OPTIONS.map(spec => (
                   <option key={spec} value={spec}>

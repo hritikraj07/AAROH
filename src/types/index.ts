@@ -11,9 +11,13 @@ export interface User {
   designation?: string; // e.g. "Assistant Professor", "Academic Registrar", "Student"
   // Student-specific fields
   rollNumber?: string;
+  username?: string;
   program?: string;
+  course?: string;
   semester?: number;
   section?: string;
+  division?: string;
+  full_name?: string;
   academicYear?: string;
   attendanceMinimum?: number; // default 75%
   classCoordinator?: string; // Assigned faculty mentor / coordinator
@@ -285,7 +289,20 @@ export interface GlobalSearchResult {
 }
 
 // B.Tech Curriculum Tracker & Hierarchical Prerequisite System
-export type SpecializationOption = 'B.Tech CSE (Core)' | 'B.Tech CSE (AI/ML)' | 'B.Tech CSE (AI/DS)';
+export type SpecializationOption =
+  | 'B.Tech CSE (Core)'
+  | 'B.Tech CSE (AI/ML)'
+  | 'B.Tech CSE (AI/DS)'
+  | 'B.Tech CSE'
+  | 'B.Tech CSE (Cyber Security) EC-Council'
+  | 'B.Tech CSE (DS) IBM'
+  | 'B.Tech CSE (Robotics & AI)'
+  | 'B.Tech CSE (UX OR UI)'
+  | 'BCA (SP AI & DS)'
+  | 'BCA (H) (Sp AI & DS) (Research)'
+  | 'BCA (Cyber Security)'
+  | 'BCA (Hons./ Hons. with Research)'
+  | 'MCA';
 
 export interface SyllabusNode {
   id: string;

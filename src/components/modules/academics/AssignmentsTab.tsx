@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../../context/AppContext';
-import { AssignmentStatus } from '../../../types';
+import { AssignmentStatus, Course } from '../../../types';
 import { Badge } from '../../ui/Badge';
 import { Button } from '../../ui/Button';
 import { CheckCircle2, Filter, Search, Calendar, Code, ArrowRight } from 'lucide-react';
+import { CustomDropdown, CustomDropdownOption } from '../../ui/CustomDropdown';
+import { getCurriculumCourses } from '../../../utils/curriculumData';
 
 export const AssignmentsTab: React.FC = () => {
   const { assignments, courses, toggleAssignmentSubmission } = useApp();
@@ -14,7 +16,38 @@ export const AssignmentsTab: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<'soonest' | 'furthest'>('soonest');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const courseMap = new Map(courses.map(c => [c.id, c]));
+  const allKnownCourses = useMemo(() => {
+    const list = [...courses];
+    getCurriculumCourses().forEach(cc => {
+      if (!list.some(c => c.id === cc.id || c.code === cc.code)) {
+        list.push(cc);
+      }
+    });
+    return list;
+  }, [courses]);
+
+  const courseMap = useMemo(() => {
+    const map = new Map<string, Course>();
+    allKnownCourses.forEach(c => {
+      map.set(c.id, c);
+      map.set(c.code, c);
+    });
+    return map;
+  }, [allKnownCourses]);
+
+  const sortOptions: CustomDropdownOption<'soonest' | 'furthest'>[] = [
+    { value: 'soonest', label: 'Due Date: Soonest first' },
+    { value: 'furthest', label: 'Due Date: Furthest first' },
+  ];
+
+  const courseOptions: CustomDropdownOption<string>[] = useMemo(() => [
+    { value: 'all', label: `All Subjects (${allKnownCourses.length})` },
+    ...allKnownCourses.map(c => ({
+      value: c.id,
+      label: `${c.code} : ${c.name}`,
+      badge: c.code,
+    })),
+  ], [allKnownCourses]);
 
   // Counts for status tabs
   const pendingCount = assignments.filter(a => a.status === 'pending').length;
@@ -83,15 +116,15 @@ export const AssignmentsTab: React.FC = () => {
 
           {/* Sort Dropdown */}
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-400 dark:text-slate-400 font-medium">Sort:</span>
-            <select
-              value={sortOrder}
-              onChange={e => setSortOrder(e.target.value as 'soonest' | 'furthest')}
-              className="text-xs px-2.5 py-1.5 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-700"
-            >
-              <option value="soonest">Due Date (Soonest first)</option>
-              <option value="furthest">Due Date (Furthest first)</option>
-            </select>
+            <span className="text-slate-400 dark:text-slate-400 font-medium whitespace-nowrap">Sort:</span>
+            <div className="w-48">
+              <CustomDropdown<'soonest' | 'furthest'>
+                value={sortOrder}
+                onChange={val => setSortOrder(val)}
+                options={sortOptions}
+                buttonClassName="min-h-[36px] py-1 px-2.5 text-xs bg-slate-50 dark:bg-[#18181B] rounded-lg"
+              />
+            </div>
           </div>
         </div>
 
@@ -110,18 +143,15 @@ export const AssignmentsTab: React.FC = () => {
 
           <div className="w-full sm:w-auto flex items-center gap-2">
             <Filter className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <select
-              value={courseFilter}
-              onChange={e => setCourseFilter(e.target.value)}
-              className="w-full sm:w-56 text-xs px-2.5 py-1.5 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-teal-700"
-            >
-              <option value="all">All Subjects ({courses.length})</option>
-              {courses.map(c => (
-                <option key={c.id} value={c.id}>
-                  {c.code} - {c.name}
-                </option>
-              ))}
-            </select>
+            <div className="w-full sm:w-64">
+              <CustomDropdown<string>
+                value={courseFilter}
+                onChange={val => setCourseFilter(val)}
+                options={courseOptions}
+                placeholder="All Subjects..."
+                buttonClassName="min-h-[36px] py-1 px-2.5 text-xs bg-slate-50 dark:bg-[#18181B] rounded-lg"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -159,11 +189,11 @@ export const AssignmentsTab: React.FC = () => {
                 <div className="flex-1 space-y-1.5">
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-mono text-xs font-bold text-teal-800 dark:text-teal-400">
-                      {course?.code}
+                      {course?.code || asg.courseId}
                     </span>
                     <span className="text-slate-300 dark:text-slate-600">•</span>
                     <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-                      {course?.name}
+                      {course?.name || 'Academic Coursework'}
                     </span>
                     <span className="text-slate-300 dark:text-slate-600">•</span>
                     <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">

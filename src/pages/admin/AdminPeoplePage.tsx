@@ -26,6 +26,7 @@ import {
 import { User, UserRole } from '../../types';
 import { APP_CONFIG } from '../../config';
 import { supabase } from '../../lib/supabase';
+import { SPECIALIZATION_OPTIONS } from '../../utils/curriculumData';
 
 export const AdminPeoplePage: React.FC = () => {
   const { users, createUser, deleteUser, updateUser, showToast, user: currentUser } = useApp();
@@ -68,7 +69,7 @@ export const AdminPeoplePage: React.FC = () => {
         return '@admin.aaroh.edu.in';
       case 'student':
       default:
-        return '@aaroh.edu.in';
+        return '@krmu.edu.in';
     }
   };
 
@@ -83,7 +84,7 @@ export const AdminPeoplePage: React.FC = () => {
 
   // Student specific form fields
   const [rollNumber, setRollNumber] = useState('');
-  const [program, setProgram] = useState('B.Tech Computer Science');
+  const [program, setProgram] = useState(SPECIALIZATION_OPTIONS[0] || 'B.Tech CSE');
   const [semester, setSemester] = useState<number>(1);
   const [section, setSection] = useState('Section A');
   const [classCoordinator, setClassCoordinator] = useState<string>('');
@@ -137,26 +138,31 @@ export const AdminPeoplePage: React.FC = () => {
     setFormError(null);
 
     const trimmedName = name.trim();
-    const cleanPrefix = emailPrefix.trim().toLowerCase().replace(/[@\s]/g, '');
+    let cleanPrefix = emailPrefix.trim().toLowerCase().replace(/[@\s]/g, '');
 
     if (!trimmedName) {
       setFormError('Please enter user full name.');
       return;
     }
 
+    if (role === 'student' && !cleanPrefix && rollNumber.trim()) {
+      cleanPrefix = rollNumber.trim().toLowerCase();
+    }
+
     if (!cleanPrefix) {
-      setFormError('Please enter user email prefix username.');
+      setFormError('Please enter user email prefix username or Roll Number.');
       return;
     }
 
     const fullEmail = `${cleanPrefix}${getEmailSuffix(role)}`;
+    const effectivePassword = password.trim() || (role === 'student' ? rollNumber.trim() : '');
 
     // Password validation for all roles
-    if (!password.trim()) {
+    if (!effectivePassword) {
       setFormError('Account Password is required.');
       return;
     }
-    if (password.trim().length < 6) {
+    if (effectivePassword.length < 6) {
       setFormError('Password must be at least 6 characters.');
       return;
     }
@@ -188,7 +194,7 @@ export const AdminPeoplePage: React.FC = () => {
     const newUserData: Omit<User, 'id'> = {
       name: trimmedName,
       email: fullEmail,
-      password: password.trim(),
+      password: effectivePassword,
       role,
       avatarInitials: '',
       department: department.trim() || (role === 'student' ? 'Computer Science & Engineering' : 'Central Administration'),
@@ -196,6 +202,9 @@ export const AdminPeoplePage: React.FC = () => {
       ...(role === 'student'
         ? {
           rollNumber: rollNumber.trim(),
+          username: rollNumber.trim(),
+          course: program.trim(),
+          division: section.replace(/section/i, '').trim() || 'A',
           program: program.trim(),
           semester: Number(semester) || 1,
           section: section.trim(),
@@ -203,21 +212,41 @@ export const AdminPeoplePage: React.FC = () => {
           attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
           classCoordinator: classCoordinator.trim() || undefined,
         }
-        : {}),
+        : {
+          username: fullEmail,
+        }),
     };
 
     // 1. Save to primary database store (aaroh_users)
     createUser(newUserData);
 
     // 2. Dual-Sync: Save to aarohUsers array in localStorage
-    const username = fullEmail;
+    const username = role === 'student' ? rollNumber.trim() : fullEmail;
     try {
       const existingAarohUsers = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
-      const idx = existingAarohUsers.findIndex((u: any) => u.username?.toLowerCase() === username.toLowerCase());
+      const idx = existingAarohUsers.findIndex(
+        (u: any) => u.username?.toLowerCase() === username.toLowerCase() || u.email?.toLowerCase() === fullEmail.toLowerCase()
+      );
+      const studentPayload = role === 'student' ? {
+        username: rollNumber.trim(),
+        email: fullEmail,
+        password: effectivePassword,
+        role: 'Student',
+        full_name: trimmedName,
+        course: program.trim(),
+        division: section.replace(/section/i, '').trim() || 'A',
+      } : {
+        username: fullEmail,
+        email: fullEmail,
+        password: effectivePassword,
+        role: role === 'admin' ? 'Admin' : 'Faculty',
+        full_name: trimmedName,
+      };
+
       if (idx >= 0) {
-        existingAarohUsers[idx] = { username, password: password.trim(), role };
+        existingAarohUsers[idx] = { ...existingAarohUsers[idx], ...studentPayload };
       } else {
-        existingAarohUsers.push({ username, password: password.trim(), role });
+        existingAarohUsers.push(studentPayload);
       }
       localStorage.setItem('aarohUsers', JSON.stringify(existingAarohUsers));
     } catch {
@@ -230,7 +259,22 @@ export const AdminPeoplePage: React.FC = () => {
     // 4. Asynchronous insert into Supabase aaroh_users table
     if (supabase) {
       try {
-        const { error } = await supabase.from('aaroh_users').insert([{ username, password: password.trim(), role }]);
+        const studentPayload = role === 'student' ? {
+          username: rollNumber.trim(),
+          email: fullEmail,
+          password: effectivePassword,
+          role: 'Student',
+          full_name: trimmedName,
+          course: program.trim(),
+          division: section.replace(/section/i, '').trim() || 'A',
+        } : {
+          username: fullEmail,
+          email: fullEmail,
+          password: effectivePassword,
+          role: role === 'admin' ? 'Admin' : 'Faculty',
+          full_name: trimmedName,
+        };
+        await supabase.from('aaroh_users').insert([studentPayload]);
       } catch {
         // Handle gracefully if offline or username already exists
       }
@@ -806,16 +850,14 @@ export const AdminPeoplePage: React.FC = () => {
                       </label>
                       <select
                         value={program}
-                        onChange={e => setProgram(e.target.value)}
-                        className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
+                        onChange={e => setProgram(e.target.value as any)}
+                        className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-all duration-150 ease-in-out"
                       >
-                        <option value="B.Tech Computer Science">B.Tech Computer Science</option>
-                        <option value="B.Tech Electronics & Comm.">B.Tech Electronics & Comm.</option>
-                        <option value="B.Tech Mechanical">B.Tech Mechanical</option>
-                        <option value="BBA / MBA">School of Management</option>
-                        <option value="BA LL.B / BBA LL.B">School of Law</option>
-                        <option value="B.Pharm">Pharmaceutical Sciences</option>
-                        <option value="B.Sc / M.Sc Applied Sciences">Applied Sciences</option>
+                        {SPECIALIZATION_OPTIONS.map(opt => (
+                          <option key={opt} value={opt}>
+                            {opt}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -1084,29 +1126,47 @@ export const AdminPeoplePage: React.FC = () => {
 
               {/* Student specific fields */}
               {editingUser.role === 'student' && (
-                <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Roll Number / ID
-                    </label>
-                    <input
-                      type="text"
-                      value={editRollNumber}
-                      onChange={e => setEditRollNumber(e.target.value)}
-                      className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-700"
-                    />
+                <div className="space-y-3 p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Roll Number / ID
+                      </label>
+                      <input
+                        type="text"
+                        value={editRollNumber}
+                        onChange={e => setEditRollNumber(e.target.value)}
+                        className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                        Semester
+                      </label>
+                      <select
+                        value={editSemester}
+                        onChange={e => setEditSemester(Number(e.target.value))}
+                        className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-700"
+                      >
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
+                          <option key={s} value={s}>Semester {s}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Semester
+                      Program / Course Track
                     </label>
                     <select
-                      value={editSemester}
-                      onChange={e => setEditSemester(Number(e.target.value))}
+                      value={editProgram}
+                      onChange={e => setEditProgram(e.target.value)}
                       className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-700"
                     >
-                      {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
-                        <option key={s} value={s}>Semester {s}</option>
+                      {SPECIALIZATION_OPTIONS.map(opt => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
                       ))}
                     </select>
                   </div>

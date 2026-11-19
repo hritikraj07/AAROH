@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Assignment, TestCase } from '../../types';
 import { CustomDropdown, CustomDropdownOption } from '../../components/ui/CustomDropdown';
+import { getCurriculumCourses } from '../../utils/curriculumData';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
 const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
@@ -32,23 +33,28 @@ export const FacultyAssignmentsPage: React.FC = () => {
   const [selectedCourseFilter, setSelectedCourseFilter] = useState<string>('all');
   const [incidentReviewAsg, setIncidentReviewAsg] = useState<Assignment | null>(null);
 
+  const effectiveCourses = useMemo(() => {
+    if (courses.length > 0) return courses;
+    return getCurriculumCourses();
+  }, [courses]);
+
   const courseFilterOptions: CustomDropdownOption<string>[] = useMemo(() => [
     { value: 'all', label: `All Courses (${assignments.length})`, subtitle: 'Show all enrolled subjects' },
-    ...courses.map(c => ({
+    ...effectiveCourses.map(c => ({
       value: c.id,
       label: `${c.code} : ${c.name}`,
       badge: c.code,
     })),
-  ], [courses, assignments.length]);
+  ], [effectiveCourses, assignments.length]);
 
   const courseSelectOptions: CustomDropdownOption<string>[] = useMemo(() => {
-    return courses.map(c => ({
+    return effectiveCourses.map(c => ({
       value: c.id,
       label: `${c.code} : ${c.name}`,
       subtitle: `${c.credits} Credits`,
       badge: c.code,
     }));
-  }, [courses]);
+  }, [effectiveCourses]);
 
   const languageOptions: CustomDropdownOption<string>[] = useMemo(() => [
     { value: 'python', label: 'Python 3 (CPython)', badge: 'PY' },
@@ -58,7 +64,7 @@ export const FacultyAssignmentsPage: React.FC = () => {
   ], []);
 
   // Standard Assignment Form State
-  const [courseId, setCourseId] = useState<string>(courses[0]?.id || '');
+  const [courseId, setCourseId] = useState<string>(effectiveCourses[0]?.id || 'CS101-AIML');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState(() => {
@@ -69,7 +75,7 @@ export const FacultyAssignmentsPage: React.FC = () => {
   const [maxMarks, setMaxMarks] = useState<number>(20);
 
   // Coding Assignment Form State
-  const [codingCourseId, setCodingCourseId] = useState<string>(courses[0]?.id || '');
+  const [codingCourseId, setCodingCourseId] = useState<string>(effectiveCourses[0]?.id || 'CS101-AIML');
   const [codingTitle, setCodingTitle] = useState('Lab 04: Two Sum & Hash Map Lookup');
   const [codingDescription, setCodingDescription] = useState(
     'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. Each input will have exactly one solution.'
@@ -100,11 +106,11 @@ export const FacultyAssignmentsPage: React.FC = () => {
     e.preventDefault();
     if (!title.trim() || !dueDate) return;
 
-    const targetCourse = courses.find(c => c.id === courseId) || courses[0];
-    if (!targetCourse) return;
+    const targetCourse = effectiveCourses.find(c => c.id === courseId) || effectiveCourses[0];
+    const targetCourseId = targetCourse ? targetCourse.id : (courseId || 'CS101-AIML');
 
     createAssignment({
-      courseId: targetCourse.id,
+      courseId: targetCourseId,
       title: title.trim(),
       description: description.trim() || 'Complete the assigned problem set and submit before deadline.',
       dueDate,
@@ -148,11 +154,11 @@ export const FacultyAssignmentsPage: React.FC = () => {
     e.preventDefault();
     if (!codingTitle.trim() || !codingDueDate) return;
 
-    const targetCourse = courses.find(c => c.id === codingCourseId) || courses[0];
-    if (!targetCourse) return;
+    const targetCourse = effectiveCourses.find(c => c.id === codingCourseId) || effectiveCourses[0];
+    const targetCourseId = targetCourse ? targetCourse.id : (codingCourseId || 'CS101-AIML');
 
     createAssignment({
-      courseId: targetCourse.id,
+      courseId: targetCourseId,
       title: codingTitle.trim(),
       description: codingDescription.trim(),
       dueDate: codingDueDate,
@@ -161,7 +167,7 @@ export const FacultyAssignmentsPage: React.FC = () => {
       language: codingLanguage,
       starterCode: starterCode.trim(),
       testCases,
-      labStatus: 'locked',
+      labStatus: 'active',
     });
 
     showToast({
@@ -512,7 +518,7 @@ export const FacultyAssignmentsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => {
-                  if (courses.length > 0 && !courseId) setCourseId(courses[0].id);
+                  if (effectiveCourses.length > 0 && !courseId) setCourseId(effectiveCourses[0].id);
                   setIsAddModalOpen(true);
                 }}
                 className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-xl transition-all duration-200 active:scale-95 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
@@ -523,7 +529,7 @@ export const FacultyAssignmentsPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => {
-                  if (courses.length > 0 && !codingCourseId) setCodingCourseId(courses[0].id);
+                  if (effectiveCourses.length > 0 && !codingCourseId) setCodingCourseId(effectiveCourses[0].id);
                   setIsCodingModalOpen(true);
                 }}
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-[#222226] hover:bg-slate-50 dark:hover:bg-[#27272A] rounded-xl border border-slate-200 dark:border-[#27272A] transition-all duration-200 active:scale-95 cursor-pointer select-none"

@@ -131,8 +131,8 @@ export const Layout: React.FC = () => {
       </div>
 
       {/* Floating Scan Attendance QR Button for Students */}
-      {role === 'student' && (
-        <div className="fixed bottom-20 sm:bottom-22 right-6 z-40">
+      {role === 'student' && !isQRScannerOpen && (
+        <div className="fixed bottom-20 sm:bottom-22 right-6 z-30">
           <button
             onClick={() => setIsQRScannerOpen(true)}
             className="flex items-center justify-center gap-2 px-3.5 py-2.5 min-h-[44px] rounded-full bg-[#18181B] dark:bg-[#18181B] hover:bg-slate-800 text-white shadow-lg border border-[#27272A] text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer"
