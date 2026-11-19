@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X, QrCode, CheckCircle2, AlertCircle, Camera, RefreshCw, KeyRound, Check } from 'lucide-react';
+import jsQR from 'jsqr';
 import { useApp } from '../../../context/AppContext';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
@@ -13,22 +15,118 @@ interface StudentQRScannerModalProps {
 }
 
 export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ isOpen, onClose }) => {
-  const { user, student, recordBatchAttendance, recordAttendanceEntry, showToast } = useApp();
+  const { user, student, courses, recordBatchAttendance, recordAttendanceEntry, showToast } = useApp();
   const currentStudent = user || student;
 
   const [activeSession, setActiveSession] = useState<any>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [hasScanned, setHasScanned] = useState(false);
   const [scanMessage, setScanMessage] = useState<string | null>(null);
+  const [scannedSessionDetails, setScannedSessionDetails] = useState<{
+    sessionCode: string;
+    subject: string;
+    room?: string;
+    timestamp: number;
+  } | null>(null);
   const [zoom, setZoom] = useState<number>(1);
   const [sessionCodeInput, setSessionCodeInput] = useState<string>('');
   const [codeError, setCodeError] = useState<string | null>(null);
+
+  // Live device camera stream state
+  const [cameraStatus, setCameraStatus] = useState<'idle' | 'requesting' | 'active' | 'error' | 'unsupported'>('idle');
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const scanFrameIdRef = useRef<number | null>(null);
+
+  // Stop camera stream and release hardware tracks immediately
+  const stopCamera = () => {
+    if (scanFrameIdRef.current) {
+      cancelAnimationFrame(scanFrameIdRef.current);
+      scanFrameIdRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => {
+        try {
+          track.stop();
+        } catch {
+          // ignore track cleanup error
+        }
+      });
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setCameraStatus('idle');
+  };
+
+  // Request camera access using environment rear camera first, with desktop webcam fallback
+  const startCamera = async () => {
+    stopCamera();
+    setCameraError(null);
+
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setCameraStatus('unsupported');
+      setCameraError('Camera access is not supported in this browser environment.');
+      return;
+    }
+
+    setCameraStatus('requesting');
+
+    try {
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } },
+          audio: false,
+        });
+      } catch {
+        // Fallback to default video input on desktop or single-camera devices
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false,
+        });
+      }
+
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play().catch(() => {});
+      }
+      setCameraStatus('active');
+    } catch (err: any) {
+      setCameraStatus('error');
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setCameraError('Camera permission was denied. Please allow camera access in your browser settings or use the session code below.');
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        setCameraError('No camera detected on this device. You can check in manually using the session code below.');
+      } else {
+        setCameraError(`Unable to access camera (${err.message || err.name || 'Unknown error'}). You can use the session code below.`);
+      }
+    }
+  };
+
+  // Manage camera lifecycle based on modal visibility
+  useEffect(() => {
+    if (isOpen && !hasScanned) {
+      startCamera();
+    } else {
+      stopCamera();
+    }
+
+    return () => {
+      stopCamera();
+    };
+  }, [isOpen, hasScanned]);
 
   // Poll for active QR broadcast in classroom
   useEffect(() => {
     if (!isOpen) {
       setHasScanned(false);
       setScanMessage(null);
+      setScannedSessionDetails(null);
       setSessionCodeInput('');
       setCodeError(null);
       return;
@@ -53,12 +151,16 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
     return () => clearInterval(interval);
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  // Execute attendance record and broadcast to faculty roster
+  const performCheckIn = (methodLabel: string, overrideSession?: any) => {
+    const targetSession = overrideSession || activeSession;
+    if (!targetSession) return;
 
-  const performCheckIn = (methodLabel: string) => {
-    if (!activeSession) return;
     setIsScanning(true);
     setCodeError(null);
+
+    // Stop active camera immediately once valid code is scanned
+    stopCamera();
 
     setTimeout(() => {
       setIsScanning(false);
@@ -66,23 +168,23 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
 
       const studentId = currentStudent?.id || 'demo_student';
       const studentName = currentStudent?.name || 'Aarav Sharma';
-      const studentRoll = currentStudent?.rollNumber || '';
+      const studentRoll = currentStudent?.rollNumber || '22CS042';
 
       // 1. Record in local QR scans array so teacher manual list updates in real time
       try {
         const scansRaw = localStorage.getItem('aaroh_qr_attendance_scans');
         const scans = scansRaw ? JSON.parse(scansRaw) : [];
         const existingIdx = scans.findIndex(
-          (s: any) => s.studentId === studentId && (s.classId === activeSession.sessionId || s.classId === activeSession.classId || s.courseId === activeSession.courseId)
+          (s: any) => s.studentId === studentId && (s.classId === targetSession.sessionId || s.classId === targetSession.classId || s.courseId === targetSession.courseId)
         );
         if (existingIdx === -1) {
           scans.push({
             studentId,
             studentName,
             studentRoll,
-            classId: activeSession.sessionId || activeSession.classId,
-            courseId: activeSession.courseId,
-            sessionCode: activeSession.sessionCode,
+            classId: targetSession.sessionId || targetSession.classId,
+            courseId: targetSession.courseId,
+            sessionCode: targetSession.sessionCode,
             method: methodLabel,
             timestamp: Date.now(),
           });
@@ -96,27 +198,152 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
       window.dispatchEvent(new Event('aaroh_qr_scan_recorded'));
 
       // 3. Record batch attendance in app context
-      if (activeSession.courseId) {
-        recordBatchAttendance(activeSession.courseId, [
+      const targetCourseId = targetSession.courseId || courses?.[0]?.id;
+      if (targetCourseId) {
+        recordBatchAttendance(targetCourseId, [
           {
             studentId,
             isPresent: true,
           },
         ]);
         if (recordAttendanceEntry) {
-          recordAttendanceEntry(activeSession.courseId, 1, 1);
+          recordAttendanceEntry(targetCourseId, 1, 1);
         }
       }
 
-      const subjectName = activeSession.subject || activeSession.courseName || 'Class';
+      const subjectName = targetSession.subject || targetSession.courseName || 'Class';
+      const sessionCode = targetSession.sessionCode || 'Active';
+      const room = targetSession.room || 'General Hall';
+
+      setScannedSessionDetails({
+        sessionCode,
+        subject: subjectName,
+        room,
+        timestamp: Date.now(),
+      });
+
       setScanMessage(`Attendance marked for ${subjectName}.`);
       showToast?.({
         type: 'success',
         title: 'Attendance Verified',
         message: `Attendance marked for ${subjectName}`,
       });
-    }, 600);
+    }, 450);
   };
+
+  // Decode QR code content from video stream
+  const handleDecodedQR = (rawText: string) => {
+    if (hasScanned || isScanning) return;
+
+    let targetSession = activeSession;
+    let codeStr = '';
+
+    try {
+      const parsed = JSON.parse(rawText);
+      if (parsed && typeof parsed === 'object') {
+        targetSession = { ...activeSession, ...parsed };
+        codeStr = parsed.sessionCode || '';
+      }
+    } catch {
+      codeStr = rawText.trim().toUpperCase();
+    }
+
+    if (!targetSession) {
+      try {
+        const stored = localStorage.getItem('aaroh_active_qr_session');
+        if (stored) {
+          const storedParsed = JSON.parse(stored);
+          if (!codeStr || storedParsed.sessionCode === codeStr || storedParsed.token === rawText) {
+            targetSession = storedParsed;
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    if (!targetSession) {
+      targetSession = {
+        sessionId: 'session-' + Date.now(),
+        sessionCode: codeStr || 'CS-5831',
+        subject: 'B.Tech CSE Classroom Session',
+        courseId: courses?.[0]?.id || 'cs301',
+        room: 'General Hall',
+      };
+    }
+
+    performCheckIn('LIVE_CAMERA_SCAN', targetSession);
+  };
+
+  // Frame processing loop with native BarcodeDetector and jsQR fallback
+  useEffect(() => {
+    if (cameraStatus !== 'active' || hasScanned) return;
+
+    let active = true;
+    const canvas = canvasRef.current || document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+    const barcodeDetector = typeof (window as any).BarcodeDetector !== 'undefined'
+      ? new (window as any).BarcodeDetector({ formats: ['qr_code'] })
+      : null;
+
+    const tick = async () => {
+      if (!active || hasScanned) return;
+
+      const video = videoRef.current;
+      if (video && video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
+        try {
+          let detectedText: string | null = null;
+
+          if (barcodeDetector) {
+            try {
+              const barcodes = await barcodeDetector.detect(video);
+              if (barcodes && barcodes.length > 0 && barcodes[0].rawValue) {
+                detectedText = barcodes[0].rawValue;
+              }
+            } catch {
+              // fallback to jsQR
+            }
+          }
+
+          if (!detectedText && ctx) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+              inversionAttempts: 'dontInvert',
+            });
+            if (code && code.data) {
+              detectedText = code.data;
+            }
+          }
+
+          if (detectedText && active && !hasScanned) {
+            active = false;
+            handleDecodedQR(detectedText);
+            return;
+          }
+        } catch {
+          // ignore frame processing glitches
+        }
+      }
+
+      if (active && !hasScanned) {
+        scanFrameIdRef.current = requestAnimationFrame(tick);
+      }
+    };
+
+    scanFrameIdRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      active = false;
+      if (scanFrameIdRef.current) {
+        cancelAnimationFrame(scanFrameIdRef.current);
+        scanFrameIdRef.current = null;
+      }
+    };
+  }, [cameraStatus, hasScanned]);
 
   const handleConfirmScan = () => {
     performCheckIn('QR_SCAN');
@@ -139,9 +366,11 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150 font-sans overflow-y-auto">
-      <div className="relative w-full max-w-md bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl shadow-xl overflow-hidden p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto animate-in zoom-in-95 duration-200 my-auto">
+  if (!isOpen) return null;
+
+  const modalContent = (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/60 backdrop-blur-[2px] animate-in fade-in duration-150 font-sans overflow-y-auto">
+      <div className="relative w-full max-w-md bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl shadow-2xl overflow-hidden p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto animate-in zoom-in-95 duration-200 my-auto">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
@@ -166,41 +395,82 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
           </button>
         </div>
 
-        {/* Viewfinder Camera Simulation */}
-        <div className="relative w-full h-48 bg-slate-950 rounded-xl overflow-hidden flex flex-col items-center justify-center border border-slate-800 shadow-inner">
-          {/* Laser scanning bar */}
-          <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#8DA9C4] to-transparent animate-pulse shadow-[0_0_12px_#8DA9C4]" />
-          
-          {/* Viewfinder Crosshairs */}
+        {/* Live Camera Viewfinder / Scanner Area */}
+        <div className="relative w-full h-52 bg-slate-950 rounded-xl overflow-hidden flex flex-col items-center justify-center border border-slate-800 shadow-inner">
+          {/* Real Device Video Stream */}
+          {cameraStatus === 'active' ? (
+            <video
+              ref={videoRef}
+              playsInline
+              muted
+              autoPlay
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-100"
+              style={{ transform: `scale(${zoom})` }}
+            />
+          ) : cameraStatus === 'requesting' ? (
+            <div className="flex flex-col items-center justify-center text-slate-400 p-4">
+              <RefreshCw className="w-8 h-8 animate-spin text-[#8DA9C4] mb-2" />
+              <span className="text-xs font-mono">Starting live camera...</span>
+            </div>
+          ) : cameraStatus === 'error' || cameraStatus === 'unsupported' ? (
+            <div className="flex flex-col items-center justify-center text-center p-4 max-w-xs space-y-2 z-10">
+              <AlertCircle className="w-7 h-7 text-amber-400" />
+              <p className="text-xs text-slate-300 font-mono leading-relaxed">
+                {cameraError || 'Camera unavailable'}
+              </p>
+              <button
+                type="button"
+                onClick={startCamera}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-mono transition-colors cursor-pointer min-h-[32px]"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Retry Camera</span>
+              </button>
+            </div>
+          ) : null}
+
+          {/* Centered Scan Frame Overlay with Corner Accents */}
           <div
-            className="w-32 h-32 border-2 border-[#8DA9C4]/40 rounded-xl relative flex items-center justify-center transition-transform duration-100"
+            className="w-36 h-36 border-2 border-[#8DA9C4]/40 rounded-xl relative flex items-center justify-center z-10 pointer-events-none transition-transform duration-100"
             style={{ transform: `scale(${zoom})` }}
           >
-            <div className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-[#8DA9C4]" />
-            <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-[#8DA9C4]" />
-            <div className="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-[#8DA9C4]" />
-            <div className="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-[#8DA9C4]" />
-            
+            <div className="absolute -top-1 -left-1 w-3.5 h-3.5 border-t-2 border-l-2 border-[#8DA9C4]" />
+            <div className="absolute -top-1 -right-1 w-3.5 h-3.5 border-t-2 border-r-2 border-[#8DA9C4]" />
+            <div className="absolute -bottom-1 -left-1 w-3.5 h-3.5 border-b-2 border-l-2 border-[#8DA9C4]" />
+            <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 border-b-2 border-r-2 border-[#8DA9C4]" />
+
+            {/* Pulsing Scan Beam */}
+            {!hasScanned && (
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-teal-400 to-transparent animate-pulse shadow-[0_0_12px_#2dd4bf]" />
+            )}
+
             {hasScanned ? (
-              <div className="text-center p-2 animate-in zoom-in-95">
+              <div className="text-center p-2 animate-in zoom-in-95 bg-black/50 rounded-lg backdrop-blur-xs">
                 <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-1 animate-bounce" />
                 <span className="text-[10px] font-mono text-emerald-300 font-bold block uppercase">
                   Verified
                 </span>
               </div>
             ) : isScanning ? (
-              <div className="text-center p-2">
+              <div className="text-center p-2 bg-black/50 rounded-lg backdrop-blur-xs">
                 <RefreshCw className="w-7 h-7 text-[#8DA9C4] animate-spin mx-auto mb-1" />
                 <span className="text-[10px] font-mono text-slate-300">Validating...</span>
               </div>
             ) : (
-              <QrCode className="w-10 h-10 text-[#8DA9C4]/40" />
+              <QrCode className="w-10 h-10 text-[#8DA9C4]/35" />
             )}
           </div>
 
-          <div className="absolute bottom-2 text-[10px] font-mono text-slate-400">
-            {activeSession ? 'Live classroom beacon detected' : 'Point camera toward teacher\'s display'}
+          <div className="absolute bottom-2 z-10 text-[10px] font-mono text-slate-300 bg-black/60 px-2.5 py-0.5 rounded-full backdrop-blur-xs">
+            {cameraStatus === 'active'
+              ? 'Align teacher\'s QR code within frame'
+              : activeSession
+                ? 'Live classroom beacon detected'
+                : 'Point camera toward teacher\'s display'}
           </div>
+
+          {/* Hidden Canvas for QR Frame Extraction */}
+          <canvas ref={canvasRef} className="hidden" />
         </div>
 
         {/* Viewfinder Zoom Control Slider */}
@@ -219,14 +489,25 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
 
         {/* Status / Active Lecture Card */}
         {hasScanned ? (
-          <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-900 dark:text-emerald-300 space-y-1">
-            <div className="flex items-center gap-1.5 font-bold">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <span>Attendance Recorded</span>
+          <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-900 dark:text-emerald-300 space-y-1.5">
+            <div className="flex items-center justify-between font-bold">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>Attendance Recorded</span>
+              </div>
+              <span className="text-[10px] font-mono font-normal text-emerald-700 dark:text-emerald-400">
+                {new Date(scannedSessionDetails?.timestamp || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+              </span>
             </div>
             <p className="text-[11px] leading-relaxed text-emerald-800/90 dark:text-emerald-300/90 font-mono">
               {scanMessage}
             </p>
+            {scannedSessionDetails && (
+              <div className="pt-2 border-t border-emerald-200/60 dark:border-emerald-800/60 flex items-center justify-between text-[10px] font-mono">
+                <span>Code: <strong className="font-bold">{scannedSessionDetails.sessionCode}</strong></span>
+                <span>Room: {scannedSessionDetails.room || 'General Hall'}</span>
+              </div>
+            )}
           </div>
         ) : activeSession ? (
           <div className="p-3.5 rounded-xl bg-[#EEF4ED] dark:bg-[#111115] border border-[#8DA9C4]/40 space-y-2 text-xs">
@@ -322,6 +603,11 @@ export const StudentQRScannerModal: React.FC<StudentQRScannerModalProps> = ({ is
       </div>
     </div>
   );
+
+  if (typeof document !== 'undefined') {
+    return createPortal(modalContent, document.body);
+  }
+  return modalContent;
 };
 
 export default StudentQRScannerModal;
