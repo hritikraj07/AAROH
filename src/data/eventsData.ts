@@ -67,6 +67,18 @@ export const DEFAULT_CAMPUS_EVENTS: CampusEvent[] = [
     registeredCount: 28,
     isRegistered: false,
     status: 'approved',
+    itinerary: [
+      {
+        day: 'Day 1',
+        date: '20th November 2026',
+        slots: [
+          { time: '10:00 AM - 10:30 AM', activity: 'Registration & Workstation Allocation', location: 'Bakery & Confectionery Lab' },
+          { time: '10:30 AM - 1:00 PM', activity: 'Live Innovation Challenge (Bake, Create, Innovate)', location: 'Bakery & Confectionery Lab' },
+          { time: '1:00 PM - 1:30 PM', activity: 'Plating, Presentation & Jury Tasting', location: 'Demo Kitchen' },
+          { time: '1:30 PM - 2:00 PM', activity: 'Valedictory & Awards (Winner and Runner-up)', location: 'Seminar Hall' },
+        ],
+      },
+    ],
     guidelines: [
       'Open to all pre-enrolled KRMU undergraduate and postgraduate students.',
       'Participants must bring standard culinary coats or aprons.',

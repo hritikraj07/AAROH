@@ -631,14 +631,34 @@ export const StorageService = {
   getEvents(): CampusEvent[] {
     const list = getStored<CampusEvent[]>(STORAGE_KEYS.EVENTS, []);
     if (list && list.length > 0) {
+      let changed = false;
       const existingIds = new Set(list.map(e => e.id));
       const missing = DEFAULT_CAMPUS_EVENTS.filter(e => !existingIds.has(e.id));
+      let current = list;
       if (missing.length > 0) {
-        const merged = [...list, ...missing];
-        setStored(STORAGE_KEYS.EVENTS, merged);
-        return merged;
+        current = [...current, ...missing];
+        changed = true;
       }
-      return list;
+      current = current.map(item => {
+        const def = DEFAULT_CAMPUS_EVENTS.find(d => d.id === item.id);
+        if (def && (!item.itinerary || !item.guidelines || !item.time_window)) {
+          changed = true;
+          return {
+            ...item,
+            itinerary: item.itinerary || def.itinerary,
+            guidelines: item.guidelines || def.guidelines,
+            time_window: item.time_window || def.time_window,
+            event_date: item.event_date || def.event_date,
+            organizer: item.organizer || def.organizer,
+            venue: item.venue || def.venue,
+          };
+        }
+        return item;
+      });
+      if (changed) {
+        setStored(STORAGE_KEYS.EVENTS, current);
+      }
+      return current;
     }
     setStored(STORAGE_KEYS.EVENTS, DEFAULT_CAMPUS_EVENTS);
     return DEFAULT_CAMPUS_EVENTS;
