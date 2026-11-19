@@ -779,219 +779,232 @@ export const FacultyAssignmentsPage: React.FC = () => {
 
       {/* Coding Assignment Creation Modal */}
       {isCodingModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-sm max-w-2xl w-full p-6 space-y-4 animate-in fade-in duration-150 my-8 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-[2px] p-4 sm:p-6 overflow-y-auto">
+          <div className="w-full max-w-3xl bg-white dark:bg-[#18181B] rounded-2xl shadow-2xl border border-slate-200 dark:border-[#27272A] overflow-hidden flex flex-col max-h-[90vh] my-auto animate-in fade-in duration-150">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-5 py-4 sm:px-6 sm:py-4 border-b border-slate-200 dark:border-[#27272A] shrink-0 bg-white dark:bg-[#18181B]">
               <div className="flex items-center gap-2">
                 <Code className="w-4 h-4 text-teal-700 dark:text-teal-400" />
                 <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">Create Live Lab Coding Assignment</h3>
               </div>
               <button
+                type="button"
                 onClick={() => setIsCodingModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                title="Close modal"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateCodingAssignment} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Target Course <span className="text-rose-600">*</span>
-                  </label>
-                  <div className="relative">
-                    <CustomDropdown<string>
-                      value={codingCourseId}
-                      onChange={val => setCodingCourseId(val)}
-                      options={courseSelectOptions}
-                      placeholder="Select course..."
-                    />
-                    <select
-                      aria-hidden="true"
-                      tabIndex={-1}
-                      value={codingCourseId}
-                      onChange={e => setCodingCourseId(e.target.value)}
-                      className="sr-only pointer-events-none"
-                    >
-                      {courses.map(c => (
-                        <option key={c.id} value={c.id}>
-                          {c.code} - {c.name}
-                        </option>
-                      ))}
-                    </select>
+            {/* Modal Form */}
+            <form onSubmit={handleCreateCodingAssignment} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-5">
+                {/* Target Course & Programming Language */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+                  <div className="min-w-0">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Target Course <span className="text-rose-600">*</span>
+                    </label>
+                    <div className="relative min-w-0">
+                      <CustomDropdown<string>
+                        value={codingCourseId}
+                        onChange={val => setCodingCourseId(val)}
+                        options={courseSelectOptions}
+                        placeholder="Select course..."
+                      />
+                      <select
+                        aria-hidden="true"
+                        tabIndex={-1}
+                        value={codingCourseId}
+                        onChange={e => setCodingCourseId(e.target.value)}
+                        className="sr-only pointer-events-none"
+                      >
+                        {courses.map(c => (
+                          <option key={c.id} value={c.id}>
+                            {c.code} - {c.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="min-w-0">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Programming Language <span className="text-rose-600">*</span>
+                    </label>
+                    <div className="relative min-w-0">
+                      <CustomDropdown<string>
+                        value={codingLanguage}
+                        onChange={val => setCodingLanguage(val)}
+                        options={languageOptions}
+                        placeholder="Select language..."
+                      />
+                      <select
+                        aria-hidden="true"
+                        tabIndex={-1}
+                        value={codingLanguage}
+                        onChange={e => setCodingLanguage(e.target.value)}
+                        className="sr-only pointer-events-none"
+                      >
+                        <option value="python">Python 3 (CPython)</option>
+                        <option value="javascript">JavaScript (Node.js ES6)</option>
+                        <option value="cpp">C++ (GCC 11)</option>
+                        <option value="java">Java (OpenJDK 17)</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 
+                {/* Lab Problem Title */}
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Programming Language <span className="text-rose-600">*</span>
+                    Lab Problem Title <span className="text-rose-600">*</span>
                   </label>
-                  <div className="relative">
-                    <CustomDropdown<string>
-                      value={codingLanguage}
-                      onChange={val => setCodingLanguage(val)}
-                      options={languageOptions}
-                      placeholder="Select language..."
-                    />
-                    <select
-                      aria-hidden="true"
-                      tabIndex={-1}
-                      value={codingLanguage}
-                      onChange={e => setCodingLanguage(e.target.value)}
-                      className="sr-only pointer-events-none"
-                    >
-                      <option value="python">Python 3 (CPython)</option>
-                      <option value="javascript">JavaScript (Node.js ES6)</option>
-                      <option value="cpp">C++ (GCC 11)</option>
-                      <option value="java">Java (OpenJDK 17)</option>
-                    </select>
-                  </div>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Lab 04: Binary Search Algorithm"
+                    value={codingTitle}
+                    onChange={e => setCodingTitle(e.target.value)}
+                    className="w-full min-w-0 box-border text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-lg bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700"
+                  />
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Lab Problem Title <span className="text-rose-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Lab 04: Binary Search Algorithm"
-                  value={codingTitle}
-                  onChange={e => setCodingTitle(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Problem Description & Constraints
-                </label>
-                <textarea
-                  rows={3}
-                  required
-                  placeholder="Detailed specifications, runtime constraints, and input format..."
-                  value={codingDescription}
-                  onChange={e => setCodingDescription(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 resize-none font-sans"
-                />
-              </div>
-
-              {/* Starter Code Editor */}
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                    Starter Code Template <span className="text-rose-600">*</span>
+                {/* Problem Description & Constraints */}
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Problem Description & Constraints
                   </label>
-                  <span className="text-[10px] font-mono text-slate-400">
-                    Pre-filled in student workspace
-                  </span>
+                  <textarea
+                    rows={3}
+                    required
+                    placeholder="Detailed specifications, runtime constraints, and input format..."
+                    value={codingDescription}
+                    onChange={e => setCodingDescription(e.target.value)}
+                    className="w-full min-w-0 box-border text-xs p-3 border border-slate-200 dark:border-[#27272A] rounded-lg bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 resize-y font-sans leading-relaxed"
+                  />
                 </div>
-                <textarea
-                  rows={4}
-                  required
-                  value={starterCode}
-                  onChange={e => setStarterCode(e.target.value)}
-                  className="w-full text-xs font-mono p-3 bg-slate-900 text-slate-100 rounded border border-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-500"
-                />
-              </div>
 
-              {/* Dynamic Test Cases Builder */}
-              <div className="p-3.5 bg-slate-50 dark:bg-[#27272A]/50 border border-slate-200 dark:border-[#27272A] rounded-lg space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
-                    <span className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
-                      Automated Test Cases Builder ({testCases.length})
+                {/* Starter Code Editor */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      Starter Code Template <span className="text-rose-600">*</span>
+                    </label>
+                    <span className="text-[10px] font-mono text-slate-400">
+                      Pre-filled in student workspace
                     </span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={handleAddTestCase}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300"
-                  >
-                    <Plus className="w-3 h-3" />
-                    <span>Add Test Case</span>
-                  </button>
-                </div>
-
-                <div className="space-y-2.5">
-                  {testCases.map((tc, index) => (
-                    <div
-                      key={tc.id}
-                      className="p-3 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-md grid grid-cols-1 sm:grid-cols-5 gap-2 items-center text-xs"
-                    >
-                      <div className="sm:col-span-2">
-                        <label className="block text-[10px] font-mono text-slate-400 uppercase mb-0.5">
-                          Test #{index + 1} Input
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. nums = [2, 7], target = 9"
-                          value={tc.input}
-                          onChange={e => handleUpdateTestCase(tc.id, 'input', e.target.value)}
-                          className="w-full text-xs font-mono px-2 py-1 border border-slate-200 dark:border-[#27272A] rounded bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
-                        />
-                      </div>
-                      <div className="sm:col-span-2">
-                        <label className="block text-[10px] font-mono text-slate-400 uppercase mb-0.5">
-                          Expected Output
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          placeholder="e.g. [0, 1]"
-                          value={tc.expectedOutput}
-                          onChange={e => handleUpdateTestCase(tc.id, 'expectedOutput', e.target.value)}
-                          className="w-full text-xs font-mono px-2 py-1 border border-slate-200 dark:border-[#27272A] rounded bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
-                        />
-                      </div>
-                      <div className="flex justify-end pt-3 sm:pt-0">
-                        {testCases.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveTestCase(tc.id)}
-                            className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1"
-                            title="Remove test case"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Due Date <span className="text-rose-600">*</span>
-                  </label>
-                  <input
-                    type="date"
+                  <textarea
+                    rows={4}
                     required
-                    value={codingDueDate}
-                    onChange={e => setCodingDueDate(e.target.value)}
-                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    value={starterCode}
+                    onChange={e => setStarterCode(e.target.value)}
+                    className="w-full min-w-0 box-border text-xs font-mono p-3 bg-slate-900 text-slate-100 rounded-lg border border-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-500 resize-y leading-relaxed"
                   />
                 </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Max Marks</label>
-                  <input
-                    type="number"
-                    min={5}
-                    max={100}
-                    value={codingMaxMarks}
-                    onChange={e => setCodingMaxMarks(Number(e.target.value))}
-                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
-                  />
+
+                {/* Dynamic Test Cases Builder */}
+                <div className="p-4 bg-slate-50 dark:bg-[#27272A]/50 border border-slate-200 dark:border-[#27272A] rounded-xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
+                      <span className="text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider">
+                        Automated Test Cases Builder ({testCases.length})
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleAddTestCase}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-teal-700 dark:text-teal-400 hover:text-teal-900 dark:hover:text-teal-300 transition-colors cursor-pointer"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Add Test Case</span>
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {testCases.map((tc, index) => (
+                      <div
+                        key={tc.id}
+                        className="p-3 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-3 items-center text-xs"
+                      >
+                        <div className="min-w-0">
+                          <label className="block text-[10px] font-mono text-slate-400 uppercase mb-0.5">
+                            Test #{index + 1} Input
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. nums = [2, 7], target = 9"
+                            value={tc.input}
+                            onChange={e => handleUpdateTestCase(tc.id, 'input', e.target.value)}
+                            className="w-full min-w-0 box-border text-xs font-mono px-3 py-1.5 border border-slate-200 dark:border-[#27272A] rounded-md bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                          />
+                        </div>
+                        <div className="min-w-0">
+                          <label className="block text-[10px] font-mono text-slate-400 uppercase mb-0.5">
+                            Expected Output
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="e.g. [0, 1]"
+                            value={tc.expectedOutput}
+                            onChange={e => handleUpdateTestCase(tc.id, 'expectedOutput', e.target.value)}
+                            className="w-full min-w-0 box-border text-xs font-mono px-3 py-1.5 border border-slate-200 dark:border-[#27272A] rounded-md bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                          />
+                        </div>
+                        <div className="flex justify-end sm:justify-center shrink-0 pt-1 sm:pt-4">
+                          {testCases.length > 1 ? (
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveTestCase(tc.id)}
+                              className="text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer"
+                              title="Remove test case"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          ) : (
+                            <div className="w-7 h-7 shrink-0 hidden sm:block" />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Due Date & Max Marks */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="min-w-0">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Due Date <span className="text-rose-600">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      required
+                      value={codingDueDate}
+                      onChange={e => setCodingDueDate(e.target.value)}
+                      className="w-full min-w-0 box-border text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-lg bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Max Marks</label>
+                    <input
+                      type="number"
+                      min={5}
+                      max={100}
+                      value={codingMaxMarks}
+                      onChange={e => setCodingMaxMarks(Number(e.target.value))}
+                      className="w-full min-w-0 box-border text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-lg bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-[#27272A]">
+              {/* Action Footer */}
+              <div className="flex items-center justify-end gap-2 px-5 py-3.5 sm:px-6 sm:py-4 border-t border-slate-200 dark:border-[#27272A] bg-slate-50/80 dark:bg-[#18181B] shrink-0">
                 <Button
                   type="button"
                   variant="secondary"
