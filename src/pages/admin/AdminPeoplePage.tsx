@@ -157,6 +157,14 @@ export const AdminPeoplePage: React.FC = () => {
           };
         });
 
+        // Arrange student first then faculty then admin
+        const roleOrder: Record<string, number> = { student: 1, faculty: 2, admin: 3 };
+        mappedUsers.sort((a, b) => {
+          const orderDiff = (roleOrder[a.role] || 99) - (roleOrder[b.role] || 99);
+          if (orderDiff !== 0) return orderDiff;
+          return (a.username || '').localeCompare(b.username || '');
+        });
+
         setDirectoryUsers(mappedUsers);
         try {
           localStorage.setItem('aaroh_users', JSON.stringify(mappedUsers));

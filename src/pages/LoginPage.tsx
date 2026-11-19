@@ -102,6 +102,85 @@ export const LoginPage: React.FC = () => {
     }
   };
 
+  const cacheStudentAndLogin = (data: any, authPassword?: string, fallbackRoll?: string, fallbackEmail?: string) => {
+    const roleStr = (data.role || '').toLowerCase();
+    let resolvedRole: UserRole = 'student';
+    if (roleStr.includes('admin')) {
+      resolvedRole = 'admin';
+    } else if (roleStr.includes('faculty')) {
+      resolvedRole = 'faculty';
+    } else {
+      resolvedRole = 'student';
+    }
+
+    const roll = data.username || (data.email ? data.email.split('@')[0] : (fallbackRoll || ''));
+    const emailAddr = data.email || (fallbackEmail ? fallbackEmail : `${roll.toLowerCase()}@aaroh.edu.in`);
+    const pwd = authPassword || data.password || roll || 'Aaroh@Krmu#2026!Key';
+    const fullName = data.full_name || data.name || (resolvedRole === 'admin' ? `Administrator ${roll}` : resolvedRole === 'faculty' ? `Prof. ${roll}` : `Student ${roll}`);
+
+    const rawCourse = data.course || data.program || 'B.Tech CSE';
+    const resolvedCourse = (rawCourse.trim().toLowerCase() === 'b.tech cse (ai/ml)' || rawCourse.trim().toLowerCase() === 'b.tech cse (ai & ml)')
+      ? 'B.Tech CSE (AI & ML)'
+      : rawCourse.trim();
+
+    const userObj: User = {
+      id: `usr_${roll.toLowerCase()}`,
+      name: fullName,
+      email: emailAddr.toLowerCase(),
+      username: roll,
+      password: pwd.trim(),
+      role: resolvedRole,
+      avatarInitials: fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
+      department: data.department || (resolvedRole === 'admin' ? 'Central Administration' : 'Computer Science & Engineering'),
+      designation: resolvedRole === 'student' ? 'Undergraduate Scholar' : (data.designation || (resolvedRole === 'admin' ? 'Campus Administrator' : 'Faculty Member')),
+      rollNumber: roll,
+      program: resolvedCourse,
+      course: resolvedCourse,
+      section: data.division ? `Section ${data.division}` : 'Section A',
+      division: data.division || 'A',
+      semester: 1,
+      academicYear: APP_CONFIG.academicSession,
+      attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
+    };
+
+    StorageService.createUser(userObj);
+
+    try {
+      const storedAaroh = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
+      const uIdx = storedAaroh.findIndex((u: any) => u.username?.toLowerCase() === roll.toLowerCase() || u.email?.toLowerCase() === emailAddr.toLowerCase());
+      const entry = {
+        username: roll,
+        email: emailAddr.toLowerCase(),
+        password: pwd.trim(),
+        role: data.role || (resolvedRole === 'admin' ? 'Admin' : resolvedRole === 'faculty' ? 'Faculty' : 'Student'),
+        full_name: fullName,
+        course: resolvedCourse,
+        division: data.division || 'A',
+        designation: userObj.designation,
+        department: userObj.department,
+      };
+      if (uIdx >= 0) {
+        storedAaroh[uIdx] = { ...storedAaroh[uIdx], ...entry };
+      } else {
+        storedAaroh.push(entry);
+      }
+      localStorage.setItem('aarohUsers', JSON.stringify(storedAaroh));
+    } catch {
+      // Storage quota fallback
+    }
+
+    let result = login(emailAddr.toLowerCase(), pwd);
+    if (!result.success) {
+      result = login(roll, pwd);
+    }
+    if (!result.success && fallbackEmail) {
+      result = login(fallbackEmail, pwd);
+    }
+
+    setLoading(false);
+    navigate(`/${resolvedRole}`);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
@@ -134,165 +213,67 @@ export const LoginPage: React.FC = () => {
 
     setLoading(true);
 
-    const cacheStudentAndLogin = (data: any) => {
-      const roleStr = (data.role || '').toLowerCase();
-      let resolvedRole: UserRole = 'student';
-      if (roleStr.includes('admin')) {
-        resolvedRole = 'admin';
-      } else if (roleStr.includes('faculty')) {
-        resolvedRole = 'faculty';
-      } else {
-        resolvedRole = 'student';
-      }
-
-      const roll = data.username || (data.email ? data.email.split('@')[0] : rollNumberInput);
-      const emailAddr = data.email || `${roll.toLowerCase()}@aaroh.edu.in`;
-      const fullName = data.full_name || data.name || (resolvedRole === 'admin' ? `Administrator ${roll}` : resolvedRole === 'faculty' ? `Prof. ${roll}` : `Student ${roll}`);
-
-      const rawCourse = data.course || data.program || 'B.Tech CSE';
-      const resolvedCourse = (rawCourse.trim().toLowerCase() === 'b.tech cse (ai/ml)' || rawCourse.trim().toLowerCase() === 'b.tech cse (ai & ml)')
-        ? 'B.Tech CSE (AI & ML)'
-        : rawCourse.trim();
-
-      const userObj: User = {
-        id: `usr_${roll.toLowerCase()}`,
-        name: fullName,
-        email: emailAddr.toLowerCase(),
-        username: roll,
-        password: password.trim(),
-        role: resolvedRole,
-        avatarInitials: fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
-        department: data.department || (resolvedRole === 'admin' ? 'Central Administration' : 'Computer Science & Engineering'),
-        designation: resolvedRole === 'student' ? 'Undergraduate Scholar' : (data.designation || (resolvedRole === 'admin' ? 'Campus Administrator' : 'Faculty Member')),
-        rollNumber: roll,
-        program: resolvedCourse,
-        course: resolvedCourse,
-        section: data.division ? `Section ${data.division}` : 'Section A',
-        division: data.division || 'A',
-        semester: 1,
-        academicYear: APP_CONFIG.academicSession,
-        attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
-      };
-
-      StorageService.createUser(userObj);
-
-      try {
-        const storedAaroh = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
-        const uIdx = storedAaroh.findIndex((u: any) => u.username?.toLowerCase() === roll.toLowerCase() || u.email?.toLowerCase() === emailAddr.toLowerCase());
-        const entry = {
-          username: roll,
-          email: emailAddr.toLowerCase(),
-          password: password.trim(),
-          role: data.role || (resolvedRole === 'admin' ? 'Admin' : resolvedRole === 'faculty' ? 'Faculty' : 'Student'),
-          full_name: fullName,
-          course: resolvedCourse,
-          division: data.division || 'A',
-          designation: userObj.designation,
-          department: userObj.department,
-        };
-        if (uIdx >= 0) {
-          storedAaroh[uIdx] = { ...storedAaroh[uIdx], ...entry };
-        } else {
-          storedAaroh.push(entry);
-        }
-        localStorage.setItem('aarohUsers', JSON.stringify(storedAaroh));
-      } catch {
-        // Storage quota fallback
-      }
-
-      let result = login(trimmedEmail, password);
-      if (!result.success) {
-        result = login(emailAddr.toLowerCase(), password);
-      }
-      if (!result.success) {
-        result = login(roll, password);
-      }
-
-      setLoading(false);
-      // Route based on profile.role from public.aaroh_users:
-      // 'Student' -> /student, 'Faculty' -> /faculty, 'Admin' -> /admin
-      navigate(`/${resolvedRole}`);
-    };
-
     // 1. Native Supabase Auth Login with RLS-protected profile query
     if (supabase) {
       try {
         const { data: authData, error } = await supabase.auth.signInWithPassword({
-          email: normalizedEmail.toLowerCase(),
+          email: normalizedEmail,
           password: password.trim(),
         });
 
         if (error || !authData?.user) {
-          // Check if this error is due to complete network unreachability
-          const isNetworkError =
-            !navigator.onLine ||
-            error?.message?.toLowerCase().includes('fetch failed') ||
-            error?.message?.toLowerCase().includes('network') ||
-            error?.status === 0;
+          // Surface Supabase Auth error directly instead of silently leaving session null
+          setLoading(false);
+          setErrorMessage(error?.message || 'Access Denied: Unregistered credentials or invalid password.');
+          return;
+        }
 
-          if (!isNetworkError) {
-            // Definite auth rejection by Supabase Auth (e.g. invalid credentials)
-            const offlineCheck = users.some(
-              u =>
-                (u.email.toLowerCase() === normalizedEmail.toLowerCase() || u.username?.toLowerCase() === rollNumberInput.toLowerCase()) &&
-                u.password === password.trim()
-            );
-            if (!offlineCheck) {
-              if (supabase.auth) {
-                await supabase.auth.signOut().catch(() => {});
-              }
-              setLoading(false);
-              setErrorMessage('Access Denied: Unregistered credentials or invalid password. Only pre-enrolled university accounts are permitted.');
-              return;
-            }
-          }
-          // Network completely unreachable: fall through to offline localStorage fallback
-        } else {
-          // Native Supabase Auth succeeded: fetch user's own RLS-protected profile from public.aaroh_users
-          const { data: profile, error: profileError } = await supabase
+        // Native Supabase Auth succeeded: auth session is stored in the browser (supabase.auth.getSession() is valid)
+        // Fetch user's own RLS-protected profile from public.aaroh_users
+        const { data: profile, error: profileError } = await supabase
+          .from('aaroh_users')
+          .select('*')
+          .eq('auth_user_id', authData.user.id)
+          .single();
+
+        let userProfile = profile;
+        if (profileError || !userProfile) {
+          // Profile query fallback by email or roll number if auth_user_id is not yet linked
+          const { data: fallbackProfile } = await supabase
             .from('aaroh_users')
             .select('*')
-            .eq('auth_user_id', authData.user.id)
-            .single();
+            .or(`email.ilike.${normalizedEmail},username.ilike.${rollNumberInput}`)
+            .maybeSingle();
 
-          let userProfile = profile;
-          if (profileError || !userProfile) {
-            // Profile query fallback by email or roll number if auth_user_id is not yet linked
-            const { data: fallbackProfile } = await supabase
-              .from('aaroh_users')
-              .select('*')
-              .or(`email.ilike.${normalizedEmail.toLowerCase()},username.ilike.${rollNumberInput}`)
-              .maybeSingle();
-
-            if (fallbackProfile) {
-              userProfile = fallbackProfile;
-              if (!fallbackProfile.auth_user_id) {
-                supabase
-                  .from('aaroh_users')
-                  .update({ auth_user_id: authData.user.id })
-                  .eq('id', fallbackProfile.id)
-                  .then(() => {});
-              }
+          if (fallbackProfile) {
+            userProfile = fallbackProfile;
+            if (!fallbackProfile.auth_user_id) {
+              await supabase
+                .from('aaroh_users')
+                .update({ auth_user_id: authData.user.id })
+                .eq('id', fallbackProfile.id);
             }
           }
-
-          if (userProfile) {
-            // Cache returned profile into localStorage for offline resilience and route
-            cacheStudentAndLogin(userProfile);
-            return;
-          } else {
-            await supabase.auth.signOut().catch(() => {});
-            setLoading(false);
-            setErrorMessage('Access Denied: Unregistered credentials or invalid password. Only pre-enrolled university accounts are permitted.');
-            return;
-          }
         }
-      } catch {
-        // Complete network unreachability: fall back cleanly to cached localStorage credentials
+
+        if (userProfile) {
+          // Cache returned profile into localStorage for offline resilience and route
+          cacheStudentAndLogin(userProfile, password.trim(), rollNumberInput, trimmedEmail);
+          return;
+        } else {
+          await supabase.auth.signOut().catch(() => {});
+          setLoading(false);
+          setErrorMessage('Access Denied: User profile not found in university directory.');
+          return;
+        }
+      } catch (err: any) {
+        setLoading(false);
+        setErrorMessage(err?.message || 'Authentication service error. Please try again.');
+        return;
       }
     }
 
-    // 2. Strict Offline Fallback Guard: check only against pre-cached enrolled accounts in localStorage
+    // 2. Strict Offline Fallback Guard: only executed if Supabase is unconfigured
     const localResult = login(trimmedEmail, password);
     setLoading(false);
 
@@ -306,7 +287,7 @@ export const LoginPage: React.FC = () => {
   };
 
   // Demo Quick Access Handler - automatically enters credentials and logs in per user specification
-  const handleQuickDemoLogin = (targetRole: UserRole) => {
+  const handleQuickDemoLogin = async (targetRole: UserRole) => {
     let demoEmail = 'aarav.sharma@aaroh.edu.in';
     const demoPassword = 'Aaroh@Krmu#2026!Key';
 
@@ -314,6 +295,44 @@ export const LoginPage: React.FC = () => {
       demoEmail = 'registrar@admin.aaroh.edu.in';
     } else if (targetRole === 'faculty') {
       demoEmail = 'prof.raman@faculty.aaroh.edu.in';
+    }
+
+    // If Admin Demo and Supabase is configured, sign in using live ADM001 credentials
+    if (targetRole === 'admin' && supabase) {
+      setSelectedRole('admin');
+      setEmail('ADM001');
+      setPassword('ADM001');
+      setErrorMessage(null);
+      setLoading(true);
+
+      try {
+        const { data: authData, error } = await supabase.auth.signInWithPassword({
+          email: 'adm001@aaroh.edu.in',
+          password: 'ADM001',
+        });
+
+        if (!error && authData?.user) {
+          const { data: profile } = await supabase
+            .from('aaroh_users')
+            .select('*')
+            .eq('auth_user_id', authData.user.id)
+            .maybeSingle();
+
+          const userProfile = profile || {
+            username: 'ADM001',
+            email: 'adm001@aaroh.edu.in',
+            role: 'Admin',
+            full_name: 'Dr. Ananya Sengupta',
+            course: 'Central Administration',
+            division: 'A',
+          };
+
+          cacheStudentAndLogin(userProfile, 'ADM001', 'ADM001', 'adm001@aaroh.edu.in');
+          return;
+        }
+      } catch {
+        // Fall back to offline demo admin if needed
+      }
     }
 
     const currentUsers = StorageService.getUsers();
