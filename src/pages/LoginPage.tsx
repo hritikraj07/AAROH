@@ -180,7 +180,7 @@ export const LoginPage: React.FC = () => {
       }
     };
 
-    // 1. Live Cloud Verification if Supabase is active
+    // 1. Native Supabase Auth Login with RLS-protected profile query
     if (supabase) {
       try {
         const { data: authData, error } = await supabase.auth.signInWithPassword({
@@ -189,56 +189,72 @@ export const LoginPage: React.FC = () => {
         });
 
         if (error || !authData?.user) {
-          // Direct table check for pre-enrolled student records in public.aaroh_users
-          const { data: tableProfile } = await supabase
+          // Check if this error is due to complete network unreachability
+          const isNetworkError =
+            !navigator.onLine ||
+            error?.message?.toLowerCase().includes('fetch failed') ||
+            error?.message?.toLowerCase().includes('network') ||
+            error?.status === 0;
+
+          if (!isNetworkError) {
+            // Definite auth rejection by Supabase Auth (e.g. invalid credentials)
+            const offlineCheck = users.some(
+              u =>
+                (u.email.toLowerCase() === normalizedEmail || u.username?.toLowerCase() === rollNumberInput.toLowerCase()) &&
+                u.password === password.trim()
+            );
+            if (!offlineCheck) {
+              if (supabase.auth) {
+                await supabase.auth.signOut().catch(() => {});
+              }
+              setLoading(false);
+              setErrorMessage('Access Denied: Unregistered credentials or invalid password. Only pre-enrolled university accounts are permitted.');
+              return;
+            }
+          }
+          // Network completely unreachable: fall through to offline localStorage fallback
+        } else {
+          // Native Supabase Auth succeeded: fetch user's own RLS-protected profile from public.aaroh_users
+          const { data: profile, error: profileError } = await supabase
             .from('aaroh_users')
             .select('*')
-            .or(`email.eq.${normalizedEmail},username.eq.${rollNumberInput}`)
-            .eq('password', password.trim())
-            .maybeSingle();
+            .eq('auth_user_id', authData.user.id)
+            .single();
 
-          if (!tableProfile) {
-            if (supabase.auth) {
-              await supabase.auth.signOut().catch(() => {});
+          let userProfile = profile;
+          if (profileError || !userProfile) {
+            // Profile query fallback by email or roll number if auth_user_id is not yet linked
+            const { data: fallbackProfile } = await supabase
+              .from('aaroh_users')
+              .select('*')
+              .or(`email.eq.${normalizedEmail},username.eq.${rollNumberInput}`)
+              .maybeSingle();
+
+            if (fallbackProfile) {
+              userProfile = fallbackProfile;
+              if (!fallbackProfile.auth_user_id) {
+                supabase
+                  .from('aaroh_users')
+                  .update({ auth_user_id: authData.user.id })
+                  .eq('id', fallbackProfile.id)
+                  .then(() => {});
+              }
             }
-            setLoading(false);
-            setErrorMessage('Access Denied: Unregistered credentials or invalid password. Only pre-enrolled university accounts are permitted.');
-            return;
           }
 
-          cacheStudentAndLogin(tableProfile);
-          return;
-        }
-
-        // Supabase Auth session established: strictly verify profile in public.aaroh_users
-        const { data: profile, error: profileError } = await supabase
-          .from('aaroh_users')
-          .select('*')
-          .eq('auth_user_id', authData.user.id)
-          .single();
-
-        if (profileError || !profile) {
-          const { data: altProfile } = await supabase
-            .from('aaroh_users')
-            .select('*')
-            .or(`email.eq.${normalizedEmail},username.eq.${rollNumberInput}`)
-            .maybeSingle();
-
-          if (!altProfile) {
+          if (userProfile) {
+            // Cache returned profile into localStorage for offline resilience and route
+            cacheStudentAndLogin(userProfile);
+            return;
+          } else {
             await supabase.auth.signOut().catch(() => {});
             setLoading(false);
             setErrorMessage('Access Denied: Unregistered credentials or invalid password. Only pre-enrolled university accounts are permitted.');
             return;
           }
-
-          cacheStudentAndLogin(altProfile);
-          return;
         }
-
-        cacheStudentAndLogin(profile);
-        return;
       } catch {
-        // Offline or network failure: proceed to strict offline fallback guard
+        // Complete network unreachability: fall back cleanly to cached localStorage credentials
       }
     }
 

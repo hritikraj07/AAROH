@@ -51,9 +51,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
     logout,
   } = useApp();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (onCloseMobile) onCloseMobile();
-    logout();
+    await logout();
     navigate('/login');
   };
 

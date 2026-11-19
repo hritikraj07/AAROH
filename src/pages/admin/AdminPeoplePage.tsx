@@ -145,17 +145,20 @@ export const AdminPeoplePage: React.FC = () => {
       return;
     }
 
-    if (role === 'student' && !cleanPrefix && rollNumber.trim()) {
-      cleanPrefix = rollNumber.trim().toLowerCase();
+    const rollNo = rollNumber.trim();
+    if (role === 'student' && !cleanPrefix && rollNo) {
+      cleanPrefix = rollNo.toLowerCase();
     }
 
-    if (!cleanPrefix) {
+    if (!cleanPrefix && role !== 'student') {
       setFormError('Please enter user email prefix username or Roll Number.');
       return;
     }
 
-    const fullEmail = `${cleanPrefix}${getEmailSuffix(role)}`;
-    const effectivePassword = password.trim() || (role === 'student' ? rollNumber.trim() : '');
+    const fullEmail = role === 'student'
+      ? `${rollNo || cleanPrefix}@aaroh.edu.in`
+      : `${cleanPrefix}${getEmailSuffix(role)}`;
+    const effectivePassword = password.trim() || (role === 'student' ? rollNo : '');
 
     // Password validation for all roles
     if (!effectivePassword) {
@@ -256,13 +259,24 @@ export const AdminPeoplePage: React.FC = () => {
     // 3. UI Loading feedback state
     setIsSyncing(true);
 
-    // 4. Asynchronous insert into Supabase aaroh_users table
+    // 4. Asynchronous registration via Native Supabase Auth & public.aaroh_users insert
     if (supabase) {
       try {
-        const studentPayload = role === 'student' ? {
-          username: rollNumber.trim(),
+        let authUserId: string | null = null;
+        const { data: signUpData, error } = await supabase.auth.signUp({
           email: fullEmail,
           password: effectivePassword,
+        });
+
+        if (!error && signUpData?.user?.id) {
+          authUserId = signUpData.user.id;
+        }
+
+        const studentPayload = role === 'student' ? {
+          username: rollNo,
+          email: fullEmail,
+          password: '[MANAGED_BY_SUPABASE_AUTH]',
+          auth_user_id: authUserId,
           role: 'Student',
           full_name: trimmedName,
           course: program.trim(),
@@ -270,7 +284,8 @@ export const AdminPeoplePage: React.FC = () => {
         } : {
           username: fullEmail,
           email: fullEmail,
-          password: effectivePassword,
+          password: '[MANAGED_BY_SUPABASE_AUTH]',
+          auth_user_id: authUserId,
           role: role === 'admin' ? 'Admin' : 'Faculty',
           full_name: trimmedName,
         };
@@ -363,8 +378,9 @@ export const AdminPeoplePage: React.FC = () => {
     if (supabase) {
       try {
         await supabase.from('aaroh_users').upsert([{
-          username: editingUser.email,
-          password: trimmedPassword,
+          username: editingUser.username || editingUser.email,
+          email: editingUser.email,
+          password: '[MANAGED_BY_SUPABASE_AUTH]',
           role: editingUser.role,
         }], { onConflict: 'username' });
       } catch {

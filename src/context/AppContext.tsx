@@ -25,6 +25,7 @@ import {
   UnlockedModuleRecord,
 } from '../types';
 import { StorageService } from '../services/storage';
+import { supabase } from '../lib/supabase';
 
 interface ToastMessage {
   id: string;
@@ -300,7 +301,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const login = loginWithDomain;
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      if (supabase) {
+        await supabase.auth.signOut().catch(() => {});
+      }
+    } catch {
+      // Offline fallback
+    }
     StorageService.logout();
     setUser(null);
     setIsAuthenticated(false);
