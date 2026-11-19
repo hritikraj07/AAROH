@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { APP_CONFIG } from '../../config';
+import { supabase } from '../../lib/supabase';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import {
@@ -28,6 +29,64 @@ export const FacultyDashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const [selectedBuilding, setSelectedBuilding] = useState<CampusBuilding>('Academic Blocks');
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [enrolledStudents, setEnrolledStudents] = useState<any[]>([]);
+  const [loadingStudents, setLoadingStudents] = useState<boolean>(true);
+
+  const facultyCourse = user?.course || 'B.Tech CSE';
+  const facultyDivision = user?.division || 'A';
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchStudents = async () => {
+      setLoadingStudents(true);
+      if (supabase) {
+        try {
+          const { data, error } = await supabase
+            .from('aaroh_users')
+            .select('*')
+            .ilike('role', 'student')
+            .ilike('course', facultyCourse);
+
+          if (!error && data && data.length > 0 && isMounted) {
+            setEnrolledStudents(data);
+            setLoadingStudents(false);
+            return;
+          }
+        } catch {
+          // offline fallback
+        }
+      }
+
+      // Offline fallback: filter from localStorage aarohUsers or users
+      let fallbackStudents: any[] = [];
+      try {
+        const stored = JSON.parse(localStorage.getItem('aarohUsers') || '[]');
+        fallbackStudents = stored.filter(
+          (u: any) =>
+            u.role?.toLowerCase() === 'student' &&
+            u.course?.toLowerCase() === facultyCourse.toLowerCase()
+        );
+      } catch {}
+
+      if (fallbackStudents.length === 0) {
+        fallbackStudents = users.filter(
+          u =>
+            u.role === 'student' &&
+            (u.course?.toLowerCase() === facultyCourse.toLowerCase() ||
+             u.program?.toLowerCase() === facultyCourse.toLowerCase())
+        );
+      }
+
+      if (isMounted) {
+        setEnrolledStudents(fallbackStudents);
+        setLoadingStudents(false);
+      }
+    };
+
+    fetchStudents();
+    return () => { isMounted = false; };
+  }, [facultyCourse, users]);
 
   const handleTriggerIntervention = (studentName: string) => {
     showToast({
@@ -117,6 +176,19 @@ export const FacultyDashboardPage: React.FC = () => {
           <p className="text-xs sm:text-sm text-teal-100 font-normal leading-relaxed max-w-xl">
             {user?.department || 'Department of Computer Science & Engineering'} • Manage your lecture schedules, student roll calls, and coursework submissions.
           </p>
+
+          {/* Faculty Profile Credentials & Assigned Programme Badges */}
+          <div className="flex flex-wrap items-center gap-2 pt-1 font-mono text-xs">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-lg font-bold bg-white/20 text-white backdrop-blur-sm border border-white/25">
+              Faculty ID: {user?.username || user?.rollNumber || 'FAC101'}
+            </span>
+            <span className="inline-flex items-center px-2.5 py-1 rounded-lg font-semibold bg-white/20 text-white backdrop-blur-sm border border-white/25 font-sans">
+              Assigned Course: {user?.course || facultyCourse}
+            </span>
+            <span className="inline-flex items-center px-2.5 py-1 rounded-lg font-semibold bg-white/20 text-white backdrop-blur-sm border border-white/25 font-sans">
+              Division: {user?.division || facultyDivision}
+            </span>
+          </div>
 
           <div className="pt-3 flex items-center gap-2.5 flex-wrap">
             <button
@@ -448,6 +520,87 @@ export const FacultyDashboardPage: React.FC = () => {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Enrolled Student Roster for Assigned Programme & Division */}
+      <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 space-y-4 transition-colors">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200 dark:border-[#27272A]">
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                Enrolled Student Roster
+              </h3>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 font-semibold">
+                {enrolledStudents.length} Students Enrolled
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Live cohort for {facultyCourse} (Section {facultyDivision}) queried from public.aaroh_users
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              icon={<ClipboardList className="w-3.5 h-3.5" />}
+              onClick={() => navigate('/faculty/attendance')}
+            >
+              Take Attendance
+            </Button>
+          </div>
+        </div>
+
+        {loadingStudents ? (
+          <div className="py-8 text-center text-xs text-slate-500 dark:text-slate-400 font-mono">
+            Loading enrolled cohort from database...
+          </div>
+        ) : enrolledStudents.length === 0 ? (
+          <div className="py-8 text-center text-xs text-slate-500 dark:text-slate-400 font-sans">
+            No enrolled students currently registered under {facultyCourse}.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 dark:border-[#27272A] text-slate-400 dark:text-slate-500 font-mono text-[10px] uppercase">
+                  <th className="py-2.5 px-3">Roll Number</th>
+                  <th className="py-2.5 px-3">Student Name</th>
+                  <th className="py-2.5 px-3">Programme</th>
+                  <th className="py-2.5 px-3">Division</th>
+                  <th className="py-2.5 px-3">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-[#27272A]/50">
+                {enrolledStudents.slice(0, 10).map((st: any, idx: number) => (
+                  <tr key={st.id || idx} className="hover:bg-slate-50/50 dark:hover:bg-[#141417]/50 transition-colors">
+                    <td className="py-2.5 px-3 font-mono font-bold text-teal-800 dark:text-teal-300">
+                      {st.username || st.rollNumber || st.email?.split('@')[0]}
+                    </td>
+                    <td className="py-2.5 px-3 font-medium text-slate-800 dark:text-slate-200">
+                      {st.full_name || st.name || `Student ${st.username}`}
+                    </td>
+                    <td className="py-2.5 px-3 text-slate-600 dark:text-slate-400">
+                      {st.course || facultyCourse}
+                    </td>
+                    <td className="py-2.5 px-3 font-mono text-slate-600 dark:text-slate-400">
+                      Section {st.division || facultyDivision}
+                    </td>
+                    <td className="py-2.5 px-3">
+                      <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                        <CheckCircle2 className="w-2.5 h-2.5" /> Enrolled
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {enrolledStudents.length > 10 && (
+              <div className="pt-2 text-center text-[11px] text-slate-500 dark:text-slate-400 font-mono border-t border-slate-100 dark:border-[#27272A]/50 mt-2">
+                Showing top 10 of {enrolledStudents.length} enrolled students. Use attendance or gradebook for full roster marks.
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Publish New Coding Lab Section & Lifecycle */}

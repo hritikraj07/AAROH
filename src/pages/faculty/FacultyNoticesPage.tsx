@@ -82,6 +82,17 @@ export const FacultyNoticesPage: React.FC = () => {
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Draft, publish, and manage academic notices, syllabus circulars, and exam advisories for students.
           </p>
+          <div className="flex flex-wrap items-center gap-2 pt-2 font-mono text-xs">
+            <span className="inline-flex items-center px-2 py-0.5 rounded font-bold bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
+              Faculty: {user?.full_name || user?.name || 'Faculty Member'} ({user?.username || 'FAC101'})
+            </span>
+            <span className="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-slate-100 dark:bg-[#27272A] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-sans">
+              Course: {user?.course || 'B.Tech CSE'}
+            </span>
+            <span className="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-slate-100 dark:bg-[#27272A] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-sans">
+              Division: {user?.division || 'A'}
+            </span>
+          </div>
         </div>
 
         <Button

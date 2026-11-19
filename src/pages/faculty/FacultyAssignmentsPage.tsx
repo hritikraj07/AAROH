@@ -27,7 +27,7 @@ const exactLightHover = 'hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_r
 const exactDarkHover = 'dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)]';
 
 export const FacultyAssignmentsPage: React.FC = () => {
-  const { courses, assignments, createAssignment, updateAssignmentLabStatus, showToast } = useApp();
+  const { user, courses, assignments, createAssignment, updateAssignmentLabStatus, showToast } = useApp();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isCodingModalOpen, setIsCodingModalOpen] = useState(false);
   const [selectedCourseFilter, setSelectedCourseFilter] = useState<string>('all');
@@ -190,6 +190,17 @@ export const FacultyAssignmentsPage: React.FC = () => {
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Create standard coursework or automated coding live labs, and control real-time student session execution.
           </p>
+          <div className="flex flex-wrap items-center gap-2 pt-2 font-mono text-xs">
+            <span className="inline-flex items-center px-2 py-0.5 rounded font-bold bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
+              Faculty: {user?.full_name || user?.name || 'Faculty Member'} ({user?.username || 'FAC101'})
+            </span>
+            <span className="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-slate-100 dark:bg-[#27272A] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-sans">
+              Course: {user?.course || 'B.Tech CSE'}
+            </span>
+            <span className="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-slate-100 dark:bg-[#27272A] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-sans">
+              Division: {user?.division || 'A'}
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">

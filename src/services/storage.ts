@@ -39,6 +39,7 @@ import {
   generateUserFromEmail,
   getUserRoleFromEmail,
 } from '../data/seed';
+import { findPreEnrolledAccount, convertToUser } from '../data/facultyDirectory';
 import { APP_CONFIG } from '../config';
 
 const STORAGE_KEYS = {
@@ -205,6 +206,15 @@ export const StorageService = {
       }
     }
 
+    // Check pre-enrolled faculty and admin directory (FAC101-FAC112 & ADM001)
+    if (!existingUser) {
+      const preEnrolled = findPreEnrolledAccount(trimmedEmail);
+      if (preEnrolled && (preEnrolled.password === password.trim() || preEnrolled.username === password.trim())) {
+        existingUser = convertToUser(preEnrolled);
+        this.createUser(existingUser);
+      }
+    }
+
     if (existingUser) {
       const isDefaultDemoUser =
         existingUser.id === 'usr_adm_demo' ||
@@ -212,11 +222,13 @@ export const StorageService = {
         existingUser.email === 'prof.raman@faculty.aaroh.edu.in' ||
         existingUser.email === 'aarav.sharma@aaroh.edu.in' ||
         existingUser.password === 'campusSecure2026' ||
-        existingUser.password === 'Aaroh@Krmu#2026!Key';
+        existingUser.password === 'Aaroh@Krmu#2026!Key' ||
+        existingUser.password === existingUser.username;
       const passwordMatch =
         existingUser.password === password.trim() ||
         (existingUser.rollNumber && existingUser.rollNumber.trim() === password.trim()) ||
         (existingUser.username && existingUser.username.trim() === password.trim()) ||
+        (existingUser.username && existingUser.username.trim().toUpperCase() === password.trim().toUpperCase()) ||
         (isDefaultDemoUser && (password.trim() === 'campusSecure2026' || password.trim() === 'Aaroh@Krmu#2026!Key' || password.trim().length > 0));
 
       if (existingUser.password && !isDefaultDemoUser && !passwordMatch) {

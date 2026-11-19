@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Button } from '../../components/ui/Button';
 import {
@@ -27,6 +27,8 @@ import { User, UserRole } from '../../types';
 import { APP_CONFIG } from '../../config';
 import { supabase } from '../../lib/supabase';
 import { SPECIALIZATION_OPTIONS } from '../../utils/curriculumData';
+import { PRE_ENROLLED_FACULTY, PRE_ENROLLED_ADMIN, convertToUser } from '../../data/facultyDirectory';
+import { StorageService } from '../../services/storage';
 
 export const AdminPeoplePage: React.FC = () => {
   const { users, createUser, deleteUser, updateUser, showToast, user: currentUser } = useApp();
@@ -48,6 +50,63 @@ export const AdminPeoplePage: React.FC = () => {
   const [editProgram, setEditProgram] = useState('B.Tech CSE');
   const [isEditSyncing, setIsEditSyncing] = useState(false);
   const [editSyncSuccess, setEditSyncSuccess] = useState(false);
+
+  // Synchronize live public.aaroh_users database directory on load
+  useEffect(() => {
+    let isMounted = true;
+    const syncDbUsers = async () => {
+      // Offline seed check for 12 Faculty Chairs & Admin if not present
+      [...PRE_ENROLLED_FACULTY, PRE_ENROLLED_ADMIN].forEach(acc => {
+        const exists = users.some(u => u.username?.toLowerCase() === acc.username.toLowerCase() || u.email.toLowerCase() === acc.email.toLowerCase());
+        if (!exists) {
+          StorageService.createUser(convertToUser(acc));
+        }
+      });
+
+      if (supabase) {
+        try {
+          const { data, error } = await supabase.from('aaroh_users').select('*');
+          if (!error && data && data.length > 0 && isMounted) {
+            data.forEach((row: any) => {
+              const r = (row.role?.toLowerCase() as UserRole) || 'student';
+              const roll = row.username || (row.email ? row.email.split('@')[0] : '');
+              const emailAddr = row.email || `${roll}@aaroh.edu.in`;
+              const exists = users.some(u => u.email.toLowerCase() === emailAddr.toLowerCase() || u.username?.toLowerCase() === roll.toLowerCase());
+              if (!exists) {
+                const userObj: User = {
+                  id: `usr_${roll.toLowerCase()}`,
+                  name: row.full_name || row.name || (r === 'admin' ? `Admin ${roll}` : r === 'faculty' ? `Prof. ${roll}` : `Student ${roll}`),
+                  email: emailAddr.toLowerCase(),
+                  username: roll,
+                  password: row.password || roll,
+                  role: r,
+                  avatarInitials: (row.full_name || roll).split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
+                  department: row.department || (r === 'admin' ? 'Central Administration' : 'Computer Science & Engineering'),
+                  designation: r === 'student' ? 'Undergraduate Scholar' : (row.designation || (r === 'admin' ? 'Campus Administrator' : 'Faculty Member')),
+                  rollNumber: roll,
+                  program: row.course || 'B.Tech CSE',
+                  course: row.course || 'B.Tech CSE',
+                  section: row.division ? `Section ${row.division}` : 'Section A',
+                  division: row.division || 'A',
+                  semester: 1,
+                  academicYear: APP_CONFIG.academicSession,
+                  attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
+                };
+                StorageService.createUser(userObj);
+              }
+            });
+            try {
+              localStorage.setItem('aarohUsers', JSON.stringify(data));
+            } catch {}
+          }
+        } catch {
+          // offline fallback
+        }
+      }
+    };
+    syncDbUsers();
+    return () => { isMounted = false; };
+  }, []);
 
   // Available Faculty Departments
   const FACULTY_DEPARTMENTS = [

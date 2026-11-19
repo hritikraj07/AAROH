@@ -58,18 +58,20 @@ export const FacultyAttendancePage: React.FC = () => {
   const selectedSession: ClassSession | undefined = facultyClasses.find(s => s.id === selectedSessionId) || facultyClasses[0];
   const selectedCourse = selectedSession ? courseMap.get(selectedSession.courseId) : undefined;
 
-  // Filter enrolled students for selected session based on Program and Semester
+  // Filter enrolled students for selected session based on Program, Semester, or Faculty Assigned Course
   const enrolledStudents = useMemo(() => {
     if (!selectedSession) return [];
 
     const students = users.filter(u => u.role === 'student');
+    const targetCourse = user?.course || selectedSession.program || '';
 
     // Filter by program and semester if present on session
     const matched = students.filter(st => {
-      if (selectedSession.program && st.program) {
+      const prog = st.course || st.program || '';
+      if (targetCourse && prog) {
         const progMatch =
-          st.program.toLowerCase().includes(selectedSession.program.toLowerCase()) ||
-          selectedSession.program.toLowerCase().includes(st.program.toLowerCase());
+          prog.toLowerCase().includes(targetCourse.toLowerCase()) ||
+          targetCourse.toLowerCase().includes(prog.toLowerCase());
         if (!progMatch) return false;
       }
       if (selectedSession.semester && st.semester) {
@@ -79,7 +81,7 @@ export const FacultyAttendancePage: React.FC = () => {
     });
 
     return matched.length > 0 ? matched : students;
-  }, [selectedSession, users]);
+  }, [selectedSession, users, user?.course]);
 
   // Attendance Marks State: studentId -> boolean (true = present, false = absent)
   const [marks, setMarks] = useState<Record<string, boolean>>({});
@@ -196,12 +198,23 @@ export const FacultyAttendancePage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h2 className="text-lg font-bold tracking-tight text-slate-900 font-sans">
+          <h2 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 font-sans">
             Lecture Attendance & Roll Call
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Log official class attendance, toggle student presence, and update student portal metrics in real-time.
           </p>
+          <div className="flex flex-wrap items-center gap-2 pt-2 font-mono text-xs">
+            <span className="inline-flex items-center px-2 py-0.5 rounded font-bold bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
+              Faculty: {user?.full_name || user?.name || 'Faculty Member'} ({user?.username || 'FAC101'})
+            </span>
+            <span className="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-slate-100 dark:bg-[#27272A] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-sans">
+              Course: {user?.course || 'B.Tech CSE'}
+            </span>
+            <span className="inline-flex items-center px-2 py-0.5 rounded font-semibold bg-slate-100 dark:bg-[#27272A] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 font-sans">
+              Division: {user?.division || 'A'}
+            </span>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 font-mono text-xs text-slate-600 dark:text-slate-300 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] px-3 py-1.5 rounded-md">

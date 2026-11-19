@@ -115,21 +115,30 @@ export const LoginPage: React.FC = () => {
     setLoading(true);
 
     const cacheStudentAndLogin = (data: any) => {
-      const studentRole: UserRole = (data.role?.toLowerCase() as UserRole) || detectedRole || selectedRole || 'student';
+      const roleStr = (data.role || '').toLowerCase();
+      let resolvedRole: UserRole = 'student';
+      if (roleStr.includes('admin')) {
+        resolvedRole = 'admin';
+      } else if (roleStr.includes('faculty')) {
+        resolvedRole = 'faculty';
+      } else {
+        resolvedRole = 'student';
+      }
+
       const roll = data.username || (data.email ? data.email.split('@')[0] : rollNumberInput);
-      const emailAddr = data.email || `${roll}@aaroh.edu.in`;
-      const fullName = data.full_name || data.name || (roll ? `Student ${roll}` : 'Student');
+      const emailAddr = data.email || `${roll.toLowerCase()}@aaroh.edu.in`;
+      const fullName = data.full_name || data.name || (resolvedRole === 'admin' ? `Administrator ${roll}` : resolvedRole === 'faculty' ? `Prof. ${roll}` : `Student ${roll}`);
 
       const userObj: User = {
-        id: `usr_${roll}`,
+        id: `usr_${roll.toLowerCase()}`,
         name: fullName,
-        email: emailAddr,
+        email: emailAddr.toLowerCase(),
         username: roll,
         password: password.trim(),
-        role: studentRole,
+        role: resolvedRole,
         avatarInitials: fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase(),
-        department: 'Computer Science & Engineering',
-        designation: studentRole === 'student' ? 'Undergraduate Scholar' : (data.designation || 'Faculty Member'),
+        department: data.department || (resolvedRole === 'admin' ? 'Central Administration' : 'Computer Science & Engineering'),
+        designation: resolvedRole === 'student' ? 'Undergraduate Scholar' : (data.designation || (resolvedRole === 'admin' ? 'Campus Administrator' : 'Faculty Member')),
         rollNumber: roll,
         program: data.course || 'B.Tech CSE',
         course: data.course || 'B.Tech CSE',
@@ -147,12 +156,14 @@ export const LoginPage: React.FC = () => {
         const uIdx = storedAaroh.findIndex((u: any) => u.username?.toLowerCase() === roll.toLowerCase() || u.email?.toLowerCase() === emailAddr.toLowerCase());
         const entry = {
           username: roll,
-          email: emailAddr,
+          email: emailAddr.toLowerCase(),
           password: password.trim(),
-          role: data.role || 'Student',
+          role: data.role || (resolvedRole === 'admin' ? 'Admin' : resolvedRole === 'faculty' ? 'Faculty' : 'Student'),
           full_name: fullName,
           course: data.course || 'B.Tech CSE',
           division: data.division || 'A',
+          designation: userObj.designation,
+          department: userObj.department,
         };
         if (uIdx >= 0) {
           storedAaroh[uIdx] = { ...storedAaroh[uIdx], ...entry };
@@ -166,25 +177,23 @@ export const LoginPage: React.FC = () => {
 
       let result = login(trimmedEmail, password);
       if (!result.success) {
-        result = login(emailAddr, password);
+        result = login(emailAddr.toLowerCase(), password);
       }
       if (!result.success) {
         result = login(roll, password);
       }
 
       setLoading(false);
-      if (result.success && result.role) {
-        navigate(`/${result.role}`);
-      } else {
-        setErrorMessage(result.error || 'Access Denied: Unregistered credentials or invalid password. Only pre-enrolled university accounts are permitted.');
-      }
+      // Route based on profile.role from public.aaroh_users:
+      // 'Student' -> /student, 'Faculty' -> /faculty, 'Admin' -> /admin
+      navigate(`/${resolvedRole}`);
     };
 
     // 1. Native Supabase Auth Login with RLS-protected profile query
     if (supabase) {
       try {
         const { data: authData, error } = await supabase.auth.signInWithPassword({
-          email: normalizedEmail,
+          email: normalizedEmail.toLowerCase(),
           password: password.trim(),
         });
 
@@ -200,7 +209,7 @@ export const LoginPage: React.FC = () => {
             // Definite auth rejection by Supabase Auth (e.g. invalid credentials)
             const offlineCheck = users.some(
               u =>
-                (u.email.toLowerCase() === normalizedEmail || u.username?.toLowerCase() === rollNumberInput.toLowerCase()) &&
+                (u.email.toLowerCase() === normalizedEmail.toLowerCase() || u.username?.toLowerCase() === rollNumberInput.toLowerCase()) &&
                 u.password === password.trim()
             );
             if (!offlineCheck) {
@@ -227,7 +236,7 @@ export const LoginPage: React.FC = () => {
             const { data: fallbackProfile } = await supabase
               .from('aaroh_users')
               .select('*')
-              .or(`email.eq.${normalizedEmail},username.eq.${rollNumberInput}`)
+              .or(`email.ilike.${normalizedEmail.toLowerCase()},username.ilike.${rollNumberInput}`)
               .maybeSingle();
 
             if (fallbackProfile) {
