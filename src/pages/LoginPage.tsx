@@ -430,11 +430,11 @@ export const LoginPage: React.FC = () => {
           </span>
         </div>
 
-        {/* Headline with 'Brighter Future' highlighted */}
+        {/* Headline */}
         <h1 className="text-3xl xl:text-4xl 2xl:text-5xl font-extrabold tracking-tight text-white leading-tight mb-4">
-          Shaping a <span className="text-amber-400">Brighter Future</span>
+          Your whole campus.
           <br />
-          Through Quality Education.
+          Minus the <span className="text-amber-400">forty group chats.</span>
         </h1>
 
         {/* 4 Icon Pillars: Learn, Innovate, Grow, Collaborate */}
