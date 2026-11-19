@@ -1922,6 +1922,11 @@ assert(facGradebookContent.includes('selectedCourseId') && facGradebookContent.i
 const facQRModalContent = fs.readFileSync(path.join(__dirname, '../src/components/modules/attendance/FacultyQRSessionModal.tsx'), 'utf8');
 assert(facQRModalContent.includes('enrolledStudents'), 'FacultyQRSessionModal accepts enrolledStudents prop');
 assert(facQRModalContent.includes('baseSessionCode'), 'FacultyQRSessionModal derives course-scoped session code');
+assert(!facQRModalContent.includes("if (!isOpen) return null;\n\n  const progressPercent"), 'FacultyQRSessionModal does not violate Rules of Hooks with premature early return');
+
+// Check Error Boundary protection in App.tsx
+const appRootContent = fs.readFileSync(path.join(__dirname, '../src/App.tsx'), 'utf8');
+assert(appRootContent.includes('ErrorBoundary'), 'App.tsx wraps application root in ErrorBoundary');
 
 // Check Admin Attendance Page course scoping
 const adminAttendanceContent = fs.readFileSync(path.join(__dirname, '../src/pages/admin/AdminAttendancePage.tsx'), 'utf8');

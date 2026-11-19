@@ -172,7 +172,7 @@ export const FacultyAttendancePage: React.FC = () => {
     }
   }, [initialSessionId, facultyClasses, selectedSessionId]);
 
-  const selectedSession: ClassSession | undefined = facultyClasses.find(s => s.id === selectedSessionId) || facultyClasses[0];
+  const selectedSession: ClassSession | undefined = facultyClasses.find(s => s.id === selectedSessionId) || timetable.find(s => s.id === selectedSessionId) || facultyClasses[0];
   const selectedCourse = selectedSession ? courseMap.get(selectedSession.courseId) : undefined;
 
   // Filter enrolled students for selected session based on Program, Semester, or Faculty Assigned Course
@@ -824,7 +824,7 @@ export const FacultyAttendancePage: React.FC = () => {
       )}
 
       {/* Dynamic Faculty QR Attendance Modal */}
-      {selectedSession && (
+      {selectedSession && isQROpen && (
         <FacultyQRSessionModal
           isOpen={isQROpen}
           session={selectedSession}

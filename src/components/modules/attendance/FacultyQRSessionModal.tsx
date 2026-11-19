@@ -194,8 +194,6 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
     };
   }, [isOpen, session, baseSessionCode, courseName, division, courseProgram]);
 
-  if (!isOpen) return null;
-
   const progressPercent = Math.max(0, Math.min(100, (secondsRemaining / 5) * 100));
 
   const handleCopyCode = () => {
@@ -241,8 +239,9 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
 
   // Dynamically ensure scanned students are present in the modal roster
   const effectiveStudents = useMemo(() => {
-    const list = [...enrolledStudents];
-    checkedInScans.forEach(scan => {
+    const list = (enrolledStudents || []).filter(Boolean);
+    (checkedInScans || []).forEach(scan => {
+      if (!scan) return;
       const exists = list.some(st => isStudentMatch(scan, st));
       if (!exists) {
         list.unshift({
@@ -270,13 +269,13 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
   }, [enrolledStudents, checkedInScans]);
 
   const pendingStudents = effectiveStudents.filter(
-    st => !checkedInScans.some(s => isStudentMatch(s, st))
+    st => st && !checkedInScans.some(s => isStudentMatch(s, st))
   );
 
   const matchedStudentIds = useMemo(() => {
     const ids = new Set<string>();
     effectiveStudents.forEach(st => {
-      if (checkedInScans.some(s => isStudentMatch(s, st))) {
+      if (st?.id && checkedInScans.some(s => isStudentMatch(s, st))) {
         ids.add(st.id);
       }
     });
@@ -287,7 +286,7 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
 
   const handleFinalizeAndClose = () => {
     effectiveStudents.forEach(st => {
-      if (checkedInScans.some(s => isStudentMatch(s, st))) {
+      if (st?.id && checkedInScans.some(s => isStudentMatch(s, st))) {
         onManualCheckIn?.(st.id);
       }
     });
