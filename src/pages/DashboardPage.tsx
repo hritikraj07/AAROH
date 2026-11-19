@@ -51,6 +51,7 @@ import { CampusMap } from '../components/modules/campus/CampusMap';
 import { SmartResolveModal } from '../components/modules/campus/SmartResolveModal';
 import { CampusBuilding } from '../types';
 import { StudentLabWorkspaceModal } from '../components/modules/labs/StudentLabWorkspaceModal';
+import { UniversityBuildingWireframe } from '../components/ui/UniversityBuildingWireframe';
 
 // Exact custom 4-layer tactile button shadow system
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
@@ -698,6 +699,9 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Architectural Wireframe SVG of University Building */}
+        <UniversityBuildingWireframe className="absolute right-0 bottom-0 h-[95%] w-auto pointer-events-none select-none z-0 text-emerald-900/15 dark:text-white/10 [mask-image:linear-gradient(to_left,black_65%,transparent_100%)] hidden md:block" />
       </div>
 
       {/* 3. In-Class Adaptive Layout Shift: Quick Notes & Live Pulse Widget at the VERY TOP */}

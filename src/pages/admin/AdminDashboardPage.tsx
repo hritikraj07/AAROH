@@ -7,6 +7,7 @@ import { CampusMap } from '../../components/modules/campus/CampusMap';
 import { SmartResolveModal } from '../../components/modules/campus/SmartResolveModal';
 import { CampusKanbanBoard } from '../../components/modules/campus/CampusKanbanBoard';
 import { CampusBuilding } from '../../types';
+import { UniversityBuildingWireframe } from '../../components/ui/UniversityBuildingWireframe';
 import {
   Bell,
   Calendar,
@@ -118,20 +119,10 @@ export const AdminDashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Hero Banner with Decorative Elements */}
+      {/* Hero Banner with Executive Controls */}
       <div className="relative overflow-hidden bg-[#0F766E] bg-gradient-to-r from-[#134074] via-[#244970] to-[#355B82] border border-[#8DA9C4]/30 shadow-lg text-white rounded-3xl p-6 sm:p-10 transition-all duration-300 select-none">
-        <div className="absolute -right-12 -bottom-12 w-64 h-64 rounded-full border-[20px] border-white/10 pointer-events-none" />
-        <div className="absolute right-28 -top-16 w-52 h-52 rounded-full border-[14px] border-white/10 pointer-events-none" />
-        <div className="absolute top-6 right-16 text-white/20 pointer-events-none select-none">
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-          </svg>
-        </div>
-        <div className="absolute bottom-8 right-52 text-white/15 pointer-events-none select-none">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-          </svg>
-        </div>
+        {/* Architectural Wireframe SVG of University Building */}
+        <UniversityBuildingWireframe className="absolute right-0 bottom-0 h-[95%] w-auto pointer-events-none select-none z-0 text-white/15 [mask-image:linear-gradient(to_left,black_65%,transparent_100%)] hidden md:block" />
 
         <div className="relative z-10 max-w-2xl space-y-2.5">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white backdrop-blur-sm border border-white/20 font-mono uppercase tracking-wider">
