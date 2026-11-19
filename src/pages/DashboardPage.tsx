@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -1473,15 +1474,15 @@ export const DashboardPage: React.FC = () => {
       )}
 
       {/* 75% Safe-Zone Attendance Calculator Modal */}
-      {isAttendanceCalcOpen && (
+      {isAttendanceCalcOpen && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed inset-0 z-50 backdrop-blur-md bg-black/40 flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200 font-sans"
+          className="fixed inset-0 z-50 backdrop-blur-md bg-black/50 flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-200 font-sans"
           onClick={() => setIsAttendanceCalcOpen(false)}
           role="dialog"
           aria-modal="true"
         >
           <div
-            className="max-w-md w-full bg-white dark:bg-[#18181B] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-5 transition-colors relative"
+            className="max-w-md w-full bg-white dark:bg-[#18181B] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl p-5 sm:p-6 space-y-5 transition-colors relative my-auto animate-in zoom-in-95 duration-150"
             onClick={e => e.stopPropagation()}
           >
             {/* Header */}
@@ -1510,8 +1511,8 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* Circular Gauge & Result Stat */}
-            <div className="flex items-center justify-center gap-5 py-1">
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shrink-0">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-1">
+              <div className="relative w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center shrink-0 mx-auto sm:mx-0">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                   <circle
                     cx="50"
@@ -1546,7 +1547,7 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               <div className="flex-1 min-w-0">
-                <div className="p-3 rounded-xl border border-slate-100 dark:border-[#27272A] bg-slate-50/80 dark:bg-[#111115]">
+                <div className="p-3.5 rounded-xl border border-slate-100 dark:border-[#27272A] bg-slate-50/80 dark:bg-[#111115]">
                   <span className="text-[10px] font-mono uppercase text-slate-500 dark:text-slate-400 font-bold block mb-1">
                     Safe-Zone Analysis
                   </span>
@@ -1574,13 +1575,13 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* Interactive Sliders */}
-            <div className="space-y-4 pt-1">
+            <div className="space-y-4 pt-1 font-sans">
               <div>
-                <div className="flex items-center justify-between text-xs mb-1.5">
+                <div className="flex items-center justify-between text-xs mb-1.5 font-sans">
                   <span className="font-semibold text-slate-700 dark:text-slate-300">
-                    Lectures Attended: <strong className="text-blue-700 dark:text-blue-300 font-mono font-bold text-sm">{calcAttended}</strong>
+                    Lectures Attended: <strong className="text-blue-700 dark:text-blue-300 font-mono font-bold text-sm ml-1">{calcAttended}</strong>
                   </span>
-                  <span className="text-[11px] font-mono text-slate-400">
+                  <span className="text-[11px] font-mono text-slate-400 shrink-0">
                     Max: {calcTotal}
                   </span>
                 </div>
@@ -1595,11 +1596,11 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               <div>
-                <div className="flex items-center justify-between text-xs mb-1.5">
+                <div className="flex items-center justify-between text-xs mb-1.5 font-sans">
                   <span className="font-semibold text-slate-700 dark:text-slate-300">
-                    Total Lectures Conducted: <strong className="text-slate-900 dark:text-slate-100 font-mono font-bold text-sm">{calcTotal}</strong>
+                    Total Lectures Conducted: <strong className="text-slate-900 dark:text-slate-100 font-mono font-bold text-sm ml-1">{calcTotal}</strong>
                   </span>
-                  <span className="text-[11px] font-mono text-slate-400">
+                  <span className="text-[11px] font-mono text-slate-400 shrink-0">
                     Range: {Math.max(1, calcAttended)} - 120
                   </span>
                 </div>
@@ -1615,14 +1616,14 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-[#27272A]">
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-[#27272A]">
               <button
                 type="button"
                 onClick={() => {
                   setCalcAttended(totalAttended > 0 ? totalAttended : 38);
                   setCalcTotal(totalHours > 0 ? totalHours : 45);
                 }}
-                className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors cursor-pointer select-none"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset to Actual</span>
@@ -1631,13 +1632,14 @@ export const DashboardPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsAttendanceCalcOpen(false)}
-                className="px-4 py-1.5 rounded-full bg-[#0F2544] hover:bg-[#0B2545] text-white text-xs font-semibold transition-colors cursor-pointer"
+                className="px-5 py-2 rounded-full bg-[#0F2544] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs font-semibold transition-all duration-150 cursor-pointer shadow-sm active:scale-95 select-none"
               >
                 Done
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
