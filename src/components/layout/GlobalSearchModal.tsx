@@ -33,12 +33,28 @@ export interface OmniSearchItem {
 }
 
 export const GlobalSearchModal: React.FC = () => {
-  const { isSearchOpen, closeSearch, globalLabs, campusTickets, role } = useApp();
+  const { isSearchOpen, openSearch, closeSearch, globalLabs, campusTickets, role } = useApp();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  // Global Ctrl + K / Cmd + K keyboard shortcut listener
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        if (isSearchOpen) {
+          closeSearch();
+        } else {
+          openSearch();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [isSearchOpen, openSearch, closeSearch]);
 
   // Focus input on open
   useEffect(() => {
@@ -120,6 +136,66 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700',
       url: '/student/lost-found',
       icon: <Layers className="w-4 h-4 text-[#0F766E]" />,
+    },
+    {
+      id: 'route_timetable',
+      category: 'ROUTES',
+      title: 'Timetable & Class Schedule',
+      subtitle: 'Weekly lecture timetable, rooms and faculties',
+      badgeText: 'Academics',
+      badgeColor: 'bg-blue-50 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+      url: '/student/academics?tab=timetable',
+      icon: <Clock className="w-4 h-4 text-[#0F766E]" />,
+    },
+    {
+      id: 'route_attendance_rate',
+      category: 'ROUTES',
+      title: 'Attendance Rate & Safe-Zone Calculator',
+      subtitle: 'Track subject attendance rates and minimum threshold',
+      badgeText: 'Academics',
+      badgeColor: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+      url: '/student/academics?tab=attendance',
+      icon: <Compass className="w-4 h-4 text-[#0F766E]" />,
+    },
+    {
+      id: 'route_results_gpa',
+      category: 'ROUTES',
+      title: 'Results & GPA Scorecards',
+      subtitle: 'Semester-wise SGPA trajectory and credit records',
+      badgeText: 'Academics',
+      badgeColor: 'bg-indigo-50 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
+      url: '/student/academics?tab=grades',
+      icon: <BookOpen className="w-4 h-4 text-[#0F766E]" />,
+    },
+    {
+      id: 'route_campus_updates',
+      category: 'ROUTES',
+      title: 'Campus Notice Board & Circulars',
+      subtitle: 'End-semester examinations, circulars, and departmental updates',
+      badgeText: 'Updates',
+      badgeColor: 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+      url: '/student/campus-updates',
+      icon: <Layers className="w-4 h-4 text-[#0F766E]" />,
+    },
+    {
+      id: 'route_opportunities',
+      category: 'ROUTES',
+      title: 'Opportunity Board & Hackathons',
+      subtitle: 'Tech Fusion 4.0, internships, and student challenges',
+      badgeText: 'Careers',
+      badgeColor: 'bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border-teal-200 dark:border-teal-800',
+      url: '/student/opportunities',
+      icon: <Compass className="w-4 h-4 text-[#0F766E]" />,
+    },
+    {
+      id: 'route_events',
+      category: 'ROUTES',
+      title: 'Campus Events & Activities',
+      subtitle: 'AARAMBHATHON 2.0, cultural fests, and workshops',
+      badgeText: 'Events',
+      badgeColor: 'bg-rose-50 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800',
+      url: '/student/events',
+      icon: <Compass className="w-4 h-4 text-[#0F766E]" />,
     },
   ], []);
 

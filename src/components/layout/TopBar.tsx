@@ -146,6 +146,9 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
     student,
     assignments,
     opportunities,
+    notices,
+    markAllNoticesRead,
+    openSearch,
     user,
     role,
     theme,
@@ -219,6 +222,10 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
   const urgentDeadlines = useMemo(() => {
     return getApproachingDeadlines(assignments, opportunities, user);
   }, [assignments, opportunities, user]);
+
+  const unreadNotices = useMemo(() => {
+    return (notices || []).filter(n => !n.readByCurrentUser);
+  }, [notices]);
 
   // Unified Autocomplete Engine: routes, coding labs, tickets, notices, events, opportunities
   const autocompleteResults: UnifiedSearchResult[] = useMemo(() => {
@@ -490,7 +497,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
             spellCheck={false}
           />
 
-          {searchQuery && (
+          {searchQuery ? (
             <button
               type="button"
               onClick={() => {
@@ -502,6 +509,16 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
               aria-label="Clear search query"
             >
               <X className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => openSearch()}
+              className="absolute right-3 hidden sm:inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono font-medium text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-[#1C1C22] border border-slate-200 dark:border-slate-700/80 rounded shadow-2xs hover:text-slate-700 dark:hover:text-slate-300 hover:border-slate-300 transition-all cursor-pointer select-none"
+              title="Open Command Palette (Ctrl K)"
+              aria-label="Open Command Palette with Ctrl K"
+            >
+              <span>Ctrl K</span>
             </button>
           )}
 
@@ -600,11 +617,11 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
             type="button"
             onClick={() => setIsNotifOpen(prev => !prev)}
             className="relative p-2 min-h-[40px] min-w-[40px] flex items-center justify-center rounded-full text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors cursor-pointer"
-            title="Approaching deadlines & urgent alerts"
+            title="Approaching deadlines, circulars & urgent alerts"
             aria-label="Notifications"
           >
             <Bell className="w-4 h-4 text-slate-600 dark:text-slate-300" />
-            {urgentDeadlines.length > 0 && (
+            {(urgentDeadlines.length > 0 || unreadNotices.length > 0) && (
               <span className="w-2 h-2 rounded-full bg-rose-600 absolute top-2 right-2 border border-white dark:border-[#18181B]" />
             )}
           </button>
@@ -619,11 +636,58 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                 className="absolute right-0 top-full mt-2 w-[calc(100vw-24px)] sm:w-96 max-w-md bg-white/95 dark:bg-[#18181B]/95 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-[#27272A] shadow-xl z-50 overflow-hidden font-sans"
               >
                 <div className="px-4 py-2.5 bg-slate-50/80 dark:bg-[#0E0E11]/80 border-b border-slate-200 dark:border-[#27272A] flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200">
-                  <span>Urgent Approaching Deadlines</span>
+                  <div className="flex items-center gap-2">
+                    <span>Campus Updates & Alerts</span>
+                    {unreadNotices.length > 0 && (
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-bold">
+                        {unreadNotices.length} new
+                      </span>
+                    )}
+                  </div>
+                  {unreadNotices.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => markAllNoticesRead()}
+                      className="text-[11px] font-semibold text-[#134074] dark:text-[#8DA9C4] hover:underline cursor-pointer"
+                    >
+                      Mark as Read
+                    </button>
+                  )}
                 </div>
 
                 <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[#27272A]">
-                  {urgentDeadlines.length === 0 ? (
+                  {/* Unread Campus Circulars */}
+                  {unreadNotices.slice(0, 3).map(n => (
+                    <Link
+                      key={n.id}
+                      to="/student/campus-updates"
+                      onClick={() => setIsNotifOpen(false)}
+                      className="block p-3 text-xs transition-colors hover:bg-slate-50 dark:hover:bg-[#27272A]/60 group"
+                    >
+                      <div className="flex items-start gap-2.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 mt-1.5 shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span className="text-[9px] font-mono font-bold uppercase px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
+                              {n.category}
+                            </span>
+                            <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">
+                              {n.publishedDate}
+                            </span>
+                          </div>
+                          <p className="text-xs text-slate-900 dark:text-slate-100 font-semibold leading-snug line-clamp-1 group-hover:text-[#134074] dark:group-hover:text-[#8DA9C4] transition-colors">
+                            {n.title}
+                          </p>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
+                            {n.summary || n.content?.slice(0, 80)}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+
+                  {/* Urgent Deadlines System */}
+                  {urgentDeadlines.length === 0 && unreadNotices.length === 0 ? (
                     <div className="p-6 text-center text-xs text-slate-600 dark:text-slate-400 font-medium">
                       You're all caught up. No deadlines in the next 48 hours.
                     </div>
@@ -653,6 +717,16 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                       </Link>
                     ))
                   )}
+                </div>
+
+                <div className="p-2.5 bg-slate-50/80 dark:bg-[#0E0E11]/80 border-t border-slate-200 dark:border-[#27272A] text-center">
+                  <Link
+                    to="/student/campus-updates"
+                    onClick={() => setIsNotifOpen(false)}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-[#134074] dark:text-[#8DA9C4] hover:underline"
+                  >
+                    <span>View All Notices →</span>
+                  </Link>
                 </div>
               </motion.div>
             )}
