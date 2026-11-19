@@ -4,7 +4,7 @@ import { Menu, Search, Bell, ArrowRight, X, SlidersHorizontal, ChevronRight, Che
 import { useApp } from '../../context/AppContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { APP_CONFIG } from '../../config';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { getApproachingDeadlines } from '../../utils/deadlineUtils';
 import { StorageService } from '../../services/storage';
 import { CustomDropdown, CustomDropdownOption } from '../ui/CustomDropdown';
@@ -139,10 +139,12 @@ export interface UnifiedSearchResult {
   title: string;
   subtitle: string;
   url: string;
+  allowedRoles?: string[];
 }
 
 export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     student,
     assignments,
@@ -287,11 +289,13 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
   }, [notices]);
 
   // Unified Autocomplete Engine: routes, coding labs, tickets, notices, events, opportunities
+  // Unified Autocomplete Engine: routes, coding labs, tickets, notices, events, opportunities
   const autocompleteResults: UnifiedSearchResult[] = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
+    const activeRole = ((user?.role || role || 'student') as string).toLowerCase();
     const list: UnifiedSearchResult[] = [];
 
-    // 1. System Routes
+    // 1. System Routes with explicit role permissions
     const systemRoutes: UnifiedSearchResult[] = [
       {
         id: 'route_faculty',
@@ -299,6 +303,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         title: 'Navigate to Faculty Dashboard',
         subtitle: 'Faculty overview, timetable & roll call attendance',
         url: '/faculty/dashboard',
+        allowedRoles: ['faculty'],
       },
       {
         id: 'route_skill_tree',
@@ -306,13 +311,23 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         title: 'Open Skill Tree',
         subtitle: 'B.Tech Curriculum Tracker & Prerequisite Map',
         url: '/student/academics?tab=curriculum',
+        allowedRoles: ['student'],
+      },
+      {
+        id: 'route_coding_labs',
+        type: 'ROUTE',
+        title: 'Automated Coding Labs',
+        subtitle: 'B.Tech CSE Semester 5 IDE & Proctored Workspace',
+        url: '/student/labs',
+        allowedRoles: ['student'],
       },
       {
         id: 'route_report_issue',
         type: 'ROUTE',
         title: 'Report Infrastructure Issue',
         subtitle: 'Smart Resolve AI campus facility complaints & map',
-        url: '/student/campus-map',
+        url: activeRole === 'admin' ? '/admin/dashboard' : '/student/campus-map',
+        allowedRoles: ['student', 'faculty', 'admin'],
       },
       {
         id: 'route_student_dash',
@@ -320,6 +335,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         title: 'Navigate to Student Dashboard',
         subtitle: 'Student overview, context schedule & tasks',
         url: '/student/dashboard',
+        allowedRoles: ['student'],
       },
       {
         id: 'route_admin_dash',
@@ -327,6 +343,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         title: 'Navigate to Administration Console',
         subtitle: 'User directory, campus facilities & controls',
         url: '/admin/dashboard',
+        allowedRoles: ['admin'],
       },
       {
         id: 'route_lost_found',
@@ -334,15 +351,26 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         title: 'Lost & Found Registry',
         subtitle: 'Report lost belongings or claim campus items',
         url: '/student/lost-found',
+        allowedRoles: ['student', 'faculty', 'admin'],
       },
     ];
 
-    // Automatically suggest top routes when focused or empty
+    // Filter routes strictly against activeRole BEFORE querying or slicing
+    const roleFilteredRoutes = systemRoutes.filter((r) => {
+      if (r.allowedRoles && !r.allowedRoles.includes(activeRole)) return false;
+      // When inside student portal, avoid redundant "Navigate to Student Dashboard" clutter
+      if (activeRole === 'student' && location.pathname.startsWith('/student') && r.id === 'route_student_dash') {
+        return false;
+      }
+      return true;
+    });
+
+    // Automatically suggest top role-filtered routes when focused or empty
     if (!q) {
-      return systemRoutes;
+      return roleFilteredRoutes;
     }
 
-    for (const r of systemRoutes) {
+    for (const r of roleFilteredRoutes) {
       if (r.title.toLowerCase().includes(q) || r.subtitle.toLowerCase().includes(q)) {
         list.push(r);
       }
@@ -362,7 +390,8 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
             type: 'LAB',
             title: lab.title,
             subtitle: `${lab.subject || 'Lab'} (Sem ${lab.semester}) • ${lab.problemStatement.slice(0, 60)}...`,
-            url: role === 'faculty' ? '/faculty/assignments' : '/student/dashboard',
+            url: activeRole === 'faculty' ? '/faculty/assignments' : '/student/labs',
+            allowedRoles: ['student', 'faculty'],
           });
         }
       }
@@ -370,7 +399,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
       // safe fallback
     }
 
-    // 3. Campus Tickets
+    // 3. Infrastructure Campus Tickets
     try {
       const tickets = StorageService.getCampusTickets();
       for (const ticket of tickets) {
@@ -384,7 +413,8 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
             type: 'TICKET',
             title: `${ticket.category}: ${ticket.summary}`,
             subtitle: `${ticket.location} • Status: ${ticket.status} • Priority: ${ticket.priority}`,
-            url: '/admin/dashboard',
+            url: activeRole === 'admin' ? '/admin/dashboard' : '/student/campus-map',
+            allowedRoles: ['student', 'faculty', 'admin'],
           });
         }
       }
@@ -402,14 +432,15 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
           title: item.title,
           subtitle: item.subtitle,
           url: item.url,
+          allowedRoles: ['student', 'faculty', 'admin'],
         });
       }
     } catch {
       // safe fallback
     }
 
-    return list.slice(0, 10);
-  }, [searchQuery, role]);
+    return list.filter((item) => !item.allowedRoles || item.allowedRoles.includes(activeRole)).slice(0, 10);
+  }, [searchQuery, role, user, location.pathname]);
 
   // Alias for backward compatibility
   const searchResults = autocompleteResults;

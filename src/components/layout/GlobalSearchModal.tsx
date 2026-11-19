@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Search,
   X,
@@ -30,15 +30,17 @@ export interface OmniSearchItem {
   badgeColor?: string;
   url: string;
   icon: React.ReactNode;
+  allowedRoles?: string[];
 }
 
 export const GlobalSearchModal: React.FC = () => {
-  const { isSearchOpen, openSearch, closeSearch, globalLabs, campusTickets, role } = useApp();
+  const { isSearchOpen, openSearch, closeSearch, globalLabs, campusTickets, role, user } = useApp();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Global Ctrl + K / Cmd + K keyboard shortcut listener
   useEffect(() => {
@@ -76,6 +78,7 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border-teal-200 dark:border-teal-800',
       url: '/faculty/dashboard',
       icon: <Compass className="w-4 h-4 text-[#0F766E]" />,
+      allowedRoles: ['faculty'],
     },
     {
       id: 'route_skill_tree',
@@ -86,6 +89,7 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
       url: '/student/academics?tab=curriculum',
       icon: <BookOpen className="w-4 h-4 text-[#0F766E]" />,
+      allowedRoles: ['student'],
     },
     {
       id: 'route_report_issue',
@@ -96,6 +100,7 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800',
       url: '/student/campus-map',
       icon: <MapPin className="w-4 h-4 text-[#0F766E]" />,
+      allowedRoles: ['student', 'faculty', 'admin'],
     },
     {
       id: 'route_student_dash',
@@ -106,6 +111,7 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border-teal-200 dark:border-teal-800',
       url: '/student/dashboard',
       icon: <Compass className="w-4 h-4 text-[#0F766E]" />,
+      allowedRoles: ['student'],
     },
     {
       id: 'route_admin_dash',
@@ -116,6 +122,7 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-purple-50 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border-purple-200 dark:border-purple-800',
       url: '/admin/dashboard',
       icon: <Shield className="w-4 h-4 text-[#0F766E]" />,
+      allowedRoles: ['admin'],
     },
     {
       id: 'route_attendance_logger',
@@ -126,6 +133,7 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border-teal-200 dark:border-teal-800',
       url: '/faculty/attendance',
       icon: <Clock className="w-4 h-4 text-[#0F766E]" />,
+      allowedRoles: ['faculty'],
     },
     {
       id: 'route_lost_found',
@@ -136,6 +144,7 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700',
       url: '/student/lost-found',
       icon: <Layers className="w-4 h-4 text-[#0F766E]" />,
+      allowedRoles: ['student', 'faculty', 'admin'],
     },
     {
       id: 'route_timetable',
@@ -146,6 +155,7 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-blue-50 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200 dark:border-blue-800',
       url: '/student/academics?tab=timetable',
       icon: <Clock className="w-4 h-4 text-[#0F766E]" />,
+      allowedRoles: ['student', 'faculty'],
     },
     {
       id: 'route_attendance_rate',
@@ -156,6 +166,7 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
       url: '/student/academics?tab=attendance',
       icon: <Compass className="w-4 h-4 text-[#0F766E]" />,
+      allowedRoles: ['student'],
     },
     {
       id: 'route_results_gpa',
@@ -166,6 +177,7 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-indigo-50 text-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
       url: '/student/academics?tab=grades',
       icon: <BookOpen className="w-4 h-4 text-[#0F766E]" />,
+      allowedRoles: ['student'],
     },
     {
       id: 'route_campus_updates',
@@ -176,6 +188,7 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800',
       url: '/student/campus-updates',
       icon: <Layers className="w-4 h-4 text-[#0F766E]" />,
+      allowedRoles: ['student', 'faculty', 'admin'],
     },
     {
       id: 'route_opportunities',
@@ -186,6 +199,7 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border-teal-200 dark:border-teal-800',
       url: '/student/opportunities',
       icon: <Compass className="w-4 h-4 text-[#0F766E]" />,
+      allowedRoles: ['student', 'faculty', 'admin'],
     },
     {
       id: 'route_events',
@@ -196,12 +210,14 @@ export const GlobalSearchModal: React.FC = () => {
       badgeColor: 'bg-rose-50 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-200 dark:border-rose-800',
       url: '/student/events',
       icon: <Compass className="w-4 h-4 text-[#0F766E]" />,
+      allowedRoles: ['student', 'faculty', 'admin'],
     },
   ], []);
 
   // 2. Unified Multi-Storage Search Engine Logic
   const groupedResults = useMemo(() => {
     const q = query.trim().toLowerCase();
+    const activeRole = ((user?.role || role || 'student') as string).toLowerCase();
 
     // Pull real-time data from localStorage arrays
     const storedLabs: CodingLab[] = StorageService.getGlobalLabs();
@@ -210,9 +226,17 @@ export const GlobalSearchModal: React.FC = () => {
     const activeLabs = storedLabs.length > 0 ? storedLabs : globalLabs;
     const activeTickets = storedTickets.length > 0 ? storedTickets : campusTickets;
 
-    // Filter Routes
-    const filteredRoutes = systemRoutes.filter(route => {
-      if (!q) return true; // show all when empty query
+    // Filter Routes strictly by active role
+    const filteredRoutes = systemRoutes.filter((route) => {
+      // 1. Enforce role clearance
+      if (route.allowedRoles && !route.allowedRoles.includes(activeRole)) {
+        return false;
+      }
+      // 2. Hide redundant "Navigate to Student Overview" if already inside student portal
+      if (activeRole === 'student' && location.pathname.startsWith('/student') && route.id === 'route_student_dash') {
+        return false;
+      }
+      if (!q) return true; // show all allowed when empty query
       return (
         route.title.toLowerCase().includes(q) ||
         route.subtitle.toLowerCase().includes(q)
@@ -221,7 +245,7 @@ export const GlobalSearchModal: React.FC = () => {
 
     // Filter Labs (Search globalLabs by lab title or problemStatement)
     const filteredLabs: OmniSearchItem[] = activeLabs
-      .filter(lab => {
+      .filter((lab) => {
         if (!q) return false;
         return (
           lab.title.toLowerCase().includes(q) ||
@@ -229,20 +253,21 @@ export const GlobalSearchModal: React.FC = () => {
           (lab.subject && lab.subject.toLowerCase().includes(q))
         );
       })
-      .map(lab => ({
+      .map((lab) => ({
         id: `lab_${lab.id}`,
         category: 'LABS' as const,
         title: lab.title,
         subtitle: `${lab.subject} (Sem ${lab.semester}) • ${lab.problemStatement.slice(0, 75)}...`,
         badgeText: `Sem ${lab.semester}`,
         badgeColor: 'bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 border-teal-200 dark:border-teal-800',
-        url: role === 'faculty' ? '/faculty/assignments' : '/student/dashboard',
+        url: activeRole === 'faculty' ? '/faculty/assignments' : '/student/labs',
         icon: <Code2 className="w-4 h-4 text-[#0F766E]" />,
+        allowedRoles: ['student', 'faculty'],
       }));
 
     // Filter Tickets (Search campusTickets by category or summary)
     const filteredTickets: OmniSearchItem[] = activeTickets
-      .filter(ticket => {
+      .filter((ticket) => {
         if (!q) return false;
         return (
           ticket.category.toLowerCase().includes(q) ||
@@ -251,7 +276,7 @@ export const GlobalSearchModal: React.FC = () => {
           (ticket.location && ticket.location.toLowerCase().includes(q))
         );
       })
-      .map(ticket => ({
+      .map((ticket) => ({
         id: `ticket_${ticket.id}`,
         category: 'TICKETS' as const,
         title: `${ticket.category}: ${ticket.summary}`,
@@ -261,8 +286,9 @@ export const GlobalSearchModal: React.FC = () => {
           ticket.priority === 'Critical'
             ? 'bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-400 border-red-200 dark:border-red-900'
             : 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800',
-        url: '/admin/dashboard',
+        url: activeRole === 'admin' ? '/admin/dashboard' : '/student/campus-map',
         icon: <AlertTriangle className="w-4 h-4 text-[#0F766E]" />,
+        allowedRoles: ['student', 'faculty', 'admin'],
       }));
 
     return {
@@ -270,7 +296,7 @@ export const GlobalSearchModal: React.FC = () => {
       LABS: filteredLabs,
       TICKETS: filteredTickets,
     };
-  }, [query, systemRoutes, globalLabs, campusTickets, role]);
+  }, [query, systemRoutes, globalLabs, campusTickets, role, user, location.pathname]);
 
   // Flatten ordered results for keyboard navigation: ROUTES -> LABS -> TICKETS
   const flatResults = useMemo(() => {

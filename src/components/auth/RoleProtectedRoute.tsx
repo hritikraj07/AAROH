@@ -12,15 +12,18 @@ export const RoleProtectedRoute: React.FC<RoleProtectedRouteProps> = ({
   allowedRoles,
   children,
 }) => {
-  const { isAuthenticated, role } = useApp();
+  const { isAuthenticated, role, user } = useApp();
   const location = useLocation();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (!role || !allowedRoles.includes(role)) {
-    return <Navigate to="/unauthorized" replace />;
+  const effectiveRole = ((user?.role || role || '') as string).toLowerCase() as UserRole;
+  const normalizedAllowed = allowedRoles.map((r) => (r as string).toLowerCase());
+
+  if (!effectiveRole || !normalizedAllowed.includes(effectiveRole)) {
+    return <Navigate to="/unauthorized" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
