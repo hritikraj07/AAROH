@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, Search, Bell, ArrowRight, X, SlidersHorizontal, ChevronRight, ChevronDown, Check, Layers, Users, UserCheck } from 'lucide-react';
+import { Menu, Search, Bell, ArrowRight, X, SlidersHorizontal, ChevronRight, ChevronDown, Check, Layers, Users, UserCheck, UserPen, Settings } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { APP_CONFIG } from '../../config';
@@ -9,6 +9,7 @@ import { getApproachingDeadlines } from '../../utils/deadlineUtils';
 import { StorageService } from '../../services/storage';
 import { CustomDropdown, CustomDropdownOption } from '../ui/CustomDropdown';
 import { teammateService } from '../../services/teammateService';
+import { EditProfileModal } from './EditProfileModal';
 
 export const AVAILABLE_SKILL_CATEGORIES: { category: string; skills: string[] }[] = [
   {
@@ -152,6 +153,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
     notices,
     markAllNoticesRead,
     openSearch,
+    openSettings,
     user,
     role,
     theme,
@@ -163,8 +165,9 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
 
-  // Profile Dropdown State
+  // Profile Dropdown & Edit Modal State
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
   // Teammate System State & Synchronization
@@ -541,6 +544,21 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
     }
   };
 
+  const handleSaveProfile = (updates: { name: string; avatarUrl?: string }) => {
+    if (!user) return;
+    const trimmedName = updates.name.trim();
+    const parts = trimmedName.split(/\s+/);
+    const avatarInitials = parts.length >= 2
+      ? (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase()
+      : trimmedName.slice(0, 2).toUpperCase() || (role === 'admin' ? 'AD' : role === 'faculty' ? 'FA' : 'ST');
+
+    updateUser(user.id, {
+      name: trimmedName,
+      avatarUrl: updates.avatarUrl,
+      avatarInitials,
+    });
+  };
+
   return (
     <header className="sticky top-0 z-30 bg-[#F4F7F5] dark:bg-[#18181B] border-b border-[#E5ECE8] dark:border-[#27272A] h-16 px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-4 transition-colors duration-200">
       {/* Left: Mobile Menu & Breadcrumb */}
@@ -835,15 +853,29 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
             title="View your profile"
             aria-label="User Profile"
           >
-            <div className="w-8 h-8 rounded-full bg-[#0F2544] text-white font-bold text-xs flex items-center justify-center shadow-sm shrink-0">
-              {user?.avatarInitials ? user.avatarInitials.charAt(0) : (user?.name ? user.name.charAt(0).toUpperCase() : 'P')}
+            <div className="w-8 h-8 rounded-full bg-[#0F2544] text-white font-bold text-xs flex items-center justify-center shadow-sm shrink-0 overflow-hidden border border-slate-200 dark:border-slate-700">
+              {user?.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={user?.name || 'Profile'}
+                  className="w-full h-full object-cover rounded-full"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLElement).style.display = 'none';
+                  }}
+                />
+              ) : null}
+              {(!user?.avatarUrl || undefined) && (
+                <span>
+                  {user?.avatarInitials ? user.avatarInitials.charAt(0) : (user?.name ? user.name.charAt(0).toUpperCase() : (role === 'admin' ? 'A' : role === 'faculty' ? 'F' : 'A'))}
+                </span>
+              )}
             </div>
             <div className="text-left hidden sm:block leading-tight pr-1">
               <span className="font-bold text-xs block text-[#0F2544] dark:text-slate-100 group-hover:text-[#1D4ED8] transition-colors">
-                {user?.name?.split(' ')[0] || 'Pankaj'}
+                {user?.name?.split(' ')[0] || (role === 'admin' ? 'Admin' : role === 'faculty' ? 'Faculty' : 'Aarav')}
               </span>
               <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium capitalize block">
-                {role === 'student' ? 'Student' : role}
+                {role === 'student' ? 'Student' : role === 'faculty' ? 'Faculty' : role === 'admin' ? 'Admin' : role}
               </span>
             </div>
             {/* Hidden avatarInitials token for verification compatibility */}
@@ -865,8 +897,19 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
               <div className="p-4 bg-gradient-to-br from-[#8DA9C4]/15 via-transparent to-transparent border-b border-slate-100 dark:border-[#27272A] rounded-t-2xl">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-[#134074] text-white font-bold text-base flex items-center justify-center font-mono shadow-md border border-[#8DA9C4]/30">
-                      {user?.avatarInitials || (role === 'admin' ? 'AD' : role === 'faculty' ? 'FA' : 'ST')}
+                    <div className="w-12 h-12 rounded-xl bg-[#134074] text-white font-bold text-base flex items-center justify-center font-mono shadow-md border border-[#8DA9C4]/30 overflow-hidden shrink-0">
+                      {user?.avatarUrl ? (
+                        <img
+                          src={user.avatarUrl}
+                          alt={user?.name || 'Profile'}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <span>{user?.avatarInitials || (role === 'admin' ? 'AD' : role === 'faculty' ? 'FA' : 'ST')}</span>
+                      )}
                     </div>
                     <div className="min-w-0">
                       <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
@@ -880,6 +923,33 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                   <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border bg-[#EEF4ED] dark:bg-[#18181B] text-[#134074] dark:text-[#8DA9C4] border-[#8DA9C4]/40">
                     {role}
                   </span>
+                </div>
+
+                {/* Profile Actions: Edit Profile & Preferences */}
+                <div className="mt-3 pt-3 border-t border-slate-100 dark:border-[#27272A] flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      setIsEditProfileOpen(true);
+                    }}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/40 dark:hover:bg-teal-900/50 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 transition-colors cursor-pointer"
+                  >
+                    <UserPen className="w-3.5 h-3.5" />
+                    <span>Edit Profile</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      openSettings();
+                    }}
+                    className="flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-[#18181B] border border-slate-200 dark:border-[#27272A] transition-colors cursor-pointer"
+                    title="Account Preferences"
+                  >
+                    <Settings className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Preferences</span>
+                  </button>
                 </div>
               </div>
 
@@ -1280,6 +1350,15 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         </AnimatePresence>
         </div>
       </div>
+
+      {/* Edit Profile Modal for Student, Faculty & Admin */}
+      <EditProfileModal
+        isOpen={isEditProfileOpen}
+        onClose={() => setIsEditProfileOpen(false)}
+        currentUser={user}
+        currentRole={role || (user?.role || 'student')}
+        onSave={handleSaveProfile}
+      />
     </header>
   );
 };

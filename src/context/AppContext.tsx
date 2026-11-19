@@ -210,7 +210,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     StorageService.initializeData(false);
     StorageService.syncEventsFromSupabase().then(evts => {
       if (evts && evts.length > 0) setEvents(evts);
-    }).catch(() => {});
+    }).catch(() => { });
     window.addEventListener('storage', refreshData);
     return () => window.removeEventListener('storage', refreshData);
   }, [refreshData]);
@@ -308,7 +308,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const logout = async () => {
     try {
       if (supabase) {
-        await supabase.auth.signOut().catch(() => {});
+        await supabase.auth.signOut().catch(() => { });
       }
     } catch {
       // Offline fallback
@@ -582,10 +582,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const updated = StorageService.updateUser(id, updates);
     if (updated) {
       setUsers(StorageService.getUsers());
-      if (user && user.id === id) {
+      if (user && (user.id === id || (user.email && updated.email && user.email.toLowerCase() === updated.email.toLowerCase()))) {
         setUser(updated);
       }
-      showToast({ type: 'success', title: 'User Updated', message: `Profile updated for ${updated.name}.` });
+      showToast({ type: 'success', title: 'Profile Updated', message: `Profile updated for ${updated.name}.` });
     }
     return updated;
   };

@@ -1851,4 +1851,38 @@ assert(globalSearchModalContent.includes("e.key === 'Enter'") && (globalSearchMo
 
 console.log('--- ALL AAROH OMNI-SEARCH VERIFICATIONS PASSED ---');
 
+// --- VERIFYING ROLE-AWARE EDIT PROFILE MODAL & CROSS-ROLE PERSISTENCE ---
+console.log('--- VERIFYING ROLE-AWARE EDIT PROFILE MODAL & CROSS-ROLE PERSISTENCE ---');
+const editProfileModalPath = path.join(__dirname, '../src/components/layout/EditProfileModal.tsx');
+assert(fs.existsSync(editProfileModalPath), 'EditProfileModal.tsx exists');
+const editProfileModalContent = fs.readFileSync(editProfileModalPath, 'utf8');
+
+assert(editProfileModalContent.includes('Edit Profile'), 'EditProfileModal renders Edit Profile title');
+assert(editProfileModalContent.includes('Full Name') && editProfileModalContent.includes('setName'), 'EditProfileModal includes Full Name input');
+assert(editProfileModalContent.includes('handleFileUpload') && editProfileModalContent.includes('FileReader'), 'EditProfileModal supports photo file upload via FileReader');
+assert(editProfileModalContent.includes('MAX_FILE_SIZE_BYTES') && editProfileModalContent.includes('2 * 1024 * 1024'), 'EditProfileModal enforces 2MB image size validation');
+assert(editProfileModalContent.includes('Remove Photo'), 'EditProfileModal provides Remove Photo option to revert to initials');
+assert(editProfileModalContent.includes('calculateInitials'), 'EditProfileModal computes live initials from name input');
+assert(editProfileModalContent.includes('Save Changes'), 'EditProfileModal includes Save Changes action');
+
+// TopBar Integration Checks
+const finalTopBar = fs.readFileSync(path.join(__dirname, '../src/components/layout/TopBar.tsx'), 'utf8');
+assert(finalTopBar.includes('EditProfileModal'), 'TopBar imports and mounts EditProfileModal');
+assert(finalTopBar.includes('isEditProfileOpen'), 'TopBar manages isEditProfileOpen state');
+assert(finalTopBar.includes('Edit Profile'), 'TopBar Profile dropdown includes Edit Profile action');
+assert(finalTopBar.includes('user?.avatarUrl'), 'TopBar displays avatarUrl when available');
+
+// Storage Role Profile Persistence Checks
+const finalStorage = fs.readFileSync(path.join(__dirname, '../src/services/storage.ts'), 'utf8');
+assert(finalStorage.includes('ROLE_PROFILES: \'aaroh_role_profiles\''), 'StorageService defines ROLE_PROFILES storage key');
+assert(finalStorage.includes('getRoleProfiles'), 'StorageService implements getRoleProfiles');
+assert(finalStorage.includes('getRoleProfile'), 'StorageService implements getRoleProfile');
+assert(finalStorage.includes('saveRoleProfile'), 'StorageService implements saveRoleProfile');
+
+// User Model Type Definition Check
+const userTypesContent = fs.readFileSync(path.join(__dirname, '../src/types/index.ts'), 'utf8');
+assert(userTypesContent.includes('avatarUrl?: string;'), 'User interface defines optional avatarUrl property');
+
+console.log('--- ALL ROLE-AWARE EDIT PROFILE VERIFICATIONS PASSED ---');
+
 module.exports = { assert };

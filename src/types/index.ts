@@ -7,6 +7,7 @@ export interface User {
   role: UserRole;
   password?: string;
   avatarInitials: string;
+  avatarUrl?: string; // Optional custom avatar image URL or base64 data URL
   department: string;
   designation?: string; // e.g. "Assistant Professor", "Academic Registrar", "Student"
   // Student-specific fields

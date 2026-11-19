@@ -69,6 +69,7 @@ const STORAGE_KEYS = {
   GLOBAL_LABS: 'globalLabs',
   LAB_SUBMISSIONS: 'labSubmissions',
   UNLOCKED_MODULES: 'unlockedModules',
+  ROLE_PROFILES: 'aaroh_role_profiles',
 };
 
 function getStored<T>(key: string, fallback: T): T {
@@ -251,6 +252,19 @@ export const StorageService = {
       }
       const token = `aaroh_session_${existingUser.role}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
       localStorage.setItem(STORAGE_KEYS.SESSION_TOKEN, token);
+      const roleOverride = this.getRoleProfile(existingUser.role);
+      if (roleOverride) {
+        if (roleOverride.name) {
+          existingUser.name = roleOverride.name;
+          const parts = roleOverride.name.trim().split(/\s+/);
+          existingUser.avatarInitials = parts.length >= 2
+            ? (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase()
+            : roleOverride.name.trim().slice(0, 2).toUpperCase();
+        }
+        if (roleOverride.avatarUrl !== undefined) {
+          existingUser.avatarUrl = roleOverride.avatarUrl;
+        }
+      }
       setStored(STORAGE_KEYS.AUTH_USER, existingUser);
       return {
         success: true,
@@ -272,11 +286,40 @@ export const StorageService = {
     localStorage.removeItem(STORAGE_KEYS.AUTH_USER);
   },
 
+  getRoleProfiles(): Record<string, { name?: string; avatarUrl?: string }> {
+    return getStored<Record<string, { name?: string; avatarUrl?: string }>>(STORAGE_KEYS.ROLE_PROFILES, {});
+  },
+
+  getRoleProfile(role: UserRole): { name?: string; avatarUrl?: string } | null {
+    const profiles = this.getRoleProfiles();
+    return profiles[role] || null;
+  },
+
+  saveRoleProfile(role: UserRole, profile: { name: string; avatarUrl?: string }): void {
+    const profiles = this.getRoleProfiles();
+    profiles[role] = profile;
+    setStored(STORAGE_KEYS.ROLE_PROFILES, profiles);
+  },
+
   getAuthUser(): User | null {
     const user = getStored<User | null>(STORAGE_KEYS.AUTH_USER, null);
-    if (user && user.role === 'student' && user.email === 'aarav.sharma@aaroh.edu.in' && user.semester === 5) {
+    if (!user) return null;
+    if (user.role === 'student' && user.email === 'aarav.sharma@aaroh.edu.in' && user.semester === 5) {
       user.semester = 1;
       setStored(STORAGE_KEYS.AUTH_USER, user);
+    }
+    const roleOverride = this.getRoleProfile(user.role);
+    if (roleOverride) {
+      if (roleOverride.name) {
+        user.name = roleOverride.name;
+        const parts = roleOverride.name.trim().split(/\s+/);
+        user.avatarInitials = parts.length >= 2
+          ? (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase()
+          : roleOverride.name.trim().slice(0, 2).toUpperCase();
+      }
+      if (roleOverride.avatarUrl !== undefined) {
+        user.avatarUrl = roleOverride.avatarUrl;
+      }
     }
     return user;
   },
@@ -349,10 +392,35 @@ export const StorageService = {
   updateUser(id: string, updates: Partial<User>): User | null {
     const users = this.getUsers();
     const idx = users.findIndex(u => u.id === id);
-    if (idx === -1) return null;
-    const updated = { ...users[idx], ...updates };
+    let updated: User;
+    if (idx === -1) {
+      const auth = getStored<User | null>(STORAGE_KEYS.AUTH_USER, null);
+      if (auth && auth.id === id) {
+        updated = { ...auth, ...updates };
+        setStored(STORAGE_KEYS.AUTH_USER, updated);
+        if (updated.role && (updates.name !== undefined || updates.avatarUrl !== undefined)) {
+          this.saveRoleProfile(updated.role, {
+            name: updated.name,
+            avatarUrl: updated.avatarUrl,
+          });
+        }
+        return updated;
+      }
+      return null;
+    }
+    updated = { ...users[idx], ...updates };
     users[idx] = updated;
     setStored(STORAGE_KEYS.USERS, users);
+    const auth = getStored<User | null>(STORAGE_KEYS.AUTH_USER, null);
+    if (auth && (auth.id === id || auth.email.toLowerCase() === updated.email.toLowerCase())) {
+      setStored(STORAGE_KEYS.AUTH_USER, updated);
+    }
+    if (updated.role && (updates.name !== undefined || updates.avatarUrl !== undefined)) {
+      this.saveRoleProfile(updated.role, {
+        name: updated.name,
+        avatarUrl: updated.avatarUrl,
+      });
+    }
     return updated;
   },
 
