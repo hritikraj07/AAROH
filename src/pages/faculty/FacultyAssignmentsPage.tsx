@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { Button } from '../../components/ui/Button';
@@ -18,6 +18,7 @@ import {
   AlertOctagon
 } from 'lucide-react';
 import { Assignment, TestCase } from '../../types';
+import { CustomDropdown, CustomDropdownOption } from '../../components/ui/CustomDropdown';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
 const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
@@ -25,11 +26,36 @@ const exactLightHover = 'hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_r
 const exactDarkHover = 'dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)]';
 
 export const FacultyAssignmentsPage: React.FC = () => {
-  const { courses, assignments, createAssignment, updateAssignmentLabStatus } = useApp();
+  const { courses, assignments, createAssignment, updateAssignmentLabStatus, showToast } = useApp();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isCodingModalOpen, setIsCodingModalOpen] = useState(false);
   const [selectedCourseFilter, setSelectedCourseFilter] = useState<string>('all');
   const [incidentReviewAsg, setIncidentReviewAsg] = useState<Assignment | null>(null);
+
+  const courseFilterOptions: CustomDropdownOption<string>[] = useMemo(() => [
+    { value: 'all', label: `All Courses (${assignments.length})`, subtitle: 'Show all enrolled subjects' },
+    ...courses.map(c => ({
+      value: c.id,
+      label: `${c.code} : ${c.name}`,
+      badge: c.code,
+    })),
+  ], [courses, assignments.length]);
+
+  const courseSelectOptions: CustomDropdownOption<string>[] = useMemo(() => {
+    return courses.map(c => ({
+      value: c.id,
+      label: `${c.code} : ${c.name}`,
+      subtitle: `${c.credits} Credits`,
+      badge: c.code,
+    }));
+  }, [courses]);
+
+  const languageOptions: CustomDropdownOption<string>[] = useMemo(() => [
+    { value: 'python', label: 'Python 3 (CPython)', badge: 'PY' },
+    { value: 'javascript', label: 'JavaScript (Node.js ES6)', badge: 'JS' },
+    { value: 'cpp', label: 'C++ (GCC 11)', badge: 'C++' },
+    { value: 'java', label: 'Java (OpenJDK 17)', badge: 'JAVA' },
+  ], []);
 
   // Standard Assignment Form State
   const [courseId, setCourseId] = useState<string>(courses[0]?.id || '');
@@ -86,6 +112,12 @@ export const FacultyAssignmentsPage: React.FC = () => {
       type: 'standard',
     });
 
+    showToast({
+      type: 'success',
+      title: 'Assignment Published to Students',
+      message: `${title.trim()} has been assigned to enrolled students.`,
+    });
+
     setTitle('');
     setDescription('');
     setIsAddModalOpen(false);
@@ -132,6 +164,12 @@ export const FacultyAssignmentsPage: React.FC = () => {
       labStatus: 'locked',
     });
 
+    showToast({
+      type: 'success',
+      title: 'Coding Lab Published to Students',
+      message: `${codingTitle.trim()} is now configured for your course students.`,
+    });
+
     setIsCodingModalOpen(false);
   };
 
@@ -150,18 +188,28 @@ export const FacultyAssignmentsPage: React.FC = () => {
 
         <div className="flex items-center gap-2 flex-wrap">
           {courses.length > 0 && (
-            <select
-              value={selectedCourseFilter}
-              onChange={e => setSelectedCourseFilter(e.target.value)}
-              className="text-xs font-mono px-3 py-1.5 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
-            >
-              <option value="all">All Courses ({assignments.length})</option>
-              {courses.map(c => (
-                <option key={c.id} value={c.id}>
-                  {c.code}
-                </option>
-              ))}
-            </select>
+            <div className="w-56">
+              <CustomDropdown<string>
+                value={selectedCourseFilter}
+                onChange={val => setSelectedCourseFilter(val)}
+                options={courseFilterOptions}
+                placeholder="Filter by course..."
+              />
+              <select
+                aria-hidden="true"
+                tabIndex={-1}
+                value={selectedCourseFilter}
+                onChange={e => setSelectedCourseFilter(e.target.value)}
+                className="sr-only pointer-events-none"
+              >
+                <option value="all">All Courses ({assignments.length})</option>
+                {courses.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.code}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
 
           <Button
@@ -173,7 +221,7 @@ export const FacultyAssignmentsPage: React.FC = () => {
               setIsAddModalOpen(true);
             }}
           >
-            Post Standard Task
+            Assign Coursework
           </Button>
 
           <Button
@@ -448,8 +496,42 @@ export const FacultyAssignmentsPage: React.FC = () => {
         </div>
 
         {filteredAssignments.length === 0 ? (
-          <div className="p-10 text-center text-xs text-slate-500">
-            No assignments match the selected course filter.
+          <div className="py-12 px-6 text-center text-xs bg-white text-slate-500 dark:bg-[#18181B] dark:text-slate-400 space-y-3 flex flex-col items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-800/60 flex items-center justify-center">
+              <FileText className="w-6 h-6" />
+            </div>
+            <div className="space-y-1">
+              <p className="font-semibold text-sm text-slate-900 dark:text-slate-100">
+                No assignments match the selected course filter.
+              </p>
+              <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed text-xs">
+                Submit coursework, problem sets, or coding labs for students. When you publish an assignment, it appears directly in the enrolled students' portals.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 pt-2 flex-wrap justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  if (courses.length > 0 && !courseId) setCourseId(courses[0].id);
+                  setIsAddModalOpen(true);
+                }}
+                className={`inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] rounded-xl transition-all duration-200 active:scale-95 border border-[#8DA9C4]/30 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} cursor-pointer select-none`}
+              >
+                <Plus className="w-3.5 h-3.5 text-white" />
+                <span>Assign Coursework to Students</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (courses.length > 0 && !codingCourseId) setCodingCourseId(courses[0].id);
+                  setIsCodingModalOpen(true);
+                }}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-[#222226] hover:bg-slate-50 dark:hover:bg-[#27272A] rounded-xl border border-slate-200 dark:border-[#27272A] transition-all duration-200 active:scale-95 cursor-pointer select-none"
+              >
+                <Code className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+                <span>Configure Automated Coding Lab</span>
+              </button>
+            </div>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -579,17 +661,27 @@ export const FacultyAssignmentsPage: React.FC = () => {
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Target Course <span className="text-rose-600">*</span>
                 </label>
-                <select
-                  value={courseId}
-                  onChange={e => setCourseId(e.target.value)}
-                  className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
-                >
-                  {courses.map(c => (
-                    <option key={c.id} value={c.id}>
-                      {c.code} - {c.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <CustomDropdown<string>
+                    value={courseId}
+                    onChange={val => setCourseId(val)}
+                    options={courseSelectOptions}
+                    placeholder="Select course..."
+                  />
+                  <select
+                    aria-hidden="true"
+                    tabIndex={-1}
+                    value={courseId}
+                    onChange={e => setCourseId(e.target.value)}
+                    className="sr-only pointer-events-none"
+                  >
+                    {courses.map(c => (
+                      <option key={c.id} value={c.id}>
+                        {c.code} - {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>
@@ -691,33 +783,53 @@ export const FacultyAssignmentsPage: React.FC = () => {
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Target Course <span className="text-rose-600">*</span>
                   </label>
-                  <select
-                    value={codingCourseId}
-                    onChange={e => setCodingCourseId(e.target.value)}
-                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
-                  >
-                    {courses.map(c => (
-                      <option key={c.id} value={c.id}>
-                        {c.code} - {c.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <CustomDropdown<string>
+                      value={codingCourseId}
+                      onChange={val => setCodingCourseId(val)}
+                      options={courseSelectOptions}
+                      placeholder="Select course..."
+                    />
+                    <select
+                      aria-hidden="true"
+                      tabIndex={-1}
+                      value={codingCourseId}
+                      onChange={e => setCodingCourseId(e.target.value)}
+                      className="sr-only pointer-events-none"
+                    >
+                      {courses.map(c => (
+                        <option key={c.id} value={c.id}>
+                          {c.code} - {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Programming Language <span className="text-rose-600">*</span>
                   </label>
-                  <select
-                    value={codingLanguage}
-                    onChange={e => setCodingLanguage(e.target.value)}
-                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
-                  >
-                    <option value="python">Python 3 (CPython)</option>
-                    <option value="javascript">JavaScript (Node.js ES6)</option>
-                    <option value="cpp">C++ (GCC 11)</option>
-                    <option value="java">Java (OpenJDK 17)</option>
-                  </select>
+                  <div className="relative">
+                    <CustomDropdown<string>
+                      value={codingLanguage}
+                      onChange={val => setCodingLanguage(val)}
+                      options={languageOptions}
+                      placeholder="Select language..."
+                    />
+                    <select
+                      aria-hidden="true"
+                      tabIndex={-1}
+                      value={codingLanguage}
+                      onChange={e => setCodingLanguage(e.target.value)}
+                      className="sr-only pointer-events-none"
+                    >
+                      <option value="python">Python 3 (CPython)</option>
+                      <option value="javascript">JavaScript (Node.js ES6)</option>
+                      <option value="cpp">C++ (GCC 11)</option>
+                      <option value="java">Java (OpenJDK 17)</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 

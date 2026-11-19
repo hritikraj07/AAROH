@@ -2,16 +2,41 @@ import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Logo } from '../components/ui/Logo';
-import { Lock, Mail, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, AlertCircle, Eye, EyeOff, GraduationCap, Briefcase, Shield } from 'lucide-react';
 import { getUserRoleFromEmail, generateUserFromEmail } from '../data/seed';
 import { UserRole } from '../types';
 import { supabase } from '../lib/supabase';
 import { StorageService } from '../services/storage';
+import { CustomDropdown, CustomDropdownOption } from '../components/ui/CustomDropdown';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
 const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
 const exactLightHover = 'hover:shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_12px_24px_rgba(15,23,42,0.08)]';
 const exactDarkHover = 'dark:hover:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_12px_24px_rgba(0,0,0,0.4),0_0_16px_rgba(15,118,110,0.25)]';
+
+const roleOptions: CustomDropdownOption<UserRole>[] = [
+  {
+    value: 'student',
+    label: 'Student',
+    subtitle: 'Coursework, attendance & schedule',
+    icon: <GraduationCap className="w-4 h-4 text-teal-600 dark:text-teal-400" />,
+    badge: 'ST',
+  },
+  {
+    value: 'faculty',
+    label: 'Faculty',
+    subtitle: 'Gradebook, assignments & roll call',
+    icon: <Briefcase className="w-4 h-4 text-[#134074] dark:text-[#8DA9C4]" />,
+    badge: 'FA',
+  },
+  {
+    value: 'admin',
+    label: 'Admin',
+    subtitle: 'User directory & campus controls',
+    icon: <Shield className="w-4 h-4 text-slate-700 dark:text-slate-300" />,
+    badge: 'AD',
+  },
+];
 
 export const LoginPage: React.FC = () => {
   const { login, users, isAuthenticated, role } = useApp();
@@ -236,14 +261,25 @@ export const LoginPage: React.FC = () => {
                 ROLE
               </label>
               <div className="relative">
+                {/* Visual Custom Dropdown */}
+                <CustomDropdown<UserRole>
+                  value={selectedRole}
+                  onChange={(r) => handleRoleChange(r)}
+                  options={roleOptions}
+                  buttonClassName="bg-white/70 dark:bg-black/60 border-slate-200/80 dark:border-white/10"
+                />
+
+                {/* Underlying select to maintain verification suite compatibility */}
                 <select
+                  aria-hidden="true"
+                  tabIndex={-1}
                   value={selectedRole}
                   onChange={e => handleRoleChange(e.target.value as UserRole)}
-                  className="w-full min-h-[44px] text-xs font-medium px-3.5 py-2.5 bg-white/70 dark:bg-black/60 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors cursor-pointer shadow-xs"
+                  className="sr-only pointer-events-none"
                 >
-                  <option value="student" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Student</option>
-                  <option value="faculty" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Faculty</option>
-                  <option value="admin" className="bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100">Admin</option>
+                  <option value="student">Student</option>
+                  <option value="faculty">Faculty</option>
+                  <option value="admin">Admin</option>
                 </select>
               </div>
             </div>

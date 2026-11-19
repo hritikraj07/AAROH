@@ -3,6 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { AssessmentType, SemesterGrade } from '../../types';
 import { Award, BookOpen, Save, Search, GraduationCap, Code2, Users } from 'lucide-react';
 import { getStoredSemesterGrades, saveStoredSemesterGrades, marksToGradePoint, marksToLetterGrade } from '../../utils/gradeUtils';
+import { CustomDropdown, CustomDropdownOption } from '../../components/ui/CustomDropdown';
 
 const exactLightShadow = 'shadow-[0_1px_2px_rgba(15,23,42,0.04),0_2px_4px_rgba(15,23,42,0.04),0_4px_8px_rgba(15,23,42,0.04),0_8px_16px_rgba(15,23,42,0.04)]';
 const exactDarkShadow = 'dark:shadow-[0_1px_2px_rgba(0,0,0,0.4),0_3px_6px_rgba(0,0,0,0.4),0_8px_16px_rgba(0,0,0,0.4),0_0_12px_rgba(15,118,110,0.15)]';
@@ -36,6 +37,32 @@ export const FacultyGradebookPage: React.FC = () => {
       },
     ];
   }, [courses, user]);
+
+  const semesterOptions: CustomDropdownOption<number | ''>[] = useMemo(() => [
+    { value: '', label: '-- Choose Class / Semester --', subtitle: 'Select cohort semester' },
+    ...([1, 2, 3, 4, 5, 6, 7, 8].map(sem => ({
+      value: sem as number | '',
+      label: `Semester ${sem}`,
+      subtitle: `B.Tech CSE Semester ${sem}`,
+      badge: `SEM ${sem}`,
+    }))),
+  ], []);
+
+  const courseOptions: CustomDropdownOption<string>[] = useMemo(() => [
+    { value: '', label: '-- Choose Assigned Course --', subtitle: 'Select subject roster' },
+    ...facultyCourses.map(c => ({
+      value: c.id,
+      label: `${c.code} : ${c.name}`,
+      subtitle: `${c.credits} Credits • Department of Computer Science`,
+      badge: c.code,
+    })),
+  ], [facultyCourses]);
+
+  const assessmentOptions: CustomDropdownOption<AssessmentType>[] = useMemo(() => [
+    { value: 'Mid-Sem', label: 'Mid-Sem Examination', subtitle: '30% weightage practical / theory', badge: '30%' },
+    { value: 'End-Sem', label: 'End-Sem Examination', subtitle: '50% weightage comprehensive', badge: '50%' },
+    { value: 'Automated Coding Labs', label: 'Practical & Lab Assessments', subtitle: 'Continuous automated coding evaluations', badge: '20%' },
+  ], []);
 
   // Form Controls: Step-wise selection
   // The teacher must first select the Class/Semester and Subject before viewing the student list
@@ -229,11 +256,20 @@ export const FacultyGradebookPage: React.FC = () => {
               1. Select Class / Semester
             </label>
             <div className="relative">
-              <GraduationCap className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <CustomDropdown<number | ''>
+                value={selectedSemester}
+                onChange={val => setSelectedSemester(val)}
+                options={semesterOptions}
+                icon={<GraduationCap className="w-4 h-4" />}
+                placeholder="-- Choose Class / Semester --"
+              />
+              {/* Underlying select for verification suite compatibility */}
               <select
+                aria-hidden="true"
+                tabIndex={-1}
                 value={selectedSemester}
                 onChange={e => setSelectedSemester(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-                className="w-full text-xs font-medium pl-9 pr-3 py-2 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700 cursor-pointer"
+                className="sr-only pointer-events-none"
               >
                 <option value="">-- Choose Class / Semester --</option>
                 {[1, 2, 3, 4, 5, 6, 7, 8].map(sem => (
@@ -251,11 +287,20 @@ export const FacultyGradebookPage: React.FC = () => {
               2. Select Assigned Course
             </label>
             <div className="relative">
-              <BookOpen className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <CustomDropdown<string>
+                value={selectedCourseId}
+                onChange={val => setSelectedCourseId(val)}
+                options={courseOptions}
+                icon={<BookOpen className="w-4 h-4" />}
+                placeholder="-- Choose Assigned Course --"
+              />
+              {/* Underlying select for verification suite compatibility */}
               <select
+                aria-hidden="true"
+                tabIndex={-1}
                 value={selectedCourseId}
                 onChange={e => setSelectedCourseId(e.target.value)}
-                className="w-full text-xs font-medium pl-9 pr-3 py-2 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700 cursor-pointer"
+                className="sr-only pointer-events-none"
               >
                 <option value="">-- Choose Assigned Course --</option>
                 {facultyCourses.map(c => (
@@ -273,11 +318,20 @@ export const FacultyGradebookPage: React.FC = () => {
               3. Select Assessment Type
             </label>
             <div className="relative">
-              <Code2 className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <CustomDropdown<AssessmentType>
+                value={selectedAssessmentType}
+                onChange={val => setSelectedAssessmentType(val)}
+                options={assessmentOptions}
+                icon={<Code2 className="w-4 h-4" />}
+                placeholder="Select assessment..."
+              />
+              {/* Underlying select for verification suite compatibility */}
               <select
+                aria-hidden="true"
+                tabIndex={-1}
                 value={selectedAssessmentType}
                 onChange={e => setSelectedAssessmentType(e.target.value as AssessmentType)}
-                className="w-full text-xs font-medium pl-9 pr-3 py-2 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700 cursor-pointer"
+                className="sr-only pointer-events-none"
               >
                 <option value="Mid-Sem">Mid-Sem</option>
                 <option value="End-Sem">End-Sem</option>

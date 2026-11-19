@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Menu, Search, Bell, ArrowRight, X, SlidersHorizontal, ChevronRight, ChevronDown } from 'lucide-react';
+import { Menu, Search, Bell, ArrowRight, X, SlidersHorizontal, ChevronRight, ChevronDown, Check, Layers } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { APP_CONFIG } from '../../config';
 import { Link, useNavigate } from 'react-router-dom';
 import { getApproachingDeadlines } from '../../utils/deadlineUtils';
 import { StorageService } from '../../services/storage';
+import { CustomDropdown, CustomDropdownOption } from '../ui/CustomDropdown';
 
 export const AVAILABLE_SKILL_CATEGORIES: { category: string; skills: string[] }[] = [
   {
@@ -162,7 +163,17 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
   // Skill Autocomplete Search State
   const [skillSearchQuery, setSkillSearchQuery] = useState('');
   const [isSkillSearchOpen, setIsSkillSearchOpen] = useState(false);
+  const [selectedSkillCategory, setSelectedSkillCategory] = useState<string>('Programming Languages');
   const skillSearchContainerRef = useRef<HTMLDivElement>(null);
+
+  const skillCategoryOptions: CustomDropdownOption<string>[] = useMemo(() => [
+    ...AVAILABLE_SKILL_CATEGORIES.map(grp => ({
+      value: grp.category,
+      label: grp.category,
+      subtitle: `${grp.skills.length} skills in category`,
+      badge: String(grp.skills.length),
+    })),
+  ], []);
 
   const flatCatalogSkills = useMemo(() => {
     const list: { skill: string; category: string }[] = [];
@@ -657,9 +668,9 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
 
           {/* Profile Card Popover to see your profile */}
           {isProfileOpen && (
-            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-24px)] sm:w-88 max-w-sm bg-white dark:bg-[#0E0E11] rounded-2xl border border-slate-200 dark:border-[#27272A] shadow-2xl z-50 overflow-hidden animate-in fade-in duration-150 font-sans">
+            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-24px)] sm:w-96 max-w-sm bg-white dark:bg-[#0E0E11] rounded-2xl border border-slate-200 dark:border-[#27272A] shadow-2xl z-50 animate-in fade-in duration-150 font-sans max-h-[85vh] overflow-y-auto">
               {/* Profile Header */}
-              <div className="p-4 bg-gradient-to-br from-[#8DA9C4]/15 via-transparent to-transparent border-b border-slate-100 dark:border-[#27272A]">
+              <div className="p-4 bg-gradient-to-br from-[#8DA9C4]/15 via-transparent to-transparent border-b border-slate-100 dark:border-[#27272A] rounded-t-2xl">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-[#134074] text-white font-bold text-base flex items-center justify-center font-mono shadow-md border border-[#8DA9C4]/30">
@@ -768,7 +779,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                     </div>
 
                     {/* Searchable Skill Combobox with Live Autocomplete */}
-                    <div ref={skillSearchContainerRef} className="space-y-1.5 pt-1 relative">
+                    <div ref={skillSearchContainerRef} className="space-y-1.5 pt-1">
                       <label htmlFor="skill-autocomplete-search" className="block text-[10px] font-mono uppercase text-slate-400 dark:text-slate-500">
                         Search & Add Skills:
                       </label>
@@ -817,9 +828,9 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                       </div>
 
                       {/* Autocomplete Dropdown Menu */}
-                      {isSkillSearchOpen && (
-                        <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-lg max-h-48 overflow-y-auto p-1 divide-y divide-slate-100 dark:divide-[#27272A]">
-                          <div className="px-2 py-1 text-[10px] font-mono text-slate-400 dark:text-slate-500 flex justify-between items-center bg-slate-50/50 dark:bg-[#141417]">
+                      {isSkillSearchOpen && skillSearchQuery.trim().length > 0 && (
+                        <div className="mt-1.5 w-full bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl shadow-lg max-h-48 overflow-y-auto p-1 divide-y divide-slate-100 dark:divide-[#27272A]">
+                          <div className="px-2.5 py-1 text-[10px] font-mono text-slate-400 dark:text-slate-500 flex justify-between items-center bg-slate-50/70 dark:bg-[#141417] rounded-t-lg">
                             <span>Matching Skills ({filteredSkills.length})</span>
                             <span className="text-[9px]">Press Enter to add</span>
                           </div>
@@ -842,7 +853,7 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                                       setSkillSearchQuery('');
                                       setIsSkillSearchOpen(false);
                                     }}
-                                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded text-left text-xs transition-colors cursor-pointer ${
+                                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left text-xs transition-colors cursor-pointer ${
                                       isAdded
                                         ? 'opacity-50 cursor-not-allowed bg-slate-50/50 dark:bg-[#141417]/50'
                                         : 'hover:bg-teal-50 dark:hover:bg-teal-950/40 text-slate-900 dark:text-slate-100'
@@ -866,6 +877,48 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                           </div>
                         </div>
                       )}
+
+                      {/* Browse Catalog by Category Dropdown Menu */}
+                      <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-[#27272A]/70">
+                        <label className="block text-[10px] font-mono uppercase text-slate-400 dark:text-slate-500">
+                          Browse Skills Catalog by Category:
+                        </label>
+                        <CustomDropdown<string>
+                          value={selectedSkillCategory}
+                          onChange={cat => setSelectedSkillCategory(cat)}
+                          options={skillCategoryOptions}
+                          icon={<Layers className="w-3.5 h-3.5" />}
+                          placeholder="Select category..."
+                          buttonClassName="min-h-[36px] py-1.5 px-3 text-xs bg-slate-50 dark:bg-[#18181B] rounded-lg"
+                        />
+
+                        {/* Category Skills Chips */}
+                        <div className="pt-1 flex flex-wrap gap-1 max-h-36 overflow-y-auto p-1.5 bg-slate-50/70 dark:bg-[#141417] border border-slate-100 dark:border-[#27272A] rounded-lg">
+                          {AVAILABLE_SKILL_CATEGORIES.find(c => c.category === selectedSkillCategory)?.skills.map(sk => {
+                            const isAdded = (user?.skills || []).includes(sk);
+                            return (
+                              <button
+                                key={sk}
+                                type="button"
+                                disabled={isAdded}
+                                onClick={() => handleAddSkill(sk)}
+                                className={`text-[10px] font-mono px-2 py-0.5 rounded transition-all cursor-pointer flex items-center gap-1 ${
+                                  isAdded
+                                    ? 'bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/50 cursor-default'
+                                    : 'bg-white dark:bg-[#1F1F23] hover:bg-teal-50 dark:hover:bg-teal-950/30 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#27272A]'
+                                }`}
+                              >
+                                {isAdded ? (
+                                  <Check className="w-2.5 h-2.5 text-teal-600 dark:text-teal-400" />
+                                ) : (
+                                  <span className="text-teal-600 dark:text-teal-400 font-bold">+</span>
+                                )}
+                                <span>{sk}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
