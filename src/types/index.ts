@@ -23,8 +23,6 @@ export interface User {
   classCoordinator?: string; // Assigned faculty mentor / coordinator
   savedOpportunityIds?: string[]; // Saved opportunities per user
   skills?: string[]; // Self-reported student technical skills
-  student_status?: 'Regular' | 'Provisional' | string;
-  status?: string;
 }
 
 // Student is an alias of User for full backward compatibility

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Logo } from '../components/ui/Logo';
@@ -52,6 +52,21 @@ export const LoginPage: React.FC = () => {
 
   // Mouse coordinate state for interactive blurred blobs
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
+
+  // Enforce Light Mode on Login Page: if dark theme is enabled in home page, do not show dark theme on login page
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.classList.remove('dark');
+    }
+    return () => {
+      if (typeof document !== 'undefined') {
+        const savedTheme = localStorage.getItem('aaroh_theme');
+        if (savedTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      }
+    };
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const { clientX, clientY, currentTarget } = e;
@@ -134,8 +149,6 @@ export const LoginPage: React.FC = () => {
         ? 'B.Tech CSE (AI & ML)'
         : rawCourse.trim();
 
-      const studentStatus = data.student_status || data.status || 'Regular';
-
       const userObj: User = {
         id: `usr_${roll.toLowerCase()}`,
         name: fullName,
@@ -151,8 +164,6 @@ export const LoginPage: React.FC = () => {
         course: resolvedCourse,
         section: data.division ? `Section ${data.division}` : 'Section A',
         division: data.division || 'A',
-        student_status: studentStatus,
-        status: studentStatus,
         semester: 1,
         academicYear: APP_CONFIG.academicSession,
         attendanceMinimum: APP_CONFIG.defaultAttendanceThreshold,
@@ -173,8 +184,6 @@ export const LoginPage: React.FC = () => {
           division: data.division || 'A',
           designation: userObj.designation,
           department: userObj.department,
-          student_status: studentStatus,
-          status: studentStatus,
         };
         if (uIdx >= 0) {
           storedAaroh[uIdx] = { ...storedAaroh[uIdx], ...entry };
@@ -372,15 +381,15 @@ export const LoginPage: React.FC = () => {
       </div>
 
       {/* 3. The Glassmorphism Login Card: Full height / length matching design screenshot */}
-      <div className="relative z-10 w-full max-w-sm sm:w-[420px] md:w-[460px] lg:w-[480px] h-full min-h-screen py-6 px-6 sm:px-8 md:px-10 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-none sm:rounded-l-3xl border-l border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-between overflow-y-auto">
+      <div className="relative z-10 w-full max-w-sm sm:w-[420px] md:w-[460px] lg:w-[480px] h-full min-h-screen max-h-screen py-3 sm:py-4 px-5 sm:px-8 md:px-9 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-none sm:rounded-l-3xl border-l border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-between overflow-hidden">
         {/* Form Section: Vertically balanced with even top and bottom spacing */}
-        <div className="my-auto flex flex-col space-y-4 sm:space-y-5 py-2">
+        <div className="my-auto flex flex-col space-y-2.5 sm:space-y-3 py-1">
           {/* Header: Logo, Aaroh, Subtitle, and Sign In heading */}
-          <div className="flex flex-col items-center justify-center text-center space-y-1">
+          <div className="flex flex-col items-center justify-center text-center space-y-0.5">
             <div className="flex items-center justify-center gap-2">
               <Logo size="md" />
             </div>
-            <div className="text-[10px] font-semibold tracking-widest text-slate-500 dark:text-slate-400 uppercase font-mono pt-0.5" title="K.R. Mangalam University">
+            <div className="text-[9px] sm:text-[10px] font-semibold tracking-widest text-slate-500 dark:text-slate-400 uppercase font-mono pt-0.5" title="K.R. Mangalam University">
               K.R. MANGALAM UNIVERSITY
             </div>
             <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
@@ -389,25 +398,25 @@ export const LoginPage: React.FC = () => {
           </div>
 
           {/* Institutional Access Restriction Notice */}
-          <div className="p-3 bg-slate-50/80 dark:bg-[#141417]/90 border border-slate-200/80 dark:border-[#27272A] rounded-xl text-center">
-            <p className="text-[11px] text-slate-600 dark:text-slate-400 font-sans leading-relaxed">
+          <div className="p-2 sm:p-2.5 bg-slate-50/80 dark:bg-[#141417]/90 border border-slate-200/80 dark:border-[#27272A] rounded-xl text-center">
+            <p className="text-[10px] sm:text-[11px] text-slate-600 dark:text-slate-400 font-sans leading-tight">
               Access restricted to pre-enrolled K.R. Mangalam University accounts. Contact Administration for credential provisioning.
             </p>
           </div>
 
           {/* Error Alert */}
           {errorMessage && (
-            <div className="p-2.5 bg-rose-50/80 dark:bg-rose-950/50 border border-rose-200/80 dark:border-rose-900/60 rounded-xl text-xs text-rose-800 dark:text-rose-300 flex items-start gap-2 animate-in fade-in duration-150">
+            <div className="p-2 bg-rose-50/80 dark:bg-rose-950/50 border border-rose-200/80 dark:border-rose-900/60 rounded-xl text-xs text-rose-800 dark:text-rose-300 flex items-start gap-2 animate-in fade-in duration-150">
               <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-              <span className="leading-relaxed">{errorMessage}</span>
+              <span className="leading-tight">{errorMessage}</span>
             </div>
           )}
 
           {/* Login Form */}
-          <form onSubmit={handleSubmit} autoComplete="off" className="space-y-3.5">
+          <form onSubmit={handleSubmit} autoComplete="off" className="space-y-2.5 sm:space-y-3">
             {/* 1. ROLE Dropdown */}
             <div>
-              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
+              <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
                 ROLE
               </label>
               <div className="relative">
@@ -416,7 +425,7 @@ export const LoginPage: React.FC = () => {
                   value={selectedRole}
                   onChange={(r) => handleRoleChange(r)}
                   options={roleOptions}
-                  buttonClassName="bg-white/70 dark:bg-black/60 border-slate-200/80 dark:border-white/10"
+                  buttonClassName="bg-white/70 dark:bg-black/60 border-slate-200/80 dark:border-white/10 py-1.5"
                 />
 
                 {/* Underlying select to maintain verification suite compatibility */}
@@ -436,29 +445,29 @@ export const LoginPage: React.FC = () => {
 
             {/* 2. ROLL NUMBER OR INSTITUTIONAL EMAIL Input */}
             <div>
-              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
+              <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
                 ROLL NUMBER OR INSTITUTIONAL EMAIL
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+                <Mail className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
                 <input
                   type="text"
                   required
                   value={email}
                   onChange={e => handleEmailChange(e.target.value)}
                   placeholder="e.g. 2601010006 or 2601010006@aaroh.edu.in"
-                  className="w-full min-h-[44px] text-xs font-mono pl-10 pr-3.5 py-2.5 bg-white/80 dark:bg-black/70 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors shadow-xs"
+                  className="w-full min-h-[38px] sm:min-h-[40px] text-xs font-mono pl-9 pr-3 py-1.5 sm:py-2 bg-white/80 dark:bg-black/70 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors shadow-xs"
                 />
               </div>
             </div>
 
             {/* 3. PASSWORD Input */}
             <div>
-              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 font-mono uppercase tracking-wider">
+              <label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 mb-1 font-mono uppercase tracking-wider">
                 PASSWORD
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
+                <Lock className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10" />
                 <input
                   id="aaroh_auth_key"
                   name="aaroh_auth_key"
@@ -474,16 +483,16 @@ export const LoginPage: React.FC = () => {
                     if (errorMessage) setErrorMessage(null);
                   }}
                   placeholder="••••••••••••"
-                  className="w-full min-h-[44px] text-xs font-mono pl-10 pr-11 py-2.5 bg-white/80 dark:bg-black/70 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors shadow-xs"
+                  className="w-full min-h-[38px] sm:min-h-[40px] text-xs font-mono pl-9 pr-10 py-1.5 sm:py-2 bg-white/80 dark:bg-black/70 border border-slate-200/80 dark:border-white/10 rounded-xl text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-[#134074] dark:focus:ring-[#8DA9C4] transition-colors shadow-xs"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(prev => !prev)}
-                  className="absolute right-1 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200 z-10 focus:outline-none cursor-pointer transition-colors"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200 z-10 focus:outline-none cursor-pointer transition-colors"
                   title={showPassword ? 'Hide password' : 'Show password'}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
               </div>
             </div>
@@ -492,19 +501,19 @@ export const LoginPage: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full min-h-[46px] inline-flex items-center justify-center gap-1.5 py-2.5 px-4 text-xs font-bold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} disabled:opacity-50 select-none cursor-pointer mt-1`}
+              className={`w-full min-h-[40px] sm:min-h-[42px] inline-flex items-center justify-center gap-1.5 py-2 px-4 text-xs font-bold text-white bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] border border-[#8DA9C4]/30 rounded-xl transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover} disabled:opacity-50 select-none cursor-pointer mt-0.5`}
             >
               <span>{loading ? 'Authenticating...' : 'Sign In ->'}</span>
             </button>
           </form>
 
           {/* Demo Quick Access Section */}
-          <div className="space-y-2.5 pt-1">
+          <div className="space-y-1.5 pt-0.5">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-200 dark:border-slate-800" />
               </div>
-              <div className="relative flex justify-center text-[10px] uppercase tracking-wider font-mono">
+              <div className="relative flex justify-center text-[9px] uppercase tracking-wider font-mono">
                 <span className="bg-white/80 dark:bg-[#18181B]/80 px-2 text-slate-400 dark:text-slate-500 rounded">
                   or continue with demo
                 </span>
@@ -517,7 +526,7 @@ export const LoginPage: React.FC = () => {
                 type="button"
                 onClick={() => handleQuickDemoLogin('admin')}
                 disabled={loading}
-                className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[44px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate shadow-2xs"
+                className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[38px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate shadow-2xs"
               >
                 Admin Demo
               </button>
@@ -525,7 +534,7 @@ export const LoginPage: React.FC = () => {
                 type="button"
                 onClick={() => handleQuickDemoLogin('faculty')}
                 disabled={loading}
-                className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[44px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate shadow-2xs"
+                className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[38px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate shadow-2xs"
               >
                 Faculty Demo
               </button>
@@ -533,7 +542,7 @@ export const LoginPage: React.FC = () => {
                 type="button"
                 onClick={() => handleQuickDemoLogin('student')}
                 disabled={loading}
-                className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[44px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate shadow-2xs"
+                className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[38px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate shadow-2xs"
               >
                 Student Demo
               </button>
@@ -542,8 +551,8 @@ export const LoginPage: React.FC = () => {
         </div>
 
         {/* Bottom Feature Showcase: "WHY CHOOSE AAROH?" & 3 feature icons */}
-        <div className="pt-2 pb-2 select-none">
-          <div className="relative mb-3">
+        <div className="pt-1 pb-1 select-none">
+          <div className="relative mb-2">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-slate-200/80 dark:border-white/10" />
             </div>
@@ -554,11 +563,11 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="grid grid-cols-3 gap-1.5 text-center">
             {/* Feature 1: AI-Powered Insights */}
             <div className="flex flex-col items-center">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[#134074] dark:text-[#8DA9C4] bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-2xs">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[#134074] dark:text-[#8DA9C4] bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-2xs">
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 2a4 4 0 0 1 4 4v1a4 4 0 0 1-4 4 4 4 0 0 1-4-4V6a4 4 0 0 1 4-4Z" />
                   <path d="M18 8a2 2 0 1 1 0 4" />
                   <path d="M6 8a2 2 0 1 0 0 4" />
@@ -566,36 +575,36 @@ export const LoginPage: React.FC = () => {
                   <path d="M12 11v3" />
                 </svg>
               </div>
-              <span className="text-[10px] font-semibold text-slate-800 dark:text-slate-200 mt-1.5 leading-tight">
+              <span className="text-[9px] font-semibold text-slate-800 dark:text-slate-200 mt-1 leading-tight">
                 AI-Powered Insights
               </span>
             </div>
 
             {/* Feature 2: Performance Analytics */}
             <div className="flex flex-col items-center">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[#134074] dark:text-[#8DA9C4] bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-2xs">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[#134074] dark:text-[#8DA9C4] bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-2xs">
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 3v18h18" />
                   <path d="m19 9-5 5-4-4-3 3" />
                   <path d="M19 5v4h-4" />
                 </svg>
               </div>
-              <span className="text-[10px] font-semibold text-slate-800 dark:text-slate-200 mt-1.5 leading-tight">
+              <span className="text-[9px] font-semibold text-slate-800 dark:text-slate-200 mt-1 leading-tight">
                 Performance Analytics
               </span>
             </div>
 
             {/* Feature 3: Real-Time Sync */}
             <div className="flex flex-col items-center">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center text-[#134074] dark:text-[#8DA9C4] bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-2xs">
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[#134074] dark:text-[#8DA9C4] bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-2xs">
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                   <path d="M3 3v5h5" />
                   <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
                   <path d="M16 16h5v5" />
                 </svg>
               </div>
-              <span className="text-[10px] font-semibold text-slate-800 dark:text-slate-200 mt-1.5 leading-tight">
+              <span className="text-[9px] font-semibold text-slate-800 dark:text-slate-200 mt-1 leading-tight">
                 Real-Time Sync
               </span>
             </div>

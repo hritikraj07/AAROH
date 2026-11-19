@@ -223,7 +223,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     if (typeof document !== 'undefined') {
-      if (theme === 'dark') {
+      const isLoginPage = typeof window !== 'undefined' && window.location.pathname === '/login';
+      if (theme === 'dark' && !isLoginPage) {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');

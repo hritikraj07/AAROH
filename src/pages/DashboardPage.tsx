@@ -339,18 +339,6 @@ export const DashboardPage: React.FC = () => {
             <span className="text-xs font-mono font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-[#27272A] border border-slate-200 dark:border-slate-700 px-3 py-1 rounded-md">
               {user?.division ? `Section ${user.division}` : (user?.section || 'Section A')}
             </span>
-            <span className={`inline-flex items-center gap-1.5 text-xs font-mono font-medium px-2.5 py-1 rounded-md border ${
-              (user?.student_status || (user as any)?.status || 'Regular').toLowerCase() === 'provisional'
-                ? 'bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800/60'
-                : 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60'
-            }`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${
-                (user?.student_status || (user as any)?.status || 'Regular').toLowerCase() === 'provisional'
-                  ? 'bg-amber-500'
-                  : 'bg-emerald-500'
-              }`} />
-              {user?.student_status || (user as any)?.status || 'Regular'}
-            </span>
           </div>
         </div>
       </div>
