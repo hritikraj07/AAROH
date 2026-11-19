@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "Aaroh Campus OS",
+  "version": "1.0.0",
+  "description": "Unified institutional academic platform for K.R. Mangalam University.",
+  "endpoints": {
+    "login": "/login",
+    "student": "/student",
+    "faculty": "/faculty",
+    "admin": "/admin"
+  },
+  "capabilities": [
+    "institutional-authentication",
+    "curriculum-tracking",
+    "attendance-management",
+    "campus-directory",
+    "notices-and-circulars"
+  ]
+}

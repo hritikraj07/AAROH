@@ -12,6 +12,9 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/aaroh_logo.png" />
+    <!-- Preload critical hero assets for instant First and Largest Contentful Paint -->
+    <link rel="preload" href="/campus.svg" as="image" type="image/svg+xml" fetchpriority="high" />
+    <link rel="preload" href="/krmu_banner.svg" as="image" type="image/svg+xml" fetchpriority="high" />
   </head>
   <body class="bg-background dark:bg-[#0E0E11] text-[#0B2545] dark:text-[#EEF4ED] antialiased selection:bg-teal-100 selection:text-teal-900 min-h-screen">
     <div class="hidden transition-colors duration-500 ease-in-out" aria-hidden="true"></div>

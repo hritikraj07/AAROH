@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { Logo } from '../components/ui/Logo';
-import { Lock, Mail, AlertCircle, Eye, EyeOff, GraduationCap, Briefcase, Shield, Lightbulb, TrendingUp, Users } from 'lucide-react';
+import { Lock, Mail, AlertCircle, Eye, EyeOff, GraduationCap, Briefcase, Shield, Lightbulb, TrendingUp, Users, Volume2, VolumeX } from 'lucide-react';
 import { getUserRoleFromEmail, generateUserFromEmail } from '../data/seed';
 import { User, UserRole } from '../types';
 import { APP_CONFIG } from '../config';
@@ -52,6 +52,8 @@ export const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Mouse coordinate state for interactive blurred blobs
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 });
@@ -349,7 +351,8 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div
+    <main
+      role="main"
       onMouseMove={handleMouseMove}
       className="min-h-screen w-full h-screen overflow-hidden flex flex-col lg:flex-row items-center justify-end lg:justify-between p-4 sm:p-6 lg:p-10 xl:p-14 relative bg-[#EEF4ED] dark:bg-[#0E0E11] font-sans select-none transition-colors duration-500 ease-in-out"
     >
@@ -358,6 +361,8 @@ export const LoginPage: React.FC = () => {
         <img
           src="/campus.svg"
           alt="K.R. Mangalam University Campus"
+          width={1920}
+          height={1080}
           className="w-full h-full min-h-screen object-cover object-center"
         />
         {/* Scrim Overlay: Deep navy scrim on the left fading to light/transparent on right */}
@@ -379,6 +384,8 @@ export const LoginPage: React.FC = () => {
         <img
           src="/krmu_banner.svg"
           alt="K.R. Mangalam University - The Complete World of Education - NAAC Grade A"
+          width={460}
+          height={90}
           className="w-[240px] xs:w-[280px] max-w-[75vw] h-auto object-contain block drop-shadow-md select-none pointer-events-none"
         />
       </div>
@@ -390,6 +397,8 @@ export const LoginPage: React.FC = () => {
           <img
             src="/krmu_banner.svg"
             alt="K.R. Mangalam University - The Complete World of Education - NAAC Grade A"
+            width={460}
+            height={90}
             className="w-[360px] xl:w-[460px] max-w-full h-auto object-contain block drop-shadow-md select-none pointer-events-none"
           />
         </div>
@@ -429,25 +438,43 @@ export const LoginPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Video Preview Card: Autoplay, No Buttons, No Borders, Transparent/Blended */}
-        <div className="w-full max-w-lg rounded-2xl overflow-hidden border-none shadow-2xl bg-black/30 backdrop-blur-xs">
+        {/* Video Preview Card: Autoplay, No Borders, Transparent/Blended with Mute/Unmute Control */}
+        <div className="relative w-full max-w-lg rounded-2xl overflow-hidden border-none shadow-2xl bg-black/30 backdrop-blur-xs group">
           <video
+            ref={videoRef}
             src={CAMPUS_PREVIEW_VIDEO}
             autoPlay
             loop
-            muted
+            muted={isMuted}
             playsInline
             controls={false}
+            preload="metadata"
             aria-label="K.R. Mangalam University Campus Preview"
             className="w-full h-auto aspect-video object-cover border-none outline-none block pointer-events-none select-none rounded-2xl"
           />
+          {/* Tactile Audio Mute / Unmute Button */}
+          <button
+            type="button"
+            onClick={() => {
+              if (videoRef.current) {
+                const nextMuted = !videoRef.current.muted;
+                videoRef.current.muted = nextMuted;
+                setIsMuted(nextMuted);
+              }
+            }}
+            className="absolute bottom-3 right-3 p-2 rounded-full bg-black/60 hover:bg-black/85 text-white backdrop-blur-md border border-white/20 transition-all duration-150 active:scale-95 cursor-pointer z-10 focus:outline-none focus:ring-2 focus:ring-amber-400"
+            title={isMuted ? 'Unmute video audio' : 'Mute video audio'}
+            aria-label={isMuted ? 'Unmute campus preview video audio' : 'Mute campus preview video audio'}
+          >
+            {isMuted ? <VolumeX className="w-4 h-4 text-white" /> : <Volume2 className="w-4 h-4 text-white" />}
+          </button>
         </div>
       </div>
 
       {/* 4. The Glassmorphism Login Card: Floating on the right matching reference layout */}
-      <div className="relative z-20 w-full max-w-sm sm:w-[400px] lg:w-[420px] max-h-[96vh] py-3.5 sm:py-4 px-5 sm:px-7 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-3xl border border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-between overflow-y-auto shrink-0 my-auto">
+      <div className="relative z-20 w-full max-w-sm sm:w-[400px] lg:w-[420px] max-h-[96vh] py-5 sm:py-6 px-5 sm:px-7 bg-white/30 dark:bg-black/30 backdrop-blur-md shadow-xl backdrop-blur-xl shadow-2xl rounded-3xl border border-white/20 dark:border-white/10 animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-700 ease-out flex flex-col justify-center overflow-y-auto shrink-0 my-auto">
         {/* Form Section: Vertically balanced with even top and bottom spacing */}
-        <div className="my-auto flex flex-col space-y-2.5 sm:space-y-3 py-1">
+        <div className="my-auto flex flex-col space-y-3 sm:space-y-3.5 py-1">
           {/* Header: Logo, Aaroh, Subtitle, and Sign In heading */}
           <div className="flex flex-col items-center justify-center text-center space-y-0.5">
             <div className="flex items-center justify-center gap-2">
@@ -459,13 +486,6 @@ export const LoginPage: React.FC = () => {
             <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">
               Sign In to Aaroh
             </h1>
-          </div>
-
-          {/* Institutional Access Restriction Notice */}
-          <div className="p-2 sm:p-2.5 bg-slate-50/80 dark:bg-[#141417]/90 border border-slate-200/80 dark:border-[#27272A] rounded-xl text-center">
-            <p className="text-[10px] sm:text-[11px] text-slate-600 dark:text-slate-400 font-sans leading-tight">
-              Access restricted to pre-enrolled K.R. Mangalam University accounts. Contact Administration for credential provisioning.
-            </p>
           </div>
 
           {/* Error Alert */}
@@ -613,69 +633,8 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Bottom Feature Showcase: "WHY CHOOSE AAROH?" & 3 feature icons */}
-        <div className="pt-1 pb-1 select-none">
-          <div className="relative mb-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200/80 dark:border-white/10" />
-            </div>
-            <div className="relative flex justify-center text-[9px] uppercase tracking-widest font-mono">
-              <span className="bg-white/80 dark:bg-[#18181B]/80 px-2 py-0.5 text-slate-500 dark:text-slate-400 rounded-full font-bold">
-                WHY CHOOSE AAROH?
-              </span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-3 gap-1.5 text-center">
-            {/* Feature 1: AI-Powered Insights */}
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[#134074] dark:text-[#8DA9C4] bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-2xs">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2a4 4 0 0 1 4 4v1a4 4 0 0 1-4 4 4 4 0 0 1-4-4V6a4 4 0 0 1 4-4Z" />
-                  <path d="M18 8a2 2 0 1 1 0 4" />
-                  <path d="M6 8a2 2 0 1 0 0 4" />
-                  <circle cx="12" cy="18" r="4" />
-                  <path d="M12 11v3" />
-                </svg>
-              </div>
-              <span className="text-[9px] font-semibold text-slate-800 dark:text-slate-200 mt-1 leading-tight">
-                AI-Powered Insights
-              </span>
-            </div>
-
-            {/* Feature 2: Performance Analytics */}
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[#134074] dark:text-[#8DA9C4] bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-2xs">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 3v18h18" />
-                  <path d="m19 9-5 5-4-4-3 3" />
-                  <path d="M19 5v4h-4" />
-                </svg>
-              </div>
-              <span className="text-[9px] font-semibold text-slate-800 dark:text-slate-200 mt-1 leading-tight">
-                Performance Analytics
-              </span>
-            </div>
-
-            {/* Feature 3: Real-Time Sync */}
-            <div className="flex flex-col items-center">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[#134074] dark:text-[#8DA9C4] bg-white/60 dark:bg-white/5 border border-white/40 dark:border-white/10 shadow-2xs">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                  <path d="M3 3v5h5" />
-                  <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
-                  <path d="M16 16h5v5" />
-                </svg>
-              </div>
-              <span className="text-[9px] font-semibold text-slate-800 dark:text-slate-200 mt-1 leading-tight">
-                Real-Time Sync
-              </span>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
+    </main>
   );
 };
 

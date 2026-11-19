@@ -1,0 +1,17 @@
+# Aaroh Campus OS
+
+> Unified institutional academic operating platform for K.R. Mangalam University.
+
+Aaroh Campus OS is the centralized portal for academic management, student tracking, faculty workflows, and campus administration.
+
+## Core Portals
+
+- [Student Portal](/student): Coursework tracking, dynamic attendance monitoring, lecture timetables, and academic records.
+- [Faculty Portal](/faculty): Roll call submission, batch attendance recording, course syllabi, and departmental circulars.
+- [Admin Portal](/admin): Institutional user directory, role provisioning, master timetable scheduling, and campus controls.
+- [Authentication](/login): Closed institutional authentication for pre-enrolled university accounts.
+
+## Documentation and Resources
+
+- [Sitemap](/sitemap.xml): Complete URL index of institutional routes.
+- [Robots Policy](/robots.txt): Crawler and indexing directives.
