@@ -701,7 +701,10 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Architectural Wireframe SVG of University Building */}
-        <UniversityBuildingWireframe className="absolute right-0 bottom-0 h-[95%] w-auto pointer-events-none select-none z-0 text-[#15803D]/45 dark:text-emerald-400/35 [mask-image:linear-gradient(to_left,black_65%,transparent_100%)] hidden md:block" />
+        <UniversityBuildingWireframe
+          wrapperClassName="hidden lg:flex items-end justify-end absolute right-3 bottom-0 w-[42%] max-w-[460px] h-[88%] pointer-events-none select-none z-0"
+          className="w-full h-full text-[#4a7c59]/25 dark:text-emerald-400/25"
+        />
       </div>
 
       {/* 3. In-Class Adaptive Layout Shift: Quick Notes & Live Pulse Widget at the VERY TOP */}
