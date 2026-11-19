@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { Opportunity, OpportunityMode, OpportunityType } from '../types';
 import { Badge } from '../components/ui/Badge';
@@ -167,31 +168,45 @@ export const OpportunitiesPage: React.FC = () => {
         </div>
 
         {/* View Switcher: "Browse" vs "Saved" */}
-        <div className="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-md border border-slate-200 dark:border-slate-700 text-xs self-start sm:self-auto">
+        <div className="flex items-center bg-slate-100 dark:bg-[#111115] p-1 rounded-xl border border-slate-200/80 dark:border-[#27272A] text-xs self-start sm:self-auto">
           <button
             onClick={() => setViewTab('browse')}
-            className={`px-3 py-1.5 rounded transition-colors font-medium ${
+            className={`relative px-3.5 py-1.5 rounded-lg transition-all duration-150 font-medium active:scale-[0.97] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4ED8]/40 ${
               viewTab === 'browse'
-                ? 'bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100 font-semibold'
+                ? 'text-slate-900 dark:text-slate-100 font-semibold'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
-            Browse ({opportunities.length})
+            {viewTab === 'browse' && (
+              <motion.div
+                layoutId="oppViewTab"
+                className="absolute inset-0 bg-white dark:bg-[#18181B] rounded-lg shadow-xs z-0"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
+            )}
+            <span className="relative z-10">Browse ({opportunities.length})</span>
           </button>
           <button
             onClick={() => setViewTab('saved')}
-            className={`px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 font-medium ${
+            className={`relative px-3.5 py-1.5 rounded-lg transition-all duration-150 flex items-center gap-1.5 font-medium active:scale-[0.97] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4ED8]/40 ${
               viewTab === 'saved'
-                ? 'bg-teal-700 text-white font-semibold'
+                ? 'text-teal-900 dark:text-teal-100 font-semibold'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
-            <Bookmark className={`w-3.5 h-3.5 ${viewTab === 'saved' ? 'fill-white' : ''}`} />
-            <span>Saved</span>
+            {viewTab === 'saved' && (
+              <motion.div
+                layoutId="oppViewTab"
+                className="absolute inset-0 bg-teal-50 dark:bg-teal-900/40 border border-teal-200/80 dark:border-teal-800/60 rounded-lg shadow-xs z-0"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
+            )}
+            <Bookmark className={`relative z-10 w-3.5 h-3.5 ${viewTab === 'saved' ? 'fill-teal-700 text-teal-700 dark:text-teal-400 dark:fill-teal-400' : ''}`} />
+            <span className="relative z-10">Saved</span>
             {savedCount > 0 && (
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full tabular-nums font-mono ${
-                  viewTab === 'saved' ? 'bg-teal-800 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                className={`relative z-10 text-[10px] px-1.5 py-0.2 rounded-full tabular-nums font-mono ${
+                  viewTab === 'saved' ? 'bg-teal-200 dark:bg-teal-800 text-teal-900 dark:text-teal-100' : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                 }`}
               >
                 {savedCount}

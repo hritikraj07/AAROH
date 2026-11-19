@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { QrCode } from 'lucide-react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
@@ -124,7 +125,17 @@ export const Layout: React.FC = () => {
 
           <main className="flex-1 overflow-y-auto bg-[#F4F7F5] dark:bg-[#0E0E11]">
             <div className="max-w-7xl mx-auto p-3.5 sm:p-6 lg:p-8 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
-              <Outlet />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={location.pathname}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -4 }}
+                  transition={{ duration: 0.22, ease: "easeOut" }}
+                >
+                  <Outlet />
+                </motion.div>
+              </AnimatePresence>
             </div>
           </main>
         </div>
@@ -135,7 +146,7 @@ export const Layout: React.FC = () => {
         <div className="fixed bottom-6 right-20 sm:right-22 z-40">
           <button
             onClick={() => setIsQRScannerOpen(true)}
-            className="flex items-center justify-center gap-2 px-5 py-3 min-h-[48px] rounded-full bg-[#0F2544] hover:bg-[#0B2545] text-white shadow-lg border border-white/10 text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer"
+            className="flex items-center justify-center gap-2 px-5 py-3 min-h-[48px] rounded-full bg-[#0F2544] hover:bg-[#0B2545] text-white shadow-lg hover:shadow-xl border border-white/10 text-xs font-semibold transition-all duration-200 hover:scale-105 active:scale-[0.97] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4ED8]/40"
             title="Scan Attendance QR"
             aria-label="Scan Attendance QR"
           >

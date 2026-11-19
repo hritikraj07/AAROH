@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   Clock,
   BookOpen,
@@ -318,10 +319,12 @@ export const DashboardPage: React.FC = () => {
             <button
               type="button"
               onClick={() => navigate('/student/assignments')}
-              className={`w-full sm:w-auto rounded-full bg-[#0F2544] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-5 py-2.5 font-medium transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow-sm ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
+              className={`group w-full sm:w-auto rounded-full bg-[#0F2544] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-xs px-5 py-2.5 font-medium transition-all duration-200 active:scale-[0.97] hover:-translate-y-0.5 flex items-center justify-center gap-2 cursor-pointer shadow-sm ${exactLightShadow} ${exactDarkShadow} ${exactLightHover} ${exactDarkHover}`}
             >
               <Code2 className="w-3.5 h-3.5 text-slate-300" />
-              <span>Automated Coding Labs →</span>
+              <span>Automated Coding Labs</span>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:translate-x-1 transition-transform duration-200" />
+              <span className="hidden" aria-hidden="true">Automated Coding Labs →</span>
             </button>
           </div>
         </div>
@@ -518,12 +521,15 @@ export const DashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* 4. 4-Column KPI Stat Cards Grid */}
+      {/* 4. 4-Column KPI Stat Cards Grid (Staggered Wave Entrances) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {/* Metric 1: Attendance */}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, delay: 0 }}
           onClick={() => navigate('/student/academics?tab=attendance')}
-          className="relative overflow-hidden bg-white dark:bg-[#18181B] border border-[#E5ECE8] dark:border-[#27272A] rounded-2xl p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 cursor-pointer flex flex-col justify-between group select-none"
+          className="relative overflow-hidden bg-white dark:bg-[#18181B] border border-[#E5ECE8] dark:border-[#27272A] rounded-2xl p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md active:scale-[0.98] cursor-pointer flex flex-col justify-between group select-none"
         >
           {/* Faint decorative pastel arc */}
           <div className="absolute -bottom-8 -right-8 w-28 h-28 rounded-full bg-blue-100/50 dark:bg-blue-900/15 pointer-events-none blur-2xl" />
@@ -558,12 +564,15 @@ export const DashboardPage: React.FC = () => {
               </span>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Metric 2: Today's Classes */}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, delay: 0.04 }}
           onClick={() => navigate('/student/academics?tab=timetable')}
-          className="relative overflow-hidden bg-white dark:bg-[#18181B] border border-[#E5ECE8] dark:border-[#27272A] rounded-2xl p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 cursor-pointer flex flex-col justify-between group select-none"
+          className="relative overflow-hidden bg-white dark:bg-[#18181B] border border-[#E5ECE8] dark:border-[#27272A] rounded-2xl p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md active:scale-[0.98] cursor-pointer flex flex-col justify-between group select-none"
         >
           {/* Faint decorative pastel arc */}
           <div className="absolute -bottom-8 -right-8 w-28 h-28 rounded-full bg-sky-100/50 dark:bg-sky-900/15 pointer-events-none blur-2xl" />
@@ -588,12 +597,15 @@ export const DashboardPage: React.FC = () => {
               ? `Next: ${upcomingInfo.session.startTime} (${upcomingInfo.session.room})`
               : 'No more classes today'}
           </div>
-        </div>
+        </motion.div>
 
         {/* Metric 3: Pending Coursework */}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, delay: 0.08 }}
           onClick={() => navigate('/student/academics?tab=assignments')}
-          className="relative overflow-hidden bg-white dark:bg-[#18181B] border border-[#E5ECE8] dark:border-[#27272A] rounded-2xl p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 cursor-pointer flex flex-col justify-between group select-none"
+          className="relative overflow-hidden bg-white dark:bg-[#18181B] border border-[#E5ECE8] dark:border-[#27272A] rounded-2xl p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md active:scale-[0.98] cursor-pointer flex flex-col justify-between group select-none"
         >
           {/* Faint decorative pastel arc */}
           <div className="absolute -bottom-8 -right-8 w-28 h-28 rounded-full bg-indigo-100/50 dark:bg-indigo-900/15 pointer-events-none blur-2xl" />
@@ -625,12 +637,15 @@ export const DashboardPage: React.FC = () => {
               <span className="text-teal-700 dark:text-teal-400 font-medium">On schedule</span>
             )}
           </div>
-        </div>
+        </motion.div>
 
         {/* Metric 4: Saved Opportunities */}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.22, delay: 0.12 }}
           onClick={() => navigate('/student/opportunities?tab=saved')}
-          className="relative overflow-hidden bg-white dark:bg-[#18181B] border border-[#E5ECE8] dark:border-[#27272A] rounded-2xl p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 cursor-pointer flex flex-col justify-between group select-none"
+          className="relative overflow-hidden bg-white dark:bg-[#18181B] border border-[#E5ECE8] dark:border-[#27272A] rounded-2xl p-5 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md active:scale-[0.98] cursor-pointer flex flex-col justify-between group select-none"
         >
           {/* Faint decorative pastel arc */}
           <div className="absolute -bottom-8 -right-8 w-28 h-28 rounded-full bg-amber-100/50 dark:bg-amber-900/15 pointer-events-none blur-2xl" />
@@ -655,7 +670,7 @@ export const DashboardPage: React.FC = () => {
           <div className="relative z-10 text-xs text-slate-600 dark:text-slate-400 font-mono">
             {opportunities.length} active listings
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* 5. Free Period Priority Section: Automated Coding Labs (Brought to the top) */}

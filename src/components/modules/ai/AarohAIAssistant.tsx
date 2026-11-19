@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Send, X, RotateCcw, User, WifiOff, Zap } from 'lucide-react';
 import { useApp } from '../../../context/AppContext';
 import {
@@ -286,7 +287,7 @@ export const AarohAIAssistant: React.FC = () => {
       <div className="fixed bottom-6 right-6 z-40">
         <button
           onClick={() => setIsOpen(prev => !prev)}
-          className="group relative flex items-center justify-center w-12 h-12 rounded-full bg-[#0F2544] hover:bg-[#0B2545] active:bg-[#081B33] text-white shadow-lg border border-white/10 focus:outline-none focus:ring-2 focus:ring-[#0F2544]/30 transition-all duration-150 ease-in-out active:scale-95 /* bg-[#134074] */"
+          className="group relative flex items-center justify-center w-12 h-12 rounded-full bg-[#0F2544] hover:bg-[#0B2545] active:bg-[#081B33] text-white shadow-lg hover:shadow-xl border border-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4ED8]/40 transition-all duration-200 hover:scale-105 active:scale-[0.97] /* bg-[#134074] */"
           aria-label={isOpen ? 'Close Aaroh AI Assistant' : 'Open Aaroh AI Assistant'}
           title="Aaroh AI Assistant"
         >
@@ -302,12 +303,17 @@ export const AarohAIAssistant: React.FC = () => {
       </div>
 
       {/* Chat Window Panel */}
-      {isOpen && (
-        <div
-          className="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[400px] max-h-[calc(100dvh-6rem)] h-[520px] bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-md flex flex-col overflow-hidden animate-in fade-in duration-150 font-sans"
-          role="dialog"
-          aria-label="Aaroh AI Campus Assistant"
-        >
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 16, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.96 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="fixed bottom-20 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[400px] max-h-[calc(100dvh-6rem)] h-[520px] bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl shadow-xl flex flex-col overflow-hidden animate-in fade-in duration-150 font-sans"
+            role="dialog"
+            aria-label="Aaroh AI Campus Assistant"
+          >
           {/* Header */}
           <div className="bg-white dark:bg-[#18181B] px-4 py-3 border-b border-slate-200 dark:border-[#27272A] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2.5">
@@ -456,8 +462,9 @@ export const AarohAIAssistant: React.FC = () => {
               </button>
             </form>
           </div>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </>
   );
 };

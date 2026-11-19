@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 export interface TabItem {
   id: string;
@@ -24,7 +25,7 @@ export const Tabs: React.FC<TabsProps> = ({
 }) => {
   if (variant === 'pills') {
     return (
-      <div role="tablist" className={`inline-flex items-center p-1 bg-slate-100/90 dark:bg-[#111115] rounded-md border border-slate-200/80 dark:border-[#27272A] ${className}`}>
+      <div role="tablist" className={`inline-flex items-center p-1 bg-slate-100/90 dark:bg-[#111115] rounded-xl border border-slate-200/80 dark:border-[#27272A] ${className}`}>
         {tabs.map(tab => {
           const isActive = activeTab === tab.id;
           return (
@@ -33,17 +34,24 @@ export const Tabs: React.FC<TabsProps> = ({
               role="tab"
               aria-selected={isActive}
               onClick={() => onChange(tab.id)}
-              className={`inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium rounded transition-all duration-150 ${
+              className={`relative inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-medium rounded-lg transition-all duration-150 active:scale-[0.97] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4ED8]/40 ${
                 isActive
-                  ? 'bg-white dark:bg-[#18181B] text-slate-900 dark:text-slate-100 font-semibold shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-[#202025]'
+                  ? 'text-slate-900 dark:text-slate-100 font-semibold'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
-              {tab.icon && <span className="shrink-0">{tab.icon}</span>}
-              <span>{tab.label}</span>
+              {isActive && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute inset-0 bg-white dark:bg-[#18181B] rounded-lg shadow-xs z-0"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+              {tab.icon && <span className="relative z-10 shrink-0">{tab.icon}</span>}
+              <span className="relative z-10">{tab.label}</span>
               {typeof tab.count === 'number' && (
                 <span
-                  className={`text-[10px] px-2 py-0.5 rounded font-mono tabular-nums ${
+                  className={`relative z-10 text-[10px] px-2 py-0.5 rounded-full font-mono tabular-nums ${
                     isActive ? 'bg-teal-100 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
                   }`}
                 >
@@ -67,10 +75,10 @@ export const Tabs: React.FC<TabsProps> = ({
             role="tab"
             aria-selected={isActive}
             onClick={() => onChange(tab.id)}
-            className={`inline-flex items-center gap-2 py-3 text-sm font-medium border-b-2 transition-all duration-150 ease-in-out -mb-[1px] ${
+            className={`relative inline-flex items-center gap-2 py-3 text-sm font-medium transition-all duration-150 ease-out active:scale-[0.97] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4ED8]/40 -mb-[1px] ${
               isActive
-                ? 'border-teal-700 text-teal-700 dark:border-teal-500 dark:text-teal-400 font-semibold'
-                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700'
+                ? 'border-b-2 border-teal-700 text-teal-700 dark:border-teal-500 dark:text-teal-400 font-semibold'
+                : 'border-b-2 border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700'
             }`}
           >
             {tab.icon && <span className="shrink-0">{tab.icon}</span>}
@@ -83,6 +91,13 @@ export const Tabs: React.FC<TabsProps> = ({
               >
                 {tab.count}
               </span>
+            )}
+            {isActive && (
+              <motion.div
+                layoutId="activeTabUnderline"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#1D4ED8] dark:bg-blue-400 z-10"
+                transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              />
             )}
           </button>
         );

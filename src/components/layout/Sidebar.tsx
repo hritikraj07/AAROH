@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   LayoutDashboard,
   GraduationCap,
@@ -306,20 +307,33 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
                   end={item.to === '/student' || item.to === '/faculty' || item.to === '/admin'}
                   onClick={onCloseMobile}
                   className={({ isActive }) =>
-                    `flex items-center justify-between px-3 py-2.5 min-h-[40px] text-xs font-medium rounded-md transition-all duration-150 ease-in-out active:scale-95 ${
+                    `group relative flex items-center justify-between px-3 py-2.5 min-h-[40px] text-xs font-medium rounded-xl transition-all duration-150 ease-out active:scale-[0.97] hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4ED8]/40 ${
                       isActive
-                        ? 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 font-semibold border border-teal-200/80 dark:border-teal-800/50'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-[#27272A] border border-transparent'
+                        ? 'text-teal-900 dark:text-teal-100 font-semibold'
+                        : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-50/80 dark:hover:bg-[#27272A]/80'
                     }`
                   }
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200">
-                      {item.icon}
-                    </span>
-                    <span>{item.label}</span>
-                  </div>
-                  {item.badge}
+                  {({ isActive }) => (
+                    <>
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeNav"
+                          className="absolute inset-0 bg-teal-50 dark:bg-teal-900/30 dark:text-teal-400 rounded-xl border border-teal-200/80 dark:border-teal-800/50 z-0"
+                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <div className="relative z-10 flex items-center gap-2.5">
+                        <span className={`transition-colors duration-150 ${isActive ? 'text-teal-700 dark:text-teal-400' : 'text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-200'}`}>
+                          {item.icon}
+                        </span>
+                        <span>{item.label}</span>
+                      </div>
+                      <div className="relative z-10">
+                        {item.badge}
+                      </div>
+                    </>
+                  )}
                 </NavLink>
               ))}
             </div>

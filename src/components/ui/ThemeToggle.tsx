@@ -1,5 +1,6 @@
 import React from 'react';
 import { Sun, Moon } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
 
 export interface ThemeToggleProps {
@@ -16,34 +17,46 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   size = 'md',
 }) => {
   const { theme, toggleTheme } = useApp();
+  const isDark = theme === 'dark';
 
   return (
     <div className={`inline-flex items-center ${className}`}>
       <button
         type="button"
         onClick={() => toggleTheme()}
-        className="relative inline-flex items-center gap-1 p-1 rounded-full bg-[#EBF3ED] dark:bg-[#202025] border border-[#E5ECE8] dark:border-[#27272A] transition-all cursor-pointer select-none active:scale-95"
-        title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        className="relative inline-flex items-center p-1 rounded-full bg-[#EBF3ED] dark:bg-[#202025] border border-[#E5ECE8] dark:border-[#27272A] transition-colors cursor-pointer select-none active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1D4ED8]/40"
+        title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         aria-label="Toggle theme"
       >
-        <div
-          className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
-            theme !== 'dark'
-              ? 'bg-[#15803D]/15 text-[#15803D] shadow-2xs font-bold'
+        {/* Sliding active indicator thumb */}
+        <motion.div
+          className="absolute top-1 bottom-1 w-6 h-6 rounded-full bg-[#15803D]/15 dark:bg-[#15803D]/30 shadow-2xs z-0"
+          animate={{ x: isDark ? 28 : 0 }}
+          transition={{ type: "spring", stiffness: 420, damping: 28 }}
+        />
+
+        <motion.div
+          animate={{ rotate: isDark ? -35 : 0, scale: isDark ? 0.9 : 1 }}
+          transition={{ duration: 0.2 }}
+          className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+            !isDark
+              ? 'text-[#15803D] font-bold'
               : 'text-slate-400 hover:text-slate-600'
           }`}
         >
           <Sun className="w-3.5 h-3.5" />
-        </div>
-        <div
-          className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${
-            theme === 'dark'
-              ? 'bg-[#15803D]/25 text-emerald-400 shadow-2xs font-bold'
+        </motion.div>
+        <motion.div
+          animate={{ rotate: isDark ? 0 : 35, scale: isDark ? 1 : 0.9 }}
+          transition={{ duration: 0.2 }}
+          className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+            isDark
+              ? 'text-emerald-400 font-bold'
               : 'text-slate-400 hover:text-slate-600'
           }`}
         >
           <Moon className="w-3.5 h-3.5" />
-        </div>
+        </motion.div>
       </button>
 
       {/* Semantic gradient and geometry nodes maintaining test suite backwards compatibility */}

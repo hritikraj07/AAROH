@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, Search, Bell, ArrowRight, X, SlidersHorizontal, ChevronRight, ChevronDown, Check, Layers } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { ThemeToggle } from '../ui/ThemeToggle';
@@ -511,73 +512,81 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
         </div>
 
         {/* Live Autocomplete Results Dropdown */}
-        {((isSearchOpen && searchQuery.trim().length > 1) || isSearchOpen) && (
-          <div className="absolute left-0 right-0 top-full mt-1.5 w-full max-w-[calc(100vw-24px)] bg-white dark:bg-[#0E0E11] rounded-xl border border-slate-200 dark:border-[#27272A] shadow-xl overflow-hidden z-50 animate-in fade-in duration-150 font-sans">
-            <div className="flex items-center justify-between px-3.5 py-1.5 border-b border-slate-100 dark:border-[#27272A] bg-slate-50/70 dark:bg-[#18181B]/70 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-              <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-[#134074] dark:text-[#8DA9C4]">Suggestions</span>
-              <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">
-                {searchResults.length} {searchResults.length === 1 ? 'match' : 'matches'}
-              </span>
-            </div>
-
-            <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[#27272A]/50">
-              {searchResults.length === 0 ? (
-                <div className="p-4 text-center text-xs text-slate-500 dark:text-slate-400">
-                  No results found for '{searchQuery}'
-                </div>
-              ) : (
-                searchResults.map((result, idx) => {
-                  const isSelected = idx === selectedIndex;
-                  return (
-                    <Link
-                      key={`${result.type}-${result.id}`}
-                      to={result.url}
-                      onMouseEnter={() => setSelectedIndex(idx)}
-                      onClick={() => {
-                        setIsSearchOpen(false);
-                        setSearchQuery('');
-                      }}
-                      className={`block p-3 text-xs transition-colors group ${
-                        isSelected
-                          ? 'bg-[#8DA9C4]/20 border-l-2 border-[#134074] dark:border-[#8DA9C4] text-slate-900 dark:text-slate-100'
-                          : 'hover:bg-slate-50 dark:hover:bg-[#18181B] text-slate-700 dark:text-slate-300 border-l-2 border-transparent'
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-[#134074] dark:group-hover:text-[#8DA9C4] transition-colors truncate">
-                          {result.title}
-                        </span>
-                        <span
-                          className={`text-[10px] font-semibold font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${getTypeBadgeClasses(
-                            result.type
-                          )}`}
-                        >
-                          {result.type}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                        {result.subtitle}
-                      </p>
-                    </Link>
-                  );
-                })
-              )}
-            </div>
-
-            {searchResults.length > 0 && (
-              <div className="px-3.5 py-1.5 bg-slate-50 dark:bg-[#18181B] border-t border-slate-100 dark:border-[#27272A] flex items-center justify-between text-[10px] font-mono text-slate-400 dark:text-slate-500">
-                <div className="flex items-center gap-2">
-                  <span>↑↓ navigate</span>
-                  <span>•</span>
-                  <span>↵ select</span>
-                  <span>•</span>
-                  <span>ESC close</span>
-                </div>
-                <span className="text-[#134074] dark:text-[#8DA9C4] font-semibold">Automatic Suggestions</span>
+        <AnimatePresence>
+          {((isSearchOpen && searchQuery.trim().length > 1) || isSearchOpen) && (
+            <motion.div
+              initial={{ opacity: 0, y: 8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 4, scale: 0.98 }}
+              transition={{ duration: 0.16, ease: "easeOut" }}
+              className="absolute left-0 right-0 top-full mt-1.5 w-full max-w-[calc(100vw-24px)] bg-white/95 dark:bg-[#0E0E11]/95 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-[#27272A] shadow-xl overflow-hidden z-50 font-sans"
+            >
+              <div className="flex items-center justify-between px-3.5 py-1.5 border-b border-slate-100 dark:border-[#27272A] bg-slate-50/70 dark:bg-[#18181B]/70 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-[#134074] dark:text-[#8DA9C4]">Suggestions</span>
+                <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500">
+                  {searchResults.length} {searchResults.length === 1 ? 'match' : 'matches'}
+                </span>
               </div>
-            )}
-          </div>
-        )}
+
+              <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[#27272A]/50">
+                {searchResults.length === 0 ? (
+                  <div className="p-4 text-center text-xs text-slate-500 dark:text-slate-400">
+                    No results found for '{searchQuery}'
+                  </div>
+                ) : (
+                  searchResults.map((result, idx) => {
+                    const isSelected = idx === selectedIndex;
+                    return (
+                      <Link
+                        key={`${result.type}-${result.id}`}
+                        to={result.url}
+                        onMouseEnter={() => setSelectedIndex(idx)}
+                        onClick={() => {
+                          setIsSearchOpen(false);
+                          setSearchQuery('');
+                        }}
+                        className={`block p-3 text-xs transition-colors group ${
+                          isSelected
+                            ? 'bg-[#8DA9C4]/20 border-l-2 border-[#134074] dark:border-[#8DA9C4] text-slate-900 dark:text-slate-100'
+                            : 'hover:bg-slate-50 dark:hover:bg-[#18181B] text-slate-700 dark:text-slate-300 border-l-2 border-transparent'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="font-semibold text-slate-900 dark:text-slate-100 group-hover:text-[#134074] dark:group-hover:text-[#8DA9C4] transition-colors truncate">
+                            {result.title}
+                          </span>
+                          <span
+                            className={`text-[10px] font-semibold font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${getTypeBadgeClasses(
+                              result.type
+                            )}`}
+                          >
+                            {result.type}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                          {result.subtitle}
+                        </p>
+                      </Link>
+                    );
+                  })
+                )}
+              </div>
+
+              {searchResults.length > 0 && (
+                <div className="px-3.5 py-1.5 bg-slate-50 dark:bg-[#18181B] border-t border-slate-100 dark:border-[#27272A] flex items-center justify-between text-[10px] font-mono text-slate-400 dark:text-slate-500">
+                  <div className="flex items-center gap-2">
+                    <span>↑↓ navigate</span>
+                    <span>•</span>
+                    <span>↵ select</span>
+                    <span>•</span>
+                    <span>ESC close</span>
+                  </div>
+                  <span className="text-[#134074] dark:text-[#8DA9C4] font-semibold">Automatic Suggestions</span>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Right Controls */}
@@ -600,46 +609,54 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
             )}
           </button>
 
-          {isNotifOpen && (
-            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-24px)] sm:w-96 max-w-md bg-white dark:bg-[#18181B] rounded-lg border border-slate-200 dark:border-[#27272A] shadow-sm z-50 overflow-hidden animate-in fade-in duration-150 font-sans">
-              <div className="px-4 py-2.5 bg-slate-50 dark:bg-[#0E0E11] border-b border-slate-200 dark:border-[#27272A] flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200">
-                <span>Urgent Approaching Deadlines</span>
-              </div>
+          <AnimatePresence>
+            {isNotifOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 4, scale: 0.98 }}
+                transition={{ duration: 0.16, ease: "easeOut" }}
+                className="absolute right-0 top-full mt-2 w-[calc(100vw-24px)] sm:w-96 max-w-md bg-white/95 dark:bg-[#18181B]/95 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-[#27272A] shadow-xl z-50 overflow-hidden font-sans"
+              >
+                <div className="px-4 py-2.5 bg-slate-50/80 dark:bg-[#0E0E11]/80 border-b border-slate-200 dark:border-[#27272A] flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200">
+                  <span>Urgent Approaching Deadlines</span>
+                </div>
 
-              <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[#27272A]">
-                {urgentDeadlines.length === 0 ? (
-                  <div className="p-6 text-center text-xs text-slate-600 dark:text-slate-400 font-medium">
-                    You're all caught up. No deadlines in the next 48 hours.
-                  </div>
-                ) : (
-                  urgentDeadlines.map(item => (
-                    <Link
-                      key={`${item.type}-${item.id}`}
-                      to={item.route}
-                      onClick={() => setIsNotifOpen(false)}
-                      className="block p-3.5 text-xs transition-colors hover:bg-slate-50 dark:hover:bg-[#27272A]/60 group"
-                    >
-                      <div className="flex items-start gap-2.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-rose-600 mt-1.5 shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs text-slate-900 dark:text-slate-100 font-medium leading-snug group-hover:text-[#134074] dark:group-hover:text-[#8DA9C4] transition-colors">
-                            {item.formattedText}
-                          </p>
-                          <div className="flex items-center justify-between mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-                            <span>{item.subtitle}</span>
-                            <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 capitalize flex items-center gap-0.5 group-hover:text-[#134074] dark:group-hover:text-[#8DA9C4]">
-                              <span>Go to {item.type === 'assignment' ? 'assignments' : 'opportunities'}</span>
-                              <ArrowRight className="w-2.5 h-2.5" />
-                            </span>
+                <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-[#27272A]">
+                  {urgentDeadlines.length === 0 ? (
+                    <div className="p-6 text-center text-xs text-slate-600 dark:text-slate-400 font-medium">
+                      You're all caught up. No deadlines in the next 48 hours.
+                    </div>
+                  ) : (
+                    urgentDeadlines.map(item => (
+                      <Link
+                        key={`${item.type}-${item.id}`}
+                        to={item.route}
+                        onClick={() => setIsNotifOpen(false)}
+                        className="block p-3.5 text-xs transition-colors hover:bg-slate-50 dark:hover:bg-[#27272A]/60 group"
+                      >
+                        <div className="flex items-start gap-2.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-600 mt-1.5 shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-slate-900 dark:text-slate-100 font-medium leading-snug group-hover:text-[#134074] dark:group-hover:text-[#8DA9C4] transition-colors">
+                              {item.formattedText}
+                            </p>
+                            <div className="flex items-center justify-between mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                              <span>{item.subtitle}</span>
+                              <span className="font-mono text-[10px] text-slate-400 dark:text-slate-500 capitalize flex items-center gap-0.5 group-hover:text-[#134074] dark:group-hover:text-[#8DA9C4]">
+                                <span>Go to {item.type === 'assignment' ? 'assignments' : 'opportunities'}</span>
+                                <ArrowRight className="w-2.5 h-2.5" />
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Link>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
+                      </Link>
+                    ))
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Subtle Vertical Divider */}
@@ -671,8 +688,15 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
           </button>
 
           {/* Profile Card Popover to see your profile */}
-          {isProfileOpen && (
-            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-24px)] sm:w-96 max-w-sm bg-white dark:bg-[#0E0E11] rounded-2xl border border-slate-200 dark:border-[#27272A] shadow-2xl z-50 animate-in fade-in duration-150 font-sans max-h-[85vh] overflow-y-auto">
+          <AnimatePresence>
+            {isProfileOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 4, scale: 0.98 }}
+                transition={{ duration: 0.16, ease: "easeOut" }}
+                className="absolute right-0 top-full mt-2 w-[calc(100vw-24px)] sm:w-96 max-w-sm bg-white/95 dark:bg-[#0E0E11]/95 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-[#27272A] shadow-2xl z-50 animate-in fade-in duration-150 font-sans max-h-[85vh] overflow-y-auto"
+              >
               {/* Profile Header */}
               <div className="p-4 bg-gradient-to-br from-[#8DA9C4]/15 via-transparent to-transparent border-b border-slate-100 dark:border-[#27272A] rounded-t-2xl">
                 <div className="flex items-start justify-between">
@@ -952,8 +976,9 @@ export const TopBar: React.FC<TopBarProps> = ({ onOpenMobileMenu, pageTitle }) =
                   </div>
                 )}
               </div>
-            </div>
+            </motion.div>
           )}
+        </AnimatePresence>
         </div>
       </div>
     </header>
