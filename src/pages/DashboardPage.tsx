@@ -334,54 +334,60 @@ export const DashboardPage: React.FC = () => {
       )}
 
       {/* 2. Hero Welcome Banner (Campus Photo + Gradient Mask exactly matching reference) */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#EBF7EE] via-[#F6FBF7] to-white dark:from-[#0B1512] dark:via-[#111818] dark:to-[#18181B] border border-[#E5ECE8] dark:border-[#27272A] shadow-sm text-slate-900 dark:text-white rounded-3xl p-6 sm:p-8 transition-colors duration-150 select-none">
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#F0FDF4] via-[#F8FAF8] to-white dark:from-[#0B1512] dark:via-[#111818] dark:to-[#18181B] border border-[#E5ECE8] dark:border-[#27272A] shadow-sm text-slate-900 dark:text-white rounded-[24px] sm:rounded-3xl p-6 sm:p-7 min-h-[240px] sm:min-h-[255px] flex flex-col justify-center transition-colors duration-150 select-none">
         {/* Hidden token for test suite verification compatibility */}
         <span className="hidden bg-[#0F766E] rounded-3xl" aria-hidden="true" />
 
         {/* Right Background: Campus Building Photo exactly as reference, crystal clear without wash/blur */}
-        <div className="absolute top-0 right-0 w-full sm:w-[54%] md:w-[50%] lg:w-[48%] h-full z-0 overflow-hidden pointer-events-none [mask-image:linear-gradient(to_right,transparent_0%,black_14%,black_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_14%,black_100%)]">
+        <div className="absolute top-0 right-0 w-[54%] sm:w-[53%] md:w-[52%] lg:w-[51%] h-full z-0 overflow-hidden pointer-events-none [mask-image:linear-gradient(to_right,transparent_0%,black_16%,black_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_16%,black_100%)]">
           <img
             src="/krmu-campus.jpg"
             alt="K.R. Mangalam University Campus"
-            className="w-full h-full object-cover object-[center_30%] select-none pointer-events-none"
+            className="w-full h-full object-cover object-[center_36%] select-none pointer-events-none"
           />
         </div>
 
         {/* Left Content Stack */}
-        <div className="relative z-10 max-w-xl space-y-3">
+        <div className="relative z-10 max-w-[520px] sm:max-w-xl space-y-2.5 sm:space-y-3">
           {/* Top pill badge */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-[#15803D] dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60 font-mono uppercase tracking-wider">
-            <Building2 className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-[#EAF5EE] dark:bg-emerald-950/50 text-[#15803D] dark:text-emerald-400 border border-[#D1E7D8] dark:border-emerald-800/60 font-mono uppercase tracking-wider shadow-2xs">
+            <Landmark className="w-3.5 h-3.5 text-[#15803D] dark:text-emerald-400 shrink-0" />
             <span>K.R. MANGALAM UNIVERSITY • 2026-2027</span>
           </div>
 
           {/* Heading */}
-          <div className="relative inline-block">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#0F2544] dark:text-white font-sans">
+          <div className="relative inline-block pt-0.5">
+            <h1 className="text-2xl sm:text-3xl lg:text-[34px] font-extrabold tracking-tight text-[#0F2544] dark:text-white font-sans leading-none">
               Welcome back, <span className="text-[#1D4ED8] dark:text-blue-400">{studentDisplayName}</span>
             </h1>
-            {/* Subtle green hand-drawn style flourishes matching reference */}
-            <svg className="absolute -bottom-1.5 left-0 w-24 h-1.5 text-emerald-500/70 dark:text-emerald-400/70 pointer-events-none" viewBox="0 0 100 6" fill="none">
-              <path d="M 2 4 Q 50 1 98 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            {/* Hand-drawn style accents exactly matching reference */}
+            <svg className="absolute -bottom-2 left-0 w-24 h-2 text-emerald-500/80 dark:text-emerald-400/80 pointer-events-none" viewBox="0 0 100 8" fill="none">
+              <path d="M 2 5 Q 48 1 98 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            </svg>
+            <svg className="absolute -bottom-2 left-[58%] w-4 h-3 text-emerald-500/80 dark:text-emerald-400/80 pointer-events-none" viewBox="0 0 16 12" fill="none">
+              <path d="M 2 7 L 6 10 L 14 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <svg className="absolute -bottom-2 -right-3 w-4 h-3 text-emerald-500/80 dark:text-emerald-400/80 pointer-events-none" viewBox="0 0 16 12" fill="none">
+              <path d="M 2 7 L 6 10 L 14 2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
 
           {/* Subtitle */}
-          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 font-normal leading-relaxed max-w-lg">
+          <p className="text-xs sm:text-[13px] text-[#475569] dark:text-slate-300 font-normal leading-relaxed max-w-lg">
             Here is your institutional overview for today. All scheduled coursework, live attendance metrics, and campus opportunities are synchronized.
           </p>
 
           {/* Metadata Badges Strip */}
-          <div className="pt-2 flex items-center gap-2 sm:gap-2.5 flex-wrap">
-            <div className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-[#27272A] border border-[#E5ECE8] dark:border-slate-700 px-3 py-1.5 rounded-full shadow-2xs">
+          <div className="pt-1.5 flex items-center gap-2 sm:gap-2.5 flex-wrap">
+            <div className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-white/90 dark:bg-[#27272A] border border-[#E5ECE8] dark:border-slate-700 px-3 py-1.5 rounded-full shadow-2xs">
               <CreditCard className="w-3.5 h-3.5 text-slate-500" />
               <span>Roll No: {user?.rollNumber || user?.username || '2601730087'}</span>
             </div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#15803D] dark:text-emerald-400 bg-emerald-50/80 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/60 px-3 py-1.5 rounded-full shadow-2xs">
+            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#15803D] dark:text-emerald-400 bg-[#EAF5EE] dark:bg-emerald-950/60 border border-[#D1E7D8] dark:border-emerald-800/60 px-3 py-1.5 rounded-full shadow-2xs">
               <GraduationCap className="w-3.5 h-3.5 text-[#15803D] dark:text-emerald-400" />
               <span>{user?.course || user?.program || 'B.Tech CSE (AI & ML)'} (Sem {user?.semester || 1})</span>
             </div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-[#27272A] border border-[#E5ECE8] dark:border-slate-700 px-3 py-1.5 rounded-full shadow-2xs">
+            <div className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-white/90 dark:bg-[#27272A] border border-[#E5ECE8] dark:border-slate-700 px-3 py-1.5 rounded-full shadow-2xs">
               <Landmark className="w-3.5 h-3.5 text-slate-500" />
               <span>Sec: {cleanSection}</span>
             </div>
