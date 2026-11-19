@@ -608,11 +608,11 @@ export const LoginPage: React.FC = () => {
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
-                onClick={() => handleQuickDemoLogin('admin')}
+                onClick={() => handleQuickDemoLogin('student')}
                 disabled={loading}
                 className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[38px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate shadow-2xs"
               >
-                Admin Demo
+                Student Demo
               </button>
               <button
                 type="button"
@@ -624,11 +624,11 @@ export const LoginPage: React.FC = () => {
               </button>
               <button
                 type="button"
-                onClick={() => handleQuickDemoLogin('student')}
+                onClick={() => handleQuickDemoLogin('admin')}
                 disabled={loading}
                 className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-medium px-3 py-1.5 rounded-full transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 min-h-[38px] flex items-center justify-center hover:border-[#134074] dark:hover:border-[#8DA9C4] hover:text-[#134074] dark:hover:text-[#8DA9C4] text-center active:scale-95 disabled:opacity-50 select-none cursor-pointer truncate shadow-2xs"
               >
-                Student Demo
+                Admin Demo
               </button>
             </div>
           </div>
