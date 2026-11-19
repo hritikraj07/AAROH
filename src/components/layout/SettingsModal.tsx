@@ -75,6 +75,64 @@ export const SettingsModal: React.FC = () => {
           </div>
         )}
 
+        {/* Faculty Profile Overview (Bare-minimum faculty context) */}
+        {role === 'faculty' && (
+          <div className="space-y-4">
+            <div className="p-4 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-xl space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-200/70 dark:border-[#27272A]">
+                <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-slate-100 font-mono uppercase tracking-wider">
+                  <UserCheck className="w-4 h-4 text-[#134074] dark:text-[#8DA9C4]" />
+                  <span>Faculty Profile</span>
+                </div>
+                <span className="text-[10px] font-mono font-semibold px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60">
+                  K.R. Mangalam University
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">Full Name</span>
+                  <span className="font-semibold text-slate-900 dark:text-slate-100 truncate block mt-0.5">
+                    {user?.name || 'Prof. Aarav Sharma'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">Position / Designation</span>
+                  <span className="font-semibold text-slate-900 dark:text-slate-100 truncate block mt-0.5">
+                    {user?.designation || 'Assistant Professor'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">Department</span>
+                  <span className="text-slate-900 dark:text-slate-100 truncate block mt-0.5">
+                    {user?.department || 'School of Engineering & Technology • CSE'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-slate-500 dark:text-slate-400 block text-[11px] font-medium">Email / Faculty ID</span>
+                  <span className="font-mono text-slate-900 dark:text-slate-100 truncate block mt-0.5">
+                    {user?.email || 'aarav.sharma@faculty.krmu.edu.in'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setConfirmReset(false);
+                  closeSettings();
+                }}
+                className="text-xs font-medium"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Session Profile Overview (Hidden for students and faculty per user specification) */}
         {role === 'admin' && (
           <div className="p-3.5 bg-slate-50 dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg space-y-2">
