@@ -385,9 +385,9 @@ export const FacultyNoticesPage: React.FC = () => {
       {/* Draft & Publish Notice Modal */}
       {isDraftModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-[2px] p-4 sm:p-6 overflow-y-auto">
-          <div className="w-full max-w-2xl bg-white dark:bg-[#18181B] rounded-2xl shadow-xl border border-slate-200 dark:border-[#27272A] overflow-hidden flex flex-col max-h-[90vh] my-auto animate-in fade-in duration-150">
+          <div className="w-full max-w-2xl bg-white dark:bg-[#18181B] rounded-2xl shadow-2xl border border-slate-200 dark:border-[#27272A] overflow-hidden flex flex-col max-h-[90vh] my-auto animate-in fade-in duration-150">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-5 py-4 sm:px-6 sm:py-4 border-b border-slate-200 dark:border-[#27272A] shrink-0 bg-white dark:bg-[#18181B]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-[#27272A] shrink-0 bg-white dark:bg-[#18181B]">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800/60 flex items-center justify-center text-teal-800 dark:text-teal-300 shrink-0">
                   <Bell className="w-4 h-4" />
@@ -413,7 +413,7 @@ export const FacultyNoticesPage: React.FC = () => {
 
             {/* Modal Form */}
             <form onSubmit={handlePublishNotice} className="flex flex-col flex-1 min-h-0 overflow-hidden">
-              <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 min-w-0">
+              <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4 min-w-0">
                 {/* Draft Notification Banner */}
                 {hasDraftLoaded && (
                   <div className="p-2.5 rounded-xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800/60 flex items-center justify-between gap-2 text-xs">
@@ -486,7 +486,7 @@ export const FacultyNoticesPage: React.FC = () => {
                     <select
                       value={targetAudience}
                       onChange={e => setTargetAudience(e.target.value)}
-                      className="w-full min-w-0 box-border rounded-xl border border-slate-300 dark:border-[#27272A] bg-white dark:bg-[#18181B] px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors"
+                      className="w-full min-w-0 box-border rounded-xl border border-slate-300 dark:border-[#27272A] bg-white dark:bg-[#18181B] px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors truncate"
                     >
                       <option value="All B.Tech CSE Students">All B.Tech CSE Students</option>
                       <option value="B.Tech CSE (Sem 5) • Section A">B.Tech CSE (Sem 5) • Section A</option>
@@ -521,15 +521,17 @@ export const FacultyNoticesPage: React.FC = () => {
                   </div>
 
                   <div className="min-w-0">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1 truncate">
-                      Issuing Department <span className="text-rose-600">*</span>
-                    </label>
+                    <div className="flex items-center justify-between mb-1 gap-2">
+                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider truncate">
+                        Issuing Department <span className="text-rose-600">*</span>
+                      </label>
+                    </div>
                     <input
                       type="text"
                       required
                       value={department}
                       onChange={e => setDepartment(e.target.value)}
-                      className="w-full min-w-0 box-border rounded-xl border border-slate-300 dark:border-[#27272A] bg-white dark:bg-[#18181B] px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors"
+                      className="w-full min-w-0 box-border rounded-xl border border-slate-300 dark:border-[#27272A] bg-white dark:bg-[#18181B] px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 transition-colors truncate"
                     />
                   </div>
                 </div>
@@ -550,7 +552,7 @@ export const FacultyNoticesPage: React.FC = () => {
                     placeholder="Write notice body, instructions for students, relevant deadlines, and faculty contact info..."
                     value={content}
                     onChange={e => setContent(e.target.value)}
-                    className="w-full min-w-0 box-border rounded-xl border border-slate-300 dark:border-[#27272A] bg-white dark:bg-[#18181B] px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 min-h-[120px] resize-y leading-relaxed transition-colors font-sans"
+                    className="w-full min-h-[110px] resize-y rounded-xl border border-slate-300 dark:border-[#27272A] bg-white dark:bg-[#18181B] p-3.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700 leading-relaxed transition-colors font-sans min-w-0 box-border"
                   />
                 </div>
 
@@ -592,7 +594,7 @@ export const FacultyNoticesPage: React.FC = () => {
               </div>
 
               {/* Action Footer */}
-              <div className="flex items-center justify-end gap-3 px-5 py-3.5 sm:px-6 sm:py-4 border-t border-slate-100 dark:border-[#27272A] bg-slate-50/80 dark:bg-[#18181B] shrink-0">
+              <div className="px-6 py-4 bg-slate-50/70 dark:bg-[#18181B] border-t border-slate-100 dark:border-[#27272A] flex items-center justify-end gap-3 shrink-0">
                 <Button
                   type="button"
                   variant="outline"

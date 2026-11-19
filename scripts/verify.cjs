@@ -97,6 +97,13 @@ assert(fs.existsSync(path.join(__dirname, '../src/pages/faculty/FacultyNoticesPa
 const facultyNoticeContent = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyNoticesPage.tsx'), 'utf8');
 assert(facultyNoticeContent.includes('Draft Department Notice') || facultyNoticeContent.includes('Department Circulars'), 'FacultyNoticesPage renders department circulars view');
 assert(facultyNoticeContent.includes('createNotice'), 'FacultyNoticesPage provides notice draft and publish form');
+assert(facultyNoticeContent.includes('fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-[2px] p-4 sm:p-6 overflow-y-auto'), 'Draft Department Notice modal has centered backdrop container');
+assert(facultyNoticeContent.includes('w-full max-w-2xl bg-white') && facultyNoticeContent.includes('max-h-[90vh] my-auto'), 'Draft Department Notice modal has bounded height max-h-[90vh]');
+assert(facultyNoticeContent.includes('px-6 py-4 border-b border-slate-100') && facultyNoticeContent.includes('shrink-0'), 'Draft Department Notice modal has pinned header');
+assert(facultyNoticeContent.includes('flex-1 overflow-y-auto px-6 py-5 space-y-4 min-w-0'), 'Draft Department Notice modal has scrollable body px-6 py-5 min-w-0');
+assert(facultyNoticeContent.includes('px-6 py-4 bg-slate-50/70') && facultyNoticeContent.includes('shrink-0'), 'Draft Department Notice modal has pinned footer action bar');
+assert(facultyNoticeContent.includes('grid grid-cols-1 sm:grid-cols-2 gap-4 items-start'), 'Draft Department Notice modal implements 2-column metadata grids');
+assert(facultyNoticeContent.includes('min-h-[110px] resize-y rounded-xl border'), 'Draft Department Notice modal provides clean textarea');
 
 // 14. Check Student Timetable & Dashboard Audience Filtering
 const studentTodayClasses = fs.readFileSync(path.join(__dirname, '../src/components/modules/dashboard/TodayClassesCard.tsx'), 'utf8');
