@@ -1068,7 +1068,7 @@ export const DashboardPage: React.FC = () => {
                     </button>
                   </div>
                 ) : activePendingGlobalLabs.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {activePendingGlobalLabs.map(lab => {
                       const startTime = new Date(lab.windowStartTime);
                       const endTime = new Date(lab.windowEndTime);
@@ -1096,31 +1096,35 @@ export const DashboardPage: React.FC = () => {
                       return (
                         <div
                           key={lab.id}
-                          className="min-w-0 p-4 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/50 dark:bg-[#111115] hover:border-teal-500/50 transition-all flex flex-col justify-between space-y-3"
+                          className="min-w-0 overflow-hidden p-5 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/50 dark:bg-[#111115] hover:border-teal-500/50 transition-all flex flex-col justify-between space-y-3.5"
                         >
                           <div className="min-w-0 space-y-2">
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="whitespace-nowrap shrink-0 text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
+                            {/* Header Row: Subject Pill + Status Badge */}
+                            <div className="flex items-center justify-between gap-2 min-w-0">
+                              <span
+                                className="min-w-0 truncate text-[11px] font-mono font-bold uppercase px-2.5 py-1 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300"
+                                title={`Sem ${lab.semester} • ${lab.subject}`}
+                              >
                                 Sem {lab.semester} • {lab.subject}
                               </span>
                               {isExpired && (
-                                <span className="whitespace-nowrap shrink-0 text-[10px] font-mono font-bold text-red-600 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 px-2 py-0.5 rounded">
+                                <span className="shrink-0 whitespace-nowrap text-[10px] font-mono font-bold text-red-600 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 px-2 py-0.5 rounded">
                                   Deadline Passed / Locked
                                 </span>
                               )}
                               {isActive && (
-                                <span className="whitespace-nowrap shrink-0 text-[10px] font-mono text-teal-800 dark:text-teal-300 font-semibold flex items-center gap-1 bg-teal-50 dark:bg-teal-950/50 border border-teal-200 dark:border-teal-800 px-2 py-0.5 rounded">
+                                <span className="shrink-0 whitespace-nowrap text-[10px] font-mono text-teal-800 dark:text-teal-300 font-semibold flex items-center gap-1 bg-teal-50 dark:bg-teal-950/50 border border-teal-200 dark:border-teal-800 px-2 py-0.5 rounded">
                                   <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
                                   Active Window
                                 </span>
                               )}
                               {isTooEarly && (
-                                <span className="whitespace-nowrap shrink-0 text-[10px] font-mono text-amber-700 dark:text-amber-400 font-semibold bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 px-2 py-0.5 rounded">
+                                <span className="shrink-0 whitespace-nowrap text-[10px] font-mono text-amber-700 dark:text-amber-400 font-semibold bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 px-2 py-0.5 rounded">
                                   Upcoming
                                 </span>
                               )}
                             </div>
-                            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+                            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate" title={lab.title}>
                               {lab.title}
                             </h3>
                             <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
@@ -1135,8 +1139,8 @@ export const DashboardPage: React.FC = () => {
                               </div>
                             )}
 
-                            <div className="flex items-center justify-between gap-3">
-                              <span className="text-[11px] font-mono text-slate-600 dark:text-slate-400 truncate">
+                            <div className="flex items-center justify-between gap-3 min-w-0">
+                              <span className="min-w-0 truncate text-[11px] font-mono text-slate-600 dark:text-slate-400">
                                 {isExpired ? 'Window Closed' : `Closes ${formatUnlock(lab.windowEndTime)}`}
                               </span>
 
@@ -1144,7 +1148,7 @@ export const DashboardPage: React.FC = () => {
                                 <button
                                   type="button"
                                   disabled
-                                  className="whitespace-nowrap shrink-0 px-4 py-2 rounded-lg text-xs font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 opacity-60 cursor-not-allowed"
+                                  className="shrink-0 whitespace-nowrap px-4 py-2 rounded-lg text-xs font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 opacity-60 cursor-not-allowed"
                                 >
                                   Open Lab
                                 </button>
@@ -1157,7 +1161,7 @@ export const DashboardPage: React.FC = () => {
                                     setSelectedGlobalLab(lab);
                                     setIsWorkspaceModalOpen(true);
                                   }}
-                                  className={`whitespace-nowrap shrink-0 px-4 py-2 rounded-lg text-xs font-semibold bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white flex items-center gap-1.5 cursor-pointer border border-[#8DA9C4]/30 transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow}`}
+                                  className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-lg text-xs font-semibold bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white flex items-center gap-1.5 cursor-pointer border border-[#8DA9C4]/30 transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow}`}
                                   title="Open Lab • Launch Workspace"
                                 >
                                   <span>Open Lab</span>
@@ -1170,7 +1174,7 @@ export const DashboardPage: React.FC = () => {
                                 <button
                                   type="button"
                                   disabled
-                                  className="whitespace-nowrap shrink-0 px-4 py-2 rounded-lg text-xs font-medium bg-red-100 dark:bg-red-950/40 text-red-400 cursor-not-allowed opacity-60"
+                                  className="shrink-0 whitespace-nowrap px-4 py-2 rounded-lg text-xs font-medium bg-red-100 dark:bg-red-950/40 text-red-400 cursor-not-allowed opacity-60"
                                 >
                                   Window Closed
                                 </button>
@@ -1182,19 +1186,19 @@ export const DashboardPage: React.FC = () => {
                     })}
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {pendingCodingLabs.map(lab => (
                       <div
                         key={lab.id}
                         onClick={() => navigate(lab.type === 'coding' ? `/student/assignments/code/${lab.id}` : '/student/academics?tab=assignments')}
-                        className="p-3.5 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/50 dark:bg-[#111115] hover:border-teal-500/50 transition-all cursor-pointer flex flex-col justify-between space-y-3"
+                        className="min-w-0 overflow-hidden p-5 rounded-xl border border-slate-200 dark:border-[#27272A] bg-slate-50/50 dark:bg-[#111115] hover:border-teal-500/50 transition-all cursor-pointer flex flex-col justify-between space-y-3.5"
                       >
-                        <div>
-                          <div className="flex items-center justify-between gap-2 mb-1.5">
-                            <span className="text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
+                        <div className="min-w-0 space-y-2">
+                          <div className="flex items-center justify-between gap-2 min-w-0">
+                            <span className="min-w-0 truncate text-[11px] font-mono font-bold uppercase px-2.5 py-1 rounded bg-teal-100 text-teal-800 dark:bg-teal-900/50 dark:text-teal-300">
                               {lab.type === 'coding' ? `${lab.language || 'Python'} Lab` : 'Coursework'}
                             </span>
-                            <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                            <span className="shrink-0 whitespace-nowrap text-[11px] font-mono text-slate-500 dark:text-slate-400">
                               Due {lab.dueDate}
                             </span>
                           </div>
@@ -1206,13 +1210,13 @@ export const DashboardPage: React.FC = () => {
                           </p>
                         </div>
 
-                        <div className="pt-2 border-t border-slate-200/60 dark:border-[#27272A] flex items-center justify-between">
-                          <span className="text-[11px] font-mono text-slate-600 dark:text-slate-400">
+                        <div className="pt-2 border-t border-slate-200/60 dark:border-[#27272A] flex items-center justify-between gap-2 min-w-0">
+                          <span className="min-w-0 truncate text-[11px] font-mono text-slate-600 dark:text-slate-400">
                             {lab.maxMarks || 20} Marks
                           </span>
                           <button
                             type="button"
-                            className={`rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-[11px] font-medium px-3 py-1 transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} flex items-center gap-1 cursor-pointer border border-[#8DA9C4]/30`}
+                            className={`shrink-0 whitespace-nowrap rounded-full bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white text-[11px] font-medium px-3 py-1 transition-all duration-200 active:scale-95 ${exactLightShadow} ${exactDarkShadow} flex items-center gap-1 cursor-pointer border border-[#8DA9C4]/30`}
                           >
                             <span>Launch Workspace</span>
                             <ArrowRight className="w-3 h-3" />

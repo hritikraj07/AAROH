@@ -269,12 +269,15 @@ export const StudentCodingLabsPage: React.FC = () => {
             return (
               <div
                 key={lab.id}
-                className="min-w-0 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 sm:p-6 shadow-sm hover:border-teal-500/50 transition-all flex flex-col justify-between space-y-4"
+                className="min-w-0 overflow-hidden bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl p-5 sm:p-6 shadow-sm hover:border-teal-500/50 transition-all flex flex-col justify-between space-y-4"
               >
                 <div className="min-w-0 space-y-3">
                   {/* Top Metadata Row */}
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <span className="whitespace-nowrap shrink-0 text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-md bg-teal-50 dark:bg-teal-950/60 text-[#0F766E] dark:text-teal-300 border border-teal-200/60 dark:border-teal-900/60">
+                  <div className="flex items-center justify-between gap-2 min-w-0">
+                    <span
+                      className="min-w-0 truncate text-[10px] font-mono font-bold uppercase px-2.5 py-1 rounded-md bg-teal-50 dark:bg-teal-950/60 text-[#0F766E] dark:text-teal-300 border border-teal-200/60 dark:border-teal-900/60"
+                      title={`Sem ${lab.semester} • ${lab.courseId || 'CS-500'}`}
+                    >
                       Sem {lab.semester} • {lab.courseId || 'CS-500'}
                     </span>
 
