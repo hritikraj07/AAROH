@@ -113,7 +113,13 @@ export const AdminPeoplePage: React.FC = () => {
             .order('role', { ascending: true })
             .order('username', { ascending: true });
 
-          if (!secondError && secondBatch && secondBatch.length > 0) {
+          if (secondError) {
+            setSupabaseError(secondError.message || 'Failed to fetch secondary directory records from Supabase.');
+            setIsLoadingDirectory(false);
+            return;
+          }
+
+          if (secondBatch && secondBatch.length > 0) {
             allRows = allRows.concat(secondBatch);
           }
         }
