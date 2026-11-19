@@ -125,7 +125,7 @@ export function CustomDropdown<T extends string | number = string | number>({
             )}
           </div>
           {selectedOption?.badge && (
-            <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 shrink-0">
+            <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60 shrink-0 whitespace-nowrap">
               {selectedOption.badge}
             </span>
           )}
@@ -187,7 +187,7 @@ export function CustomDropdown<T extends string | number = string | number>({
 
                   <div className="flex items-center gap-1.5 shrink-0">
                     {opt.badge && (
-                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-100 dark:bg-[#27272A] text-slate-500 dark:text-slate-400">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-[#27272A] text-slate-500 dark:text-slate-400 shrink-0 whitespace-nowrap">
                         {opt.badge}
                       </span>
                     )}
