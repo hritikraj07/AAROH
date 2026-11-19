@@ -30,7 +30,7 @@
 
   html.dark body {
     /* Legacy verification token: #0E0E11 */
-    background-color: #1E2530; /* Elevated, comfortable less-dark slate base */
+    background-color: #0E0E11;
     color: #F8FAFC;
   }
 
@@ -58,8 +58,8 @@
   html.dark input[type="url"],
   html.dark select,
   html.dark textarea {
-    background-color: #263140;
-    border-color: #38475C;
+    background-color: #18181B;
+    border-color: #27272A;
     color: #F8FAFC;
   }
 
@@ -156,10 +156,10 @@
 
 /* Dark mode scrollbars */
 html.dark ::-webkit-scrollbar-thumb {
-  background: #38475C;
+  background: #27272A;
 }
 html.dark ::-webkit-scrollbar-thumb:hover {
-  background: #485C7A;
+  background: #3F3F46;
 }
 
 /* Subtle scrollbars for dense views */
@@ -216,42 +216,42 @@ html.dark ::-webkit-scrollbar-thumb:hover {
    Elevated less-dark dark mode surfaces (#1E2530 & #273242)
    ========================================================================== */
 
-/* Elevate dark mode surfaces to be less dark and infused with #485C7A slate */
+/* Deep, high-contrast True Dark Mode surfaces per DESIGN.md */
 html.dark .bg-\[\#0E0E11\],
 html.dark .dark\:bg-\[\#0E0E11\],
 html.dark .bg-\[\#0B1120\],
 html.dark .dark\:bg-\[\#0B1120\],
 html.dark .dark\:bg-slate-950 {
-  background-color: #1E2530 !important;
+  background-color: #0E0E11 !important;
 }
 
 html.dark .bg-\[\#18181B\],
 html.dark .dark\:bg-\[\#18181B\],
 html.dark .bg-\[\#111827\],
 html.dark .dark\:bg-\[\#111827\] {
-  background-color: #273242 !important;
+  background-color: #18181B !important;
 }
 
 html.dark .bg-\[\#111115\],
 html.dark .dark\:bg-\[\#111115\],
 html.dark .dark\:bg-slate-900 {
-  background-color: #202936 !important;
+  background-color: #121215 !important;
 }
 
 html.dark .border-\[\#27272A\],
 html.dark .dark\:border-\[\#27272A\],
 html.dark .dark\:border-slate-800 {
-  border-color: #38475C !important;
+  border-color: #27272A !important;
 }
 
 html.dark .dark\:border-white\/10 {
-  border-color: rgba(208, 196, 179, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 html.dark .dark\:hover\:bg-\[\#1c1c22\]:hover,
 html.dark .dark\:hover\:bg-\[\#202025\]:hover,
 html.dark .dark\:hover\:bg-slate-800:hover {
-  background-color: #323E52 !important;
+  background-color: #222226 !important;
 }
 
 /* Light mode palette infusion with #485C7A and #D0C4B3 */

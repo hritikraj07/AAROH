@@ -122,7 +122,7 @@ export const AdminDashboardPage: React.FC = () => {
       {/* Hero Banner with Executive Controls */}
       <div className="relative overflow-hidden bg-[#0F766E] bg-gradient-to-r from-[#134074] via-[#244970] to-[#355B82] border border-[#8DA9C4]/30 shadow-lg text-white rounded-3xl p-6 sm:p-10 transition-all duration-300 select-none">
         {/* Architectural Wireframe SVG of University Building */}
-        <UniversityBuildingWireframe className="absolute right-0 bottom-0 h-[95%] w-auto pointer-events-none select-none z-0 text-white/15 [mask-image:linear-gradient(to_left,black_65%,transparent_100%)] hidden md:block" />
+        <UniversityBuildingWireframe className="absolute right-0 bottom-0 h-[95%] w-auto pointer-events-none select-none z-0 text-white/20 [mask-image:linear-gradient(to_left,black_65%,transparent_100%)] hidden md:block" />
 
         <div className="relative z-10 max-w-2xl space-y-2.5">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white backdrop-blur-sm border border-white/20 font-mono uppercase tracking-wider">

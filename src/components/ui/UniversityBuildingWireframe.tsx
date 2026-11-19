@@ -4,237 +4,204 @@ export interface UniversityBuildingWireframeProps {
   className?: string;
 }
 
+/**
+ * Architectural line-art SVG illustration of K.R. Mangalam University's monumental building facade.
+ * Features a grand central dome with spire, two flanking side cupolas, triangular pedimented portico,
+ * symmetrical multi-storey wings with paired windows, and a ground-floor classical colonnade arcade.
+ */
 export const UniversityBuildingWireframe: React.FC<UniversityBuildingWireframeProps> = ({
-  className = 'absolute right-0 bottom-0 h-[95%] w-auto pointer-events-none select-none z-0 text-emerald-900/15 dark:text-white/10 [mask-image:linear-gradient(to_left,black_65%,transparent_100%)] hidden md:block',
+  className = 'absolute right-0 bottom-0 h-[92%] sm:h-[96%] w-auto pointer-events-none select-none z-0 text-[#15803D]/45 dark:text-emerald-400/35 [mask-image:linear-gradient(to_left,black_65%,transparent_100%)] hidden md:block',
 }) => {
   return (
     <svg
-      viewBox="0 0 680 250"
+      viewBox="0 0 700 240"
       fill="none"
       stroke="currentColor"
-      strokeWidth="1.1"
+      strokeWidth="1.15"
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      {/* 1. Base Plinth & Monumental Steps */}
-      <line x1="10" y1="242" x2="670" y2="242" strokeWidth="1.2" />
-      <line x1="25" y1="238" x2="655" y2="238" />
-      <line x1="40" y1="234" x2="640" y2="234" />
-      <line x1="50" y1="230" x2="630" y2="230" strokeWidth="1.3" />
+      {/* 1. Base Ground Lines & Monumental Steps */}
+      <line x1="20" y1="225" x2="680" y2="225" strokeWidth="1.4" />
+      <line x1="40" y1="220" x2="660" y2="220" strokeWidth="1.2" />
+      <line x1="260" y1="216" x2="440" y2="216" strokeWidth="1.1" />
+      <line x1="270" y1="212" x2="430" y2="212" strokeWidth="1.1" />
+      <line x1="280" y1="208" x2="420" y2="208" strokeWidth="1.1" />
 
-      {/* 2. Classical Central Rotunda & Grand Dome */}
-      {/* Rotunda Drum Base & Arched Windows */}
-      <rect x="296" y="40" width="88" height="26" strokeWidth="1.1" />
-      <line x1="292" y1="40" x2="388" y2="40" strokeWidth="1.3" />
-      <line x1="294" y1="66" x2="386" y2="66" />
-      {/* Drum pilaster ribs */}
-      <line x1="304" y1="40" x2="304" y2="66" strokeWidth="0.8" />
-      <line x1="320" y1="40" x2="320" y2="66" strokeWidth="0.8" />
-      <line x1="336" y1="40" x2="336" y2="66" strokeWidth="0.8" />
-      <line x1="344" y1="40" x2="344" y2="66" strokeWidth="0.8" />
-      <line x1="360" y1="40" x2="360" y2="66" strokeWidth="0.8" />
-      <line x1="376" y1="40" x2="376" y2="66" strokeWidth="0.8" />
-      {/* Drum arched windows */}
-      <path d="M 308 60 L 308 48 A 4 4 0 0 1 316 48 L 316 60 Z" />
-      <path d="M 324 60 L 324 46 A 4 4 0 0 1 332 46 L 332 60 Z" />
-      <path d="M 348 60 L 348 46 A 4 4 0 0 1 356 46 L 356 60 Z" />
-      <path d="M 364 60 L 364 48 A 4 4 0 0 1 372 48 L 372 60 Z" />
+      {/* 2. Central Grand Rotunda & Main Dome */}
+      {/* Rotunda Drum Base & Windows */}
+      <line x1="295" y1="94" x2="405" y2="94" strokeWidth="1.2" />
+      <rect x="304" y="66" width="92" height="28" strokeWidth="1.1" />
+      <line x1="300" y1="66" x2="400" y2="66" strokeWidth="1.3" />
+      {/* Drum vertical arched windows */}
+      {[312, 324, 336, 348, 360, 372, 384].map((wx) => (
+        <rect key={`drum-win-${wx}`} x={wx} y="72" width="6" height="16" rx="3" strokeWidth="0.85" />
+      ))}
 
-      {/* Prominent Central Grand Dome */}
-      <line x1="292" y1="40" x2="388" y2="40" strokeWidth="1.4" />
-      <path d="M 296 40 C 296 12, 384 12, 384 40 Z" strokeWidth="1.3" />
+      {/* Grand Central Hemispherical Dome */}
+      <path d="M 305 66 C 305 28, 395 28, 395 66 Z" strokeWidth="1.35" />
       {/* Dome meridian ribs */}
-      <line x1="340" y1="14" x2="340" y2="40" strokeWidth="1" />
-      <path d="M 340 14 C 324 18, 314 27, 312 40" strokeWidth="0.9" />
-      <path d="M 340 14 C 308 20, 301 29, 300 40" strokeWidth="0.9" />
-      <path d="M 340 14 C 356 18, 366 27, 368 40" strokeWidth="0.9" />
-      <path d="M 340 14 C 372 20, 379 29, 380 40" strokeWidth="0.9" />
+      <line x1="350" y1="28" x2="350" y2="66" strokeWidth="1.0" />
+      <path d="M 350 28 C 332 35, 320 48, 318 66" strokeWidth="0.85" />
+      <path d="M 350 28 C 316 38, 308 50, 306 66" strokeWidth="0.85" />
+      <path d="M 350 28 C 368 35, 380 48, 382 66" strokeWidth="0.85" />
+      <path d="M 350 28 C 384 38, 392 50, 394 66" strokeWidth="0.85" />
 
-      {/* Dome Top Lantern & Finial Spire */}
-      <line x1="333" y1="14" x2="347" y2="14" strokeWidth="1.2" />
-      <line x1="335" y1="8" x2="335" y2="14" strokeWidth="0.9" />
-      <line x1="338" y1="8" x2="338" y2="14" strokeWidth="0.9" />
-      <line x1="342" y1="8" x2="342" y2="14" strokeWidth="0.9" />
-      <line x1="345" y1="8" x2="345" y2="14" strokeWidth="0.9" />
-      <path d="M 334 8 L 340 4 L 346 8 Z" strokeWidth="1" />
-      <line x1="340" y1="4" x2="340" y2="1" strokeWidth="1.1" />
-      <circle cx="340" cy="1" r="1.3" />
+      {/* Dome Lantern & Spire Finial */}
+      <line x1="344" y1="28" x2="356" y2="28" strokeWidth="1.1" />
+      <rect x="346" y="22" width="8" height="6" strokeWidth="0.9" />
+      <path d="M 345 22 L 350 17 L 355 22 Z" strokeWidth="0.95" />
+      <line x1="350" y1="17" x2="350" y2="10" strokeWidth="1.1" />
+      <circle cx="350" cy="10" r="1.4" />
 
-      {/* 3. Central Triangular Pedimented Portico */}
+      {/* 3. Two Flanking Towers & Side Cupola Domes */}
+      {/* Left Tower & Dome (Center = 245) */}
+      <rect x="222" y="94" width="46" height="34" strokeWidth="1.1" />
+      <line x1="218" y1="94" x2="272" y2="94" strokeWidth="1.2" />
+      <rect x="228" y="68" width="34" height="26" strokeWidth="1.05" />
+      <line x1="225" y1="68" x2="265" y2="68" strokeWidth="1.2" />
+      {/* Side drum windows */}
+      <rect x="233" y="74" width="5" height="14" rx="2.5" strokeWidth="0.8" />
+      <rect x="242.5" y="74" width="5" height="14" rx="2.5" strokeWidth="0.8" />
+      <rect x="252" y="74" width="5" height="14" rx="2.5" strokeWidth="0.8" />
+      {/* Cupola curve */}
+      <path d="M 226 68 C 226 46, 264 46, 264 68 Z" strokeWidth="1.2" />
+      <line x1="245" y1="46" x2="245" y2="68" strokeWidth="0.8" />
+      <path d="M 245 46 C 236 50, 230 58, 229 68" strokeWidth="0.75" />
+      <path d="M 245 46 C 254 50, 260 58, 261 68" strokeWidth="0.75" />
+      {/* Tower Spire */}
+      <line x1="245" y1="46" x2="245" y2="34" strokeWidth="1.05" />
+      <circle cx="245" cy="34" r="1.3" />
+      {/* Tower body window */}
+      <rect x="238" y="102" width="14" height="18" rx="1" strokeWidth="0.85" />
+      <line x1="238" y1="111" x2="252" y2="111" strokeWidth="0.6" />
+
+      {/* Right Tower & Dome (Center = 455) */}
+      <rect x="432" y="94" width="46" height="34" strokeWidth="1.1" />
+      <line x1="428" y1="94" x2="482" y2="94" strokeWidth="1.2" />
+      <rect x="438" y="68" width="34" height="26" strokeWidth="1.05" />
+      <line x1="435" y1="68" x2="475" y2="68" strokeWidth="1.2" />
+      {/* Side drum windows */}
+      <rect x="443" y="74" width="5" height="14" rx="2.5" strokeWidth="0.8" />
+      <rect x="452.5" y="74" width="5" height="14" rx="2.5" strokeWidth="0.8" />
+      <rect x="462" y="74" width="5" height="14" rx="2.5" strokeWidth="0.8" />
+      {/* Cupola curve */}
+      <path d="M 436 68 C 436 46, 474 46, 474 68 Z" strokeWidth="1.2" />
+      <line x1="455" y1="46" x2="455" y2="68" strokeWidth="0.8" />
+      <path d="M 455 46 C 446 50, 440 58, 439 68" strokeWidth="0.75" />
+      <path d="M 455 46 C 464 50, 470 58, 471 68" strokeWidth="0.75" />
+      {/* Tower Spire */}
+      <line x1="455" y1="46" x2="455" y2="34" strokeWidth="1.05" />
+      <circle cx="455" cy="34" r="1.3" />
+      {/* Tower body window */}
+      <rect x="448" y="102" width="14" height="18" rx="1" strokeWidth="0.85" />
+      <line x1="448" y1="111" x2="462" y2="111" strokeWidth="0.6" />
+
+      {/* 4. Central Portico & Triangular Pediment */}
       {/* Triangular Pediment */}
-      <path d="M 276 104 L 340 66 L 404 104 Z" strokeWidth="1.4" />
-      <path d="M 283 102 L 340 70 L 397 102" strokeWidth="0.9" />
-      {/* Pediment Tympanum Crest / Medallion */}
-      <circle cx="340" cy="86" r="9" strokeWidth="1" />
-      <circle cx="340" cy="86" r="5" strokeWidth="0.8" />
-      <line x1="340" y1="81" x2="340" y2="91" strokeWidth="0.8" />
-      <line x1="335" y1="86" x2="345" y2="86" strokeWidth="0.8" />
-      {/* Acroteria Ornaments */}
-      <line x1="340" y1="66" x2="340" y2="59" strokeWidth="1" />
-      <line x1="337" y1="62" x2="343" y2="62" strokeWidth="0.9" />
-      <line x1="276" y1="104" x2="273" y2="99" strokeWidth="1" />
-      <line x1="404" y1="104" x2="407" y2="99" strokeWidth="1" />
+      <path d="M 285 130 L 350 96 L 415 130 Z" strokeWidth="1.35" />
+      <path d="M 293 128 L 350 101 L 407 128" strokeWidth="0.9" />
+      {/* Tympanum Roundel / Crest */}
+      <circle cx="350" cy="116" r="6" strokeWidth="0.9" />
+      <circle cx="350" cy="116" r="3" strokeWidth="0.7" />
 
-      {/* Entablature Below Pediment */}
-      <line x1="280" y1="104" x2="400" y2="104" strokeWidth="1.3" />
-      <line x1="283" y1="109" x2="397" y2="109" strokeWidth="0.8" />
-      <line x1="282" y1="114" x2="398" y2="114" strokeWidth="1.2" />
+      {/* Glass / Window Grid Behind Portico Columns */}
+      <line x1="292" y1="146" x2="408" y2="146" strokeWidth="0.6" strokeDasharray="2 2" />
+      <line x1="292" y1="162" x2="408" y2="162" strokeWidth="0.6" strokeDasharray="2 2" />
+      <line x1="292" y1="178" x2="408" y2="178" strokeWidth="0.6" strokeDasharray="2 2" />
+      {[308, 328, 350, 372, 392].map((gx) => (
+        <line key={`portico-grid-${gx}`} x1={gx} y1="130" x2={gx} y2="195" strokeWidth="0.6" strokeDasharray="2 2" />
+      ))}
 
-      {/* Grand Arch Portal Behind Portico */}
-      <path d="M 322 230 L 322 170 A 18 18 0 0 1 358 170 L 358 230" strokeWidth="1.2" />
-      <path d="M 326 230 L 326 172 A 14 14 0 0 1 354 172 L 354 230" strokeWidth="0.9" />
-      <line x1="340" y1="172" x2="340" y2="230" strokeWidth="0.9" />
-      <line x1="326" y1="200" x2="354" y2="200" strokeWidth="0.8" />
-      {/* Keystone */}
-      <path d="M 338 152 L 342 152 L 343 158 L 337 158 Z" strokeWidth="0.9" />
-      {/* 2nd floor window above portal */}
-      <path d="M 332 144 L 332 128 A 8 8 0 0 1 348 128 L 348 144 Z" strokeWidth="0.9" />
+      {/* Entablature beam */}
+      <line x1="285" y1="130" x2="415" y2="130" strokeWidth="1.3" />
+      <line x1="288" y1="135" x2="412" y2="135" strokeWidth="0.85" />
 
       {/* Classical Portico Vertical Columns (6 Fluted Columns) */}
-      {[295, 313, 331, 349, 367, 385].map((colX) => (
+      {[296, 317, 338, 362, 383, 404].map((colX) => (
         <g key={`portico-col-${colX}`}>
-          {/* Column Capital */}
-          <line x1={colX - 6} y1="114" x2={colX + 6} y2="114" strokeWidth="1.1" />
-          <path d={`M ${colX - 5} 118 C ${colX - 6} 115, ${colX - 2} 114, ${colX} 116 C ${colX + 2} 114, ${colX + 6} 115, ${colX + 5} 118 Z`} strokeWidth="0.8" />
-          {/* Column Shaft */}
-          <line x1={colX - 2.5} y1="118" x2={colX - 2.5} y2="226" strokeWidth="0.9" />
-          <line x1={colX + 2.5} y1="118" x2={colX + 2.5} y2="226" strokeWidth="0.9" />
-          <line x1={colX} y1="120" x2={colX} y2="224" strokeWidth="0.6" strokeDasharray="4 2" />
-          {/* Column Base / Plinth */}
-          <rect x={colX - 4.5} y="226" width="9" height="4" strokeWidth="0.9" />
+          {/* Capital */}
+          <line x1={colX - 5} y1="135" x2={colX + 5} y2="135" strokeWidth="1.1" />
+          {/* Shaft */}
+          <line x1={colX - 2.2} y1="136" x2={colX - 2.2} y2="204" strokeWidth="0.85" />
+          <line x1={colX + 2.2} y1="136" x2={colX + 2.2} y2="204" strokeWidth="0.85" />
+          {/* Base */}
+          <rect x={colX - 4} y="204" width="8" height="4" strokeWidth="0.9" />
         </g>
       ))}
 
-      {/* 4. Two Symmetrical Side Domes & Pavilions */}
-      {/* Left Side Dome Pavilion (center = 210) */}
-      <rect x="188" y="78" width="44" height="36" strokeWidth="1.1" />
-      <line x1="184" y1="78" x2="236" y2="78" strokeWidth="1.2" />
-      <rect x="194" y="60" width="32" height="18" strokeWidth="1" />
-      <path d="M 198 74 L 198 65 A 3 3 0 0 1 204 65 L 204 74 Z" strokeWidth="0.8" />
-      <path d="M 207 74 L 207 64 A 3 3 0 0 1 213 64 L 213 74 Z" strokeWidth="0.8" />
-      <path d="M 216 74 L 216 65 A 3 3 0 0 1 222 65 L 222 74 Z" strokeWidth="0.8" />
-      {/* Cupola */}
-      <line x1="190" y1="60" x2="230" y2="60" strokeWidth="1.2" />
-      <path d="M 192 60 C 192 38, 228 38, 228 60 Z" strokeWidth="1.2" />
-      <line x1="210" y1="41" x2="210" y2="60" strokeWidth="0.8" />
-      <path d="M 210 41 C 201 44, 196 51, 195 60" strokeWidth="0.7" />
-      <path d="M 210 41 C 219 44, 224 51, 225 60" strokeWidth="0.7" />
-      {/* Spire */}
-      <line x1="210" y1="41" x2="210" y2="28" strokeWidth="1" />
-      <circle cx="210" cy="28" r="1.5" />
-      <line x1="210" y1="26" x2="210" y2="22" strokeWidth="1" />
+      {/* Grand Center Entrance Portal */}
+      <rect x="340" y="174" width="20" height="30" rx="1.5" strokeWidth="1.0" />
+      <line x1="350" y1="174" x2="350" y2="204" strokeWidth="0.75" />
 
-      {/* Right Side Dome Pavilion (center = 470) */}
-      <rect x="448" y="78" width="44" height="36" strokeWidth="1.1" />
-      <line x1="444" y1="78" x2="496" y2="78" strokeWidth="1.2" />
-      <rect x="454" y="60" width="32" height="18" strokeWidth="1" />
-      <path d="M 458 74 L 458 65 A 3 3 0 0 1 464 65 L 464 74 Z" strokeWidth="0.8" />
-      <path d="M 467 74 L 467 64 A 3 3 0 0 1 473 64 L 473 74 Z" strokeWidth="0.8" />
-      <path d="M 476 74 L 476 65 A 3 3 0 0 1 482 65 L 482 74 Z" strokeWidth="0.8" />
-      {/* Cupola */}
-      <line x1="450" y1="60" x2="490" y2="60" strokeWidth="1.2" />
-      <path d="M 452 60 C 452 38, 488 38, 488 60 Z" strokeWidth="1.2" />
-      <line x1="470" y1="41" x2="470" y2="60" strokeWidth="0.8" />
-      <path d="M 470 41 C 461 44, 456 51, 455 60" strokeWidth="0.7" />
-      <path d="M 470 41 C 479 44, 484 51, 485 60" strokeWidth="0.7" />
-      {/* Spire */}
-      <line x1="470" y1="41" x2="470" y2="28" strokeWidth="1" />
-      <circle cx="470" cy="28" r="1.5" />
-      <line x1="470" y1="26" x2="470" y2="22" strokeWidth="1" />
+      {/* 5. Left Wing (Multi-Storey Windows & Ground Arcade) */}
+      {/* Horizontal Cornices */}
+      <line x1="75" y1="108" x2="222" y2="108" strokeWidth="1.25" />
+      <line x1="75" y1="102" x2="222" y2="102" strokeWidth="0.8" />
+      <line x1="75" y1="144" x2="222" y2="144" strokeWidth="0.9" />
+      <line x1="75" y1="178" x2="222" y2="178" strokeWidth="0.9" />
+      <line x1="75" y1="102" x2="75" y2="220" strokeWidth="1.2" />
 
-      {/* 5. Left Wing Facade (Multi-Storey Windows & Cornices) */}
-      <line x1="60" y1="114" x2="188" y2="114" strokeWidth="1.3" />
-      <line x1="62" y1="106" x2="188" y2="106" strokeWidth="0.9" />
-      {/* Left Balustrade ticks */}
-      {[70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180].map((bx) => (
-        <line key={`left-bal-${bx}`} x1={bx} y1="106" x2={bx} y2="114" strokeWidth="0.7" />
-      ))}
-      <line x1="60" y1="152" x2="188" y2="152" strokeWidth="0.9" />
-      <line x1="60" y1="190" x2="188" y2="190" strokeWidth="0.9" />
-      {/* Outer Left Wall Boundary */}
-      <line x1="60" y1="106" x2="60" y2="230" strokeWidth="1.2" />
-      <line x1="64" y1="106" x2="64" y2="230" strokeWidth="0.6" />
-
-      {/* Left Wing Windows Grids */}
-      {[86, 120, 154].map((wx) => (
-        <g key={`left-win-${wx}`}>
-          {/* Top Floor (Floor 3) Window */}
-          <line x1={wx - 9} y1="123" x2={wx + 9} y2="123" strokeWidth="0.8" />
-          <rect x={wx - 7} y="125" width="14" height="18" rx="1" strokeWidth="0.9" />
-          <line x1={wx - 7} y1="134" x2={wx + 7} y2="134" strokeWidth="0.6" />
-          <line x1={wx} y1="125" x2={wx} y2="143" strokeWidth="0.6" />
-
-          {/* Middle Floor (Floor 2) Window with Pediment Lintel */}
-          <path d={`M ${wx - 9} 163 L ${wx} 159 L ${wx + 9} 163`} strokeWidth="0.9" />
-          <rect x={wx - 7} y="165" width="14" height="19" rx="1" strokeWidth="0.9" />
-          <line x1={wx - 7} y1="174" x2={wx + 7} y2="174" strokeWidth="0.6" />
-          <line x1={wx} y1="165" x2={wx} y2="184" strokeWidth="0.6" />
-
-          {/* Ground Floor (Floor 1) Arched Window */}
-          <path d={`M ${wx - 7} 224 L ${wx - 7} 207 A 7 7 0 0 1 ${wx + 7} 207 L ${wx + 7} 224 Z`} strokeWidth="0.9" />
-          <line x1={wx - 9} y1="225" x2={wx + 9} y2="225" strokeWidth="0.9" />
-          <line x1={wx - 7} y1="214" x2={wx + 7} y2="214" strokeWidth="0.6" />
-          <line x1={wx} y1="200" x2={wx} y2="224" strokeWidth="0.6" />
+      {/* Floor 3 Paired Windows */}
+      {[92, 132, 172].map((wx) => (
+        <g key={`left-f3-${wx}`}>
+          <rect x={wx} y="115" width="11" height="19" rx="1" strokeWidth="0.85" />
+          <line x1={wx} y1="124" x2={wx + 11} y2="124" strokeWidth="0.6" />
+          <rect x={wx + 15} y="115" width="11" height="19" rx="1" strokeWidth="0.85" />
+          <line x1={wx + 15} y1="124" x2={wx + 26} y2="124" strokeWidth="0.6" />
         </g>
       ))}
 
-      {/* 6. Right Wing Facade (Multi-Storey Windows & Cornices) */}
-      <line x1="492" y1="114" x2="620" y2="114" strokeWidth="1.3" />
-      <line x1="492" y1="106" x2="618" y2="106" strokeWidth="0.9" />
-      {/* Right Balustrade ticks */}
-      {[500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 600, 610].map((bx) => (
-        <line key={`right-bal-${bx}`} x1={bx} y1="106" x2={bx} y2="114" strokeWidth="0.7" />
-      ))}
-      <line x1="492" y1="152" x2="620" y2="152" strokeWidth="0.9" />
-      <line x1="492" y1="190" x2="620" y2="190" strokeWidth="0.9" />
-      {/* Outer Right Wall Boundary */}
-      <line x1="620" y1="106" x2="620" y2="230" strokeWidth="1.2" />
-      <line x1="616" y1="106" x2="616" y2="230" strokeWidth="0.6" />
-
-      {/* Right Wing Windows Grids */}
-      {[526, 560, 594].map((wx) => (
-        <g key={`right-win-${wx}`}>
-          {/* Top Floor Window */}
-          <line x1={wx - 9} y1="123" x2={wx + 9} y2="123" strokeWidth="0.8" />
-          <rect x={wx - 7} y="125" width="14" height="18" rx="1" strokeWidth="0.9" />
-          <line x1={wx - 7} y1="134" x2={wx + 7} y2="134" strokeWidth="0.6" />
-          <line x1={wx} y1="125" x2={wx} y2="143" strokeWidth="0.6" />
-
-          {/* Middle Floor Window with Pediment Lintel */}
-          <path d={`M ${wx - 9} 163 L ${wx} 159 L ${wx + 9} 163`} strokeWidth="0.9" />
-          <rect x={wx - 7} y="165" width="14" height="19" rx="1" strokeWidth="0.9" />
-          <line x1={wx - 7} y1="174" x2={wx + 7} y2="174" strokeWidth="0.6" />
-          <line x1={wx} y1="165" x2={wx} y2="184" strokeWidth="0.6" />
-
-          {/* Ground Floor Arched Window */}
-          <path d={`M ${wx - 7} 224 L ${wx - 7} 207 A 7 7 0 0 1 ${wx + 7} 207 L ${wx + 7} 224 Z`} strokeWidth="0.9" />
-          <line x1={wx - 9} y1="225" x2={wx + 9} y2="225" strokeWidth="0.9" />
-          <line x1={wx - 7} y1="214" x2={wx + 7} y2="214" strokeWidth="0.6" />
-          <line x1={wx} y1="200" x2={wx} y2="224" strokeWidth="0.6" />
+      {/* Floor 2 Paired Windows */}
+      {[92, 132, 172].map((wx) => (
+        <g key={`left-f2-${wx}`}>
+          <rect x={wx} y="150" width="11" height="19" rx="1" strokeWidth="0.85" />
+          <line x1={wx} y1="159" x2={wx + 11} y2="159" strokeWidth="0.6" />
+          <rect x={wx + 15} y="150" width="11" height="19" rx="1" strokeWidth="0.85" />
+          <line x1={wx + 15} y1="159" x2={wx + 26} y2="159" strokeWidth="0.6" />
         </g>
       ))}
 
-      {/* 7. Intermediate Wings (Between Side Pavilions & Central Portico) */}
-      {/* Left Intermediary */}
-      <line x1="236" y1="114" x2="276" y2="114" strokeWidth="1.2" />
-      <line x1="236" y1="106" x2="276" y2="106" strokeWidth="0.8" />
-      <line x1="236" y1="152" x2="276" y2="152" strokeWidth="0.8" />
-      <line x1="236" y1="190" x2="276" y2="190" strokeWidth="0.8" />
-      <rect x="249" y="125" width="14" height="18" rx="1" strokeWidth="0.9" />
-      <rect x="249" y="165" width="14" height="19" rx="1" strokeWidth="0.9" />
-      <path d="M 249 224 L 249 207 A 7 7 0 0 1 263 207 L 263 224 Z" strokeWidth="0.9" />
+      {/* Ground Floor Colonnade / Open Walkway Arcade */}
+      {[86, 100, 114, 128, 142, 156, 170, 184, 198, 212].map((ax) => (
+        <rect key={`left-arcade-${ax}`} x={ax} y="184" width="8" height="34" rx="1" strokeWidth="0.85" />
+      ))}
 
-      {/* Right Intermediary */}
-      <line x1="404" y1="114" x2="444" y2="114" strokeWidth="1.2" />
-      <line x1="404" y1="106" x2="444" y2="106" strokeWidth="0.8" />
-      <line x1="404" y1="152" x2="444" y2="152" strokeWidth="0.8" />
-      <line x1="404" y1="190" x2="444" y2="190" strokeWidth="0.8" />
-      <rect x="417" y="125" width="14" height="18" rx="1" strokeWidth="0.9" />
-      <rect x="417" y="165" width="14" height="19" rx="1" strokeWidth="0.9" />
-      <path d="M 417 224 L 417 207 A 7 7 0 0 1 431 207 L 431 224 Z" strokeWidth="0.9" />
+      {/* 6. Right Wing (Multi-Storey Windows & Ground Arcade) */}
+      {/* Horizontal Cornices */}
+      <line x1="478" y1="108" x2="625" y2="108" strokeWidth="1.25" />
+      <line x1="478" y1="102" x2="625" y2="102" strokeWidth="0.8" />
+      <line x1="478" y1="144" x2="625" y2="144" strokeWidth="0.9" />
+      <line x1="478" y1="178" x2="625" y2="178" strokeWidth="0.9" />
+      <line x1="625" y1="102" x2="625" y2="220" strokeWidth="1.2" />
+
+      {/* Floor 3 Paired Windows */}
+      {[502, 542, 582].map((wx) => (
+        <g key={`right-f3-${wx}`}>
+          <rect x={wx} y="115" width="11" height="19" rx="1" strokeWidth="0.85" />
+          <line x1={wx} y1="124" x2={wx + 11} y2="124" strokeWidth="0.6" />
+          <rect x={wx + 15} y="115" width="11" height="19" rx="1" strokeWidth="0.85" />
+          <line x1={wx + 15} y1="124" x2={wx + 26} y2="124" strokeWidth="0.6" />
+        </g>
+      ))}
+
+      {/* Floor 2 Paired Windows */}
+      {[502, 542, 582].map((wx) => (
+        <g key={`right-f2-${wx}`}>
+          <rect x={wx} y="150" width="11" height="19" rx="1" strokeWidth="0.85" />
+          <line x1={wx} y1="159" x2={wx + 11} y2="159" strokeWidth="0.6" />
+          <rect x={wx + 15} y="150" width="11" height="19" rx="1" strokeWidth="0.85" />
+          <line x1={wx + 15} y1="159" x2={wx + 26} y2="159" strokeWidth="0.6" />
+        </g>
+      ))}
+
+      {/* Ground Floor Colonnade / Open Walkway Arcade */}
+      {[482, 496, 510, 524, 538, 552, 566, 580, 594, 608].map((ax) => (
+        <rect key={`right-arcade-${ax}`} x={ax} y="184" width="8" height="34" rx="1" strokeWidth="0.85" />
+      ))}
     </svg>
   );
 };

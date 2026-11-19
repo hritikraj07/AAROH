@@ -10,7 +10,7 @@ export interface ThemeToggleProps {
 
 /**
  * Clean pill-shaped theme toggle switch matching modern university dashboard design.
- * Features an active emerald green indicator circle for the active theme.
+ * Features an active indicator circle with precision centering and high contrast.
  */
 export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   className = '',
@@ -24,34 +24,37 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
       <button
         type="button"
         onClick={() => toggleTheme()}
-        className="relative inline-flex items-center p-1 rounded-full bg-[#F0ECE4] dark:bg-[#263140] border border-[#D0C4B3]/40 dark:border-[#38475C] transition-colors cursor-pointer select-none active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#485C7A]/40"
+        className="relative inline-flex items-center justify-between w-14 h-8 p-1 rounded-full bg-slate-200/90 dark:bg-[#1E293B] border border-slate-300/80 dark:border-slate-700/80 transition-colors cursor-pointer select-none active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50"
         title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         aria-label="Toggle theme"
       >
-        {/* Sliding active indicator thumb */}
+        {/* Sliding active indicator thumb - 24px wide, translating by exactly 24px */}
         <motion.div
-          className="absolute top-1 bottom-1 w-6 h-6 rounded-full bg-[#485C7A]/15 dark:bg-[#D0C4B3]/25 shadow-2xs z-0"
-          animate={{ x: isDark ? 28 : 0 }}
-          transition={{ type: "spring", stiffness: 420, damping: 28 }}
+          className="absolute top-1 left-1 w-6 h-6 rounded-full bg-white dark:bg-[#0F172A] shadow-sm border border-slate-200/60 dark:border-slate-600/60 z-0 pointer-events-none"
+          animate={{ x: isDark ? 24 : 0 }}
+          transition={{ type: "spring", stiffness: 450, damping: 28 }}
         />
 
+        {/* Sun Icon */}
         <motion.div
-          animate={{ rotate: isDark ? -35 : 0, scale: isDark ? 0.9 : 1 }}
-          transition={{ duration: 0.2 }}
+          animate={{ rotate: isDark ? -30 : 0, scale: isDark ? 0.85 : 1 }}
+          transition={{ duration: 0.18 }}
           className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
             !isDark
-              ? 'text-[#485C7A] font-bold'
-              : 'text-slate-400 hover:text-slate-600'
+              ? 'text-amber-500'
+              : 'text-slate-400 hover:text-slate-200'
           }`}
         >
           <Sun className="w-3.5 h-3.5" />
         </motion.div>
+
+        {/* Moon Icon */}
         <motion.div
-          animate={{ rotate: isDark ? 0 : 35, scale: isDark ? 1 : 0.9 }}
-          transition={{ duration: 0.2 }}
+          animate={{ rotate: isDark ? 0 : 30, scale: isDark ? 1 : 0.85 }}
+          transition={{ duration: 0.18 }}
           className={`relative z-10 w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
             isDark
-              ? 'text-[#D0C4B3] font-bold'
+              ? 'text-blue-300'
               : 'text-slate-400 hover:text-slate-600'
           }`}
         >
