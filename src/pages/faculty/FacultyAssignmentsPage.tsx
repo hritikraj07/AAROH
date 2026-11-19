@@ -658,108 +658,126 @@ export const FacultyAssignmentsPage: React.FC = () => {
 
       {/* Standard Assignment Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-sm max-w-md w-full p-6 space-y-4 animate-in fade-in duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-[2px] p-4 sm:p-6 overflow-y-auto">
+          <div className="w-full max-w-2xl bg-white dark:bg-[#18181B] rounded-2xl shadow-2xl border border-slate-200 dark:border-[#27272A] overflow-hidden flex flex-col max-h-[90vh] my-auto animate-in fade-in duration-150">
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-[#27272A] flex items-center justify-between shrink-0 bg-white dark:bg-[#18181B]">
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-teal-800 dark:text-teal-400" />
-                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Post Standard Assignment</h3>
+                <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">
+                  Post Standard Assignment
+                </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setIsAddModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                title="Close modal"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateStandardAssignment} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Target Course <span className="text-rose-600">*</span>
-                </label>
-                <div className="relative">
-                  <CustomDropdown<string>
-                    value={courseId}
-                    onChange={val => setCourseId(val)}
-                    options={courseSelectOptions}
-                    placeholder="Select course..."
-                  />
-                  <select
-                    aria-hidden="true"
-                    tabIndex={-1}
-                    value={courseId}
-                    onChange={e => setCourseId(e.target.value)}
-                    className="sr-only pointer-events-none"
-                  >
-                    {courses.map(c => (
-                      <option key={c.id} value={c.id}>
-                        {c.code} - {c.name}
-                      </option>
-                    ))}
-                  </select>
+            {/* Modal Form */}
+            <form onSubmit={handleCreateStandardAssignment} className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="p-6 space-y-4 overflow-y-auto flex-1">
+                {/* Target Course */}
+                <div className="w-full min-w-0 box-border">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
+                    Target Course <span className="text-rose-600">*</span>
+                  </label>
+                  <div className="relative w-full min-w-0 box-border">
+                    <CustomDropdown<string>
+                      value={courseId}
+                      onChange={val => setCourseId(val)}
+                      options={courseSelectOptions}
+                      placeholder="Select course..."
+                      className="w-full min-w-0 box-border"
+                      buttonClassName="px-3.5 py-2.5 rounded-xl w-full"
+                    />
+                    <select
+                      aria-hidden="true"
+                      tabIndex={-1}
+                      value={courseId}
+                      onChange={e => setCourseId(e.target.value)}
+                      className="sr-only pointer-events-none"
+                    >
+                      {courses.map(c => (
+                        <option key={c.id} value={c.id}>
+                          {c.code} - {c.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Assignment Title <span className="text-rose-600">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Problem Set 3: Database Normalization"
-                  value={title}
-                  onChange={e => setTitle(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Description & Submission Guidelines
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder="Provide instructions, rubric criteria, or problem set links..."
-                  value={description}
-                  onChange={e => setDescription(e.target.value)}
-                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-teal-700 resize-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Due Date <span className="text-rose-600">*</span>
+                {/* Assignment Title */}
+                <div className="w-full min-w-0 box-border">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
+                    Assignment Title <span className="text-rose-600">*</span>
                   </label>
                   <input
-                    type="date"
+                    type="text"
                     required
-                    value={dueDate}
-                    onChange={e => setDueDate(e.target.value)}
-                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+                    placeholder="e.g. Problem Set 3: Database Normalization"
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
+                    className="w-full min-w-0 box-border text-xs px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition-all"
                   />
                 </div>
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Max Marks</label>
-                  <input
-                    type="number"
-                    min={5}
-                    max={100}
-                    value={maxMarks}
-                    onChange={e => setMaxMarks(Number(e.target.value))}
-                    className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-700"
+
+                {/* Description & Submission Guidelines */}
+                <div className="w-full min-w-0 box-border">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
+                    Description & Submission Guidelines
+                  </label>
+                  <textarea
+                    rows={4}
+                    placeholder="Provide instructions, rubric criteria, or problem set links..."
+                    value={description}
+                    onChange={e => setDescription(e.target.value)}
+                    className="w-full min-w-0 box-border min-h-[100px] text-xs px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#18181B] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0F766E] resize-y transition-all"
                   />
+                </div>
+
+                {/* Bottom Row: Due Date & Max Marks */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+                  <div className="min-w-0 w-full">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
+                      Due Date <span className="text-rose-600">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      required
+                      value={dueDate}
+                      onChange={e => setDueDate(e.target.value)}
+                      className="w-full min-w-0 box-border text-xs font-mono px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition-all"
+                    />
+                  </div>
+                  <div className="min-w-0 w-full">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5 font-sans">
+                      Max Marks
+                    </label>
+                    <input
+                      type="number"
+                      min={5}
+                      max={100}
+                      value={maxMarks}
+                      onChange={e => setMaxMarks(Number(e.target.value))}
+                      className="w-full min-w-0 box-border text-xs font-mono px-3.5 py-2.5 border border-slate-200 dark:border-[#27272A] rounded-xl bg-white dark:bg-[#18181B] text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0F766E] transition-all"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-[#27272A]">
+              {/* Modal Footer */}
+              <div className="px-6 py-4 bg-slate-50/70 dark:bg-[#111115] border-t border-slate-100 dark:border-[#27272A] flex items-center justify-end gap-3 shrink-0">
                 <Button
                   type="button"
                   variant="secondary"
                   size="sm"
                   onClick={() => setIsAddModalOpen(false)}
+                  className="whitespace-nowrap shrink-0"
                 >
                   Cancel
                 </Button>
@@ -768,6 +786,7 @@ export const FacultyAssignmentsPage: React.FC = () => {
                   variant="primary"
                   size="sm"
                   disabled={courses.length === 0}
+                  className="whitespace-nowrap shrink-0"
                 >
                   Publish Task
                 </Button>
