@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { X, QrCode, RefreshCw, Copy, Check, Users, ShieldCheck, Zap } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { X, RefreshCw, Copy, Check, Users, ShieldCheck, Zap } from 'lucide-react';
 import QRCode from 'qrcode';
 import { ClassSession, User } from '../../../types';
 
@@ -98,7 +99,7 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
         // Generate scannable QR code image containing the active session payload
         const qrString = JSON.stringify(activePayload);
         const url = await QRCode.toDataURL(qrString, {
-          width: 280,
+          width: 240,
           margin: 1,
           color: {
             dark: '#0B2545',
@@ -182,9 +183,9 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150 overflow-y-auto font-sans">
-      <div className="relative w-full max-w-lg bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-2xl shadow-xl overflow-hidden p-5 sm:p-6 space-y-4 max-h-[92dvh] overflow-y-auto animate-in zoom-in-95 duration-200 my-auto">
+  const modalContent = (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 backdrop-blur-[2px] p-4 sm:p-6 overflow-y-auto font-sans">
+      <div className="relative w-full max-w-2xl bg-white dark:bg-[#18181B] border border-slate-200/80 dark:border-[#27272A] rounded-2xl shadow-2xl p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto my-auto animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
@@ -208,17 +209,17 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
           </button>
         </div>
 
-        {/* QR Code & Session Code Display Container */}
-        <div className="flex flex-col items-center justify-center p-5 bg-slate-50 dark:bg-[#0E0E11] border border-slate-200 dark:border-[#27272A] rounded-2xl relative space-y-3">
-          <div className="relative p-3 bg-white rounded-xl shadow-sm border border-slate-200">
+        {/* Compact & Balanced QR + Session Code Section */}
+        <div className="p-4 sm:p-5 flex flex-col items-center gap-3 bg-slate-50 dark:bg-[#0E0E11] border border-slate-200 dark:border-[#27272A] rounded-2xl relative">
+          <div className="relative p-2.5 sm:p-3 bg-white rounded-xl shadow-xs border border-slate-200 shrink-0">
             {qrDataUrl ? (
               <img
                 src={qrDataUrl}
                 alt="Active Classroom Attendance QR Code"
-                className="w-48 h-48 sm:w-52 sm:h-52 object-contain rounded-lg"
+                className="w-40 h-40 sm:w-48 sm:h-48 object-contain rounded-lg"
               />
             ) : (
-              <div className="w-48 h-48 sm:w-52 sm:h-52 flex flex-col items-center justify-center bg-slate-50 rounded-lg text-slate-400">
+              <div className="w-40 h-40 sm:w-48 sm:h-48 flex flex-col items-center justify-center bg-slate-50 rounded-lg text-slate-400">
                 <RefreshCw className="w-6 h-6 animate-spin text-[#134074]" />
                 <span className="text-[11px] font-mono mt-2">Generating QR...</span>
               </div>
@@ -226,8 +227,8 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
           </div>
 
           {/* Visible Session Code with 1-Click Copy */}
-          <div className="flex items-center gap-2">
-            <div className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] flex items-center gap-2 shadow-xs">
+          <div className="flex items-center justify-center gap-2.5">
+            <div className="px-3.5 py-1.5 rounded-xl bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] flex items-center gap-2 shadow-xs whitespace-nowrap shrink-0">
               <span className="text-[10px] font-mono uppercase text-slate-400 dark:text-slate-500 font-bold">
                 Session Code:
               </span>
@@ -239,7 +240,7 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
             <button
               type="button"
               onClick={handleCopyCode}
-              className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] hover:bg-slate-50 dark:hover:bg-[#27272A] text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs min-h-[38px]"
+              className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] hover:bg-slate-50 dark:hover:bg-[#27272A] text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer shadow-xs min-h-[38px] whitespace-nowrap shrink-0"
               title="Copy session code"
             >
               {copiedCode ? (
@@ -259,8 +260,8 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
 
         {/* Dynamic Expiration Progress & Countdown Timer */}
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs font-mono">
-            <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+          <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-mono">
+            <span className="flex items-center gap-1.5">
               <RefreshCw className="w-3.5 h-3.5 text-[#134074] dark:text-[#8DA9C4] animate-spin" />
               Auto-rotating QR beacon in:
             </span>
@@ -278,7 +279,7 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
         </div>
 
         {/* Live Check-In Counter & Feed */}
-        <div className="p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl space-y-2">
+        <div className="p-3.5 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-xl space-y-2.5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
               <Users className="w-3.5 h-3.5 text-teal-700 dark:text-teal-400" />
@@ -290,7 +291,7 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
           </div>
 
           {checkedInScans.length === 0 ? (
-            <p className="text-[11px] text-slate-400 dark:text-slate-500 font-mono text-center py-1">
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 font-mono text-center py-1.5">
               Waiting for students to scan QR or submit code...
             </p>
           ) : (
@@ -298,7 +299,7 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
               {checkedInScans.map(scan => (
                 <span
                   key={scan.studentId}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-mono bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60"
                 >
                   <ShieldCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                   <span>{scan.studentName || scan.studentId}</span>
@@ -309,15 +310,15 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
 
           {/* Quick Check-In Demo Row */}
           {pendingStudents.length > 0 && (
-            <div className="pt-2 border-t border-slate-200/60 dark:border-[#27272A] flex items-center justify-between gap-2 flex-wrap text-[11px]">
-              <span className="text-[10px] font-mono text-slate-400">Quick Check-in:</span>
-              <div className="flex flex-wrap gap-1">
+            <div className="pt-2.5 border-t border-slate-200/60 dark:border-[#27272A] flex flex-wrap items-center justify-between gap-2 text-[11px]">
+              <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 font-medium">Quick Check-in:</span>
+              <div className="flex flex-wrap items-center gap-1.5">
                 {pendingStudents.slice(0, 3).map(st => (
                   <button
                     key={st.id}
                     type="button"
                     onClick={() => handleQuickDemoCheckIn(st)}
-                    className="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-white dark:bg-[#18181B] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-slate-700 dark:text-slate-300 hover:text-emerald-700 border border-slate-200 dark:border-[#27272A] transition-colors cursor-pointer flex items-center gap-1"
+                    className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-semibold bg-white dark:bg-[#18181B] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-slate-700 dark:text-slate-300 hover:text-emerald-700 border border-slate-200 dark:border-[#27272A] transition-colors cursor-pointer flex items-center gap-1 min-h-[30px]"
                     title={`Mark ${st.name} present`}
                   >
                     <Zap className="w-2.5 h-2.5 text-amber-500" />
@@ -330,13 +331,13 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="pt-2 flex items-center justify-between text-xs border-t border-slate-100 dark:border-[#27272A]">
+        <div className="pt-4 mt-4 border-t border-slate-100 dark:border-[#27272A] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <span className="text-slate-400 dark:text-slate-500 text-[11px]">
             Students scan via Student Portal &gt; Scan Attendance QR
           </span>
           <button
             onClick={onClose}
-            className="px-4 py-2 min-h-[40px] text-xs font-semibold rounded-xl bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white transition-colors cursor-pointer shadow-xs"
+            className="px-4 py-2 min-h-[40px] text-xs font-semibold rounded-xl bg-[#134074] hover:bg-[#0B2545] active:bg-[#081B33] text-white transition-colors cursor-pointer shadow-xs whitespace-nowrap shrink-0 w-full sm:w-auto"
           >
             Review &amp; Finalize Roster
           </button>
@@ -344,4 +345,9 @@ export const FacultyQRSessionModal: React.FC<FacultyQRSessionModalProps> = ({
       </div>
     </div>
   );
+
+  if (typeof document !== 'undefined') {
+    return createPortal(modalContent, document.body);
+  }
+  return modalContent;
 };
