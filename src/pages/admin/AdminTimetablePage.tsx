@@ -9,7 +9,8 @@ import {
   User,
   X,
   Filter,
-  AlertTriangle
+  AlertTriangle,
+  GraduationCap
 } from 'lucide-react';
 import { ClassType } from '../../types';
 import { getFacultyFullName } from '../../utils/facultyUtils';
@@ -20,6 +21,10 @@ export const AdminTimetablePage: React.FC = () => {
   const [activeDay, setActiveDay] = useState<number>(1); // 1=Mon ... 6=Sat
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [programFilter, setProgramFilter] = useState<string>('all');
+  const [semesterFilter, setSemesterFilter] = useState<string>('all');
+  const [targetClassProgram, setTargetClassProgram] = useState<string>('B.Tech CSE');
+  const [targetClassSemester, setTargetClassSemester] = useState<number>(5);
+  const [targetClassSection, setTargetClassSection] = useState<string>('Section A');
 
   // Filter existing faculty members from users directory
   const facultyMembers = users.filter(u => u.role === 'faculty');
@@ -115,8 +120,13 @@ export const AdminTimetablePage: React.FC = () => {
   const currentDaySessions = timetable
     .filter(s => s.dayOfWeek === activeDay)
     .filter(s => {
-      if (programFilter === 'all') return true;
-      return s.program?.toLowerCase().includes(programFilter.toLowerCase());
+      if (programFilter !== 'all' && !s.program?.toLowerCase().includes(programFilter.toLowerCase())) {
+        return false;
+      }
+      if (semesterFilter !== 'all' && Number(s.semester) !== Number(semesterFilter)) {
+        return false;
+      }
+      return true;
     })
     .sort((a, b) => a.startTime.localeCompare(b.startTime));
 
@@ -180,11 +190,94 @@ export const AdminTimetablePage: React.FC = () => {
           icon={<Plus className="w-3.5 h-3.5" />}
           onClick={() => {
             setDayOfWeek(activeDay);
+            setProgram(targetClassProgram);
+            setSemester(targetClassSemester);
             setIsAddModalOpen(true);
           }}
         >
           Add Timetable Entry
         </Button>
+      </div>
+
+      {/* Target Class / Cohort Selection Banner */}
+      <div className="p-4 bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-sm space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-[#27272A]">
+          <div className="flex items-center gap-2">
+            <GraduationCap className="w-4 h-4 text-teal-700 dark:text-teal-400" />
+            <h3 className="text-xs font-bold uppercase tracking-wider font-mono text-slate-900 dark:text-slate-100">
+              Active Class Schedule Selection
+            </h3>
+          </div>
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-medium bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60">
+            <span>Setting Timetable For:</span>
+            <span className="font-bold underline">{programFilter === 'all' ? targetClassProgram : programFilter} • Sem {semesterFilter === 'all' ? targetClassSemester : semesterFilter} • {targetClassSection}</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              Select Program / Course:
+            </label>
+            <select
+              value={programFilter}
+              onChange={e => {
+                setProgramFilter(e.target.value);
+                if (e.target.value !== 'all') {
+                  setTargetClassProgram(e.target.value);
+                  setProgram(e.target.value);
+                }
+              }}
+              className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-slate-50 dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-600"
+            >
+              <option value="all">All Academic Programs</option>
+              <option value="B.Tech CSE">B.Tech Computer Science (CSE)</option>
+              <option value="B.Tech ECE">B.Tech Electronics & Comm (ECE)</option>
+              <option value="B.Sc IT">B.Sc Information Technology</option>
+              <option value="BCA">Bachelor of Computer Applications (BCA)</option>
+              <option value="MCA">Master of Computer Applications (MCA)</option>
+              <option value="M.Tech">M.Tech AI & Data Science</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              Select Semester:
+            </label>
+            <select
+              value={semesterFilter}
+              onChange={e => {
+                setSemesterFilter(e.target.value);
+                if (e.target.value !== 'all') {
+                  setTargetClassSemester(Number(e.target.value));
+                  setSemester(Number(e.target.value));
+                }
+              }}
+              className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-slate-50 dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-600"
+            >
+              <option value="all">All Semesters</option>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
+                <option key={s} value={s}>Semester {s}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-400 mb-1">
+              Select Class Section:
+            </label>
+            <select
+              value={targetClassSection}
+              onChange={e => setTargetClassSection(e.target.value)}
+              className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-slate-50 dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-600"
+            >
+              <option value="Section A">Section A</option>
+              <option value="Section B">Section B</option>
+              <option value="Section C">Section C</option>
+              <option value="Full Batch">All Cohorts / Full Batch</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Program Filter Bar & Day Selector */}

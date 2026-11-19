@@ -95,7 +95,7 @@ export const GlobalSearchModal: React.FC = () => {
       id: 'route_admin_dash',
       category: 'ROUTES',
       title: 'Navigate to Administration Console',
-      subtitle: 'Campus nexus, infrastructure tickets kanban & department controls',
+      subtitle: 'Campus facilities, infrastructure tickets kanban & department controls',
       badgeText: 'Admin',
       badgeColor: 'bg-purple-50 text-purple-800 dark:bg-purple-950/60 dark:text-purple-300 border-purple-200 dark:border-purple-800',
       url: '/admin/dashboard',

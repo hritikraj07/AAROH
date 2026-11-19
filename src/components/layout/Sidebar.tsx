@@ -238,7 +238,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCloseMobile }) => {
         },
         {
           to: '/admin/campus-map',
-          label: 'Infrastructure Heatmap',
+          label: 'Campus Facilities',
           icon: <MapPin className="w-4 h-4" />,
         },
         {

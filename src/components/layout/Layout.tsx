@@ -89,7 +89,7 @@ export const Layout: React.FC = () => {
       case '/admin/opportunities':
         return 'Opportunity Board Publisher';
       case '/admin/campus-map':
-        return 'Campus Infrastructure Nexus & Live Heatmap';
+        return 'Campus Facilities & Maintenance';
       case '/admin/settings':
         return 'System Configuration';
 

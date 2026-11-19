@@ -20,6 +20,8 @@ import {
   Check,
   Loader2,
   Shield,
+  Edit2,
+  KeyRound,
 } from 'lucide-react';
 import { User, UserRole } from '../../types';
 import { APP_CONFIG } from '../../config';
@@ -27,11 +29,25 @@ import { APP_CONFIG } from '../../config';
 const GOOGLE_SHEETS_WEBHOOK = "PASTE_WEBHOOK_URL_HERE";
 
 export const AdminPeoplePage: React.FC = () => {
-  const { users, createUser, deleteUser, user: currentUser } = useApp();
+  const { users, createUser, deleteUser, updateUser, showToast, user: currentUser } = useApp();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | UserRole>('all');
+
+  // Edit User State
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editPassword, setEditPassword] = useState('');
+  const [editShowPassword, setEditShowPassword] = useState(false);
+  const [editRollNumber, setEditRollNumber] = useState('');
+  const [editDepartment, setEditDepartment] = useState('');
+  const [editDesignation, setEditDesignation] = useState('');
+  const [editSemester, setEditSemester] = useState<number>(1);
+  const [editProgram, setEditProgram] = useState('B.Tech CSE');
+  const [isEditSyncing, setIsEditSyncing] = useState(false);
+  const [editSyncSuccess, setEditSyncSuccess] = useState(false);
 
   // Available Faculty Departments
   const FACULTY_DEPARTMENTS = [
@@ -247,6 +263,110 @@ export const AdminPeoplePage: React.FC = () => {
       setSyncSuccess(false);
       setIsAddModalOpen(false);
     }, 1000);
+  };
+
+  const handleOpenEditModal = (u: User) => {
+    setEditingUser(u);
+    setEditName(u.name);
+    setEditPassword(u.password || '');
+    setEditShowPassword(false);
+    setEditRollNumber(u.rollNumber || '');
+    setEditDepartment(u.department || '');
+    setEditDesignation(u.designation || '');
+    setEditSemester(u.semester || 1);
+    setEditProgram(u.program || 'B.Tech CSE');
+    setEditSyncSuccess(false);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveUserEdits = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+
+    const trimmedPassword = editPassword.trim();
+    const updates: Partial<User> = {
+      name: editName.trim() || editingUser.name,
+      password: trimmedPassword,
+    };
+
+    if (editingUser.role === 'student') {
+      if (editRollNumber.trim()) updates.rollNumber = editRollNumber.trim();
+      if (editProgram.trim()) updates.program = editProgram.trim();
+      if (editSemester) updates.semester = Number(editSemester);
+    } else {
+      if (editDepartment.trim()) updates.department = editDepartment.trim();
+      if (editDesignation.trim()) updates.designation = editDesignation.trim();
+    }
+
+    // 1. Update in StorageService / AppContext
+    updateUser(editingUser.id, updates);
+
+    // 2. Dual-Sync: Update aarohUsers array in localStorage (offline database)
+    try {
+      const raw = localStorage.getItem('aarohUsers');
+      const existing: any[] = raw ? JSON.parse(raw) : [];
+      const idx = existing.findIndex(
+        item => (item.username && item.username.toLowerCase() === editingUser.email.toLowerCase()) ||
+                (item.email && item.email.toLowerCase() === editingUser.email.toLowerCase())
+      );
+      if (idx >= 0) {
+        existing[idx] = {
+          ...existing[idx],
+          name: updates.name,
+          password: trimmedPassword,
+          role: editingUser.role,
+        };
+      } else {
+        existing.push({
+          username: editingUser.email,
+          password: trimmedPassword,
+          role: editingUser.role,
+          name: updates.name,
+        });
+      }
+      localStorage.setItem('aarohUsers', JSON.stringify(existing));
+    } catch (err) {
+      console.warn('Failed updating aarohUsers in localStorage:', err);
+    }
+
+    // 3. Dual-Sync: Asynchronous fetch call to Google Sheets Webhook
+    setIsEditSyncing(true);
+    try {
+      await fetch(GOOGLE_SHEETS_WEBHOOK, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'UPDATE_CREDENTIALS',
+          username: editingUser.email,
+          password: trimmedPassword,
+          role: editingUser.role,
+          name: updates.name,
+          email: editingUser.email,
+          rollNumber: updates.rollNumber,
+          department: updates.department,
+          timestamp: new Date().toISOString(),
+        }),
+      });
+    } catch (fetchErr) {
+      console.warn('Google Sheets Webhook sync error (offline-first mode):', fetchErr);
+    }
+
+    setIsEditSyncing(false);
+    setEditSyncSuccess(true);
+    showToast({
+      type: 'success',
+      title: 'Credentials Updated',
+      message: `Updated login credentials for ${editingUser.name}.`,
+    });
+
+    setTimeout(() => {
+      setEditSyncSuccess(false);
+      setIsEditModalOpen(false);
+      setEditingUser(null);
+    }, 700);
   };
 
   return (
@@ -489,19 +609,32 @@ export const AdminPeoplePage: React.FC = () => {
 
                       {/* Actions */}
                       <td className="py-3 px-4 text-right whitespace-nowrap">
-                        {!isCurrent && (
+                        <div className="flex items-center justify-end gap-1">
                           <button
-                            onClick={() => {
-                              if (window.confirm(`Are you sure you want to remove ${u.name} from the directory?`)) {
-                                deleteUser(u.id);
-                              }
-                            }}
-                            className="text-slate-400 hover:text-rose-600 p-1.5 rounded hover:bg-rose-50 transition-colors"
-                            title="Remove User"
+                            type="button"
+                            onClick={() => handleOpenEditModal(u)}
+                            className="text-slate-400 hover:text-teal-700 dark:hover:text-teal-400 p-1.5 rounded hover:bg-teal-50 dark:hover:bg-teal-950/40 transition-colors cursor-pointer"
+                            title="Edit Credentials & Password"
+                            aria-label={`Edit credentials for ${u.name}`}
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Edit2 className="w-3.5 h-3.5" />
                           </button>
-                        )}
+                          {!isCurrent && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm(`Are you sure you want to remove ${u.name} from the directory?`)) {
+                                  deleteUser(u.id);
+                                }
+                              }}
+                              className="text-slate-400 hover:text-rose-600 p-1.5 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                              title="Remove User"
+                              aria-label={`Remove user ${u.name}`}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   );
@@ -889,6 +1022,188 @@ export const AdminPeoplePage: React.FC = () => {
                     <>
                       <UserPlus className="w-3.5 h-3.5" />
                       <span>Create Account & Onboard User</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {isEditModalOpen && editingUser && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#18181B] border border-slate-200 dark:border-[#27272A] rounded-lg shadow-sm max-w-lg w-full p-6 space-y-4 animate-in fade-in duration-150 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-[#27272A]">
+              <div className="flex items-center gap-2">
+                <KeyRound className="w-4 h-4 text-teal-800 dark:text-teal-400" />
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  Edit Credentials: {editingUser.name}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditModalOpen(false);
+                  setEditingUser(null);
+                }}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveUserEdits} className="space-y-4">
+              {/* Account summary banner */}
+              <div className="p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md flex items-center justify-between text-xs font-mono">
+                <div>
+                  <span className="text-slate-400 block text-[10px]">Institutional Email</span>
+                  <span className="font-semibold text-slate-900 dark:text-slate-100">{editingUser.email}</span>
+                </div>
+                <span className="capitalize px-2 py-0.5 rounded text-[11px] font-semibold bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60">
+                  {editingUser.role}
+                </span>
+              </div>
+
+              {/* Full Name */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Full Name <span className="text-rose-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editName}
+                  onChange={e => setEditName(e.target.value)}
+                  className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700"
+                />
+              </div>
+
+              {/* Password update field */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Login Password (Reset if Forgotten) <span className="text-rose-600">*</span>
+                </label>
+                <div className="relative">
+                  <input
+                    type={editShowPassword ? 'text' : 'password'}
+                    required
+                    value={editPassword}
+                    onChange={e => setEditPassword(e.target.value)}
+                    placeholder="Enter new password..."
+                    className="w-full text-xs font-mono px-3 py-2 pr-10 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teal-700/20 focus:border-teal-700"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setEditShowPassword(!editShowPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1"
+                    title={editShowPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {editShowPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
+                  If the user forgot their password, set a new password here. It updates localStorage and syncs with the database.
+                </p>
+              </div>
+
+              {/* Student specific fields */}
+              {editingUser.role === 'student' && (
+                <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Roll Number / ID
+                    </label>
+                    <input
+                      type="text"
+                      value={editRollNumber}
+                      onChange={e => setEditRollNumber(e.target.value)}
+                      className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-700"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Semester
+                    </label>
+                    <select
+                      value={editSemester}
+                      onChange={e => setEditSemester(Number(e.target.value))}
+                      className="w-full text-xs font-mono px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-700"
+                    >
+                      {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
+                        <option key={s} value={s}>Semester {s}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* Faculty specific fields */}
+              {editingUser.role === 'faculty' && (
+                <div className="grid grid-cols-2 gap-3 p-3 bg-slate-50 dark:bg-[#111115] border border-slate-200 dark:border-[#27272A] rounded-md">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Department
+                    </label>
+                    <input
+                      type="text"
+                      value={editDepartment}
+                      onChange={e => setEditDepartment(e.target.value)}
+                      className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-700"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Designation
+                    </label>
+                    <input
+                      type="text"
+                      value={editDesignation}
+                      onChange={e => setEditDesignation(e.target.value)}
+                      className="w-full text-xs px-3 py-2 border border-slate-200 dark:border-[#27272A] rounded-md bg-white dark:bg-[#111115] text-slate-900 dark:text-slate-100 focus:outline-none focus:border-teal-700"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Modal footer actions */}
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200 dark:border-[#27272A]">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  disabled={isEditSyncing}
+                  onClick={() => {
+                    setIsEditModalOpen(false);
+                    setEditingUser(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <button
+                  type="submit"
+                  disabled={isEditSyncing || !editPassword.trim()}
+                  className={`inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-white rounded-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-teal-700/40 disabled:opacity-75 disabled:cursor-not-allowed ${
+                    editSyncSuccess
+                      ? 'bg-emerald-600 shadow-[0_1px_2px_rgba(5,150,105,0.2),0_2px_4px_rgba(5,150,105,0.2),0_4px_8px_rgba(5,150,105,0.2),0_8px_16px_rgba(5,150,105,0.25)]'
+                      : 'bg-[#0F766E] hover:bg-teal-800 shadow-[0_1px_2px_rgba(15,118,110,0.2),0_2px_4px_rgba(15,118,110,0.2),0_4px_8px_rgba(15,118,110,0.15),0_8px_16px_rgba(15,118,110,0.25)]'
+                  }`}
+                >
+                  {isEditSyncing ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Saving Credentials...</span>
+                    </>
+                  ) : editSyncSuccess ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" />
+                      <span>Updated & Synced ✓</span>
+                    </>
+                  ) : (
+                    <>
+                      <KeyRound className="w-3.5 h-3.5" />
+                      <span>Save & Sync Credentials</span>
                     </>
                   )}
                 </button>
