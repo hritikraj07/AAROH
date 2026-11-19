@@ -127,6 +127,19 @@ export interface TestCase {
   expectedOutput: string;
 }
 
+export interface AssignmentSubmission {
+  id: string;
+  assignmentId: string;
+  studentId: string;
+  studentName: string;
+  studentRoll?: string;
+  studentEmail: string;
+  submittedAt: string;
+  status: 'submitted' | 'graded';
+  marksAwarded?: number;
+  submissionNote?: string;
+}
+
 export interface Assignment {
   id: string;
   courseId: string;
@@ -141,6 +154,7 @@ export interface Assignment {
   studentEmail?: string;
   studentName?: string;
   securityIncident?: SecurityIncident;
+  submissions?: AssignmentSubmission[];
 
   // Live Lab / Coding Assignment additions
   type?: 'standard' | 'coding';

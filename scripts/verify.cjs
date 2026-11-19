@@ -2035,4 +2035,25 @@ assert(themeToggleCheck.includes('animate={{ x: isDark ? 24 : 0 }}'), 'ThemeTogg
 
 console.log('--- ALL EARLY WARNING, LOST & FOUND RBAC, SEMESTER PROGRESSION & THEME TOGGLE VERIFICATIONS PASSED ---');
 
+// ==========================================
+// 38. Faculty Dashboard Student Coursework Submissions Roster
+// ==========================================
+console.log('--- VERIFYING FACULTY STUDENT COURSEWORK SUBMISSIONS ROSTER ---');
+
+const facultyDashboardCheck = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyDashboardPage.tsx'), 'utf8');
+assert(facultyDashboardCheck.includes('Student Coursework & Assignment Submissions'), 'FacultyDashboardPage renders Student Coursework Submissions header');
+assert(facultyDashboardCheck.includes('allSubmissionsList'), 'FacultyDashboardPage computes live submissions list');
+assert(facultyDashboardCheck.includes('sub.studentRoll'), 'FacultyDashboardPage displays student roll numbers in submissions roster');
+assert(facultyDashboardCheck.includes('View Roster'), 'FacultyDashboardPage provides View Roster action');
+
+const facultyAssignmentsCheck = fs.readFileSync(path.join(__dirname, '../src/pages/faculty/FacultyAssignmentsPage.tsx'), 'utf8');
+assert(facultyAssignmentsCheck.includes('View Submissions'), 'FacultyAssignmentsPage provides View Submissions button for coursework');
+assert(facultyAssignmentsCheck.includes('selectedSubmissionsAsg'), 'FacultyAssignmentsPage manages selected submissions modal state');
+
+const typesCheck = fs.readFileSync(path.join(__dirname, '../src/types/index.ts'), 'utf8');
+assert(typesCheck.includes('export interface AssignmentSubmission'), 'types/index.ts exports AssignmentSubmission interface');
+assert(typesCheck.includes('submissions?: AssignmentSubmission[]'), 'Assignment interface includes submissions array');
+
+console.log('--- ALL FACULTY STUDENT COURSEWORK SUBMISSIONS ROSTER VERIFICATIONS PASSED ---');
+
 module.exports = { assert };

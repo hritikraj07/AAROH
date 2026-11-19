@@ -7,6 +7,7 @@ import {
   AttendanceRecord,
   Assignment,
   AssignmentStatus,
+  AssignmentSubmission,
   SecurityIncident,
   Notice,
   CampusEvent,
@@ -608,7 +609,30 @@ export const StorageService = {
 
   // Assignments
   getAssignments(): Assignment[] {
-    return getStored<Assignment[]>(STORAGE_KEYS.ASSIGNMENTS, INITIAL_ASSIGNMENTS);
+    let list = getStored<Assignment[]>(STORAGE_KEYS.ASSIGNMENTS, INITIAL_ASSIGNMENTS);
+    if (Array.isArray(list)) {
+      list = list.map(asg => {
+        if (asg.status === 'submitted' && (!asg.submissions || asg.submissions.length === 0)) {
+          return {
+            ...asg,
+            submissions: [
+              {
+                id: `sub_${asg.id}_auto`,
+                assignmentId: asg.id,
+                studentId: asg.studentId || 'usr_std_demo',
+                studentName: asg.studentName || 'Aarav Sharma',
+                studentRoll: '22CS042',
+                studentEmail: asg.studentEmail || 'aarav.sharma@aaroh.edu.in',
+                submittedAt: asg.submittedAt || new Date().toISOString(),
+                status: 'submitted',
+              },
+            ],
+          };
+        }
+        return asg;
+      });
+    }
+    return list;
   },
 
   createAssignment(asg: Omit<Assignment, 'id' | 'status'>): Assignment {
@@ -617,6 +641,7 @@ export const StorageService = {
       ...asg,
       id: `asg_${Date.now()}`,
       status: 'pending',
+      submissions: [],
     };
     list.unshift(newAsg);
     setStored(STORAGE_KEYS.ASSIGNMENTS, list);
@@ -637,34 +662,100 @@ export const StorageService = {
     return list[idx];
   },
 
-  submitCodingAssignment(id: string, studentCode: string, testResultsSummary?: string, statusOverride?: AssignmentStatus, securityIncident?: SecurityIncident): Assignment | null {
+  submitCodingAssignment(id: string, studentCode: string, testResultsSummary?: string, statusOverride?: AssignmentStatus, securityIncident?: SecurityIncident, studentInfo?: { studentId?: string; studentName?: string; studentRoll?: string; studentEmail?: string }): Assignment | null {
     const list = this.getAssignments();
     const idx = list.findIndex(a => a.id === id);
     if (idx === -1) return null;
+
+    const now = new Date().toISOString();
+    const sId = studentInfo?.studentId || list[idx].studentId || 'usr_std_demo';
+    const sName = studentInfo?.studentName || list[idx].studentName || 'Aarav Sharma';
+    const sRoll = studentInfo?.studentRoll || '22CS042';
+    const sEmail = studentInfo?.studentEmail || list[idx].studentEmail || 'aarav.sharma@aaroh.edu.in';
+
+    let subList = Array.isArray(list[idx].submissions) ? [...(list[idx].submissions || [])] : [];
+    const existingIdx = subList.findIndex(s => s.studentId === sId || s.studentRoll === sRoll);
+    const subRecord: AssignmentSubmission = {
+      id: `sub_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+      assignmentId: id,
+      studentId: sId,
+      studentName: sName,
+      studentRoll: sRoll,
+      studentEmail: sEmail,
+      submittedAt: now,
+      status: 'submitted',
+    };
+    if (existingIdx >= 0) {
+      subList[existingIdx] = subRecord;
+    } else {
+      subList.unshift(subRecord);
+    }
+
     list[idx] = {
       ...list[idx],
       studentCode,
       testResultsSummary,
       status: statusOverride || 'submitted',
-      submittedAt: new Date().toISOString(),
+      submittedAt: now,
+      studentId: sId,
+      studentName: sName,
+      studentEmail: sEmail,
       securityIncident: securityIncident || list[idx].securityIncident,
+      submissions: subList,
     };
     setStored(STORAGE_KEYS.ASSIGNMENTS, list);
     if (typeof window !== 'undefined') window.dispatchEvent(new Event('storage'));
     return list[idx];
   },
 
-  toggleAssignmentSubmission(id: string): Assignment | null {
+  toggleAssignmentSubmission(
+    id: string,
+    studentInfo?: { studentId?: string; studentName?: string; studentRoll?: string; studentEmail?: string }
+  ): Assignment | null {
     const list = this.getAssignments();
     const idx = list.findIndex(a => a.id === id);
     if (idx === -1) return null;
 
     const current = list[idx];
     const isNowSubmitted = current.status !== 'submitted';
+    const now = new Date().toISOString();
+
+    const sId = studentInfo?.studentId || current.studentId || 'usr_std_demo';
+    const sName = studentInfo?.studentName || current.studentName || 'Aarav Sharma';
+    const sRoll = studentInfo?.studentRoll || '22CS042';
+    const sEmail = studentInfo?.studentEmail || current.studentEmail || 'aarav.sharma@aaroh.edu.in';
+
+    let subList = Array.isArray(current.submissions) ? [...(current.submissions || [])] : [];
+
+    if (isNowSubmitted) {
+      const existingIdx = subList.findIndex(s => s.studentId === sId || s.studentRoll === sRoll);
+      const subRecord: AssignmentSubmission = {
+        id: `sub_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+        assignmentId: id,
+        studentId: sId,
+        studentName: sName,
+        studentRoll: sRoll,
+        studentEmail: sEmail,
+        submittedAt: now,
+        status: 'submitted',
+      };
+      if (existingIdx >= 0) {
+        subList[existingIdx] = subRecord;
+      } else {
+        subList.unshift(subRecord);
+      }
+    } else {
+      subList = subList.filter(s => s.studentId !== sId && s.studentRoll !== sRoll);
+    }
+
     const updated: Assignment = {
       ...current,
-      status: isNowSubmitted ? 'submitted' : 'pending',
-      submittedAt: isNowSubmitted ? new Date().toISOString() : undefined,
+      status: isNowSubmitted ? 'submitted' : (subList.length > 0 ? 'submitted' : 'pending'),
+      submittedAt: isNowSubmitted ? now : (subList[0]?.submittedAt || undefined),
+      studentId: isNowSubmitted ? sId : (subList[0]?.studentId || undefined),
+      studentName: isNowSubmitted ? sName : (subList[0]?.studentName || undefined),
+      studentEmail: isNowSubmitted ? sEmail : (subList[0]?.studentEmail || undefined),
+      submissions: subList,
     };
     list[idx] = updated;
     setStored(STORAGE_KEYS.ASSIGNMENTS, list);

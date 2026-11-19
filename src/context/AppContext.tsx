@@ -329,7 +329,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const toggleAssignmentSubmission = (id: string) => {
-    const updated = StorageService.toggleAssignmentSubmission(id);
+    const currentStudent = user;
+    const studentInfo = currentStudent ? {
+      studentId: currentStudent.id,
+      studentName: currentStudent.name || 'Aarav Sharma',
+      studentRoll: currentStudent.rollNumber || '22CS042',
+      studentEmail: currentStudent.email || 'aarav.sharma@aaroh.edu.in',
+    } : undefined;
+
+    const updated = StorageService.toggleAssignmentSubmission(id, studentInfo);
     if (updated) {
       setAssignments(StorageService.getAssignments());
       const isSub = updated.status === 'submitted';

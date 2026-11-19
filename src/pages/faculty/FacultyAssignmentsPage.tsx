@@ -16,7 +16,10 @@ import {
   Trash2,
   ShieldAlert,
   ShieldCheck,
-  AlertOctagon
+  AlertOctagon,
+  Users,
+  FileCheck,
+  Eye
 } from 'lucide-react';
 import { Assignment, TestCase } from '../../types';
 import { CustomDropdown, CustomDropdownOption } from '../../components/ui/CustomDropdown';
@@ -33,6 +36,7 @@ export const FacultyAssignmentsPage: React.FC = () => {
   const [isCodingModalOpen, setIsCodingModalOpen] = useState(false);
   const [selectedCourseFilter, setSelectedCourseFilter] = useState<string>('all');
   const [incidentReviewAsg, setIncidentReviewAsg] = useState<Assignment | null>(null);
+  const [selectedSubmissionsAsg, setSelectedSubmissionsAsg] = useState<Assignment | null>(null);
 
   const effectiveCourses = useMemo(() => {
     if (courses.length > 0) return courses;
@@ -646,7 +650,14 @@ export const FacultyAssignmentsPage: React.FC = () => {
                           <ExternalLink className="w-3 h-3" />
                         </Link>
                       ) : (
-                        <span className="text-slate-400 text-xs">Standard Submission</span>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSubmissionsAsg(asg)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 border border-teal-200 dark:border-teal-800 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors cursor-pointer"
+                        >
+                          <Users className="w-3.5 h-3.5" />
+                          <span>View Submissions ({asg.submissions?.length || (asg.status === 'submitted' ? 1 : 0)})</span>
+                        </button>
                       )}
                     </td>
                   </tr>
@@ -1146,6 +1157,144 @@ export const FacultyAssignmentsPage: React.FC = () => {
           return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : modalContent;
         })()
       )}
+
+      {/* Submitted Student Coursework Roster Modal */}
+      {selectedSubmissionsAsg && (() => {
+        const modalContent = (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 backdrop-blur-[2px] p-4 sm:p-6 overflow-y-auto">
+            <div className="w-full max-w-2xl bg-white dark:bg-[#18181B] rounded-2xl shadow-2xl border border-slate-200 dark:border-[#27272A] overflow-hidden flex flex-col max-h-[90vh] my-auto">
+              {/* Header */}
+              <div className="px-6 py-4 border-b border-slate-100 dark:border-[#27272A] flex items-center justify-between shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 flex items-center justify-center shrink-0">
+                    <FileCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                      Coursework Submissions
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
+                      {selectedSubmissionsAsg.title}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedSubmissionsAsg(null)}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#27272A] transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                {/* Metadata Cards Strip */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#202025]/50 border border-slate-100 dark:border-[#27272A]">
+                    <span className="text-[10px] text-slate-400 uppercase font-mono block">Course</span>
+                    <span className="text-xs font-bold font-mono text-slate-800 dark:text-slate-200">
+                      {courses.find(c => c.id === selectedSubmissionsAsg.courseId)?.code || 'CS101-AIML'}
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#202025]/50 border border-slate-100 dark:border-[#27272A]">
+                    <span className="text-[10px] text-slate-400 uppercase font-mono block">Max Marks</span>
+                    <span className="text-xs font-bold font-mono text-slate-800 dark:text-slate-200">
+                      {selectedSubmissionsAsg.maxMarks} Points
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#202025]/50 border border-slate-100 dark:border-[#27272A]">
+                    <span className="text-[10px] text-slate-400 uppercase font-mono block">Deadline</span>
+                    <span className="text-xs font-bold font-mono text-slate-800 dark:text-slate-200">
+                      {selectedSubmissionsAsg.dueDate}
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-800/40">
+                    <span className="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase font-mono block">Submissions</span>
+                    <span className="text-xs font-bold font-mono text-emerald-800 dark:text-emerald-300">
+                      {selectedSubmissionsAsg.submissions?.length || (selectedSubmissionsAsg.status === 'submitted' ? 1 : 0)} Students
+                    </span>
+                  </div>
+                </div>
+
+                {/* Submissions List */}
+                <div className="space-y-2">
+                  <h4 className="text-xs font-semibold text-slate-800 dark:text-slate-200 uppercase font-mono tracking-wider">
+                    Submitted Student Roster
+                  </h4>
+
+                  {(!selectedSubmissionsAsg.submissions || selectedSubmissionsAsg.submissions.length === 0) && selectedSubmissionsAsg.status !== 'submitted' ? (
+                    <div className="py-8 text-center border border-dashed border-slate-200 dark:border-[#27272A] rounded-xl text-xs text-slate-500">
+                      No students have submitted this coursework yet.
+                    </div>
+                  ) : (
+                    <div className="border border-slate-200 dark:border-[#27272A] rounded-xl overflow-hidden divide-y divide-slate-100 dark:divide-[#27272A]">
+                      {(selectedSubmissionsAsg.submissions && selectedSubmissionsAsg.submissions.length > 0
+                        ? selectedSubmissionsAsg.submissions
+                        : [
+                            {
+                              id: `sub_single_${selectedSubmissionsAsg.id}`,
+                              assignmentId: selectedSubmissionsAsg.id,
+                              studentId: selectedSubmissionsAsg.studentId || 'usr_std_demo',
+                              studentName: selectedSubmissionsAsg.studentName || 'Aarav Sharma',
+                              studentRoll: '22CS042',
+                              studentEmail: selectedSubmissionsAsg.studentEmail || 'aarav.sharma@aaroh.edu.in',
+                              submittedAt: selectedSubmissionsAsg.submittedAt || new Date().toISOString(),
+                              status: 'submitted' as const,
+                            },
+                          ]
+                      ).map(sub => (
+                        <div key={sub.id} className="p-3.5 flex items-center justify-between gap-3 text-xs bg-white dark:bg-[#18181B] hover:bg-slate-50/50 dark:hover:bg-[#202025]/50 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-950 text-teal-800 dark:text-teal-300 font-bold flex items-center justify-center text-xs shrink-0">
+                              {sub.studentName.slice(0, 2).toUpperCase()}
+                            </div>
+                            <div>
+                              <span className="font-semibold text-slate-900 dark:text-slate-100 block">
+                                {sub.studentName}
+                              </span>
+                              <div className="flex items-center gap-2 text-[11px] text-slate-400 font-mono">
+                                <span>Roll: {sub.studentRoll || '22CS042'}</span>
+                                <span>•</span>
+                                <span>{sub.studentEmail}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <div className="text-right">
+                              <span className="text-[10px] text-slate-400 font-mono block">Submitted At</span>
+                              <span className="font-mono text-slate-600 dark:text-slate-400">
+                                {new Date(sub.submittedAt).toLocaleDateString()} {new Date(sub.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                            <span className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-full">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                              <span>Submitted</span>
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 bg-slate-50/70 dark:bg-[#18181B] border-t border-slate-100 dark:border-[#27272A] flex items-center justify-end gap-3 shrink-0">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedSubmissionsAsg(null)}
+                >
+                  Close Roster
+                </Button>
+              </div>
+            </div>
+          </div>
+        );
+        return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : modalContent;
+      })()}
     </div>
   );
 };
