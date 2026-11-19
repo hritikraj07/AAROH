@@ -104,6 +104,7 @@ assert(facultyNoticeContent.includes('flex-1 overflow-y-auto px-6 py-5 space-y-4
 assert(facultyNoticeContent.includes('px-6 py-4 bg-slate-50/70') && facultyNoticeContent.includes('shrink-0'), 'Draft Department Notice modal has pinned footer action bar');
 assert(facultyNoticeContent.includes('grid grid-cols-1 sm:grid-cols-2 gap-4 items-start'), 'Draft Department Notice modal implements 2-column metadata grids');
 assert(facultyNoticeContent.includes('min-h-[110px] resize-y rounded-xl border'), 'Draft Department Notice modal provides clean textarea');
+assert(facultyNoticeContent.includes('createPortal') && facultyNoticeContent.includes('document.body'), 'Draft Department Notice modal teleports to document.body via createPortal to fill viewport');
 
 // 14. Check Student Timetable & Dashboard Audience Filtering
 const studentTodayClasses = fs.readFileSync(path.join(__dirname, '../src/components/modules/dashboard/TodayClassesCard.tsx'), 'utf8');
